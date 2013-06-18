@@ -24,6 +24,23 @@
   </CustomGroups>
   <CustomFields>
     <CustomField>
+      <name>Volunteer_Need_Id</name>
+      <label>Volunteer Need Id</label>
+      <data_type>Int</data_type>
+      <html_type>Text</html_type>
+      <is_required>0</is_required>
+      <is_searchable>0</is_searchable>
+      <is_search_range>0</is_search_range>
+      <weight>1</weight>
+      <is_active>1</is_active>
+      <is_view>0</is_view>
+      <text_length>255</text_length>
+      <note_columns>60</note_columns>
+      <note_rows>4</note_rows>
+      <column_name>volunteer_need_id_7</column_name>
+      <custom_group_name>CiviVolunteer</custom_group_name>
+    </CustomField>
+    <CustomField>
       <name>Volunteer_Status</name>
       <label>Volunteer Status</label>
       <data_type>String</data_type>
@@ -37,7 +54,7 @@
       <text_length>255</text_length>
       <note_columns>60</note_columns>
       <note_rows>4</note_rows>
-      <column_name>volunteer_status_7</column_name>
+      <column_name>volunteer_status_8</column_name>
       <option_group_name>volunteer_status_20130617135236</option_group_name>
       <custom_group_name>CiviVolunteer</custom_group_name>
     </CustomField>
@@ -55,13 +72,13 @@
       <text_length>255</text_length>
       <note_columns>60</note_columns>
       <note_rows>4</note_rows>
-      <column_name>time_scheduled_in_minutes_8</column_name>
+      <column_name>time_scheduled_in_minutes_9</column_name>
       <custom_group_name>CiviVolunteer</custom_group_name>
     </CustomField>
     <CustomField>
-      <name>time_completed_In_minutes</name>
-      <label>time completed - In minutes</label>
-      <data_type>Float</data_type>
+      <name>Time_Completed_In_minutes</name>
+      <label>Time Completed - In minutes</label>
+      <data_type>Int</data_type>
       <html_type>Text</html_type>
       <is_required>0</is_required>
       <is_searchable>0</is_searchable>
@@ -72,7 +89,7 @@
       <text_length>255</text_length>
       <note_columns>60</note_columns>
       <note_rows>4</note_rows>
-      <column_name>time_completed_in_minutes_9</column_name>
+      <column_name>time_completed_in_minutes_10</column_name>
       <custom_group_name>CiviVolunteer</custom_group_name>
     </CustomField>
   </CustomFields>
@@ -80,6 +97,12 @@
     <OptionGroup>
       <name>volunteer_status_20130617135236</name>
       <title>Volunteer Status</title>
+      <is_reserved>1</is_reserved>
+      <is_active>1</is_active>
+    </OptionGroup>
+    <OptionGroup>
+      <name>volunteer_role_20130617135236</name>
+      <title>Volunteer Role</title>
       <is_reserved>1</is_reserved>
       <is_active>1</is_active>
     </OptionGroup>
@@ -139,6 +162,39 @@
       <is_reserved>0</is_reserved>
       <is_active>1</is_active>
       <option_group_name>volunteer_status_20130617135236</option_group_name>
+    </OptionValue>
+    <OptionValue>
+      <label>Ticket-taker</label>
+      <value>Ticket-taker</value>
+      <name>Ticket_taker</name>
+      <is_default>0</is_default>
+      <weight>1</weight>
+      <is_optgroup>0</is_optgroup>
+      <is_reserved>0</is_reserved>
+      <is_active>1</is_active>
+      <option_group_name>volunteer_role_20130617135236</option_group_name>
+    </OptionValue>
+    <OptionValue>
+      <label>Usher</label>
+      <value>Usher</value>
+      <name>Usher</name>
+      <is_default>0</is_default>
+      <weight>2</weight>
+      <is_optgroup>0</is_optgroup>
+      <is_reserved>0</is_reserved>
+      <is_active>1</is_active>
+      <option_group_name>volunteer_role_20130617135236</option_group_name>
+    </OptionValue>
+    <OptionValue>
+      <label>Will Call</label>
+      <value>Will Call</value>
+      <name>Will_Call</name>
+      <is_default>0</is_default>
+      <weight>3</weight>
+      <is_optgroup>0</is_optgroup>
+      <is_reserved>0</is_reserved>
+      <is_active>1</is_active>
+      <option_group_name>volunteer_role_20130617135236</option_group_name>
     </OptionValue>
   </OptionValues>
 </CustomData>
