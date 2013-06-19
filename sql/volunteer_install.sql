@@ -1,7 +1,7 @@
 CREATE TABLE IF NOT EXISTS civicrm_volunteer_need (
   id int(10) unsigned NOT NULL AUTO_INCREMENT COMMENT 'Need Id',
   start_time datetime DEFAULT NULL,
-  duration decimal(20,2) DEFAULT NULL COMMENT 'Length in minutes of this volunteer time slot.',
+  duration int(11) DEFAULT NULL COMMENT 'Length in minutes of this volunteer time slot.',
   is_flexible tinyint(4) DEFAULT '0' COMMENT 'boolean indicating whether or not the time and role are flexible. Activities linked to a flexible need indicate that the volunteer is generally available.',
   quantity int(11) DEFAULT NULL COMMENT 'Number of volunteers required for this need.',
   visibility_id int(11) DEFAULT NULL COMMENT 'Implicit FK to option_value row in visibility option_group. Indicates whether this need is offered on public volunteer signup forms.',
