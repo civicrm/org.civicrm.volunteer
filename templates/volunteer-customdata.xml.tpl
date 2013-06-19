@@ -41,26 +41,8 @@
       <custom_group_name>CiviVolunteer</custom_group_name>
     </CustomField>
     <CustomField>
-      <name>Volunteer_Status</name>
-      <label>Volunteer Status</label>
-      <data_type>String</data_type>
-      <html_type>Select</html_type>
-      <is_required>0</is_required>
-      <is_searchable>0</is_searchable>
-      <is_search_range>0</is_search_range>
-      <weight>1</weight>
-      <is_active>1</is_active>
-      <is_view>0</is_view>
-      <text_length>255</text_length>
-      <note_columns>60</note_columns>
-      <note_rows>4</note_rows>
-      <column_name>volunteer_status_8</column_name>
-      <option_group_name>volunteer_status</option_group_name>
-      <custom_group_name>CiviVolunteer</custom_group_name>
-    </CustomField>
-    <CustomField>
-      <name>Time_Scheduled_In_minutes</name>
-      <label>Time Scheduled - In minutes</label>
+      <name>Time_Scheduled_Minutes</name>
+      <label>Time Scheduled (minutes)</label>
       <data_type>Int</data_type>
       <html_type>Text</html_type>
       <is_required>0</is_required>
@@ -76,8 +58,8 @@
       <custom_group_name>CiviVolunteer</custom_group_name>
     </CustomField>
     <CustomField>
-      <name>Time_Completed_In_minutes</name>
-      <label>Time Completed - In minutes</label>
+      <name>Time_Completed_Minutes</name>
+      <label>Time Completed (minutes)</label>
       <data_type>Int</data_type>
       <html_type>Text</html_type>
       <is_required>0</is_required>
@@ -95,14 +77,14 @@
   </CustomFields>
   <OptionGroups>
     <OptionGroup>
-      <name>volunteer_status</name>
-      <title>Volunteer Status</title>
+      <name>volunteer_role</name>
+      <title>Volunteer Role</title>
       <is_reserved>1</is_reserved>
       <is_active>1</is_active>
     </OptionGroup>
     <OptionGroup>
-      <name>volunteer_role</name>
-      <title>Volunteer Role</title>
+      <name>activity_status</name>
+      <title>Activity Status</title>
       <is_reserved>1</is_reserved>
       <is_active>1</is_active>
     </OptionGroup>
@@ -110,62 +92,29 @@
   <OptionValues>
     <OptionValue>
       <label>Available</label>
-      <value>Available</value>
+      <value>7</value>
       <name>Available</name>
       <is_default>0</is_default>
-      <weight>1</weight>
+      <weight>7</weight>
       <is_optgroup>0</is_optgroup>
       <is_reserved>0</is_reserved>
       <is_active>1</is_active>
-      <option_group_name>volunteer_status</option_group_name>
-    </OptionValue>
-    <OptionValue>
-      <label>Scheduled</label>
-      <value>Scheduled</value>
-      <name>Scheduled</name>
-      <is_default>0</is_default>
-      <weight>2</weight>
-      <is_optgroup>0</is_optgroup>
-      <is_reserved>0</is_reserved>
-      <is_active>1</is_active>
-      <option_group_name>volunteer_status</option_group_name>
-    </OptionValue>
-    <OptionValue>
-      <label>Completed</label>
-      <value>Completed</value>
-      <name>Completed</name>
-      <is_default>0</is_default>
-      <weight>3</weight>
-      <is_optgroup>0</is_optgroup>
-      <is_reserved>0</is_reserved>
-      <is_active>1</is_active>
-      <option_group_name>volunteer_status</option_group_name>
-    </OptionValue>
-    <OptionValue>
-      <label>Not used</label>
-      <value>Not used</value>
-      <name>Not_used</name>
-      <is_default>0</is_default>
-      <weight>4</weight>
-      <is_optgroup>0</is_optgroup>
-      <is_reserved>0</is_reserved>
-      <is_active>1</is_active>
-      <option_group_name>volunteer_status</option_group_name>
+      <option_group_name>activity_status</option_group_name>
     </OptionValue>
     <OptionValue>
       <label>No-show</label>
-      <value>No-show</value>
+      <value>8</value>
       <name>No_show</name>
       <is_default>0</is_default>
-      <weight>5</weight>
+      <weight>8</weight>
       <is_optgroup>0</is_optgroup>
       <is_reserved>0</is_reserved>
       <is_active>1</is_active>
-      <option_group_name>volunteer_status</option_group_name>
+      <option_group_name>activity_status</option_group_name>
     </OptionValue>
     <OptionValue>
       <label>Ticket-taker</label>
-      <value>Ticket-taker</value>
+      <value>1</value>
       <name>Ticket_taker</name>
       <is_default>0</is_default>
       <weight>1</weight>
@@ -176,7 +125,7 @@
     </OptionValue>
     <OptionValue>
       <label>Usher</label>
-      <value>Usher</value>
+      <value>2</value>
       <name>Usher</name>
       <is_default>0</is_default>
       <weight>2</weight>
@@ -187,7 +136,7 @@
     </OptionValue>
     <OptionValue>
       <label>Will Call</label>
-      <value>Will Call</value>
+      <value>3</value>
       <name>Will_Call</name>
       <is_default>0</is_default>
       <weight>3</weight>
