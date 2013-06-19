@@ -42,7 +42,7 @@ class CRM_Volunteer_DAO_Need extends CRM_Core_DAO
    * @var string
    * @static
    */
-  static $_tableName = 'civicrm_civivol_need';
+  static $_tableName = 'civicrm_volunteer_need';
   /**
    * static instance to hold the field values
    *
@@ -110,7 +110,7 @@ class CRM_Volunteer_DAO_Need extends CRM_Core_DAO
    *
    * @var boolean
    */
-  public $flexible;
+  public $is_flexible;
   /**
    * the number of volunteers needed for this need in each time slot
    *
@@ -139,11 +139,11 @@ class CRM_Volunteer_DAO_Need extends CRM_Core_DAO
    * class constructor
    *
    * @access public
-   * @return civicrm_civivol_need
+   * @return civicrm_volunteer_need
    */
   function __construct()
   {
-    $this->__table = 'civicrm_civivol_need';
+    $this->__table = 'civicrm_volunteer_need';
     parent::__construct();
   }
   /**
@@ -156,13 +156,13 @@ class CRM_Volunteer_DAO_Need extends CRM_Core_DAO
   {
     if (!(self::$_fields)) {
       self::$_fields = array(
-        'civicrm_civivol_need_id' => array(
+        'civicrm_volunteer_need_id' => array(
           'name' => 'id',
           'type' => CRM_Utils_Type::T_INT,
           'title' => ts('CiviVolunteer Need ID') ,
           'required' => true,
           'import' => true,
-          'where' => 'civicrm_civivol_need.id',
+          'where' => 'civicrm_volunteer_need.id',
           'headerPattern' => '',
           'dataPattern' => '',
           'export' => true,
@@ -172,7 +172,7 @@ class CRM_Volunteer_DAO_Need extends CRM_Core_DAO
           'type' => CRM_Utils_Type::T_DATE + CRM_Utils_Type::T_TIME,
           'title' => ts('Start time') ,
           'import' => true,
-          'where' => 'civicrm_civivol_need.start_time',
+          'where' => 'civicrm_volunteer_need.start_time',
           'headerPattern' => '',
           'dataPattern' => '',
           'export' => true,
@@ -182,12 +182,12 @@ class CRM_Volunteer_DAO_Need extends CRM_Core_DAO
           'type' => CRM_Utils_Type::T_MONEY,
           'title' => ts('Duration') ,
         ) ,
-        'flexible' => array(
-          'name' => 'flexible',
+        'is_flexible' => array(
+          'name' => 'is_flexible',
           'type' => CRM_Utils_Type::T_BOOLEAN,
-          'title' => ts('Flexible') ,
+          'title' => ts('Is Flexible') ,
           'import' => true,
-          'where' => 'civicrm_civivol_need.flexible',
+          'where' => 'civicrm_volunteer_need.flexible',
           'headerPattern' => '',
           'dataPattern' => '',
           'export' => true,
@@ -204,7 +204,7 @@ class CRM_Volunteer_DAO_Need extends CRM_Core_DAO
           'maxlength' => 128,
           'size' => CRM_Utils_Type::HUGE,
           'import' => true,
-          'where' => 'civicrm_civivol_need.role_id',
+          'where' => 'civicrm_volunteer_need.role_id',
           'headerPattern' => '',
           'dataPattern' => '',
           'export' => false,
@@ -238,10 +238,10 @@ class CRM_Volunteer_DAO_Need extends CRM_Core_DAO
   {
     if (!(self::$_fieldKeys)) {
       self::$_fieldKeys = array(
-        'id' => 'civicrm_civivol_need_id',
+        'id' => 'civicrm_volunteer_need_id',
         'start_time' => 'start_time',
         'duration' => 'duration',
-        'flexible' => 'flexible',
+        'is_flexible' => 'is_flexible',
         'quantity' => 'quantity',
         'role_id' => 'role_id',
         'entity_id' => 'entity_id',
@@ -286,7 +286,7 @@ class CRM_Volunteer_DAO_Need extends CRM_Core_DAO
       foreach($fields as $name => $field) {
         if (CRM_Utils_Array::value('import', $field)) {
           if ($prefix) {
-            self::$_import['civivol_need'] = & $fields[$name];
+            self::$_import['volunteer_need'] = & $fields[$name];
           } else {
             self::$_import[$name] = & $fields[$name];
           }
@@ -310,7 +310,7 @@ class CRM_Volunteer_DAO_Need extends CRM_Core_DAO
       foreach($fields as $name => $field) {
         if (CRM_Utils_Array::value('export', $field)) {
           if ($prefix) {
-            self::$_export['civivol_need'] = & $fields[$name];
+            self::$_export['volunteer_need'] = & $fields[$name];
           } else {
             self::$_export[$name] = & $fields[$name];
           }
