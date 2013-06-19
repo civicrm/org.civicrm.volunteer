@@ -55,7 +55,7 @@
       <note_columns>60</note_columns>
       <note_rows>4</note_rows>
       <column_name>volunteer_status_8</column_name>
-      <option_group_name>volunteer_status_20130617135236</option_group_name>
+      <option_group_name>volunteer_status</option_group_name>
       <custom_group_name>CiviVolunteer</custom_group_name>
     </CustomField>
     <CustomField>
@@ -95,13 +95,13 @@
   </CustomFields>
   <OptionGroups>
     <OptionGroup>
-      <name>volunteer_status_20130617135236</name>
+      <name>volunteer_status</name>
       <title>Volunteer Status</title>
       <is_reserved>1</is_reserved>
       <is_active>1</is_active>
     </OptionGroup>
     <OptionGroup>
-      <name>volunteer_role_20130617135236</name>
+      <name>volunteer_role</name>
       <title>Volunteer Role</title>
       <is_reserved>1</is_reserved>
       <is_active>1</is_active>
@@ -117,7 +117,7 @@
       <is_optgroup>0</is_optgroup>
       <is_reserved>0</is_reserved>
       <is_active>1</is_active>
-      <option_group_name>volunteer_status_20130617135236</option_group_name>
+      <option_group_name>volunteer_status</option_group_name>
     </OptionValue>
     <OptionValue>
       <label>Scheduled</label>
@@ -128,7 +128,7 @@
       <is_optgroup>0</is_optgroup>
       <is_reserved>0</is_reserved>
       <is_active>1</is_active>
-      <option_group_name>volunteer_status_20130617135236</option_group_name>
+      <option_group_name>volunteer_status</option_group_name>
     </OptionValue>
     <OptionValue>
       <label>Completed</label>
@@ -139,7 +139,7 @@
       <is_optgroup>0</is_optgroup>
       <is_reserved>0</is_reserved>
       <is_active>1</is_active>
-      <option_group_name>volunteer_status_20130617135236</option_group_name>
+      <option_group_name>volunteer_status</option_group_name>
     </OptionValue>
     <OptionValue>
       <label>Not used</label>
@@ -150,7 +150,7 @@
       <is_optgroup>0</is_optgroup>
       <is_reserved>0</is_reserved>
       <is_active>1</is_active>
-      <option_group_name>volunteer_status_20130617135236</option_group_name>
+      <option_group_name>volunteer_status</option_group_name>
     </OptionValue>
     <OptionValue>
       <label>No-show</label>
@@ -161,7 +161,7 @@
       <is_optgroup>0</is_optgroup>
       <is_reserved>0</is_reserved>
       <is_active>1</is_active>
-      <option_group_name>volunteer_status_20130617135236</option_group_name>
+      <option_group_name>volunteer_status</option_group_name>
     </OptionValue>
     <OptionValue>
       <label>Ticket-taker</label>
@@ -172,7 +172,7 @@
       <is_optgroup>0</is_optgroup>
       <is_reserved>0</is_reserved>
       <is_active>1</is_active>
-      <option_group_name>volunteer_role_20130617135236</option_group_name>
+      <option_group_name>volunteer_role</option_group_name>
     </OptionValue>
     <OptionValue>
       <label>Usher</label>
@@ -183,7 +183,7 @@
       <is_optgroup>0</is_optgroup>
       <is_reserved>0</is_reserved>
       <is_active>1</is_active>
-      <option_group_name>volunteer_role_20130617135236</option_group_name>
+      <option_group_name>volunteer_role</option_group_name>
     </OptionValue>
     <OptionValue>
       <label>Will Call</label>
@@ -194,7 +194,7 @@
       <is_optgroup>0</is_optgroup>
       <is_reserved>0</is_reserved>
       <is_active>1</is_active>
-      <option_group_name>volunteer_role_20130617135236</option_group_name>
+      <option_group_name>volunteer_role</option_group_name>
     </OptionValue>
   </OptionValues>
 </CustomData>

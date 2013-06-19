@@ -122,12 +122,23 @@ class CRM_Volunteer_Upgrader extends CRM_Volunteer_Upgrader_Base {
    * @throws CRM_Core_Exception
    */
   public function findCreateVolunteerActivityType() {
-    $activityType = civicrm_api('ActivityType', 'getsingle', array(
+    $activityType = civicrm_api('OptionGroup', 'Get', array(
+      'version' => 3,
+      'name' => 'activity_type',
+      'return' => 'id'                                                                                                                                                                             
+    ));
+    $activityTypeID = $activityType['id'];
+    $activityType = civicrm_api('OptionValue', 'Get', array(
       'version' => 3,
       'name' => 'Volunteer',
+      'option_group_id' => $activityType['id'],
+      'return' => 'value'
     ));
-    if (!empty($activityType['id'])) {
-      return $activityType['value'];
+
+    if ($activityType['count']) {
+      foreach($activityType['values'] as $actType) {
+        return $actType['value'];
+      }   
     }
     else {
       $result = civicrm_api('ActivityType', 'create', array(
