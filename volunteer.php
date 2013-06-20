@@ -18,6 +18,11 @@ function volunteer_civicrm_xmlMenu(&$files) {
   _volunteer_civix_civicrm_xmlMenu($files);
 }
 
+/**                                                                                                                                                                                                       * Implementation of hook_civicrm_xmlMenu                                                                                                                                                                 *                                                                                                                                                                                                        * @param $files array(string)                                                                                                                                                                            */
+function volunteer_civicrm_eventTabs(&$tabs, $eventID ) {
+    _volunteer_civix_civicrm_eventTabs(&$tabs, $eventID );
+}
+
 /**
  * Implementation of hook_civicrm_install
  */
