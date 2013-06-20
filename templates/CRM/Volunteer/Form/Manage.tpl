@@ -24,14 +24,23 @@
  +--------------------------------------------------------------------+
 *}
 
+<div id="help">
+  {ts}Use this form to manage your volunteers for the event. You can define your volunteer needs, assign volunteers to  and log their hours.{/ts}
+</div>
+
 {capture assign=volunteerNeedsURL}{crmURL p="civicrm/volunteer/need" q="reset=1&action=add&entityId=`$id`&entityTable=event"}{/capture}
-<tr><td><a accesskey="N" href="{$volunteerNeedsURL}" class="button"><span><div class="icon edit-icon"></div>{ts}Define Volunteer Needs{/ts}</span></a></td><td></td></tr>
-
 {capture assign=assignVolunteerURL}{crmURL p="civicrm/volunteer/assign" q="reset=1&action=add&entityId=`$id`&entityTable=event"}{/capture}
-<tr><td><a accesskey="N" href="{$assignVolunteerURL}" class="button"><span><div class="icon edit-icon"></div>{ts}Assign Volunteers{/ts}</span></a></td><td></td></tr>
-
 {capture assign=volunteerLogURL}{crmURL p="civicrm/volunteer/loghours" q="reset=1&action=add&entityId=`$id`&entityTable=event"}{/capture}
-<tr><td><a accesskey="N" href="{$volunteerLogURL}" class="button"><span><div class="icon edit-icon"></div>{ts}Log Volunteer Hours{/ts}</span></a></td><td></td></tr>
+
+<tr class="crm-event-manage-volunteer-form-block-need_id">
+  <td><a accesskey="N" href="{$volunteerNeedsURL}" class="button"><span><div class="icon edit-icon"></div>{ts}Define Volunteer Needs{/ts}</span></a></td><td></td>
+</tr>
+<tr class="crm-event-manage-volunteer-form-block-assign_id">
+  <td><a accesskey="N" href="{$assignVolunteerURL}" class="button"><span><div class="icon edit-icon"></div>{ts}Assign Volunteers{/ts}</span></a></td><td></td>
+</tr>
+<tr class="crm-event-manage-volunteer-form-block-log_id">
+  <td><a accesskey="N" href="{$volunteerLogURL}" class="button"><span><div class="icon edit-icon"></div>{ts}Log Volunteer Hours{/ts}</span></a></td><td></td>
+</tr>
 
 
 
