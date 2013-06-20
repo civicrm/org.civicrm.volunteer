@@ -82,12 +82,6 @@
       <is_reserved>1</is_reserved>
       <is_active>1</is_active>
     </OptionGroup>
-    <OptionGroup>
-      <name>activity_status</name>
-      <title>Activity Status</title>
-      <is_reserved>1</is_reserved>
-      <is_active>1</is_active>
-    </OptionGroup>
   </OptionGroups>
   <OptionValues>
     <OptionValue>
