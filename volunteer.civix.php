@@ -46,7 +46,6 @@ function _volunteer_civix_civicrm_install() {
   }
 }
 
-
 /**
  * Implementation of hook_civicrm_uninstall
  */
@@ -109,7 +108,7 @@ function _volunteer_civix_upgrader() {
  * @param $files array(string)
  */
 function _volunteer_civix_civicrm_eventTabs( &$tabs, $eventID ) {
-  $url = CRM_Utils_System::url( 'civicrm/event/manage/location',
+  $url = CRM_Utils_System::url( 'civicrm/event/manage/volunteer',
     "reset=1&snippet=5&force=1&id=$eventID&action=update&component=event" );
 
   $tab['volunteer'] = array(
