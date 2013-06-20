@@ -91,28 +91,6 @@
   </OptionGroups>
   <OptionValues>
     <OptionValue>
-      <label>Available</label>
-      <value>7</value>
-      <name>Available</name>
-      <is_default>0</is_default>
-      <weight>7</weight>
-      <is_optgroup>0</is_optgroup>
-      <is_reserved>0</is_reserved>
-      <is_active>1</is_active>
-      <option_group_name>activity_status</option_group_name>
-    </OptionValue>
-    <OptionValue>
-      <label>No-show</label>
-      <value>8</value>
-      <name>No_show</name>
-      <is_default>0</is_default>
-      <weight>8</weight>
-      <is_optgroup>0</is_optgroup>
-      <is_reserved>0</is_reserved>
-      <is_active>1</is_active>
-      <option_group_name>activity_status</option_group_name>
-    </OptionValue>
-    <OptionValue>
       <label>Ticket-taker</label>
       <value>1</value>
       <name>Ticket_taker</name>
