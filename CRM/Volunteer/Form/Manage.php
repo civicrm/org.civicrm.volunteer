@@ -35,7 +35,7 @@
  */
 
 /**
- * This class generates form components for processing Event
+ * This class generates form components for processing Volunteer
  *
  */
 class CRM_Volunteer_Form_Manage extends CRM_Event_Form_ManageEvent {
