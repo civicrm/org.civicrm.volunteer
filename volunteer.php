@@ -19,8 +19,20 @@ function volunteer_civicrm_xmlMenu(&$files) {
 }
 
 /**                                                                                                                                                                                                       * Implementation of hook_civicrm_xmlMenu                                                                                                                                                                 *                                                                                                                                                                                                        * @param $files array(string)                                                                                                                                                                            */
-function volunteer_civicrm_eventTabs(&$tabs, $eventID ) {
-    _volunteer_civix_civicrm_eventTabs(&$tabs, $eventID );
+function volunteer_civicrm_tabs(&$tabs, $entityID, $entity ) {
+  $url = CRM_Utils_System::url( 'civicrm/event/manage/volunteer',
+    "reset=1&snippet=5&force=1&id=$entityID&action=update&component=event" );
+
+  $tab['volunteer'] = array(
+    'title' => 'Manage Volunteers',
+    'link' => $url,
+    'valid' => 1,
+    'active' => 1,
+    'current' => '',
+    'qfKey' =>  '',
+  );
+
+  array_splice($tabs, 4, 0, $tab);
 }
 
 /**
