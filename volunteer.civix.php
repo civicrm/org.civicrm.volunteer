@@ -104,23 +104,25 @@ function _volunteer_civix_upgrader() {
 }
 
 /**
- * (Delegated) Implementation of hook_civicrm_eventTabs
+ * (Delegated) Implementation of hook_civicrm_tabs
  * @param $files array(string)
  */
-function _volunteer_civix_civicrm_eventTabs( &$tabs, $eventID ) {
-  $url = CRM_Utils_System::url( 'civicrm/event/manage/volunteer',
-    "reset=1&snippet=5&force=1&id=$eventID&action=update&component=event" );
+function _volunteer_civix_civicrm_tabs( &$tabs, $entityID, $entity) {
+  if ($entity == 'civicrm_event') {
+    $url = CRM_Utils_System::url( 'civicrm/event/manage/volunteer',
+      "reset=1&snippet=5&force=1&id=$entityID&action=update&component=event" );
 
-  $tab['volunteer'] = array(
-    'title' => 'Manage Volunteers',
-    'link' => $url,
-    'valid' => 1,
-    'active' => 1,
-    'current' => '',
-    'qfKey' =>  '',
-  );
+    $tab['volunteer'] = array(
+      'title' => 'Manage Volunteers',
+      'link' => $url,
+      'valid' => 1,
+      'active' => 1,
+      'current' => '',
+      'qfKey' =>  '',
+    );
   
-  array_splice($tabs, 4, 0, $tab);
+    array_splice($tabs, 4, 0, $tab);
+  }
 }
 
 /**
