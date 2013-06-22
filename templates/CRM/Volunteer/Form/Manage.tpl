@@ -24,23 +24,53 @@
  +--------------------------------------------------------------------+
 *}
 
+{capture assign=volunteerNeedsURL}{crmURL p="civicrm/volunteer/need" q="reset=1&action=add&id=`$id`"}{/capture}
+{capture assign=assignVolunteerURL}{crmURL p="civicrm/volunteer/assign" q="reset=1&action=add&id=`$id`"}{/capture}
+{capture assign=volunteerLogURL}{crmURL p="civicrm/volunteer/loghours" q="reset=1&action=add&id=`$id`"}{/capture}
+
 <div id="help">
-  {ts}Use this form to manage your volunteers for the event. You can define your volunteer needs, assign volunteers to  and log their hours.{/ts}
+  {if $form.is_active.value}
+    <p>
+      Volunteer Management is enabled for this event. Click one of the buttons
+      below to get started.
+    </p>
+    <p>
+      {ts}If you want to disable Volunteer Management for this event, uncheck
+      the box below and submit the form. Disabling Volunteer Management for this
+      event will not result in loss of volunteer data.{/ts}
+      {help id="id-volunteer-init"}
+    </p>
+  {else}
+    <p>
+      {ts}If you want to enable Volunteer Management for this event, check
+      the box below and submit the form.{/ts}
+      {help id="id-volunteer-init"}
+    </p>
+  {/if}
 </div>
 
-{capture assign=volunteerNeedsURL}{crmURL p="civicrm/volunteer/need" q="reset=1&action=add&entityId=`$id`&entityTable=event"}{/capture}
-{capture assign=assignVolunteerURL}{crmURL p="civicrm/volunteer/assign" q="reset=1&action=add&entityId=`$id`&entityTable=event"}{/capture}
-{capture assign=volunteerLogURL}{crmURL p="civicrm/volunteer/loghours" q="reset=1&action=add&entityId=`$id`&entityTable=event"}{/capture}
+{if $form.is_active.value}
+<table class="crm-block crm-form-block crm-event-manage-volunteer-form-block">
+  <tr>
+    <td><a href="{$volunteerNeedsURL}" class="button"><span><div class="icon edit-icon"></div>{ts}Define Volunteer Needs{/ts}</span></a></td>
+    <td><a href="{$assignVolunteerURL}" class="button"><span><div class="icon edit-icon"></div>{ts}Assign Volunteers{/ts}</span></a></td>
+    <td><a href="{$volunteerLogURL}" class="button"><span><div class="icon edit-icon"></div>{ts}Log Volunteer Hours{/ts}</span></a></td>
+  </tr>
+</table>
+{/if}
 
-<tr class="crm-event-manage-volunteer-form-block-need_id">
-  <td><a accesskey="N" href="{$volunteerNeedsURL}" class="button"><span><div class="icon edit-icon"></div>{ts}Define Volunteer Needs{/ts}</span></a></td><td></td>
-</tr>
-<tr class="crm-event-manage-volunteer-form-block-assign_id">
-  <td><a accesskey="N" href="{$assignVolunteerURL}" class="button"><span><div class="icon edit-icon"></div>{ts}Assign Volunteers{/ts}</span></a></td><td></td>
-</tr>
-<tr class="crm-event-manage-volunteer-form-block-log_id">
-  <td><a accesskey="N" href="{$volunteerLogURL}" class="button"><span><div class="icon edit-icon"></div>{ts}Log Volunteer Hours{/ts}</span></a></td><td></td>
-</tr>
-
-
-
+<div class="crm-block crm-form-block crm-event-manage-volunteer-form-block">
+  <div id="init">
+   <table class="form-layout">
+       <tr class="crm-event-manage-volunteer-form-block-is_active">
+          <td class="label">{$form.is_active.label}</td>
+          <td>{$form.is_active.html}
+            <span class="description">{ts}Enable or disable volunteer management for this event.{/ts}</span>
+          </td>
+       </tr>
+   </table>
+  </div>
+  <div class="crm-submit-buttons">
+    {include file="CRM/common/formButtons.tpl" location="bottom"}
+  </div>
+</div>
