@@ -51,12 +51,32 @@ class CRM_Volunteer_Form_Manage extends CRM_Event_Form_ManageEvent {
   }
 
   /**
+   * This function sets the default values for the form. For edit/view mode
+   * the default values are retrieved from the database
+   *
+   * @access public
+   *
+   * @return None
+   */
+  function setDefaultValues() {
+    $defaults = array();
+    $defaults['is_active'] = 0;
+    return $defaults;
+  }
+
+  /**
    * Function to build the form
    *
    * @return None
    * @access public
    */
   public function buildQuickForm() {
+    $this->add(
+      'checkbox',
+      'is_active',
+      ts('Enable Volunteer Management?')
+    );
+
     parent::buildQuickForm();
   }
 
@@ -68,9 +88,29 @@ class CRM_Volunteer_Form_Manage extends CRM_Event_Form_ManageEvent {
    * @return None
    */
   public function postProcess() {
+    $params = array();
+    $params = $this->exportValues();
+
+    $params['entity_id'] = $this->_id;
+    $params['entity_table'] = CRM_Event_DAO_Event::$_tableName;
+
+    //format params
+    $params['is_active'] = CRM_Utils_Array::value('is_active', $params, FALSE);
+
+    if ($params['is_active'] === '1') {
+      // commented out until the BAOs exist
+//      $project = CRM_Volunteer_BAO_Project::add($params);
+//
+//      $need = array(
+//        'project_id' => $project->id,
+//        'is_flexible' => '1',
+//        'visibility_id' => '1',
+//      );
+//      CRM_Volunteer_BAO_Need::add($need);
+    }
+
     parent::endPostProcess();
   }
-  //end of function
 
   /**
    * Return a descriptive name for the page, used in wizard header
