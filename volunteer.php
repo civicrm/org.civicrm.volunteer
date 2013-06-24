@@ -25,19 +25,26 @@ function volunteer_civicrm_xmlMenu(&$files) {
  */
 function volunteer_civicrm_tabset($tabsetName, &$tabs, $context) {
   if ($tabsetName == 'civicrm/event/manage') {
-    $eventID = $context['event_id'];  
-    $url = CRM_Utils_System::url( 'civicrm/event/manage/volunteer',
-      "reset=1&snippet=5&force=1&id=$eventID&action=update&component=event" );
+    if (!empty($context)) {
+      $eventID = $context['event_id'];  
+      $url = CRM_Utils_System::url( 'civicrm/event/manage/volunteer',
+        "reset=1&snippet=5&force=1&id=$eventID&action=update&component=event" );
 
-    $tab['volunteer'] = array(
-      'title' => 'Manage Volunteers',
-      'link' => $url,
-      'valid' => 1,
-      'active' => 1,
-      'current' => '',
-      'qfKey' =>  '',
-    );
-
+      $tab['volunteer'] = array(
+        'title' => ts('Manage Volunteers'),
+        'link' => $url,
+        'valid' => 1,
+        'active' => 1,
+        'current' => '',
+        'qfKey' =>  '',
+      );
+    }
+    else {
+      $tab['volunteer'] = array(
+        'title' => ts('Manage Volunteers'),
+        'url' => 'civicrm/event/manage/volunteer',
+      );
+    }
     array_splice($tabs, 4, 0, $tab);
   }
 }
