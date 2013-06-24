@@ -18,9 +18,35 @@ function volunteer_civicrm_xmlMenu(&$files) {
   _volunteer_civix_civicrm_xmlMenu($files);
 }
 
-/**                                                                                                                                                                                                       * Implementation of hook_civicrm_xmlMenu                                                                                                                                                                 *                                                                                                                                                                                                        * @param $files array(string)                                                                                                                                                                            */
-function volunteer_civicrm_eventTabs(&$tabs, $eventID ) {
-    _volunteer_civix_civicrm_eventTabs($tabs, $eventID );
+/**                                                                                                                                                                                                    
+ * Implementation of hook_civicrm_tabset
+ *
+ * 
+ */
+function volunteer_civicrm_tabset($tabsetName, &$tabs, $context) {
+  if ($tabsetName == 'civicrm/event/manage') {
+    if (!empty($context)) {
+      $eventID = $context['event_id'];  
+      $url = CRM_Utils_System::url( 'civicrm/event/manage/volunteer',
+        "reset=1&snippet=5&force=1&id=$eventID&action=update&component=event" );
+
+      $tab['volunteer'] = array(
+        'title' => ts('Manage Volunteers'),
+        'link' => $url,
+        'valid' => 1,
+        'active' => 1,
+        'current' => '',
+        'qfKey' =>  '',
+      );
+    }
+    else {
+      $tab['volunteer'] = array(
+        'title' => ts('Manage Volunteers'),
+        'url' => 'civicrm/event/manage/volunteer',
+      );
+    }
+    array_splice($tabs, 4, 0, $tab);
+  }
 }
 
 /**

@@ -104,26 +104,6 @@ function _volunteer_civix_upgrader() {
 }
 
 /**
- * (Delegated) Implementation of hook_civicrm_eventTabs
- * @param $files array(string)
- */
-function _volunteer_civix_civicrm_eventTabs( &$tabs, $eventID ) {
-  $url = CRM_Utils_System::url( 'civicrm/event/manage/volunteer',
-    "reset=1&snippet=5&force=1&id=$eventID&action=update&component=event" );
-
-  $tab['volunteer'] = array(
-    'title' => 'Manage Volunteers',
-    'link' => $url,
-    'valid' => 1,
-    'active' => 1,
-    'current' => '',
-    'qfKey' =>  '',
-  );
-  
-  array_splice($tabs, 4, 0, $tab);
-}
-
-/**
  * Search directory tree for files which match a glob pattern
  *
  * Note: Dot-directories (like "..", ".git", or ".svn") will be ignored.
