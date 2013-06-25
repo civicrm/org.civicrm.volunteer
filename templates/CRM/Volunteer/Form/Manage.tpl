@@ -24,9 +24,9 @@
  +--------------------------------------------------------------------+
 *}
 
-{capture assign=volunteerNeedsURL}{crmURL p="civicrm/volunteer/need" q="reset=1&action=add&id=`$id`"}{/capture}
-{capture assign=assignVolunteerURL}{crmURL p="civicrm/volunteer/assign" q="reset=1&action=add&id=`$id`"}{/capture}
-{capture assign=volunteerLogURL}{crmURL p="civicrm/volunteer/loghours" q="reset=1&action=add&id=`$id`"}{/capture}
+{capture assign=volunteerNeedsURL}{crmURL p="civicrm/volunteer/need" q="reset=1&action=add&vid=`$id`"}{/capture}
+{capture assign=assignVolunteerURL}{crmURL p="civicrm/volunteer/assign" q="reset=1&action=add&vid=`$id`"}{/capture}
+{capture assign=volunteerLogURL}{crmURL p="civicrm/volunteer/loghours" q="reset=1&action=add&vid=`$id`"}{/capture}
 
 <div id="help">
   {if $form.is_active.value}

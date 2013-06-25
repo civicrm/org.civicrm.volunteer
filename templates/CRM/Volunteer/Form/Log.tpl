@@ -51,9 +51,9 @@
 	 <div class="compressed crm-grid-cell">
           {$form.volunteer_role.$rowNumber.html}
 	   </div>
+
 	   <div class="compressed crm-grid-cell">
-          {$form.start_time.$rowNumber.html}<span class="crm-log-start_time-{$rowNumber}">{include file="CRM/common/jcalendar.tpl" elementName="start_time" elementIndex=$rowNumber batchUpdate=1}</span>
-        </div>
+	     <span class="crm-batch-start_time-{$rowNumber}">{include file="CRM/common/jcalendar.tpl" elementName=start_time  elementIndex=$rowNumber batchUpdate=1}</span></div>
 	 <div class="compressed crm-grid-cell">
           {$form.scheduled_duration.$rowNumber.html}
         </div>

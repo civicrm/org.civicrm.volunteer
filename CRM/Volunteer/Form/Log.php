@@ -72,22 +72,22 @@ class CRM_Volunteer_Form_Log extends CRM_Core_Form {
     
     $this->addFormRule(array('CRM_Volunteer_Form_Log', 'formRule'), $this);
     $this->addButtons(array(
-        array(
-          'type' => 'upload',
-          'name' => ts('Save'),
-          'isDefault' => TRUE
-        ),
-        array(
-          'type' => 'cancel',
-          'name' => ts('Cancel'),
-        )
+      array(
+        'type' => 'upload',
+        'name' => ts('Save'),
+        'isDefault' => TRUE
+      ),
+      array(
+        'type' => 'cancel',
+        'name' => ts('Cancel'),
       )
-    );
+    ));
 
     $this->assign('rowCount', $this->_batchInfo['item_count'] + 1);
 
     $volunteerRole = CRM_Volunteer_PseudoConstant::volunteerRole();
     $volunteerStatus = CRM_Core_PseudoConstant::activityStatus();
+
     for ($rowNumber = 1; $rowNumber <= $this->_batchInfo['item_count']; $rowNumber++) {
       CRM_Contact_Form_NewContact::buildQuickForm($this, $rowNumber, NULL, TRUE, 'primary_');
       
