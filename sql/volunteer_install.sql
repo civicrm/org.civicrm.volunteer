@@ -16,6 +16,7 @@ CREATE TABLE IF NOT EXISTS civicrm_volunteer_need (
   quantity int(11) DEFAULT NULL COMMENT 'Number of volunteers required for this need.',
   visibility_id int(11) DEFAULT NULL COMMENT 'Implicit FK to option_value row in visibility option_group. Indicates whether this need is offered on public volunteer signup forms.',
   role_id int(11) DEFAULT NULL COMMENT 'Implicit FK to option_value row in volunteer_role option_group.',
+  is_active tinyint(4) DEFAULT '1' COMMENT 'Is this need enabled?',
   PRIMARY KEY (`id`),
   UNIQUE KEY `UI_id` (`id`),
   KEY `FK_civicrm_volunteer_need_project_id` (`project_id`),
