@@ -2,3 +2,4 @@
 *.bak
 bin/setup.conf
 .DS_Store
+update.sh

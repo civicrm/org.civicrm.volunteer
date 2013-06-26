@@ -7,72 +7,85 @@
   <add>4.4</add>
   <log>true</log>
   <field>
-      <name>id</name>
-      <uniqueName>civicrm_volunteer_need_id</uniqueName>
-      <title>CiviVolunteer Need ID</title>
-      <type>int unsigned</type>
-      <required>true</required>
-      <comment>Need Id</comment>
-      <import>true</import>
-      <add>4.4</add>
+    <name>id</name>
+    <uniqueName>civicrm_volunteer_need_id</uniqueName>
+    <title>CiviVolunteer Need ID</title>
+    <type>int unsigned</type>
+    <required>true</required>
+    <comment>Need Id</comment>
+    <add>4.4</add>
   </field>
   <primaryKey>
-       <name>id</name>
-       <autoincrement>true</autoincrement>
+     <name>id</name>
+     <autoincrement>true</autoincrement>
   </primaryKey>
   <field>
+    <name>project_id</name>
+    <type>int unsigned</type>
+    <required>true</required>
+    <uniqueName>civicrm_volunteer_need_project_id</uniqueName>
+    <comment>FK to civicrm_volunteer_project table which contains entity_table + entity for each volunteer project (initially civicrm_event + eventID).</comment>
+    <add>4.4</add>
+  </field>
+  <foreignKey>
+    <name>project_id</name>
+    <table>civicrm_volunteer_project</table>
+    <key>id</key>
+    <onDelete>SET NULL</onDelete>
+  </foreignKey>
+  <field>
     <name>start_time</name>
-    <title>Start time</title>
-    <import>true</import>
+    <title>Start Date and Time</title>
     <type>datetime</type>
     <add>4.4</add>
   </field>
   <field>
     <name>duration</name>
-    <type>decimal</type>
-    <comment>if times are flexible then duration is probably more appropriate than an end_time field</comment>
+    <title>Duration</title>
+    <type>int</type>
+    <comment>Length in minutes of this volunteer time slot.</comment>
     <add>4.4</add>
   </field>
   <field>
     <name>is_flexible</name>
-    <title>Is Flexible</title>
+    <title>Flexible</title>
     <type>boolean</type>
     <default>0</default>
-    <import>true</import>
-    <comment>boolean indicating whether or not the time is flexible</comment>
+    <required>true</required>
+    <comment>Boolean indicating whether or not the time and role are flexible. Activities linked to a flexible need indicate that the volunteer is generally available.</comment>
     <add>4.4</add>
   </field>
   <field>
     <name>quantity</name>
     <type>int</type>
+    <default>NULL</default>
     <title>Quantity</title>
-    <comment>the number of volunteers needed for this need in each time slot</comment>
+    <comment>The number of volunteers needed for this need.</comment>
+    <add>4.4</add>
+  </field>
+  <field>
+    <name>visibility_id</name>
+    <title>Visibility</title>
+    <type>int unsigned</type>
+    <default>NULL</default>
+    <comment> Indicates whether this need is offered on public volunteer signup forms. Implicit FK to option_value row in visibility option_group.</comment>
     <add>4.4</add>
   </field>
   <field>
     <name>role_id</name>
-    <title>Role associated with this Need</title>
-    <import>true</import>
-    <type>varchar</type>
-    <length>128</length>
-    <export>false</export>
-    <default>NULL</default>
-    <comment>Initially, this will be just a label (e.g., Lifeguard), but in future releases roles will have additional properties, such as qualifications.</comment>
-    <add>4.4</add>
-  </field>
-  <field>
-    <name>entity_id</name>
+    <title>Role</title>
     <type>int unsigned</type>
-    <required>true</required>
-    <comment>Artificial FK to other CiviCRM entity.</comment>
+    <default>NULL</default>
+    <comment>The role associated with this need. Implicit FK to option_value row in volunteer_role option_group.</comment>
     <add>4.4</add>
   </field>
   <field>
-    <name>entity_table</name>
-    <type>varchar</type>
-    <length>64</length>
+    <name>is_active</name>
+    <type>boolean</type>
+    <title>Enabled</title>
+    <default>1</default>
     <required>true</required>
-    <comment>Entity table</comment>
+    <comment>Is this need enabled?</comment>
     <add>4.4</add>
   </field>
 </table>
