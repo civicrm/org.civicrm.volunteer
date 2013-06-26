@@ -19,7 +19,10 @@ class CRM_Volunteer_Upgrader extends CRM_Volunteer_Upgrader_Base {
     $this->executeCustomDataTemplateFile('volunteer-customdata.xml.tpl');
 
     $this->createVolunteerActivityStatus();
-    //$this->executeSqlFile('sql/myinstall.sql');
+    
+    //load the sample data, after the 
+    //DB basic structure/custom tables etc are built
+    $this->executeSqlFile('sql/volunteer_sample.mysql');
   }
 
   /**
