@@ -28,7 +28,7 @@
   {ts}Click Save below when you've logged all the volunteers for the event.{/ts}
 </div>
 
-<div class="crm-copy-fields crm-grid-table" id="crm-batch-entry-table">
+<div class="crm-copy-fields crm-grid-table" id="crm-log-entry-table">
       <div class="crm-grid-header">
         <div class="crm-grid-cell">&nbsp;</div>
         <div class="crm-grid-cell">{ts}Contact{/ts}</div>
@@ -51,9 +51,8 @@
 	 <div class="compressed crm-grid-cell">
           {$form.volunteer_role.$rowNumber.html}
 	   </div>
-
 	   <div class="compressed crm-grid-cell">
-	     <span class="crm-batch-start_time-{$rowNumber}">{include file="CRM/common/jcalendar.tpl" elementName=start_time  elementIndex=$rowNumber batchUpdate=1}</span></div>
+	     <span class="crm-log-start_date-{$rowNumber}">{include file="CRM/common/jcalendar.tpl" elementName=start_date  elementIndex=$rowNumber batchUpdate=1}</span></div>
 	 <div class="compressed crm-grid-cell">
           {$form.scheduled_duration.$rowNumber.html}
         </div>
