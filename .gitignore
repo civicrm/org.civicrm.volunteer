@@ -1,2 +1,4 @@
 *~
 *.bak
+bin/setup.conf
+.DS_Store
