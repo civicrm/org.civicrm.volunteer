@@ -73,16 +73,16 @@ class CRM_Volunteer_BAO_Need extends CRM_Volunteer_DAO_Need {
           return;
       }
       
-      $tbl_activities = $this->tableName();
+      $tbl_needs = $this->tableName();
       $fields = CRM_Volunteer_BAO_Need::fields();
       $fld_entity_id = $fields['civicrm_volunteer_need_id']['name'];
       $fld_entity_type = $fields['entity_table']['name'];
       
       $query = "SELECT 
-          {$tbl_activities}.*
-      FROM {$tbl_activities}
-      WHERE {$tbl_activities}.{$fld_entity_id} = '{$params['id']}'
-          AND {$tbl_activities}.{$fld_entity_type} = '{$params['type']}'
+          {$tbl_needs}.*
+      FROM {$tbl_needs}
+      WHERE {$tbl_needs}.{$fld_entity_id} = '{$params['id']}'
+          AND {$tbl_needs}.{$fld_entity_type} = '{$params['type']}'
           ";
       
       $result = CRM_Core_DAO::executeQuery($query);
@@ -103,7 +103,7 @@ class CRM_Volunteer_BAO_Need extends CRM_Volunteer_DAO_Need {
       $need = new CRM_Volunteer_DAO_Need();
       $need->copyValues($params);
 
-      $need->is_deleted = 1;
+      $need->is_active = 0;
       $result = $need->save();
       
       return $result;
