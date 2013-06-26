@@ -24,49 +24,59 @@
  +--------------------------------------------------------------------+
 *}
 <div class="volunteer-log form-item">
-<div id="help">
-  {ts}Click Save below when you've logged all the volunteers for the event.{/ts}
-</div>
+  <div id="help">
+    {ts}Click Save below when you've logged all the volunteers for the event.{/ts}
+  </div>
 
-<div class="crm-copy-fields crm-grid-table" id="crm-log-entry-table">
-      <div class="crm-grid-header">
-        <div class="crm-grid-cell">&nbsp;</div>
-        <div class="crm-grid-cell">{ts}Contact{/ts}</div>
-        <div class="crm-grid-cell">{ts}Role{/ts}</div>
-	 <div class="crm-grid-cell">{ts}Start Time{/ts}</div>
-	 <div class="crm-grid-cell">{ts}Scheduled Duration{/ts}</div>
-	 <div class="crm-grid-cell">{ts}Actual Duration{/ts}</div>
-	 <div class="crm-grid-cell"><img src="{$config->resourceBase}i/copy.png" alt="{ts 1=$field.title}Click to copy %1 from row one to all rows.{/ts}" fname="volunteer_status" class="action-icon" title="{ts}Click here to copy the value in row one to ALL rows.{/ts}" />{ts}Status{/ts}</div>
-
+  <div class="crm-copy-fields crm-grid-table" id="crm-log-entry-table">
+    <div class="crm-grid-header">
+      <div class="crm-grid-cell">&nbsp;</div>
+      <div class="crm-grid-cell">{ts}Contact{/ts}</div>
+      <div class="crm-grid-cell">{ts}Role{/ts}</div>
+      <div class="crm-grid-cell">{ts}Start Time{/ts}</div>
+      <div class="crm-grid-cell">{ts}Scheduled Duration{/ts}</div>
+      <div class="crm-grid-cell"><img src="{$config->resourceBase}i/copy.png"
+                                      alt="{ts}Click to copy Actual Duration from row one to all rows.{/ts}"
+                                      fname="actual_duration" class="action-icon"
+                                      title="{ts}Click here to copy the Actual Duration value in row one to ALL rows.{/ts}"/>{ts}Actual Duration{/ts}
       </div>
-  
-  {section name='i' start=1 loop=$rowCount}
-    {assign var='rowNumber' value=$smarty.section.i.index}
-    <div class="{cycle values="odd-row,even-row"} selector-rows crm-grid-row" entity_id="{$rowNumber}">
+      <div class="crm-grid-cell"><img src="{$config->resourceBase}i/copy.png"
+                                      alt="{ts}Click to copy Volunteer Status from row one to all rows.{/ts}"
+                                      fname="volunteer_status" class="action-icon"
+                                      title="{ts}Click here to copy the Volunteer Status value in row one to ALL rows.{/ts}"/>{ts}Status{/ts}
+      </div>
+
+    </div>
+
+    {section name='i' start=1 loop=$rowCount}
+      {assign var='rowNumber' value=$smarty.section.i.index}
+      <div class="{cycle values="odd-row,even-row"} selector-rows crm-grid-row" entity_id="{$rowNumber}">
         <div class="compressed crm-grid-cell"><span class="log-edit"></span></div>
         {* contact select/create option*}
         <div class="compressed crm-grid-cell">
-            {include file="CRM/Contact/Form/NewContact.tpl" blockNo = $rowNumber noLabel=true prefix="primary_" newContactCallback="updateContactInfo($rowNumber, 'primary_')"}
+          {include file="CRM/Contact/Form/NewContact.tpl" blockNo = $rowNumber noLabel=true prefix="primary_" newContactCallback="updateContactInfo($rowNumber, 'primary_')"}
         </div>
-	 <div class="compressed crm-grid-cell">
-          {$form.volunteer_role.$rowNumber.html}
-	   </div>
-	   <div class="compressed crm-grid-cell">
-	     <span class="crm-log-start_date-{$rowNumber}">{include file="CRM/common/jcalendar.tpl" elementName=start_date  elementIndex=$rowNumber batchUpdate=1}</span></div>
-	 <div class="compressed crm-grid-cell">
-          {$form.scheduled_duration.$rowNumber.html}
+        <div class="compressed crm-grid-cell">
+          {$form.field.$rowNumber.volunteer_role.html}
         </div>
-	 <div class="compressed crm-grid-cell">
-          {$form.actual_duration.$rowNumber.html}
+        <div class="compressed crm-grid-cell">
+          <span
+            class="crm-log-start_date-{$rowNumber}">{include file="CRM/common/jcalendar.tpl" elementName=start_date  elementIndex=$rowNumber batchUpdate=1}</span>
         </div>
-	 <div class="compressed crm-grid-cell">
-	   {$form.volunteer_status.$rowNumber.html}
-	   </div>
+        <div class="compressed crm-grid-cell">
+          {$form.field.$rowNumber.scheduled_duration.html}
+        </div>
+        <div class="compressed crm-grid-cell">
+          {$form.field.$rowNumber.actual_duration.html}
+        </div>
+        <div class="compressed crm-grid-cell">
+          {$form.field.$rowNumber.volunteer_status.html}
+        </div>
 
-    </div>
+      </div>
     {/section}
-</div>
-<div class="crm-submit-buttons">{if $fields}{$form._qf_Batch_refresh.html}{/if} &nbsp; {$form.buttons.html}</div>
+  </div>
+  <div class="crm-submit-buttons">{if $fields}{$form._qf_Batch_refresh.html}{/if} &nbsp; {$form.buttons.html}</div>
 </div>
 
 {*include batch copy js js file*}

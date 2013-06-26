@@ -94,12 +94,12 @@ class CRM_Volunteer_Form_Log extends CRM_Core_Form {
     for ($rowNumber = 1; $rowNumber <= $this->_batchInfo['item_count']; $rowNumber++) {
       CRM_Contact_Form_NewContact::buildQuickForm($this, $rowNumber, NULL, TRUE, 'primary_');
       
-      $this->add('select', "volunteer_role[$rowNumber]", '', $volunteerRole);
-      $this->add('select', "volunteer_status[$rowNumber]", '', $volunteerStatus);
+      $this->add('select', "field[$rowNumber][volunteer_role]", '', $volunteerRole);
+      $this->add('select', "field[$rowNumber][volunteer_status]", '', $volunteerStatus);
       $this->addDateTime("field[$rowNumber][start_date]", '', FALSE, array('formatType' => 'activityDateTime'));
 
-      $this->add('text', "scheduled_duration[$rowNumber]", '', $attributes);
-      $this->add('text', "actual_duration[$rowNumber]", '', $attributes);
+      $this->add('text', "field[$rowNumber][scheduled_duration]", '', $attributes);
+      $this->add('text', "field[$rowNumber][actual_duration]", '', $attributes);
     }
 
     // don't set the status message when form is submitted.
