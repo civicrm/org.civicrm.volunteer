@@ -1,0 +1,33 @@
+-- sample data for civivolunteer development
+-- enable volunteering for sample event 1 (fall fundraiser)
+INSERT INTO `civicrm_volunteer_project` (`entity_table`, `entity_id`, `is_active`) VALUES ('civicrm_event', 1, 1);
+SELECT @projectID := max(id) from civicrm_volunteer_project;
+
+-- insert needs for fall fundraiser
+INSERT INTO `civicrm_volunteer_need`
+  (`project_id`, `start_time`, `duration`, `is_flexible`, `quantity`, `visibility_id`, `role_id`)
+VALUES
+  (@projectID, NULL, NULL, 1, NULL, 1, NULL),
+  (@projectID, '2013-12-17 16:00:00', 240, 0, 2, 1, 1),
+  (@projectID, '2013-12-17 16:00:00', 240, 0, 3, 1, 2),
+  (@projectID, '2013-12-17 16:00:00', 240, 0, 1, 1, 3);
+
+SELECT @flexNeedID := max(id) from civicrm_volunteer_need where is_flexible = 1 AND project_id = @projectID;
+
+-- insert volunteer activities for available volunteers
+INSERT INTO `civicrm_activity`
+  (`source_record_id`, `activity_type_id`, `subject`, `activity_date_time`, `duration`, `location`, `phone_id`, `phone_number`, `details`, `status_id`, `priority_id`, `parent_id`, `is_test`, `medium_id`, `is_auto`, `relationship_id`, `is_current_revision`, `original_id`, `result`, `is_deleted`, `campaign_id`, `engagement_level`, `weight`)
+VALUES
+  (NULL, 58, 'Fall Fundraiser Volunteering', '2013-12-17 16:00:00', NULL, NULL, NULL, NULL, NULL, 1, 2, NULL, 0, NULL, 0, NULL, 1, NULL, NULL, 0, NULL, NULL, NULL);
+
+SELECT @activityLastID := max(id) from civicrm_activity;
+INSERT INTO `civicrm_activity_contact`
+  (`activity_id`, `contact_id`, `record_type_id`)
+VALUES
+  (@activityLastID, 130, 3),
+  (@activityLastID, 202, 2);
+
+INSERT INTO `civicrm_value_civivolunteer_4`
+  (`entity_id`, `volunteer_need_id_7`, `time_scheduled_in_minutes_9`, `time_completed_in_minutes_10`)
+VALUES
+  (@activityLastID, @flexNeedID, NULL, NULL);
