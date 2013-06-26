@@ -187,7 +187,7 @@ class CRM_Volunteer_DAO_Need extends CRM_Core_DAO
           'type' => CRM_Utils_Type::T_BOOLEAN,
           'title' => ts('Is Flexible') ,
           'import' => true,
-          'where' => 'civicrm_volunteer_need.flexible',
+          'where' => 'civicrm_volunteer_need.is_flexible',
           'headerPattern' => '',
           'dataPattern' => '',
           'export' => true,
