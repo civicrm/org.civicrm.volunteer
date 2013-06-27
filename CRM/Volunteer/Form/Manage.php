@@ -60,7 +60,17 @@ class CRM_Volunteer_Form_Manage extends CRM_Event_Form_ManageEvent {
    */
   function setDefaultValues() {
     $defaults = array();
-    $defaults['is_active'] = 0;
+
+    $params['entity_id'] = $this->_id;
+    $params['entity_table'] = CRM_Event_DAO_Event::$_tableName;
+    $projects = CRM_Volunteer_BAO_Project::retrieve($params);
+
+    if (count($projects) === 1) {
+      $p = current($projects);
+      $defaults['is_active'] = $p->is_active;
+    } else {
+      $defaults['is_active'] = 0;
+    }
     return $defaults;
   }
 
@@ -81,32 +91,42 @@ class CRM_Volunteer_Form_Manage extends CRM_Event_Form_ManageEvent {
   }
 
   /**
-   * Function to process the form
+   * Function to process the form. Enables/disables Volunteer Project. If the
+   * Project does not already exist, it is created, along with a "flexible" Need.
    *
    * @access public
    *
    * @return None
    */
   public function postProcess() {
-    $params = array();
-    $params = $this->exportValues();
+    $form = $this->exportValues();
 
     $params['entity_id'] = $this->_id;
     $params['entity_table'] = CRM_Event_DAO_Event::$_tableName;
 
-    //format params
-    $params['is_active'] = CRM_Utils_Array::value('is_active', $params, FALSE);
+    // see if this project already exists
+    $projects = CRM_Volunteer_BAO_Project::retrieve($params);
 
-    if ($params['is_active'] === '1') {
-      // commented out until the BAOs exist
-//      $project = CRM_Volunteer_BAO_Project::add($params);
-//
-//      $need = array(
-//        'project_id' => $project->id,
-//        'is_flexible' => '1',
-//        'visibility_id' => '1',
-//      );
-//      CRM_Volunteer_BAO_Need::add($need);
+    $form['is_active'] = CRM_Utils_Array::value('is_active', $form, FALSE);
+    file_put_contents('/tmp/civi.debug', count($projects), FILE_APPEND);
+    if (count($projects) === 1) {
+      $p = current($projects);
+      if ($form['is_active'] === '1') {
+        $p->enable();
+      } else {
+        $p->disable();
+      }
+    // if the project doesn't already exist and the user enabled vol management
+    } elseif ($form['is_active'] === '1') {
+      $project = CRM_Volunteer_BAO_Project::create($params);
+
+  // commented out until the BAOs exist
+  //  $need = array(
+  //    'project_id' => $project->id,
+  //    'is_flexible' => '1',
+  //    'visibility_id' => '1',
+  //  );
+  //  CRM_Volunteer_BAO_Need::add($need);
     }
 
     parent::endPostProcess();
