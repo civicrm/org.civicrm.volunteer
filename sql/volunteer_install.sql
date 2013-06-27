@@ -4,7 +4,7 @@ CREATE TABLE IF NOT EXISTS civicrm_volunteer_project (
   entity_id int(10) unsigned NOT NULL COMMENT 'Implicit FK project entity (initially eventID).',
   is_active tinyint(4) DEFAULT '1' COMMENT 'Is the project active. Enabling volunteering for an event or other project sets this TRUE.',
   PRIMARY KEY (`id`),
-  UNIQUE KEY `UI_id` (`id`)
+  UNIQUE KEY `unique_entity` (`entity_table`,`entity_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci AUTO_INCREMENT=1 ;
 
 CREATE TABLE IF NOT EXISTS civicrm_volunteer_need (
@@ -22,4 +22,4 @@ CREATE TABLE IF NOT EXISTS civicrm_volunteer_need (
   KEY `FK_civicrm_volunteer_need_project_id` (`project_id`),
   CONSTRAINT `FK_civicrm_volunteer_need_project_id` FOREIGN KEY (`project_id`) REFERENCES `civicrm_volunteer_project`(`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci AUTO_INCREMENT=1 ;
-  
+
