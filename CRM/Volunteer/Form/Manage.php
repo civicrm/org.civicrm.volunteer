@@ -139,7 +139,7 @@ class CRM_Volunteer_Form_Manage extends CRM_Event_Form_ManageEvent {
    * @access public
    */
   public function getTitle() {
-    return ts('Manage Volunteers');
+    return ts('Volunteers');
   }
 }
 
