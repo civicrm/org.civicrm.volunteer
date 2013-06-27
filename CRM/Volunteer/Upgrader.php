@@ -16,6 +16,9 @@ class CRM_Volunteer_Upgrader extends CRM_Volunteer_Upgrader_Base {
     $activityTypeId = $this->findCreateVolunteerActivityType();
     $smarty = CRM_Core_Smarty::singleton();
     $smarty->assign('volunteer_activity_type_id', $activityTypeId);
+    
+    $customIDs = $this->findCustomGroupValueIDs();
+    $smarty->assign('customIDs', $customIDs);
     $this->executeCustomDataTemplateFile('volunteer-customdata.xml.tpl');
 
     $this->createVolunteerActivityStatus();
@@ -122,6 +125,25 @@ class CRM_Volunteer_Upgrader extends CRM_Volunteer_Upgrader_Base {
     return TRUE;
   } // */
 
+  public function findCustomGroupValueIDs() {
+    $params = array(
+      'version' => 3,
+      'sequential' => 1,
+    );
+    $customGroupID = civicrm_api('CustomGroup', 'getcount', $params);
+
+    $params = array(
+      'version' => 3,
+      'sequential' => 1,
+
+    );
+    $customFieldID = civicrm_api('CustomField', 'getcount', $params);
+    $customData = array(
+      'customGroupID' => $customGroupID+1,
+      'customFieldID' => $customFieldID+1
+    );
+    return $customData;
+  }
   /**
    * @return int
    * @throws CRM_Core_Exception
@@ -132,7 +154,7 @@ class CRM_Volunteer_Upgrader extends CRM_Volunteer_Upgrader_Base {
       'name' => 'activity_type',
       'return' => 'id'                                                                                                                                                                             
     ));
-    $activityTypeID = $activityType['id'];
+
     $activityType = civicrm_api('OptionValue', 'Get', array(
       'version' => 3,
       'name' => 'Volunteer',

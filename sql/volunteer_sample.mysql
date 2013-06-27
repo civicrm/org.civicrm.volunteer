@@ -28,6 +28,6 @@ VALUES
   (@activityLastID, 202, 2);
 
 INSERT INTO `civicrm_value_civivolunteer_4`
-  (`entity_id`, `volunteer_need_id_7`, `time_scheduled_in_minutes_9`, `time_completed_in_minutes_10`)
+  (`entity_id`, `volunteer_need_id_7`, `time_scheduled_in_minutes_8`, `time_completed_in_minutes_9`)
 VALUES
   (@activityLastID, @flexNeedID, NULL, NULL);
