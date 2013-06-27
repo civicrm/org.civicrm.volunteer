@@ -12,18 +12,18 @@ class CRM_Volunteer_Upgrader extends CRM_Volunteer_Upgrader_Base {
    * Example: Run an external SQL script when the module is installed
    */
   public function install() {
-      
+
     $activityTypeId = $this->findCreateVolunteerActivityType();
     $smarty = CRM_Core_Smarty::singleton();
     $smarty->assign('volunteer_activity_type_id', $activityTypeId);
-    
+
     $customIDs = $this->findCustomGroupValueIDs();
     $smarty->assign('customIDs', $customIDs);
     $this->executeCustomDataTemplateFile('volunteer-customdata.xml.tpl');
 
     $this->createVolunteerActivityStatus();
-    
-    //load the sample data, after the 
+
+    //load the sample data, after the
     //DB basic structure/custom tables etc are built
     $this->executeSqlFile('sql/volunteer_sample.mysql');
   }
@@ -131,12 +131,6 @@ class CRM_Volunteer_Upgrader extends CRM_Volunteer_Upgrader_Base {
       'sequential' => 1,
     );
     $customGroupID = civicrm_api('CustomGroup', 'getcount', $params);
-
-    $params = array(
-      'version' => 3,
-      'sequential' => 1,
-
-    );
     $customFieldID = civicrm_api('CustomField', 'getcount', $params);
     $customData = array(
       'customGroupID' => $customGroupID+1,
@@ -149,25 +143,23 @@ class CRM_Volunteer_Upgrader extends CRM_Volunteer_Upgrader_Base {
    * @throws CRM_Core_Exception
    */
   public function findCreateVolunteerActivityType() {
-    $activityType = civicrm_api('OptionGroup', 'Get', array(
+    $optionGroup = civicrm_api('OptionGroup', 'Get', array(
       'version' => 3,
       'name' => 'activity_type',
-      'return' => 'id'                                                                                                                                                                             
+      'return' => 'id'
     ));
 
-    $activityType = civicrm_api('OptionValue', 'Get', array(
+    $optionValue = civicrm_api('OptionValue', 'Get', array(
       'version' => 3,
       'name' => 'Volunteer',
-      'option_group_id' => $activityType['id'],
+      'option_group_id' => $optionGroup['id'],
       'return' => 'value'
     ));
 
-    if ($activityType['count']) {
-      foreach($activityType['values'] as $actType) {
-        return $actType['value'];
-      }   
-    }
-    else {
+    if ($optionValue['count']) {
+      $opt = current($optionValue['values']);
+      return $opt['value'];
+    } else {
       $result = civicrm_api('ActivityType', 'create', array(
         'version' => 3,
         'name' => 'Volunteer',
@@ -192,13 +184,13 @@ class CRM_Volunteer_Upgrader extends CRM_Volunteer_Upgrader_Base {
       'return' => 'id'
     ));
     $activityStatusID = $activityStatus['id'];
-  
-    $activityStatuses = array( 
+
+    $activityStatuses = array(
       array(
-        'name' => 'Available',                                                                                                                                           
+        'name' => 'Available',
         'label' => 'Available'),
       array(
-        'name' => 'No_show',                                                                                                                                                
+        'name' => 'No_show',
         'label' => 'No-show')
     );
 
@@ -209,7 +201,7 @@ class CRM_Volunteer_Upgrader extends CRM_Volunteer_Upgrader_Base {
         'option_group_id' => $activityStatusID,
         'return' => 'value'
       ));
-  
+
       if (!$activityStatus['count']) {
         $params = array(
           'version' => 3,
@@ -224,10 +216,10 @@ class CRM_Volunteer_Upgrader extends CRM_Volunteer_Upgrader_Base {
           CRM_Core_Error::debug_var('activityStatusResult', $result);
           throw new CRM_Core_Exception('Failed to register activity status');
         }
-      } 
+      }
     }
   }
-  
+
   public function executeCustomDataTemplateFile($relativePath) {
       $smarty = CRM_Core_Smarty::singleton();
       $xmlCode = $smarty->fetch($relativePath);
