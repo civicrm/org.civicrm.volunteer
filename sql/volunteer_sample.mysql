@@ -27,7 +27,28 @@ VALUES
   (@activityLastID, 130, 3),
   (@activityLastID, 202, 2);
 
-INSERT INTO `civicrm_value_civivolunteer_4`
-  (`entity_id`, `volunteer_need_id_7`, `time_scheduled_in_minutes_8`, `time_completed_in_minutes_9`)
-VALUES
-  (@activityLastID, @flexNeedID, NULL, NULL);
+SELECT @customGroupId := max(id)
+FROM civicrm_custom_group
+WHERE name = 'CiviVolunteer';
+
+SELECT @volunteerTable := CONCAT('civicrm_value_civivolunteer_', @customGroupId);
+
+SELECT @colVolunteerNeedId := column_name
+FROM civicrm_custom_field WHERE name = 'Volunteer_Need_Id' and custom_group_id = @customGroupId;
+
+SELECT @colTimeSched := column_name
+FROM civicrm_custom_field WHERE name = 'Time_Scheduled_Minutes' and custom_group_id = @customGroupId;
+
+SELECT @colTimeComp := column_name
+FROM civicrm_custom_field WHERE name = 'Time_Completed_Minutes' and custom_group_id = @customGroupId;
+
+SET @stmt_insert = CONCAT('INSERT INTO ', @volunteerTable);
+SET @stmt_fields = CONCAT(' (', CONCAT_WS(',', 'entity_id', @colVolunteerNeedId, @colTimeSched, @colTimeComp), ')');
+SET @stmt_values = CONCAT(' VALUES (', CONCAT_WS(',', @activityLastId, @flexNeedID, 'NULL', 'NULL'), ')');
+
+SET @stmt_query = CONCAT(@stmt_insert, @stmt_fields, @stmt_values);
+
+
+PREPARE stmt FROM @stmt_query;
+EXECUTE stmt;
+DEALLOCATE PREPARE stmt;
