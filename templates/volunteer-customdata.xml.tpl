@@ -15,7 +15,7 @@
       <help_post></help_post>
       <weight>2</weight>
       <is_active>1</is_active>
-      <table_name>civicrm_value_civivolunteer_4</table_name>
+      <table_name>civicrm_value_civivolunteer_{$customIDs.customGroupID}</table_name>
       <is_multiple>0</is_multiple>
       <collapse_adv_display>0</collapse_adv_display>
       <created_date>0000-00-00 00:00:00</created_date>
@@ -37,7 +37,7 @@
       <text_length>255</text_length>
       <note_columns>60</note_columns>
       <note_rows>4</note_rows>
-      <column_name>volunteer_need_id_7</column_name>
+      <column_name>volunteer_need_id_{$customIDs.customFieldID}</column_name>
       <custom_group_name>CiviVolunteer</custom_group_name>
     </CustomField>
     <CustomField>
@@ -54,7 +54,7 @@
       <text_length>255</text_length>
       <note_columns>60</note_columns>
       <note_rows>4</note_rows>
-      <column_name>time_scheduled_in_minutes_9</column_name>
+      <column_name>time_scheduled_in_minutes_{$customIDs.customFieldID+1}</column_name>
       <custom_group_name>CiviVolunteer</custom_group_name>
     </CustomField>
     <CustomField>
@@ -71,7 +71,7 @@
       <text_length>255</text_length>
       <note_columns>60</note_columns>
       <note_rows>4</note_rows>
-      <column_name>time_completed_in_minutes_10</column_name>
+      <column_name>time_completed_in_minutes_{$customIDs.customFieldID+2}</column_name>
       <custom_group_name>CiviVolunteer</custom_group_name>
     </CustomField>
   </CustomFields>
