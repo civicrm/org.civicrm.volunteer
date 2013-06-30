@@ -30,22 +30,21 @@ function volunteer_civicrm_tabset($tabsetName, &$tabs, $context) {
       $url = CRM_Utils_System::url( 'civicrm/event/manage/volunteer',
         "reset=1&snippet=5&force=1&id=$eventID&action=update&component=event" );
 
-      $tab['volunteer'] = array(
+      $tabs['volunteer'] = array(
         'title' => ts('Volunteers'),
         'link' => $url,
         'valid' => 1,
         'active' => 1,
-        'current' => '',
-        'qfKey' =>  '',
+        'current' => false,
       );
     }
     else {
-      $tab['volunteer'] = array(
+      $tabs['volunteer'] = array(
         'title' => ts('Volunteers'),
         'url' => 'civicrm/event/manage/volunteer',
       );
     }
-    array_splice($tabs, 4, 0, $tab);
+    //    array_splice($tabs, 4, 0, $tab);
   }
 }
 
