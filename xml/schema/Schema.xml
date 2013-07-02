@@ -7,5 +7,5 @@
 <table_type>InnoDB</table_type>
 <comment>Schema for CiviCRM</comment>
 
-<xi:include href="Volunteer/files.xml"             parse="xml" />
+<xi:include href="Volunteer/files.xml"         parse="xml" />
 </database>
