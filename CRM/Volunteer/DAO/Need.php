@@ -223,6 +223,9 @@ class CRM_Volunteer_DAO_Need extends CRM_Core_DAO
           'type' => CRM_Utils_Type::T_INT,
           'title' => ts('Role') ,
           'default' => 'UL',
+          'pseudoconstant' => array(
+            'optionGroupName' => 'volunteer_role',
+          )
         ) ,
         'is_active' => array(
           'name' => 'is_active',

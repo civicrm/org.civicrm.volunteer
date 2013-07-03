@@ -190,7 +190,7 @@ class CRM_Volunteer_BAO_Project extends CRM_Volunteer_DAO_Project {
     $activityContacts = CRM_Core_OptionGroup::values('activity_contacts', FALSE, FALSE, FALSE, NULL, 'name');
     $targetID = CRM_Utils_Array::key('Activity Targets', $activityContacts);
 
-    $activityType = CRM_Core_PseudoConstant::activityType();
+    $activityType = CRM_Activity_BAO_Activity::buildOptions('activity_type_id', 'validate');
     $volunteerID = CRM_Utils_Array::key('Volunteer', $activityType);
 
     $tableInfo = self::getVolunteerCustomTable();
