@@ -45,7 +45,7 @@ class CRM_Volunteer_Form_Log extends CRM_Core_Form {
   protected $_rowCount = 1;
 
   /**
-   * Batch informtaion
+   * Batch information
    */
   protected $_batchInfo = array();
 
@@ -132,7 +132,23 @@ class CRM_Volunteer_Form_Log extends CRM_Core_Form {
    * @return None
    */
   function setDefaultValues() {
-    //return $defaults;
+    $volunteerData = CRM_Volunteer_BAO_Project::getVolunteerCommitment($this->_vid);
+    $defaults = array();
+    $i = 1;
+    foreach ($volunteerData as $activityID => $data) {
+      $defaults['field'][$i]['scheduled_duration'] = $data['time_scheduled'];
+      $defaults['field'][$i]['actual_duration'] = $data['time_completed'];
+      $defaults['field'][$i]['volunteer_role'] = $data['role_id'];
+      $defaults['field'][$i]['volunteer_status'] = $data['status_id'];
+      $startDate  = CRM_Utils_Date::customFormat($data['start_time'], "%m/%E/%Y;%l:%M %P");
+      $date = explode(';', $startDate);
+      $defaults['field'][$i]['start_date'] = $date[0];
+      $defaults['field'][$i]['start_date_time'] = $date[1];
+      $defaults['primary_contact_select_id'][$i] = $data['contact_id'];
+      $i++;
+    }
+
+    return $defaults;
   }
 
   /**
