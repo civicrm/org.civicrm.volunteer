@@ -56,21 +56,13 @@ class CRM_Volunteer_Form_Volunteer extends CRM_Event_Form_ManageEvent {
    *
    * @access public
    *
-   * @return None
+   * @return array
    */
   function setDefaultValues() {
-    $defaults = array();
+    $defaults = array(
+      'is_active' => CRM_Volunteer_BAO_Project::isActive($this->_id, CRM_Event_DAO_Event::$_tableName),
+    );
 
-    $params['entity_id'] = $this->_id;
-    $params['entity_table'] = CRM_Event_DAO_Event::$_tableName;
-    $projects = CRM_Volunteer_BAO_Project::retrieve($params);
-
-    if (count($projects) === 1) {
-      $p = current($projects);
-      $defaults['is_active'] = $p->is_active;
-    } else {
-      $defaults['is_active'] = 0;
-    }
     return $defaults;
   }
 
