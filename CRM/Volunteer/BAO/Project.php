@@ -167,7 +167,7 @@ class CRM_Volunteer_BAO_Project extends CRM_Volunteer_DAO_Project {
     return parent::copyValues($params);
   }
 
-  public function getVolunteerCommitment( $param) {
+  public function getVolunteerCommitment( $projectID ) {
     $activityContacts = CRM_Core_OptionGroup::values('activity_contacts', FALSE, FALSE, FALSE, NULL, 'name');
     $targetID = CRM_Utils_Array::key('Activity Targets', $activityContacts);
 
@@ -199,7 +199,7 @@ WHERE activity_type_id = %2 AND project.id = %3
     $params = array(
       1 => array($targetID, 'Integer'),
       2 => array($volunteerID, 'Integer'),
-      3 => array($param['project_id'], 'Integer'),
+      3 => array($projectID, 'Integer'),
     );
 
     $dao = CRM_Core_DAO::executeQuery($query, $params);
@@ -214,7 +214,7 @@ WHERE activity_type_id = %2 AND project.id = %3
       $row['start_time'] = $dao->start_time;
       $rows[$dao->activity_id] = $row;
     }
-    crm_core_error::debug('rows', $rows);
+    return $rows;
   }
 
   public function getVolunteerCustomTable( ) {
