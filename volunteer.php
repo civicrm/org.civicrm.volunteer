@@ -44,18 +44,14 @@ function volunteer_civicrm_tabset($tabsetName, &$tabs, $context) {
         'url' => 'civicrm/event/manage/volunteer',
       );
     }
-    array_splice($tabs, 4, 0, $tab);
-    foreach ($tabs as $key => $val) {
-      if ($key) {
-        $return[$key] = $val;
-      }
-      else {
-        $return['volunteer'] = $val;
-      }
-    }
+    // Insert this tab into position 4
+    $tabs = array_merge(
+      array_slice($tabs, 0, 4),
+      $tab,
+      array_slice($tabs, 4)
+    );
   }
 
-  $tabs = $return;
 }
 
 /**
