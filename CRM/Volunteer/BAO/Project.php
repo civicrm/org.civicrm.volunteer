@@ -89,6 +89,25 @@ class CRM_Volunteer_BAO_Project extends CRM_Volunteer_DAO_Project {
   }
 
   /**
+   * Find out if a project is active
+   *
+   * @param $entityId
+   * @param $entityTable
+   * @return boolean|null Boolean if project exists, null otherwise
+   */
+  static function isActive($entityId, $entityTable) {
+    $params['entity_id'] = $entityId;
+    $params['entity_table'] = $entityTable;
+    $projects = self::retrieve($params);
+
+    if (count($projects) === 1) {
+      $p = current($projects);
+      return $p->is_active;
+    }
+    return NULL;
+  }
+
+  /**
    * Get a list of Projects matching the params, where params keys are column
    * names of civicrm_volunteer_project.
    *
