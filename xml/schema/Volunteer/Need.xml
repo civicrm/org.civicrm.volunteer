@@ -78,6 +78,9 @@
     <default>NULL</default>
     <comment>The role associated with this need. Implicit FK to option_value row in volunteer_role option_group.</comment>
     <add>4.4</add>
+    <pseudoconstant>
+      <optionGroupName>volunteer_role</optionGroupName>
+    </pseudoconstant>
   </field>
   <field>
     <name>is_active</name>

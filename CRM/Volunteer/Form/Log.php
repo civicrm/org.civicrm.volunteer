@@ -85,8 +85,8 @@ class CRM_Volunteer_Form_Log extends CRM_Core_Form {
 
     $this->assign('rowCount', $this->_batchInfo['item_count'] + 1);
 
-    $volunteerRole = CRM_Volunteer_PseudoConstant::volunteerRole();
-    $volunteerStatus = CRM_Core_PseudoConstant::activityStatus();
+    $volunteerRole = CRM_Volunteer_BAO_Need::buildOptions('role_id', 'create');
+    $volunteerStatus = CRM_Activity_BAO_Activity::buildOptions('status_id', 'create');
     $attributes = array(
       'size' => 6,
       'maxlength' => 14
