@@ -80,14 +80,12 @@ class CRM_Volunteer_BAO_Need extends CRM_Volunteer_DAO_Need {
           return;
       }
       
-      $daoNeed = new CRM_Volunteer_DAO_Need();
+      $daoNeed = new CRM_Volunteer_BAO_Need();
       $daoNeed->copyValues($params);
       $daoNeed->find();
       
       while ($daoNeed->fetch()) {
-          foreach ($fields as $id => $field) {
-              $needs[$daoNeed->id]  = $daoNeed;
-          }
+          $needs[$daoNeed->id] = $daoNeed->toArray();
       }
       
       return $needs;
