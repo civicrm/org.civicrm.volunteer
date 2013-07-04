@@ -14,11 +14,17 @@ VALUES
 
 SELECT @flexNeedID := max(id) from civicrm_volunteer_need where is_flexible = 1 AND project_id = @projectID;
 
+SELECT @volunteerActivityTypeId := `value`
+FROM `civicrm_option_value` v
+INNER JOIN `civicrm_option_group` g
+ON (v.`option_group_id` = g.`id` AND g.`name` = 'activity_type')
+WHERE v.`name` = 'Volunteer';
+
 -- insert volunteer activities for available volunteers
 INSERT INTO `civicrm_activity`
   (`source_record_id`, `activity_type_id`, `subject`, `activity_date_time`, `duration`, `location`, `phone_id`, `phone_number`, `details`, `status_id`, `priority_id`, `parent_id`, `is_test`, `medium_id`, `is_auto`, `relationship_id`, `is_current_revision`, `original_id`, `result`, `is_deleted`, `campaign_id`, `engagement_level`, `weight`)
 VALUES
-  (NULL, 58, 'Fall Fundraiser Volunteering', '2013-12-17 16:00:00', NULL, NULL, NULL, NULL, NULL, 1, 2, NULL, 0, NULL, 0, NULL, 1, NULL, NULL, 0, NULL, NULL, NULL);
+  (NULL, @volunteerActivityTypeId, 'Fall Fundraiser Volunteering', '2013-12-17 16:00:00', NULL, NULL, NULL, NULL, NULL, 1, 2, NULL, 0, NULL, 0, NULL, 1, NULL, NULL, 0, NULL, NULL, NULL);
 
 SELECT @activityLastID := max(id) from civicrm_activity;
 INSERT INTO `civicrm_activity_contact`
