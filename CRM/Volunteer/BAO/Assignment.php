@@ -143,14 +143,7 @@ class CRM_Volunteer_BAO_Assignment extends CRM_Activity_DAO_Activity {
     $dao = CRM_Core_DAO::executeQuery($query, $placeholders);
     $rows = array();
     while ($dao->fetch()) {
-      $row['contact_id'] = $dao->contact_id;
-      $row['status_id'] = $dao->status_id;
-      $row['role_id'] = $dao->role_id;
-      $row['is_flexible'] = $dao->is_flexible;
-      $row['time_scheduled'] = $dao->time_scheduled_minutes;
-      $row['time_completed'] = $dao->time_completed_minutes;
-      $row['start_time'] = $dao->start_time;
-      $rows[$dao->activity_id] = $row;
+      $rows[$dao->activity_id] = clone $dao;
     }
     return $rows;
   }
