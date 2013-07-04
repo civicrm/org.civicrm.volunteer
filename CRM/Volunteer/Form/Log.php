@@ -61,7 +61,7 @@ class CRM_Volunteer_Form_Log extends CRM_Core_Form {
     $resources = CRM_Core_Resources::singleton();
     $resources->addScriptFile('org.civicrm.volunteer', 'templates/CRM/Volunteer/Form/Log.js');
 
-    $this->_batchInfo['item_count'] = 2;
+    $this->_batchInfo['item_count'] = 10;
   }
 
   /**
@@ -87,7 +87,7 @@ class CRM_Volunteer_Form_Log extends CRM_Core_Form {
       )
     ));
 
-    $this->assign('rowCount', $this->_batchInfo['item_count'] + 1);
+
 
     $volunteerRole = CRM_Volunteer_BAO_Need::buildOptions('role_id', 'create');
     $volunteerStatus = CRM_Activity_BAO_Activity::buildOptions('status_id', 'create');
@@ -122,6 +122,10 @@ class CRM_Volunteer_Form_Log extends CRM_Core_Form {
       $this->add('text', "field[$rowNumber][actual_duration]", '', $attributes);
 
     }
+
+
+    $this->assign('rowCount', $this->_batchInfo['item_count']);
+    $this->assign('showVolunteerRow', $count);
 
     // don't set the status message when form is submitted.
     $buttonName = $this->controller->getButtonName('submit');
