@@ -75,20 +75,24 @@ class CRM_Volunteer_BAO_Need extends CRM_Volunteer_DAO_Need {
    *
    * @usage
    */
-  static function retrieve( array $params) {
-      if (empty($params)) {
-          return;
-      }
+  static function retrieve(array $params) {
+    $result = array();
 
-      $daoNeed = new CRM_Volunteer_BAO_Need();
-      $daoNeed->copyValues($params);
-      $daoNeed->find();
+    if (!CRM_Utils_Array::value('project_id', $params)) {
+      CRM_Core_Error::fatal('Missing required parameter project)id.');
+    }
 
-      while ($daoNeed->fetch()) {
-          $needs[$daoNeed->id] = clone $daoNeed;
-      }
+    $daoNeed = new CRM_Volunteer_BAO_Need();
+    $daoNeed->copyValues($params);
+    $daoNeed->find();
 
-      return $needs;
+    while ($daoNeed->fetch()) {
+      $result[$daoNeed->id] = clone $daoNeed;
+    }
+
+    $daoNeed->free();
+
+    return $result;
   }
 
   function delete($params) {
