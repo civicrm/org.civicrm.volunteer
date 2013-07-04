@@ -122,7 +122,7 @@ class CRM_Volunteer_BAO_Project extends CRM_Volunteer_DAO_Project {
     $project->find();
 
     while ($project->fetch()) {
-      $result[] = $project;
+      $result[$project->id] = clone $project;
     }
 
     $project->free();
