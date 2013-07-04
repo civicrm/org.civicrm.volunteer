@@ -128,13 +128,12 @@ class CRM_Volunteer_Form_Volunteer extends CRM_Event_Form_ManageEvent {
     } elseif ($form['is_active'] === '1') {
       $project = CRM_Volunteer_BAO_Project::create($params);
 
-  // commented out until the BAOs exist
-  //  $need = array(
-  //    'project_id' => $project->id,
-  //    'is_flexible' => '1',
-  //    'visibility_id' => '1',
-  //  );
-  //  CRM_Volunteer_BAO_Need::add($need);
+      $need = array(
+        'project_id' => $project->id,
+        'is_flexible' => '1',
+        'visibility_id' => CRM_Core_OptionGroup::getValue('visibility', 'public', 'name'),
+      );
+      CRM_Volunteer_BAO_Need::create($need);
     }
 
     parent::endPostProcess();
