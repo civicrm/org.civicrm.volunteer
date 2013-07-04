@@ -107,14 +107,16 @@ class CRM_Volunteer_Form_Volunteer extends CRM_Event_Form_ManageEvent {
    */
   public function postProcess() {
     $form = $this->exportValues();
+    $form['is_active'] = CRM_Utils_Array::value('is_active', $form, FALSE);
 
-    $params['entity_id'] = $this->_id;
-    $params['entity_table'] = CRM_Event_DAO_Event::$_tableName;
+    $params = array(
+      'entity_id' => $this->_id,
+      'entity_table' => CRM_Event_DAO_Event::$_tableName,
+    );
 
     // see if this project already exists
     $projects = CRM_Volunteer_BAO_Project::retrieve($params);
 
-    $form['is_active'] = CRM_Utils_Array::value('is_active', $form, FALSE);
     if (count($projects) === 1) {
       $p = current($projects);
       if ($form['is_active'] === '1') {
