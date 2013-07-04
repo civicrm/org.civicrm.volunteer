@@ -168,7 +168,7 @@ class CRM_Volunteer_Upgrader extends CRM_Volunteer_Upgrader_Base {
       $result = civicrm_api('ActivityType', 'create', array(
         'version' => 3,
         'name' => self::customActivityTypeName,
-        'label' => 'Volunteer',
+        'label' => ts('Volunteer'),
         'weight' => 58,
         'is_active' => '1',
       ));
@@ -191,18 +191,14 @@ class CRM_Volunteer_Upgrader extends CRM_Volunteer_Upgrader_Base {
     $activityStatusID = $activityStatus['id'];
 
     $activityStatuses = array(
-      array(
-        'name' => 'Available',
-        'label' => 'Available'),
-      array(
-        'name' => 'No_show',
-        'label' => 'No-show')
+      'Available' => ts('Available'),
+      'No_show' => ts('No-show'),
     );
 
-    foreach( $activityStatuses as $eachActivityStatus ) {
+    foreach($activityStatuses as $name => $label) {
       $activityStatus = civicrm_api('OptionValue', 'Get', array(
         'version' => 3,
-        'name' => $eachActivityStatus['name'],
+        'name' => $name,
         'option_group_id' => $activityStatusID,
         'return' => 'value'
       ));
@@ -212,8 +208,8 @@ class CRM_Volunteer_Upgrader extends CRM_Volunteer_Upgrader_Base {
           'version' => 3,
           'sequential' => 1,
           'option_group_id'=> $activityStatusID,
-          'name' => $eachActivityStatus['name'],
-          'label' => $eachActivityStatus['label'],
+          'name' => $name,
+          'label' => $label,
         );
         $result = civicrm_api('OptionValue', 'create', $params);
 
