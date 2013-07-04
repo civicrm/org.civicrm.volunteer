@@ -50,7 +50,9 @@
 
     {section name='i' start=1 loop=$rowCount}
       {assign var='rowNumber' value=$smarty.section.i.index}
-      <div class="{cycle values="odd-row,even-row"} selector-rows crm-grid-row" entity_id="{$rowNumber}">
+      <div
+        class="{cycle values="odd-row,even-row"} selector-rows {if $rowNumber > $showVolunteerRow} hiddenElement {else} crm-grid-row {/if}"
+        entity_id="{$rowNumber}">
         <div class="compressed crm-grid-cell"><span class="log-edit"></span></div>
         {* contact select/create option*}
         <div class="compressed crm-grid-cell">
@@ -76,6 +78,11 @@
       </div>
     {/section}
   </div>
+  <div class="crm-submit-buttons">
+    <a href="#" id="addMoreVolunteer" class="button"><span><div
+          class="icon add-icon"></div>{ts}Add Volunteer{/ts}</span></a>
+  </div>
+
   <div class="crm-submit-buttons">{if $fields}{$form._qf_Batch_refresh.html}{/if} &nbsp; {$form.buttons.html}</div>
 </div>
 

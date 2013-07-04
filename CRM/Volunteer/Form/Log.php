@@ -56,8 +56,12 @@ class CRM_Volunteer_Form_Log extends CRM_Core_Form {
    * @access public
    */
   function preProcess() {
-    $this->_vid = CRM_Utils_Request::retrieve('vid', 'Positive', $this, TRUE);        
-    $this->_batchInfo['item_count'] = 2;
+    $this->_vid = CRM_Utils_Request::retrieve('vid', 'Positive', $this, TRUE);
+
+    $resources = CRM_Core_Resources::singleton();
+    $resources->addScriptFile('org.civicrm.volunteer', 'templates/CRM/Volunteer/Form/Log.js');
+
+    $this->_batchInfo['item_count'] = 10;
   }
 
   /**
@@ -83,7 +87,7 @@ class CRM_Volunteer_Form_Log extends CRM_Core_Form {
       )
     ));
 
-    $this->assign('rowCount', $this->_batchInfo['item_count'] + 1);
+
 
     $volunteerRole = CRM_Volunteer_BAO_Need::buildOptions('role_id', 'create');
     $volunteerStatus = CRM_Activity_BAO_Activity::buildOptions('status_id', 'create');
@@ -94,6 +98,7 @@ class CRM_Volunteer_Form_Log extends CRM_Core_Form {
 
     $this->_volunteerData = CRM_Volunteer_BAO_Project::getVolunteerCommitment($this->_vid);
     $count = count($this->_volunteerData);
+
     for ($rowNumber = 1; $rowNumber <= $this->_batchInfo['item_count']; $rowNumber++) {
       $extra = array();
       if ($rowNumber <= $count) {
@@ -118,6 +123,10 @@ class CRM_Volunteer_Form_Log extends CRM_Core_Form {
 
     }
 
+
+    $this->assign('rowCount', $this->_batchInfo['item_count']);
+    $this->assign('showVolunteerRow', $count);
+
     // don't set the status message when form is submitted.
     $buttonName = $this->controller->getButtonName('submit');
   }
@@ -135,6 +144,17 @@ class CRM_Volunteer_Form_Log extends CRM_Core_Form {
    */
   static function formRule($params, $files, $self) {
     $errors = array();
+    $volunteerStatus = CRM_Activity_BAO_Activity::buildOptions('status_id', 'create');
+
+    foreach ($params['field'] as $key => $value) {
+      if ($value['volunteer_status'] == CRM_Utils_Array::key('Completed', $volunteerStatus)) {
+        $errors["field[$key][actual_duration]"] = ts('Please enter the actual duration for Completed volunteer activity');
+      }
+    }
+
+    if (!empty($errors)) {
+      return $errors;
+    }
 
     return TRUE;
   }
@@ -159,9 +179,10 @@ class CRM_Volunteer_Form_Log extends CRM_Core_Form {
       $date = explode(';', $startDate);
       $defaults['field'][$i]['start_date'] = $date[0];
       $defaults['field'][$i]['start_date_time'] = $date[1];
-      $defaults['primary_contact_select_id'][$i] = $data['contact_id'];
+      $defaults["primary_contact_select_id[$i]"] = $data['contact_id'];
       $i++;
     }
+
     return $defaults;
   }
 
@@ -173,8 +194,9 @@ class CRM_Volunteer_Form_Log extends CRM_Core_Form {
    * @return None
    */
   public function postProcess() {
-    //$params = $this->controller->exportValues($this->_name);
-
+    $params = $this->controller->exportValues($this->_name);
+    //CRM_Core_Error::debug('p',$params);
+    //exit;
   }
 
 }
