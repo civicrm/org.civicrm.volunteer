@@ -5,6 +5,9 @@
  */
 class CRM_Volunteer_Upgrader extends CRM_Volunteer_Upgrader_Base {
 
+  const customGroupName = 'CiviVolunteer';
+  const customActivityTypeName = 'Volunteer';
+
   // By convention, functions that look like "function upgrade_NNNN()" are
   // upgrade tasks. They are executed in order (like Drupal's hook_update_N).
 
@@ -15,6 +18,8 @@ class CRM_Volunteer_Upgrader extends CRM_Volunteer_Upgrader_Base {
 
     $activityTypeId = $this->findCreateVolunteerActivityType();
     $smarty = CRM_Core_Smarty::singleton();
+    $smarty->assign('volunteer_custom_group_name', self::customGroupName);
+    $smarty->assign('volunteer_custom_activity_type_name', self::customActivityTypeName);
     $smarty->assign('volunteer_activity_type_id', $activityTypeId);
 
     $customIDs = $this->findCustomGroupValueIDs();
@@ -151,7 +156,7 @@ class CRM_Volunteer_Upgrader extends CRM_Volunteer_Upgrader_Base {
 
     $optionValue = civicrm_api('OptionValue', 'Get', array(
       'version' => 3,
-      'name' => 'Volunteer',
+      'name' => self::customActivityTypeName,
       'option_group_id' => $optionGroup['id'],
       'return' => 'value'
     ));
@@ -162,7 +167,7 @@ class CRM_Volunteer_Upgrader extends CRM_Volunteer_Upgrader_Base {
     } else {
       $result = civicrm_api('ActivityType', 'create', array(
         'version' => 3,
-        'name' => 'Volunteer',
+        'name' => self::customActivityTypeName,
         'label' => 'Volunteer',
         'weight' => 58,
         'is_active' => '1',
@@ -223,7 +228,6 @@ class CRM_Volunteer_Upgrader extends CRM_Volunteer_Upgrader_Base {
   public function executeCustomDataTemplateFile($relativePath) {
       $smarty = CRM_Core_Smarty::singleton();
       $xmlCode = $smarty->fetch($relativePath);
-      //x dpm($xmlCode);
       $xml = simplexml_load_string($xmlCode);
 
       require_once 'CRM/Utils/Migrate/Import.php';
@@ -231,5 +235,4 @@ class CRM_Volunteer_Upgrader extends CRM_Volunteer_Upgrader_Base {
       $import->runXmlElement($xml);
       return TRUE;
   }
-
 }

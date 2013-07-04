@@ -3,11 +3,11 @@
 <CustomData>
   <CustomGroups>
     <CustomGroup>
-      <name>CiviVolunteer</name>
+      <name>{$volunteer_custom_group_name}</name>
       <title>CiviVolunteer</title>
       <extends>Activity</extends>
       <extends_entity_column_value_option_group>activity_type</extends_entity_column_value_option_group>
-      <extends_entity_column_value_option_value>Volunteer</extends_entity_column_value_option_value>
+      <extends_entity_column_value_option_value>{$volunteer_custom_activity_type_name}</extends_entity_column_value_option_value>
       <extends_entity_column_value>:;:;:;{$volunteer_activity_type_id}:;:;:;</extends_entity_column_value>
       <style>Inline</style>
       <collapse_display>1</collapse_display>
