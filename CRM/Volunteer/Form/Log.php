@@ -56,7 +56,7 @@ class CRM_Volunteer_Form_Log extends CRM_Core_Form {
    * @access public
    */
   function preProcess() {
-    $this->_vid = CRM_Utils_Request::retrieve('vid', 'Positive', $this, TRUE);        
+    $this->_vid = CRM_Utils_Request::retrieve('vid', 'Positive', $this, TRUE);
     $this->_batchInfo['item_count'] = 2;
   }
 
@@ -69,7 +69,7 @@ class CRM_Volunteer_Form_Log extends CRM_Core_Form {
    */
   function buildQuickForm() {
     CRM_Utils_System::setTitle(ts('Batch Data Entry for Logging Volunteer Hours'));
-    
+
     $this->addFormRule(array('CRM_Volunteer_Form_Log', 'formRule'), $this);
     $this->addButtons(array(
       array(
@@ -92,7 +92,8 @@ class CRM_Volunteer_Form_Log extends CRM_Core_Form {
       'maxlength' => 14
     );
 
-    $this->_volunteerData = CRM_Volunteer_BAO_Project::getVolunteerCommitment($this->_vid);
+    $params = array('project_id' => $this->_vid);
+    $this->_volunteerData = CRM_Volunteer_BAO_Assignment::retrieve($params);
     $count = count($this->_volunteerData);
     for ($rowNumber = 1; $rowNumber <= $this->_batchInfo['item_count']; $rowNumber++) {
       $extra = array();
