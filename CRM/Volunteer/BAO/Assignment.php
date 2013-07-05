@@ -143,7 +143,7 @@ class CRM_Volunteer_BAO_Assignment extends CRM_Activity_DAO_Activity {
     $dao = CRM_Core_DAO::executeQuery($query, $placeholders);
     $rows = array();
     while ($dao->fetch()) {
-      $rows[$dao->activity_id] = clone $dao;
+      $rows[] = clone $dao;
     }
     return $rows;
   }
@@ -217,5 +217,22 @@ class CRM_Volunteer_BAO_Assignment extends CRM_Activity_DAO_Activity {
     }
 
     return $result;
+  }
+
+  public static function createVolunteerActivity($volunteer) {
+    $params = $volunteer['params'];
+    $volunteerCustom = $volunteer['custom'];
+
+    $customFields = self::getCustomFields();
+    $activityTypes = CRM_Core_PseudoConstant::activityType();
+    $params['activity_type_id'] = CRM_Utils_Array::key(CRM_Volunteer_Upgrader::customActivityTypeName, $activityTypes);
+
+    foreach ($volunteerCustom as $field => $val) {
+      $id = $customFields[$field]['id'];
+      $params['custom_' . $id] = $val;
+    }
+
+    $result = civicrm_api('Activity', 'create', $params);
+
   }
 }
