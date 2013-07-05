@@ -34,18 +34,18 @@
  */
 
 class CRM_Volunteer_BAO_Need extends CRM_Volunteer_DAO_Need {
-    
+
    /**
    * class constructor
    */
   function __construct() {
       parent::__construct();
-    
+
   }
-  
+
   /**
    * Function to create a Volunteer Need
-   * takes an associative array and creates a Need object 
+   * takes an associative array and creates a Need object
    *
    * This function is invoked from within the web form layer and also from the api layer
    *
@@ -56,47 +56,51 @@ class CRM_Volunteer_BAO_Need extends CRM_Volunteer_DAO_Need {
    * @static
    */
   static function &create($params) {
-      
+
       if (empty($params)) {
       return;
     }
-    
+
     $need = new CRM_Volunteer_DAO_Need();
-    
+
     $need->copyValues($params);
     $need->save();
-    
+
     return $need;
   }
   /**
    * Return an ID-Indexed array of Needs
-   * 
+   *
    * @param array $params
-   * 
+   *
    * @usage
    */
-  static function getNeeds( array $params) {
-      if (empty($params)) {
-          return;
-      }
-      
-      $daoNeed = new CRM_Volunteer_BAO_Need();
-      $daoNeed->copyValues($params);
-      $daoNeed->find();
-      
-      while ($daoNeed->fetch()) {
-          $needs[$daoNeed->id] = $daoNeed->toArray();
-      }
-      
-      return $needs;
+  static function retrieve(array $params) {
+    $result = array();
+
+    if (!CRM_Utils_Array::value('project_id', $params)) {
+      CRM_Core_Error::fatal('Missing required parameter project)id.');
+    }
+
+    $daoNeed = new CRM_Volunteer_BAO_Need();
+    $daoNeed->copyValues($params);
+    $daoNeed->find();
+
+    while ($daoNeed->fetch()) {
+      $result[$daoNeed->id] = clone $daoNeed;
+    }
+
+    $daoNeed->free();
+
+    return $result;
   }
-  
+
   function delete($params) {
       if (empty($params)) {
           return 'ERROR';
       }
-      
-      $custom_group = civicrm_api('CustomGroup', 'getsingle', 
+
+      $custom_group = civicrm_api('CustomGroup', 'getsingle',
               array('name' => 'CiviVolunteer')
               );
       if (isset($custom_group['is_error']) && $custom_group['is_error'] == 1) {
@@ -105,15 +109,15 @@ class CRM_Volunteer_BAO_Need extends CRM_Volunteer_DAO_Need {
           $group_id = $custom_group['id'];
           $table_name = $custom_group['table_name'];
       }
-      
+
       $result = civicrm_api('CustomFields', 'getFields', $params);
-      
+
       $need = new CRM_Volunteer_DAO_Need();
       $need->copyValues($params);
 
       $need->is_active = 0;
       $result = $need->save();
-      
+
       return $result;
   }
 }
