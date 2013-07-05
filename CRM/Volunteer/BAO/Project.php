@@ -199,12 +199,14 @@ class CRM_Volunteer_BAO_Project extends CRM_Volunteer_DAO_Project {
     foreach ($projects as $project) {
       switch ($project->entity_table) {
         case 'civicrm_event' :
-          $name = CRM_Event_PseudoConstant::event($project->entity_id, FALSE, "( is_template IS NULL OR is_template != 1 )");
+          $value['name'] = CRM_Event_PseudoConstant::event($project->entity_id, FALSE, "( is_template IS NULL OR is_template != 1 )");
+          $value['id'] = $project->entity_id;
+          $value['entity'] = 'event';
           break;
       }
     }
 
-    return $name;
+    return $value;
   }
 
 }

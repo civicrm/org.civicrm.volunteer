@@ -206,49 +206,64 @@ class CRM_Volunteer_Form_Log extends CRM_Core_Form {
    */
   public function postProcess() {
     $params = $this->controller->exportValues($this->_name);
-    $name = CRM_Volunteer_BAO_Project::getName($this->_vid);
+    $value = CRM_Volunteer_BAO_Project::getName($this->_vid);
 
+    $name = $value['name'];
+    $entityID = $value['id'];
+    $entity = $value['entity'];
+
+    $count = 0;
     foreach ($params['field'] as $key => $value) {
-      if (!empty($value['activity_id'])) {
-        // update the activity record
+      if (!empty($params['primary_contact_select_id'][$key])) {
+        if (!empty($value['activity_id'])) {
+          // update the activity record
 
-      }
-      else {
-        //create need record
-        $needs = array(
-          'project_id' => $this->_vid,
-          'duration' => $value['actual_duration'],
-          'role_id' => $value['volunteer_role'],
-          'is_active' => 1,
-        );
-        if (empty($value['start_date'])) {
-          $needs['is_flexible'] = 1;
         }
         else {
-          $needs['is_flexible'] = 0;
-          $needs['start_time'] = CRM_Utils_Date::processDate($value['start_date'], $value['start_date_time'], TRUE);
+          //create need record
+          $needs = array(
+            'project_id' => $this->_vid,
+            'duration' => $value['actual_duration'],
+            'role_id' => $value['volunteer_role'],
+            'is_active' => 1,
+          );
+          if (empty($value['start_date'])) {
+            $needs['is_flexible'] = 1;
+          }
+          else {
+            $needs['is_flexible'] = 0;
+            $needs['start_time'] = CRM_Utils_Date::processDate($value['start_date'], $value['start_date_time'], TRUE);
+          }
+
+          $need = CRM_Volunteer_BAO_Need::create($needs);
+
+          //create new Volunteer activity records
+          $volunteer = array(
+            'params' => array(
+              'version' => 3,
+              'sequential' => 1,
+              'assignee_contact_id' => $params['primary_contact_select_id'][$key],
+              'subject' => $name . ' Volunteering',
+            ),
+            'custom' => array(
+              'volunteer_need_id' => $need->id,
+              'time_completed_minutes' => $value['actual_duration'],
+              'time_scheduled_minutes' => $value['scheduled_duration']
+            )
+          );
+
+          CRM_Volunteer_BAO_Assignment::createVolunteerActivity($volunteer);
         }
-
-        $need = CRM_Volunteer_BAO_Need::create($needs);
-
-        //create new Volunteer activity records
-        $volunteer = array(
-          'params' => array(
-            'version' => 3,
-            'sequential' => 1,
-            'assignee_contact_id' => $params['primary_contact_select_id'][$key],
-            'subject' => $name . ' Volunteering',
-          ),
-          'custom' => array(
-            'volunteer_need_id' => $need->id,
-            'time_completed_minutes' => $value['actual_duration'],
-            'time_scheduled_minutes' => $value['scheduled_duration']
-          )
-        );
-
-        CRM_Volunteer_BAO_Assignment::createVolunteerActivity($volunteer);
+        $count++;
       }
     }
+
+    $statusMsg = ts('Volunteer hours have been recorded for %1 volunteers',
+      array(1 => $count));
+    CRM_Core_Session::setStatus($statusMsg, '', 'info');
+    CRM_Utils_System::redirect(CRM_Utils_System::url("civicrm/{$entity}/manage/volunteer",
+      "reset=1&action=update&id={$entityID}"
+    ));
   }
 
 }
