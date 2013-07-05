@@ -120,7 +120,7 @@ class CRM_Volunteer_Form_Log extends CRM_Core_Form {
       $this->add('text', "field[$rowNumber][scheduled_duration]", '', array_merge($attributes, $extra));
       $this->add('text', "field[$rowNumber][actual_duration]", '', $attributes);
 
-      $this->addElement('hidden', "field[$rowNumber][activity_id]", $this->_volunteerData[$rowNumber-1]->activity_id);
+      $this->add('text', "field[$rowNumber][activity_id]");
     }
 
 
@@ -170,17 +170,20 @@ class CRM_Volunteer_Form_Log extends CRM_Core_Form {
   function setDefaultValues() {
     $defaults = array();
     $i = 1;
-    foreach ($this->_volunteerData as $activityID => $data) {
+
+    foreach ($this->_volunteerData as $data) {
       $defaults['field'][$i]['scheduled_duration'] = $data->time_scheduled_minutes;
       $defaults['field'][$i]['actual_duration'] = $data->time_completed_minutes;
       $defaults['field'][$i]['volunteer_role'] = $data->role_id;
       $defaults['field'][$i]['volunteer_status'] = $data->status_id;
+      $defaults['field'][$i]['activity_id'] = $data->activity_id;
       $startDate = CRM_Utils_Date::customFormat($data->start_time, "%m/%E/%Y;%l:%M %P");
-      $date = explode(';', $startDate);
-      $defaults['field'][$i]['start_date'] = $date[0];
-      $defaults['field'][$i]['start_date_time'] = $date[1];
+      if ($startDate) {
+        $date = explode(';', $startDate);
+        $defaults['field'][$i]['start_date'] = $date[0];
+        $defaults['field'][$i]['start_date_time'] = $date[1];
+      }
 
-      //FIXME: missing contact ID from the retrieve BAO method
       $defaults["primary_contact_select_id[$i]"] = $data->contact_id;
       $i++;
     }
@@ -197,8 +200,9 @@ class CRM_Volunteer_Form_Log extends CRM_Core_Form {
    */
   public function postProcess() {
     $params = $this->controller->exportValues($this->_name);
+    $name = CRM_Volunteer_BAO_Project::getName($this->_vid);
 
-    foreach ($params['field'] as $value) {
+    foreach ($params['field'] as $key => $value) {
       if (!empty($value['activity_id'])) {
         // update the activity record
 
@@ -218,16 +222,27 @@ class CRM_Volunteer_Form_Log extends CRM_Core_Form {
           $needs['is_flexible'] = 0;
           $needs['start_time'] = CRM_Utils_Date::processDate($value['start_date'], $value['start_date_time'], TRUE);
         }
-        CRM_Volunteer_BAO_Need::create($needs);
+
+        $need = CRM_Volunteer_BAO_Need::create($needs);
 
         //create new Volunteer activity records
+        $volunteer = array(
+          'params' => array(
+            'version' => 3,
+            'sequential' => 1,
+            'assignee_contact_id' => $params['primary_contact_select_id'][$key],
+            'subject' => $name . ' Volunteering',
+          ),
+          'custom' => array(
+            'need_id' => $need->id,
+            'time_completed' => $value['actual_duration'],
+            'time_scheduled' => $value['scheduled_duration']
+          )
+        );
+
+        CRM_Volunteer_BAO_Assignment::createVolunteerActivity($volunteer);
       }
-
     }
-
-
-    CRM_Core_Error::debug('p', $params);
-    exit;
   }
 
 }

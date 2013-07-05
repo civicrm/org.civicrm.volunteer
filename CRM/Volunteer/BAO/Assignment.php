@@ -218,4 +218,15 @@ class CRM_Volunteer_BAO_Assignment extends CRM_Activity_DAO_Activity {
 
     return $result;
   }
+
+  public static function createVolunteerActivity($volunteer) {
+    $volunteerParams = $volunteer['params'];
+    $volunteerCustom = $volunteer['custom'];
+
+    $activityTypes = CRM_Core_PseudoConstant::activityType();
+    $volunteerParams['activity_type_id'] = CRM_Utils_Array::key(CRM_Volunteer_Upgrader::customActivityTypeName, $activityTypes);
+    $result = civicrm_api('Activity', 'create', $volunteerParams);
+
+
+  }
 }
