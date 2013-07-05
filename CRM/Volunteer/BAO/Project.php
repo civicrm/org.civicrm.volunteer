@@ -185,4 +185,28 @@ class CRM_Volunteer_BAO_Project extends CRM_Volunteer_DAO_Project {
     }
     return parent::copyValues($params);
   }
+
+  /**
+   * Returns name of the entity associated with this project
+   *
+   * @param type $id
+   * @return String
+   * @access public
+   */
+  public static function getName($id) {
+    $params = array('id' => $id);
+    $projects = self::retrieve($params);
+    foreach ($projects as $project) {
+      switch ($project->entity_table) {
+        case 'civicrm_event' :
+          $value['name'] = CRM_Event_PseudoConstant::event($project->entity_id, FALSE, "( is_template IS NULL OR is_template != 1 )");
+          $value['id'] = $project->entity_id;
+          $value['entity'] = 'event';
+          break;
+      }
+    }
+
+    return $value;
+  }
+
 }
