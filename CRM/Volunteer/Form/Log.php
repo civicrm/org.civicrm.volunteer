@@ -108,13 +108,13 @@ class CRM_Volunteer_Form_Log extends CRM_Core_Form {
         );
       }
 
-      CRM_Contact_Form_NewContact::buildQuickForm($this, $rowNumber, NULL, TRUE, 'primary_');
+      CRM_Contact_Form_NewContact::buildQuickForm($this, $rowNumber, NULL, FALSE, 'primary_');
 
-      $element = $this->add('select', "field[$rowNumber][volunteer_role]", '', $volunteerRole);
+      $element = $this->add('select', "field[$rowNumber][volunteer_role]", '', array('' => ts('-select-')) + $volunteerRole);
       if (!empty($extra)) {
         $element->freeze();
       }
-      $this->add('select', "field[$rowNumber][volunteer_status]", '', $volunteerStatus);
+      $this->add('select', "field[$rowNumber][volunteer_status]", '', array('' => ts('-select-')) + $volunteerStatus);
       $this->addDateTime("field[$rowNumber][start_date]", '', FALSE, array('formatType' => 'activityDateTime'));
 
       $this->add('text', "field[$rowNumber][scheduled_duration]", '', array_merge($attributes, $extra));
@@ -147,8 +147,14 @@ class CRM_Volunteer_Form_Log extends CRM_Core_Form {
     $volunteerStatus = CRM_Activity_BAO_Activity::buildOptions('status_id', 'validate');
 
     foreach ($params['field'] as $key => $value) {
-      if ($value['volunteer_status'] == CRM_Utils_Array::key('Completed', $volunteerStatus)) {
-        $errors["field[$key][actual_duration]"] = ts('Please enter the actual duration for Completed volunteer activity');
+      if (!empty($value['volunteer_status'])) {
+        if (empty($params['primary_contact_select_id'][$key])) {
+          $errors["primary_contact[$key]"] = ts('Please enter the volunteer');
+        }
+        if ($value['volunteer_status'] == CRM_Utils_Array::key('Completed', $volunteerStatus)) {
+          $errors["field[$key][actual_duration]"] = ts('Please enter the actual duration for Completed volunteer activity');
+        }
+
       }
     }
 
