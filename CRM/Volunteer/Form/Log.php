@@ -234,9 +234,9 @@ class CRM_Volunteer_Form_Log extends CRM_Core_Form {
             'subject' => $name . ' Volunteering',
           ),
           'custom' => array(
-            'need_id' => $need->id,
-            'time_completed' => $value['actual_duration'],
-            'time_scheduled' => $value['scheduled_duration']
+            'volunteer_need_id' => $need->id,
+            'time_completed_minutes' => $value['actual_duration'],
+            'time_scheduled_minutes' => $value['scheduled_duration']
           )
         );
 
