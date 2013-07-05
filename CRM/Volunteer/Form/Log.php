@@ -120,6 +120,7 @@ class CRM_Volunteer_Form_Log extends CRM_Core_Form {
       $this->add('text', "field[$rowNumber][scheduled_duration]", '', array_merge($attributes, $extra));
       $this->add('text', "field[$rowNumber][actual_duration]", '', $attributes);
 
+      $this->addElement('hidden', "field[$rowNumber][activity_id]", $this->_volunteerData[$rowNumber-1]->activity_id);
     }
 
 
@@ -196,8 +197,37 @@ class CRM_Volunteer_Form_Log extends CRM_Core_Form {
    */
   public function postProcess() {
     $params = $this->controller->exportValues($this->_name);
-    //CRM_Core_Error::debug('p',$params);
-    //exit;
+
+    foreach ($params['field'] as $value) {
+      if (!empty($value['activity_id'])) {
+        // update the activity record
+
+      }
+      else {
+        //create need record
+        $needs = array(
+          'project_id' => $this->_vid,
+          'duration' => $value['actual_duration'],
+          'role_id' => $value['volunteer_role'],
+          'is_active' => 1,
+        );
+        if (empty($value['start_date'])) {
+          $needs['is_flexible'] = 1;
+        }
+        else {
+          $needs['is_flexible'] = 0;
+          $needs['start_time'] = CRM_Utils_Date::processDate($value['start_date'], $value['start_date_time'], TRUE);
+        }
+        CRM_Volunteer_BAO_Need::create($needs);
+
+        //create new Volunteer activity records
+      }
+
+    }
+
+
+    CRM_Core_Error::debug('p', $params);
+    exit;
   }
 
 }
