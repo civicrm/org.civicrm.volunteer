@@ -221,6 +221,20 @@ class CRM_Volunteer_Form_Log extends CRM_Core_Form {
         if (!empty($value['activity_id'])) {
           // update the activity record
 
+          $volunteer = array(
+            'params' => array(
+              'version' => 3,
+              'sequential' => 1,
+              'status_id' => $value['volunteer_status'],
+              'id' => $value['activity_id'],
+            ),
+            'custom' => array(
+              'time_completed_minutes' => $value['actual_duration'],
+              'time_scheduled_minutes' => $value['scheduled_duration']
+            )
+          );
+
+          CRM_Volunteer_BAO_Assignment::createVolunteerActivity($volunteer);
 
         }
         else {
