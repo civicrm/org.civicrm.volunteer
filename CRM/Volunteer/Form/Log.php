@@ -96,8 +96,8 @@ class CRM_Volunteer_Form_Log extends CRM_Core_Form {
 
     $params = array('project_id' => $this->_vid);
     $this->_volunteerData = CRM_Volunteer_BAO_Assignment::retrieve($params);
-    $count = count($this->_volunteerData);
 
+    $count = count($this->_volunteerData);
     for ($rowNumber = 1; $rowNumber <= $this->_batchInfo['item_count']; $rowNumber++) {
       $extra = array();
       if ($rowNumber <= $count) {
@@ -136,6 +136,8 @@ class CRM_Volunteer_Form_Log extends CRM_Core_Form {
    *
    * @param array $params   posted values of the form
    * @param array $files    list of errors to be posted back to the form
+   *
+   *
    * @param array $self     form object
    *
    * @return array list of errors to be posted back to the form
@@ -151,7 +153,8 @@ class CRM_Volunteer_Form_Log extends CRM_Core_Form {
         if (empty($params['primary_contact_select_id'][$key])) {
           $errors["primary_contact[$key]"] = ts('Please enter the volunteer');
         }
-        if ($value['volunteer_status'] == CRM_Utils_Array::key('Completed', $volunteerStatus)) {
+
+        if ((!$value['actual_duration']) && $value['volunteer_status'] == CRM_Utils_Array::key('Completed', $volunteerStatus) ) {
           $errors["field[$key][actual_duration]"] = ts('Please enter the actual duration for Completed volunteer activity');
         }
 
@@ -218,6 +221,7 @@ class CRM_Volunteer_Form_Log extends CRM_Core_Form {
         if (!empty($value['activity_id'])) {
           // update the activity record
 
+
         }
         else {
           //create need record
@@ -243,6 +247,7 @@ class CRM_Volunteer_Form_Log extends CRM_Core_Form {
               'version' => 3,
               'sequential' => 1,
               'assignee_contact_id' => $params['primary_contact_select_id'][$key],
+              'status_id' => $value['volunteer_status'],
               'subject' => $name . ' Volunteering',
             ),
             'custom' => array(
