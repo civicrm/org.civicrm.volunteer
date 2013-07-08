@@ -54,17 +54,30 @@
         class="{cycle values="odd-row,even-row"} selector-rows {if $rowNumber > $showVolunteerRow} hiddenElement {else} crm-grid-row {/if}"
         entity_id="{$rowNumber}">
         <div class="compressed crm-grid-cell"><span class="log-edit"></span></div>
+        {if $rowNumber > $showVolunteerRow}
         {* contact select/create option*}
-        <div class="compressed crm-grid-cell">
-          {include file="CRM/Contact/Form/NewContact.tpl" blockNo = $rowNumber noLabel=true prefix="primary_" newContactCallback="updateContactInfo($rowNumber, 'primary_')"}
-        </div>
+          <div class="compressed crm-grid-cell">
+            {include file="CRM/Contact/Form/NewContact.tpl" blockNo = $rowNumber noLabel=true prefix="primary_" newContactCallback="updateContactInfo($rowNumber, 'primary_')"}
+          </div>
+        {else}
+          <div class="compressed crm-grid-cell">
+            {$form.primary_contact.$rowNumber.html}
+          </div>
+        {/if}
         <div class="compressed crm-grid-cell">
           {$form.field.$rowNumber.volunteer_role.html}
         </div>
-        <div class="compressed crm-grid-cell">
+
+        {if $rowNumber > $showVolunteerRow}
+          <div class="compressed crm-grid-cell">
           <span
             class="crm-log-start_date-{$rowNumber}">{include file="CRM/common/jcalendar.tpl" elementName=start_date  elementIndex=$rowNumber batchUpdate=1}</span>
-        </div>
+          </div>
+        {else}
+          <div class="compressed crm-grid-cell">
+            {$form.field.$rowNumber.start_date.html}
+          </div>
+        {/if}
         <div class="compressed crm-grid-cell">
           {$form.field.$rowNumber.scheduled_duration.html}
         </div>
