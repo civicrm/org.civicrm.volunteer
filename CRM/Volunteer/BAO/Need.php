@@ -72,6 +72,9 @@ class CRM_Volunteer_BAO_Need extends CRM_Volunteer_DAO_Need {
    * Return an ID-Indexed array of Needs
    *
    * @param array $params
+   *    'project_id' is required
+   *    'return_as_array' returns a multidimensional array
+   *    instead of serialized of objects by using DAO::toArray()
    *
    * @usage
    */
@@ -79,15 +82,17 @@ class CRM_Volunteer_BAO_Need extends CRM_Volunteer_DAO_Need {
     $result = array();
 
     if (!CRM_Utils_Array::value('project_id', $params)) {
-      CRM_Core_Error::fatal('Missing required parameter project)id.');
+      CRM_Core_Error::fatal('Missing required parameter project_id.');
     }
+    
+    $return_as_array = CRM_Utils_Array::value('return_as_array', $params);
 
     $daoNeed = new CRM_Volunteer_BAO_Need();
     $daoNeed->copyValues($params);
     $daoNeed->find();
 
     while ($daoNeed->fetch()) {
-      $result[$daoNeed->id] = clone $daoNeed;
+      $result[$daoNeed->id] = ($return_as_array) ? $daoNeed->toArray() : clone $daoNeed;
     }
 
     $daoNeed->free();
@@ -97,14 +102,14 @@ class CRM_Volunteer_BAO_Need extends CRM_Volunteer_DAO_Need {
 
   function delete($params) {
       if (empty($params)) {
-          return 'ERROR';
+          CRM_Core_Error::fatal('No parameters supplied.');
       }
 
       $custom_group = civicrm_api('CustomGroup', 'getsingle',
               array('name' => 'CiviVolunteer')
               );
       if (isset($custom_group['is_error']) && $custom_group['is_error'] == 1) {
-          return 'ERROR';
+          CRM_Core_Error::fatal('CiviVolunteer Custom Group not defined.');
       } else {
           $group_id = $custom_group['id'];
           $table_name = $custom_group['table_name'];
