@@ -106,22 +106,20 @@ class CRM_Volunteer_Form_Log extends CRM_Core_Form {
           'READONLY' => TRUE,
           'style' => "background-color:#EBECE4"
         );
+
+        $this->add('text', "primary_contact[$rowNumber]", '', $extra);
         $this->add('text', "field[$rowNumber][start_date]", '', $extra);
+        $this->add('text', "field[$rowNumber][volunteer_role]", '', array_merge($attributes, $extra));
       }
       else {
+        CRM_Contact_Form_NewContact::buildQuickForm($this, $rowNumber, NULL, FALSE, 'primary_');
         $this->addDateTime("field[$rowNumber][start_date]", '', FALSE, array('formatType' => 'activityDateTime'));
+        $this->add('select', "field[$rowNumber][volunteer_role]", '', array('' => ts('-select-')) + $volunteerRole);
       }
 
-      CRM_Contact_Form_NewContact::buildQuickForm($this, $rowNumber, NULL, FALSE, 'primary_');
-
-      $element = $this->add('select', "field[$rowNumber][volunteer_role]", '', array('' => ts('-select-')) + $volunteerRole);
-      if (!empty($extra)) {
-        $element->freeze();
-      }
       $this->add('select', "field[$rowNumber][volunteer_status]", '', array('' => ts('-select-')) + $volunteerStatus);
       $this->add('text', "field[$rowNumber][scheduled_duration]", '', array_merge($attributes, $extra));
       $this->add('text', "field[$rowNumber][actual_duration]", '', $attributes);
-
       $this->add('text', "field[$rowNumber][activity_id]");
     }
 
@@ -152,7 +150,7 @@ class CRM_Volunteer_Form_Log extends CRM_Core_Form {
 
     foreach ($params['field'] as $key => $value) {
       if (!empty($value['volunteer_status'])) {
-        if (empty($params['primary_contact_select_id'][$key])) {
+        if (empty($params['primary_contact'][$key])) {
           $errors["primary_contact[$key]"] = ts('Please enter the volunteer');
         }
 
@@ -181,15 +179,16 @@ class CRM_Volunteer_Form_Log extends CRM_Core_Form {
   function setDefaultValues() {
     $defaults = array();
     $i = 1;
+    $volunteerRole = CRM_Volunteer_BAO_Need::buildOptions('role_id', 'create');
 
     foreach ($this->_volunteerData as $data) {
       $defaults['field'][$i]['scheduled_duration'] = $data->time_scheduled_minutes;
       $defaults['field'][$i]['actual_duration'] = $data->time_completed_minutes;
-      $defaults['field'][$i]['volunteer_role'] = $data->role_id;
+      $defaults['field'][$i]['volunteer_role'] = CRM_Utils_Array::value($data->role_id, $volunteerRole);
       $defaults['field'][$i]['volunteer_status'] = $data->status_id;
       $defaults['field'][$i]['activity_id'] = $data->activity_id;
       $defaults['field'][$i]['start_date'] = CRM_Utils_Date::customFormat($data->start_time, "%m/%E/%Y %l:%M %P");
-      $defaults["primary_contact_select_id[$i]"] = $data->contact_id;
+      $defaults["primary_contact"][$i] = CRM_Core_DAO::getFieldValue('CRM_Contact_DAO_Contact', $data->contact_id, 'sort_name');
       $i++;
     }
 
