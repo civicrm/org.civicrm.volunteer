@@ -106,6 +106,10 @@ class CRM_Volunteer_Form_Log extends CRM_Core_Form {
           'READONLY' => TRUE,
           'style' => "background-color:#EBECE4"
         );
+        $this->add('text', "field[$rowNumber][start_date]", '', $extra);
+      }
+      else {
+        $this->addDateTime("field[$rowNumber][start_date]", '', FALSE, array('formatType' => 'activityDateTime'));
       }
 
       CRM_Contact_Form_NewContact::buildQuickForm($this, $rowNumber, NULL, FALSE, 'primary_');
@@ -115,8 +119,6 @@ class CRM_Volunteer_Form_Log extends CRM_Core_Form {
         $element->freeze();
       }
       $this->add('select', "field[$rowNumber][volunteer_status]", '', array('' => ts('-select-')) + $volunteerStatus);
-      $this->addDateTime("field[$rowNumber][start_date]", '', FALSE, array('formatType' => 'activityDateTime'));
-
       $this->add('text', "field[$rowNumber][scheduled_duration]", '', array_merge($attributes, $extra));
       $this->add('text', "field[$rowNumber][actual_duration]", '', $attributes);
 
@@ -186,13 +188,7 @@ class CRM_Volunteer_Form_Log extends CRM_Core_Form {
       $defaults['field'][$i]['volunteer_role'] = $data->role_id;
       $defaults['field'][$i]['volunteer_status'] = $data->status_id;
       $defaults['field'][$i]['activity_id'] = $data->activity_id;
-      $startDate = CRM_Utils_Date::customFormat($data->start_time, "%m/%E/%Y;%l:%M %P");
-      if ($startDate) {
-        $date = explode(';', $startDate);
-        $defaults['field'][$i]['start_date'] = $date[0];
-        $defaults['field'][$i]['start_date_time'] = $date[1];
-      }
-
+      $defaults['field'][$i]['start_date'] = CRM_Utils_Date::customFormat($data->start_time, "%m/%E/%Y %l:%M %P");
       $defaults["primary_contact_select_id[$i]"] = $data->contact_id;
       $i++;
     }
