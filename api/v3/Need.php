@@ -58,8 +58,8 @@ function civicrm_api3_need_create($params) {
  */
 function _civicrm_api3_need_create_spec(&$params) {
   $params['project_id']['api.required'] = 1;
-  $params['is_flexible']['api.required'] = 1;
-  $params['is_active']['api.required'] = 1; /* TODO: this probably shouldn't be required */
+  $params['is_flexible']['api.default'] = 1;
+  $params['is_active']['api.default'] = 1;
 }
 
 /**

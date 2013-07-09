@@ -24,8 +24,6 @@
  +--------------------------------------------------------------------+
 *}
 
-{capture assign=volunteerNeedsURL}{crmURL p="civicrm/volunteer/need" q="reset=1&action=add&vid=`$vid`"}{/capture}
-{capture assign=assignVolunteerURL}{crmURL p="civicrm/volunteer/assign" q="reset=1&action=add&vid=`$vid`"}{/capture}
 {capture assign=volunteerLogURL}{crmURL p="civicrm/volunteer/loghours" q="reset=1&action=add&vid=`$vid`"}{/capture}
 
 <div id="help">
@@ -52,8 +50,8 @@
 {if $form.is_active.value}
 <table class="crm-block crm-form-block crm-event-manage-volunteer-form-block">
   <tr>
-    <td><a href="{$volunteerNeedsURL}" class="button"><span><div class="icon edit-icon"></div>{ts}Define Volunteer Needs{/ts}</span></a></td>
-    <td><a href="{$assignVolunteerURL}" class="button"><span><div class="icon edit-icon"></div>{ts}Assign Volunteers{/ts}</span></a></td>
+    <td><a href="#" class="button crm-volunteer-popup" data-vid="{$vid}" data-tab="Needs"><span><div class="icon edit-icon"></div>{ts}Define Volunteer Needs{/ts}</span></a></td>
+    <td><a href="#" class="button crm-volunteer-popup" data-vid="{$vid}" data-tab="Assign"><span><div class="icon edit-icon"></div>{ts}Assign Volunteers{/ts}</span></a></td>
     <td><a href="{$volunteerLogURL}" class="button"><span><div class="icon edit-icon"></div>{ts}Log Volunteer Hours{/ts}</span></a></td>
   </tr>
 </table>
