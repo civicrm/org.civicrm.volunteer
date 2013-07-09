@@ -84,12 +84,9 @@ class CRM_Volunteer_BAO_Assignment extends CRM_Activity_DAO_Activity {
     $activityContactTypes = CRM_Core_OptionGroup::values('activity_contacts', FALSE, FALSE, FALSE, NULL, 'name');
     $assigneeID = CRM_Utils_Array::key('Activity Assignees', $activityContactTypes);
 
-    $activityTypes = CRM_Core_PseudoConstant::activityType();
-    $volunteerActivityTypeID = CRM_Utils_Array::key(CRM_Volunteer_Upgrader::customActivityTypeName, $activityTypes);
-
     $placeholders = array(
       1 => array($assigneeID, 'Integer'),
-      2 => array($volunteerActivityTypeID, 'Integer'),
+      2 => array(self::volunteerActivityTypeId(), 'Integer'),
     );
 
     $i = count($placeholders) + 1;
@@ -223,9 +220,7 @@ class CRM_Volunteer_BAO_Assignment extends CRM_Activity_DAO_Activity {
     $params = $volunteer['params'];
     $volunteerCustom = $volunteer['custom'];
 
-    $customFields = self::getCustomFields();
-    $activityTypes = CRM_Core_PseudoConstant::activityType();
-    $params['activity_type_id'] = CRM_Utils_Array::key(CRM_Volunteer_Upgrader::customActivityTypeName, $activityTypes);
+    $params['activity_type_id'] = self::volunteerActivityTypeId();
 
     foreach ($volunteerCustom as $field => $val) {
       $id = $customFields[$field]['id'];
@@ -234,5 +229,14 @@ class CRM_Volunteer_BAO_Assignment extends CRM_Activity_DAO_Activity {
 
     $result = civicrm_api('Activity', 'create', $params);
 
+  }
+
+  /**
+   * Fetch activity type id of 'volunteer' type activity
+   * @return integer
+   */
+  public static function volunteerActivityTypeId() {
+    $activityTypes = CRM_Activity_BAO_Activity::buildOptions('activity_type_id', 'validate');
+    return CRM_Utils_Array::key(CRM_Volunteer_Upgrader::customActivityTypeName, $activityTypes);
   }
 }
