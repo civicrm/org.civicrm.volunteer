@@ -30,7 +30,7 @@ SELECT @activityLastID := max(id) from civicrm_activity;
 INSERT INTO `civicrm_activity_contact`
   (`activity_id`, `contact_id`, `record_type_id`)
 VALUES
-  (@activityLastID, 130, 3),
+  (@activityLastID, 130, 1),
   (@activityLastID, 202, 2);
 
 SELECT @customGroupId := max(id)

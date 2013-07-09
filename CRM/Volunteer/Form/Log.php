@@ -61,6 +61,9 @@ class CRM_Volunteer_Form_Log extends CRM_Core_Form {
 
     $resources = CRM_Core_Resources::singleton();
     $resources->addScriptFile('org.civicrm.volunteer', 'templates/CRM/Volunteer/Form/Log.js');
+
+    $params = array('project_id' => $this->_vid);
+    $this->_volunteerData = CRM_Volunteer_BAO_Assignment::retrieve($params);
   }
 
   /**
@@ -93,9 +96,6 @@ class CRM_Volunteer_Form_Log extends CRM_Core_Form {
       'size' => 6,
       'maxlength' => 14
     );
-
-    $params = array('project_id' => $this->_vid);
-    $this->_volunteerData = CRM_Volunteer_BAO_Assignment::retrieve($params);
 
     $count = count($this->_volunteerData);
     for ($rowNumber = 1; $rowNumber <= $this->_batchInfo['item_count']; $rowNumber++) {
@@ -157,7 +157,6 @@ class CRM_Volunteer_Form_Log extends CRM_Core_Form {
         if ((!$value['actual_duration']) && $value['volunteer_status'] == CRM_Utils_Array::key('Completed', $volunteerStatus) ) {
           $errors["field[$key][actual_duration]"] = ts('Please enter the actual duration for Completed volunteer activity');
         }
-
       }
     }
 
@@ -167,7 +166,6 @@ class CRM_Volunteer_Form_Log extends CRM_Core_Form {
 
     return TRUE;
   }
-
 
   /**
    * This function sets the default values for the form.
@@ -212,7 +210,7 @@ class CRM_Volunteer_Form_Log extends CRM_Core_Form {
 
     $count = 0;
     foreach ($params['field'] as $key => $value) {
-      if (!empty($params['primary_contact_select_id'][$key])) {
+      if (!empty($params['primary_contact_select_id'][$key]) or !empty($params['primary_contact'][$key]) ) {
         if (!empty($value['activity_id'])) {
           // update the activity record
 
@@ -228,9 +226,7 @@ class CRM_Volunteer_Form_Log extends CRM_Core_Form {
               'time_scheduled_minutes' => $value['scheduled_duration']
             )
           );
-
           CRM_Volunteer_BAO_Assignment::createVolunteerActivity($volunteer);
-
         }
         else {
           //create need record
