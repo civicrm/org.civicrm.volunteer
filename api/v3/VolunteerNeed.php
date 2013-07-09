@@ -46,7 +46,7 @@
  * @access public
  */
 function civicrm_api3_volunteer_need_create($params) {
-  return _civicrm_api3_basic_create(_civicrm_api3_get_BAO(__FUNCTION__), $params);
+  return _civicrm_api3_basic_create('CRM_Volunteer_BAO_Need', $params);
 }
 
 /**
@@ -73,6 +73,7 @@ function _civicrm_api3_volunteer_need_create_spec(&$params) {
  * @access public
  */
 function civicrm_api3_volunteer_need_get($params) {
+  $params['return_as_array'] = TRUE;
   return CRM_Volunteer_BAO_Need::retrieve($params);
 }
 function _civicrm_api3_volunteer_need_get_spec(&$params) {
@@ -93,6 +94,6 @@ function _civicrm_api3_volunteer_need_get_spec(&$params) {
  * @access public
  */
 function civicrm_api3_volunteer_need_delete($params) {
-  return _civicrm_api3_basic_delete(_civicrm_api3_get_BAO(__FUNCTION__), $params);
+  return _civicrm_api3_basic_delete('CRM_Volunteer_BAO_Need', $params);
 }
 
