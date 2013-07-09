@@ -21,7 +21,7 @@ function volunteer_civicrm_xmlMenu(&$files) {
 /**
  * Implementation of hook_civicrm_tabset
  *
- *
+ * Insert the "Volunteer" tab into the event edit workflow
  */
 function volunteer_civicrm_tabset($tabsetName, &$tabs, $context) {
   if ($tabsetName == 'civicrm/event/manage') {
@@ -37,6 +37,10 @@ function volunteer_civicrm_tabset($tabsetName, &$tabs, $context) {
         'active' => 1,
         'current' => false,
       );
+      // If volunteer mngmt is enabled, add necessary UI elements
+      if (CRM_Volunteer_BAO_Project::isActive($eventID, CRM_Event_DAO_Event::$_tableName)) {
+        CRM_Volunteer_Form_Manage::addResources();
+      }
     }
     else {
       $tab['volunteer'] = array(
