@@ -26,27 +26,27 @@
  */
 
 /**
- * File for the CiviCRM APIv3 Volunteer Need functions
+ * File for the CiviCRM APIv3 Volunteer Assignment functions
  *
  * @package CiviVolunteer_APIv3
- * @subpackage API_Volunteer_Need
+ * @subpackage API_Volunteer_Assignment
  * @copyright CiviCRM LLC (c) 2004-2013
  */
 
 
 /**
- * Create or update a need
+ * Create or update a volunteer assignment
  *
  * @param array $params  Associative array of property
- *                       name/value pairs to insert in new 'need'
- * @example NeedCreate.php Std Create example
+ *                       name/value pairs to insert in new 'assignment'
+ * @example AssignmentCreate.php Std Create example
  *
  * @return array api result array
- * {@getfields volunteer_need create}
+ * {@getfields volunteer_assignment create}
  * @access public
  */
-function civicrm_api3_volunteer_need_create($params) {
-  return _civicrm_api3_basic_create('CRM_Volunteer_BAO_Need', $params);
+function civicrm_api3_volunteer_assignment_create($params) {
+  return; // FIXME
 }
 
 /**
@@ -55,45 +55,37 @@ function civicrm_api3_volunteer_need_create($params) {
  * The metadata is used for setting defaults, documentation & validation
  * @param array $params array or parameters determined by getfields
  */
-function _civicrm_api3_volunteer_need_create_spec(&$params) {
-  $params['project_id']['api.required'] = 1;
-  $params['is_flexible']['api.default'] = 1;
-  $params['is_active']['api.default'] = 1;
+function _civicrm_api3_volunteer_assignment_create_spec(&$params) {
 }
 
 /**
- * Returns array of needs  matching a set of one or more group properties
+ * Returns array of assignments matching a set of one or more group properties
  *
  * @param array $params  (referance) Array of one or more valid
  *                       property_name=>value pairs. If $params is set
- *                       as null, all needs will be returned
+ *                       as null, all assignments will be returned
  *
- * @return array  (referance) Array of matching needs
- * {@getfields need_get}
+ * @return array  (referance) Array of matching assignments
+ * {@getfields assignment_get}
  * @access public
  */
-function civicrm_api3_volunteer_need_get($params) {
-  $params['return_as_array'] = TRUE;
-  return CRM_Volunteer_BAO_Need::retrieve($params);
+function civicrm_api3_volunteer_assignment_get($params) {
+  return; // FIXME
 }
-function _civicrm_api3_volunteer_need_get_spec(&$params) {
-    $params['project_id']['api.required'] = 1;
-}
+
 /**
- * delete an existing need
- *
- * This method is used to delete any existing need. id of the group
- * to be deleted is required field in $params array
+ * Delete any existing assignment activity.
+ * Activity id is required
  *
  * @param array $params  (reference) array containing id of the group
  *                       to be deleted
  *
  * @return array  (referance) returns flag true if successfull, error
  *                message otherwise
- * {@getfields need_delete}
+ * {@getfields assignment_delete}
  * @access public
  */
-function civicrm_api3_volunteer_need_delete($params) {
-  return _civicrm_api3_basic_delete('CRM_Volunteer_BAO_Need', $params);
+function civicrm_api3_volunteer_assignment_delete($params) {
+  return _civicrm_api3_basic_delete('CRM_Activity_BAO_Activity', $params);
 }
 

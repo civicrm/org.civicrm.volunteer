@@ -60,5 +60,11 @@ class CRM_Volunteer_Form_Manage {
     CRM_Core_Region::instance('page-header')->add(array(
       'template' => 'CRM/Volunteer/Form/Manage.tpl',
     ));
+
+    // Static variables
+    $ccr->addSetting(array('volunteerData' => array(
+      'customFields' => CRM_Volunteer_BAO_Assignment::getCustomFields(),
+      'activityTypeId' => CRM_Volunteer_BAO_Assignment::volunteerActivityTypeId(),
+    )));
   }
 }
