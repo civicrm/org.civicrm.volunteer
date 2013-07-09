@@ -68,37 +68,6 @@ class CRM_Volunteer_BAO_Need extends CRM_Volunteer_DAO_Need {
 
     return $need;
   }
-  /**
-   * Return an ID-Indexed array of Needs
-   *
-   * @param array $params
-   *    'project_id' is required
-   *    'return_as_array' returns a multidimensional array
-   *    instead of serialized of objects by using DAO::toArray()
-   *
-   * @usage
-   */
-  static function retrieve(array $params) {
-    $result = array();
-
-    if (!CRM_Utils_Array::value('project_id', $params)) {
-      CRM_Core_Error::fatal('Missing required parameter project_id.');
-    }
-    
-    $return_as_array = CRM_Utils_Array::value('return_as_array', $params);
-
-    $daoNeed = new CRM_Volunteer_BAO_Need();
-    $daoNeed->copyValues($params);
-    $daoNeed->find();
-
-    while ($daoNeed->fetch()) {
-      $result[$daoNeed->id] = ($return_as_array) ? $daoNeed->toArray() : clone $daoNeed;
-    }
-
-    $daoNeed->free();
-
-    return $result;
-  }
 
   function delete($params) {
       if (empty($params)) {
