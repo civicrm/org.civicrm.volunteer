@@ -1,5 +1,4 @@
 <?php
-
 /*
  +--------------------------------------------------------------------+
  | CiviCRM version 4.3                                                |
@@ -27,7 +26,7 @@
  */
 
 /**
- * File for the CiviCRM APIv3 group functions
+ * File for the CiviCRM APIv3 Volunteer Need functions
  *
  * @package CiviCRM_APIv3
  * @subpackage API_Need
@@ -43,10 +42,10 @@
  * @example NeedCreate.php Std Create example
  *
  * @return array api result array
- * {@getfields need_create}
+ * {@getfields volunteer_need create}
  * @access public
  */
-function civicrm_api3_need_create($params) {
+function civicrm_api3_volunteer_need_create($params) {
   return _civicrm_api3_basic_create(_civicrm_api3_get_BAO(__FUNCTION__), $params);
 }
 
@@ -56,7 +55,7 @@ function civicrm_api3_need_create($params) {
  * The metadata is used for setting defaults, documentation & validation
  * @param array $params array or parameters determined by getfields
  */
-function _civicrm_api3_need_create_spec(&$params) {
+function _civicrm_api3_volunteer_need_create_spec(&$params) {
   $params['project_id']['api.required'] = 1;
   $params['is_flexible']['api.default'] = 1;
   $params['is_active']['api.default'] = 1;
@@ -73,10 +72,10 @@ function _civicrm_api3_need_create_spec(&$params) {
  * {@getfields need_get}
  * @access public
  */
-function civicrm_api3_need_get($params) {
+function civicrm_api3_volunteer_need_get($params) {
   return CRM_Volunteer_BAO_Need::retrieve($params);
 }
-function _civicrm_api3_need_get_spec(&$params) {
+function _civicrm_api3_volunteer_need_get_spec(&$params) {
     $params['project_id']['api.required'] = 1;
 }
 /**
@@ -93,7 +92,7 @@ function _civicrm_api3_need_get_spec(&$params) {
  * {@getfields need_delete}
  * @access public
  */
-function civicrm_api3_need_delete($params) {
+function civicrm_api3_volunteer_need_delete($params) {
   return _civicrm_api3_basic_delete(_civicrm_api3_get_BAO(__FUNCTION__), $params);
 }
 
