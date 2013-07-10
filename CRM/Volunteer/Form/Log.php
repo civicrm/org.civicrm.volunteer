@@ -211,7 +211,7 @@ class CRM_Volunteer_Form_Log extends CRM_Core_Form {
 
     $count = 0;
     foreach ($params['field'] as $key => $value) {
-      if (!empty($params['primary_contact_select_id'][$key]) or !empty($params['primary_contact'][$key]) ) {
+      if (!empty($params['primary_contact_select_id'][$key]) or !empty($params['primary_contact'][$key])) {
         if (!empty($value['activity_id'])) {
           // update the activity record
 
@@ -223,8 +223,8 @@ class CRM_Volunteer_Form_Log extends CRM_Core_Form {
               'id' => $value['activity_id'],
             ),
             'custom' => array(
-              'time_completed_minutes' => $value['actual_duration'],
-              'time_scheduled_minutes' => $value['scheduled_duration']
+              'time_completed_minutes' => CRM_Utils_Array::value('actual_duration', $value),
+              'time_scheduled_minutes' => CRM_Utils_Array::value('scheduled_duration', $value)
             )
           );
           CRM_Volunteer_BAO_Assignment::createVolunteerActivity($volunteer);
@@ -233,8 +233,8 @@ class CRM_Volunteer_Form_Log extends CRM_Core_Form {
           //create need record
           $needs = array(
             'project_id' => $this->_vid,
-            'duration' => $value['actual_duration'],
-            'role_id' => $value['volunteer_role'],
+            'duration' => CRM_Utils_Array::value('actual_duration', $value),
+            'role_id' => CRM_Utils_Array::value('volunteer_role', $value),
             'is_active' => 1,
           );
           if (empty($value['start_date'])) {
@@ -258,8 +258,8 @@ class CRM_Volunteer_Form_Log extends CRM_Core_Form {
             ),
             'custom' => array(
               'volunteer_need_id' => $need->id,
-              'time_completed_minutes' => $value['actual_duration'],
-              'time_scheduled_minutes' => $value['scheduled_duration']
+              'time_completed_minutes' => CRM_Utils_Array::value('actual_duration', $value),
+              'time_scheduled_minutes' => CRM_Utils_Array::value('scheduled_duration', $value)
             )
           );
           if (!empty($needs['start_time'])) {
