@@ -69,10 +69,6 @@ class CRM_Volunteer_BAO_Assignment extends CRM_Activity_DAO_Activity {
     unset($allowed_params['activity_duration']);
     $filtered_params = array_intersect_key($params, $allowed_params);
 
-    if (!CRM_Utils_Array::value('project_id', $filtered_params)) {
-      CRM_Core_Error::fatal('Missing required project_id parameter');
-    }
-
     $custom_group = self::getCustomGroup();
     $customTableName = $custom_group['table_name'];
 
