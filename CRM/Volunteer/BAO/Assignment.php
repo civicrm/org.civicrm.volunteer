@@ -84,9 +84,15 @@ class CRM_Volunteer_BAO_Assignment extends CRM_Activity_DAO_Activity {
     $activityContactTypes = CRM_Core_OptionGroup::values('activity_contacts', FALSE, FALSE, FALSE, NULL, 'name');
     $assigneeID = CRM_Utils_Array::key('Activity Assignees', $activityContactTypes);
 
+    $volunteerStatus = CRM_Activity_BAO_Activity::buildOptions('status_id', 'validate');
+    $available =  CRM_Utils_Array::key('Available', $volunteerStatus);
+    $scheduled =  CRM_Utils_Array::key('Scheduled', $volunteerStatus);
+
     $placeholders = array(
       1 => array($assigneeID, 'Integer'),
       2 => array(self::volunteerActivityTypeId(), 'Integer'),
+      3 => array($scheduled, 'Integer'),
+      4 => array($available, 'Integer'),
     );
 
     $i = count($placeholders) + 1;
@@ -134,6 +140,7 @@ class CRM_Volunteer_BAO_Assignment extends CRM_Activity_DAO_Activity {
       LEFT JOIN civicrm_volunteer_project
         ON (civicrm_volunteer_project.id = civicrm_volunteer_need.project_id)
       WHERE civicrm_activity.activity_type_id = %2
+      AND civicrm_activity.status_id IN (%3, %4 )
       AND {$where}
     ";
 

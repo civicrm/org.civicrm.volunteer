@@ -261,6 +261,9 @@ class CRM_Volunteer_Form_Log extends CRM_Core_Form {
               'time_scheduled_minutes' => $value['scheduled_duration']
             )
           );
+          if (!empty($needs['start_time'])) {
+            $volunteer['params']['activity_date_time'] = $needs['start_time'];
+          }
 
           CRM_Volunteer_BAO_Assignment::createVolunteerActivity($volunteer);
         }
