@@ -104,7 +104,8 @@ class CRM_Volunteer_Form_Log extends CRM_Core_Form {
         //readonly for some fields
         $extra = array(
           'READONLY' => TRUE,
-          'style' => "background-color:#EBECE4"
+          'style' => "background-color:#EBECE4",
+          'disabled' => 'disabled'
         );
 
         $this->add('text', "primary_contact[$rowNumber]", '', $extra);
@@ -150,7 +151,7 @@ class CRM_Volunteer_Form_Log extends CRM_Core_Form {
 
     foreach ($params['field'] as $key => $value) {
       if (!empty($value['volunteer_status'])) {
-        if (empty($params['primary_contact'][$key])) {
+        if ($key > count($self->_volunteerData) && empty($params['primary_contact_select_id'][$key])) {
           $errors["primary_contact[$key]"] = ts('Please enter the volunteer');
         }
 
