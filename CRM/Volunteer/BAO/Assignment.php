@@ -60,10 +60,10 @@ class CRM_Volunteer_BAO_Assignment extends CRM_Activity_DAO_Activity {
   static function retrieve(array $params) {
     $activity_fields = CRM_Activity_DAO_Activity::fields();
     $custom_fields = self::getCustomFields();
+    $foreign_fields = array('project_id');
 
     // enforce restrictions on parameters
-    $allowed_params = array_merge(array_keys($activity_fields), array_keys($custom_fields));
-    $allowed_params[] = 'project_id';
+    $allowed_params = array_merge(array_keys($activity_fields), array_keys($custom_fields), $foreign_fields);
     $allowed_params = array_flip($allowed_params);
     unset($allowed_params['activity_type_id']);
     unset($allowed_params['activity_duration']);
@@ -227,7 +227,7 @@ class CRM_Volunteer_BAO_Assignment extends CRM_Activity_DAO_Activity {
     $params = $volunteer['params'];
     $volunteerCustom = $volunteer['custom'];
 
-    $customFields = self::getCustomFields(); 
+    $customFields = self::getCustomFields();
     $params['activity_type_id'] = self::volunteerActivityTypeId();
 
     foreach ($volunteerCustom as $field => $val) {
