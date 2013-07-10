@@ -94,4 +94,47 @@ class CRM_Volunteer_BAO_Need extends CRM_Volunteer_DAO_Need {
 
       return $result;
   }
+
+  /**
+   * Gets label to be used for Flexible Needs.
+   *
+   * Implemented as a function in case we need to use logic later (e.g., if we
+   * allow users to set this on a per-project basis).
+   *
+   * @return string
+   */
+  static function getFlexibleRoleLabel() {
+    return ts("I'm Flexible");
+  }
+
+  /**
+   * Returns a string representing the times of a shift. Times will be formatted
+   * according to the user's defined time display settings. If no duration is
+   * given, only the formatted start time will be returned.
+   *
+   * @param string $start Should be a parseable time string
+   * @param mixed $duration An int or a string, in minutes, or NULL for no end time
+   * @return mixed Returns a string on success, boolean FALSE if $start is not
+   * a parseable time.
+   */
+  static function getTimes($start, $duration = NULL) {
+    $result = FALSE;
+
+    if (strtotime($start)) {
+      $timeFormat = CRM_Core_Config::singleton()->dateformatTime;
+      $result = CRM_Utils_Date::customFormat($start, $timeFormat);
+
+      if (
+        $duration
+        && (is_int($duration) || ctype_digit($duration))
+      ) {
+        $date = new DateTime($start);
+        $date->add(new DateInterval("PT{$duration}M"));
+        $end = $date->format('Y-m-d H:i:s');
+        $result .= ' - ' . CRM_Utils_Date::customFormat($end, $timeFormat);
+      }
+    }
+
+    return $result;
+  }
 }
