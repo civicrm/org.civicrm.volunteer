@@ -77,7 +77,7 @@
   </CustomFields>
   <OptionGroups>
     <OptionGroup>
-      <name>volunteer_role</name>
+      <name>{$volunteer_custom_option_group_name}</name>
       <title>Volunteer Role</title>
       <is_reserved>1</is_reserved>
       <is_active>1</is_active>
