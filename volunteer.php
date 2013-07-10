@@ -108,3 +108,19 @@ function volunteer_civicrm_upgrade($op, CRM_Queue_Queue $queue = NULL) {
 function volunteer_civicrm_managed(&$entities) {
   return _volunteer_civix_civicrm_managed($entities);
 }
+
+/**
+ * Implementation of hook_civicrm_entityTypes
+ */
+function volunteer_civicrm_entityTypes(&$entityTypes) {
+  $entityTypes[] = array(
+    'name'  => 'VolunteerNeed',
+    'class' => 'CRM_Volunteer_DAO_Need',
+    'table' => 'civicrm_volunteer_need',
+  );
+  $entityTypes[] = array(
+    'name'  => 'VolunteerProject',
+    'class' => 'CRM_Volunteer_DAO_Project',
+    'table' => 'civicrm_volunteer_project',
+  );
+}
