@@ -220,6 +220,7 @@ class CRM_Volunteer_BAO_Assignment extends CRM_Activity_DAO_Activity {
     $params = $volunteer['params'];
     $volunteerCustom = $volunteer['custom'];
 
+    $customFields = self::getCustomFields(); 
     $params['activity_type_id'] = self::volunteerActivityTypeId();
 
     foreach ($volunteerCustom as $field => $val) {
