@@ -51,19 +51,26 @@ class CRM_Volunteer_BAO_Assignment extends CRM_Activity_DAO_Activity {
    *  1. the key of a field in civicrm_activity (e.g., activity_id, not id),
    *     except for activity_type_id and activity_duration
    *  2. the key of a custom field on the activity
-   *     (volunteer_need_id, time_scheduled, time_completed);
-   *  3. project_id
+   *     (volunteer_need_id, time_scheduled, time_completed)
+   *  3. the key of a field in civicrm_contact
+   *  4. project_id
    *
    * @param array $params
    * @return array of CRM_Volunteer_BAO_Project objects
    */
   static function retrieve(array $params) {
     $activity_fields = CRM_Activity_DAO_Activity::fields();
+    $contact_fields = CRM_Contact_DAO_Contact::fields();
     $custom_fields = self::getCustomFields();
     $foreign_fields = array('project_id');
 
     // enforce restrictions on parameters
-    $allowed_params = array_merge(array_keys($activity_fields), array_keys($custom_fields), $foreign_fields);
+    $allowed_params = array_merge(
+      array_keys($activity_fields),
+      array_keys($contact_fields),
+      array_keys($custom_fields),
+      $foreign_fields
+    );
     $allowed_params = array_flip($allowed_params);
     unset($allowed_params['activity_type_id']);
     unset($allowed_params['activity_duration']);
@@ -93,12 +100,17 @@ class CRM_Volunteer_BAO_Assignment extends CRM_Activity_DAO_Activity {
 
     $i = count($placeholders) + 1;
     $where = array();
+    $whereClause = NULL;
     foreach ($filtered_params as $key => $value) {
 
       if (CRM_Utils_Array::value($key, $activity_fields)) {
         $dataType = CRM_Utils_Type::typeToString($activity_fields[$key]['type']);
         $fieldName = $activity_fields[$key]['name'];
         $tableName = CRM_Activity_DAO_Activity::$_tableName;
+      } elseif (CRM_Utils_Array::value($key, $contact_fields)) {
+        $dataType = CRM_Utils_Type::typeToString($contact_fields[$key]['type']);
+        $fieldName = $contact_fields[$key]['name'];
+        $tableName = CRM_Contact_DAO_Contact::$_tableName;
       } elseif (CRM_Utils_Array::value($key, $custom_fields)) {
         $dataType = $custom_fields[$key]['data_type'];
         $fieldName = $custom_fields[$key]['column_name'];
@@ -113,7 +125,10 @@ class CRM_Volunteer_BAO_Assignment extends CRM_Activity_DAO_Activity {
       $placeholders[$i] = array($value, $dataType);
       $i++;
     }
-    $where = implode("\nAND ", $where);
+
+    if (count($where)) {
+      $whereClause = 'AND ' . implode("\nAND ", $where);
+    }
 
     $query = "
       SELECT civicrm_activity_contact.contact_id,
@@ -122,13 +137,17 @@ class CRM_Volunteer_BAO_Assignment extends CRM_Activity_DAO_Activity {
         {$customSelect},
         civicrm_volunteer_need.start_time,
         civicrm_volunteer_need.is_flexible,
-        civicrm_volunteer_need.role_id
+        civicrm_volunteer_need.role_id,
+        civicrm_contact.sort_name,
+        civicrm_contact.display_name
       FROM civicrm_activity
       LEFT JOIN civicrm_activity_contact
         ON (
           civicrm_activity_contact.activity_id = civicrm_activity.id
           AND civicrm_activity_contact.record_type_id = %1
         )
+      LEFT JOIN civicrm_contact
+        ON civicrm_activity_contact.contact_id = civicrm_contact.id
       INNER JOIN {$customTableName}
         ON ({$customTableName}.entity_id = civicrm_activity.id)
       INNER JOIN civicrm_volunteer_need
@@ -137,7 +156,7 @@ class CRM_Volunteer_BAO_Assignment extends CRM_Activity_DAO_Activity {
         ON (civicrm_volunteer_project.id = civicrm_volunteer_need.project_id)
       WHERE civicrm_activity.activity_type_id = %2
       AND civicrm_activity.status_id IN (%3, %4 )
-      AND {$where}
+      {$whereClause}
     ";
 
     $dao = CRM_Core_DAO::executeQuery($query, $placeholders);
