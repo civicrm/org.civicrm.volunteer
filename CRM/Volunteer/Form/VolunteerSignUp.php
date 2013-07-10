@@ -197,7 +197,7 @@ class CRM_Volunteer_Form_VolunteerSignUp extends CRM_Core_Form {
       'version' => 3,
       'visibility_id' => CRM_Core_OptionGroup::getValue('visibility', 'public', 'name'),
     );
-    $result = civicrm_api('Need', 'get', $params);
+    $result = civicrm_api('VolunteerNeed', 'get', $params);
 
     if (CRM_Utils_Array::value('is_error', $result) === 0) {
       $this->_needs = $result['values'];
