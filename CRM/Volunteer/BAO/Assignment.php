@@ -101,7 +101,7 @@ class CRM_Volunteer_BAO_Assignment extends CRM_Activity_DAO_Activity {
         $tableName = CRM_Activity_DAO_Activity::$_tableName;
       } elseif (CRM_Utils_Array::value($key, $custom_fields)) {
         $dataType = $custom_fields[$key]['data_type'];
-        $fieldName = $key;
+        $fieldName = $custom_fields[$key]['column_name'];
         $tableName = $customTableName;
       } else { // this would be project_id
         $dataType = 'Int';
