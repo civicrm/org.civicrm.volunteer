@@ -5,8 +5,9 @@
  */
 class CRM_Volunteer_Upgrader extends CRM_Volunteer_Upgrader_Base {
 
-  const customGroupName = 'CiviVolunteer';
   const customActivityTypeName = 'Volunteer';
+  const customGroupName = 'CiviVolunteer';
+  const customOptionGroupName = 'volunteer_role';
 
   // By convention, functions that look like "function upgrade_NNNN()" are
   // upgrade tasks. They are executed in order (like Drupal's hook_update_N).
@@ -18,8 +19,9 @@ class CRM_Volunteer_Upgrader extends CRM_Volunteer_Upgrader_Base {
 
     $activityTypeId = $this->findCreateVolunteerActivityType();
     $smarty = CRM_Core_Smarty::singleton();
-    $smarty->assign('volunteer_custom_group_name', self::customGroupName);
     $smarty->assign('volunteer_custom_activity_type_name', self::customActivityTypeName);
+    $smarty->assign('volunteer_custom_group_name', self::customGroupName);
+    $smarty->assign('volunteer_custom_option_group_name', self::customOptionGroupName);
     $smarty->assign('volunteer_activity_type_id', $activityTypeId);
 
     $customIDs = $this->findCustomGroupValueIDs();

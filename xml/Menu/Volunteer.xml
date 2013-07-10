@@ -33,5 +33,10 @@
      <is_ssl>true</is_ssl>
      <weight>935</weight>
   </item>
-
+  <item>
+    <path>civicrm/volunteer/signup</path>
+    <page_callback>CRM_Volunteer_Form_VolunteerSignUp</page_callback>
+    <title>VolunteerSignUp</title>
+    <access_arguments>access CiviCRM</access_arguments>
+  </item>
 </menu>
