@@ -129,11 +129,11 @@ class CRM_Volunteer_BAO_Assignment extends CRM_Activity_DAO_Activity {
           civicrm_activity_contact.activity_id = civicrm_activity.id
           AND civicrm_activity_contact.record_type_id = %1
         )
-      LEFT JOIN {$customTableName}
+      INNER JOIN {$customTableName}
         ON ({$customTableName}.entity_id = civicrm_activity.id)
-      LEFT JOIN civicrm_volunteer_need
+      INNER JOIN civicrm_volunteer_need
         ON (civicrm_volunteer_need.id = {$customTableName}.{$custom_fields['volunteer_need_id']['column_name']})
-      LEFT JOIN civicrm_volunteer_project
+      INNER JOIN civicrm_volunteer_project
         ON (civicrm_volunteer_project.id = civicrm_volunteer_need.project_id)
       WHERE civicrm_activity.activity_type_id = %2
       AND civicrm_activity.status_id IN (%3, %4 )
