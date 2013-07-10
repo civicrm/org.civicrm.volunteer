@@ -114,12 +114,12 @@ function volunteer_civicrm_managed(&$entities) {
  */
 function volunteer_civicrm_entityTypes(&$entityTypes) {
   $entityTypes[] = array(
-    'name'  => 'Need',
+    'name'  => 'VolunteerNeed',
     'class' => 'CRM_Volunteer_DAO_Need',
     'table' => 'civicrm_volunteer_need',
   );
   $entityTypes[] = array(
-    'name'  => 'Project',
+    'name'  => 'VolunteerProject',
     'class' => 'CRM_Volunteer_DAO_Project',
     'table' => 'civicrm_volunteer_project',
   );
