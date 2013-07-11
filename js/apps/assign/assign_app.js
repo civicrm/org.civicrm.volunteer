@@ -5,8 +5,8 @@ CRM.volunteerApp.module('Assign', function(Assign, volunteerApp, Backbone, Mario
   var assignLayout = Marionette.Layout.extend({
     template: "#crm-vol-assign-layout-tpl",
     regions: {
-      contactRegion: "#crm-vol-assign-contact-region",
-      eventRegion: "#crm-vol-assign-event-region"
+      flexibleRegion: "#crm-vol-assign-flexible-region",
+      scheduledRegion: "#crm-vol-assign-scheduled-region"
     }
   });
 

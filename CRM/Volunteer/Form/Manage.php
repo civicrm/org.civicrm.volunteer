@@ -42,16 +42,17 @@ class CRM_Volunteer_Form_Manage {
     $ccr->addScriptFile('civicrm', 'packages/backbone/json2.js', 100, 'html-header', FALSE);
     $ccr->addScriptFile('civicrm', 'packages/backbone/underscore.js', 110, 'html-header', FALSE);
     $ccr->addScriptFile('civicrm', 'packages/backbone/backbone.js', 120, 'html-header');
+    $ccr->addScriptFile('civicrm', 'packages/backbone/backbone.collectionsubset.js', 125, 'html-header', FALSE);
     $ccr->addScriptFile('civicrm', 'packages/backbone/backbone.marionette.js', 125, 'html-header', FALSE);
 
     // Our stylesheet
     $ccr->addStyleFile('org.civicrm.volunteer', 'css/volunteer_app.css');
 
-    // Add all scripts from our app
+    // Add all scripts for our js app
     $weight = 0;
     $baseDir = CRM_Extension_System::singleton()->getMapper()->keyToBasePath('org.civicrm.volunteer') . '/';
-    // This glob pattern will recurse the js/apps directory up to 4 levels deep
-    foreach (glob($baseDir . 'js/apps/{*,*/*,*/*/*,*/*/*/*}.js', GLOB_BRACE) as $file) {
+    // This glob pattern will recurse the js directory up to 4 levels deep
+    foreach (glob($baseDir . 'js/{*,*/*,*/*/*,*/*/*/*}.js', GLOB_BRACE) as $file) {
       $fileName = substr($file, strlen($baseDir));
       $ccr->addScriptFile('org.civicrm.volunteer', $fileName, $weight++);
     }
@@ -62,9 +63,15 @@ class CRM_Volunteer_Form_Manage {
     ));
 
     // Static variables
-    $ccr->addSetting(array('volunteerData' => array(
-      'customFields' => CRM_Volunteer_BAO_Assignment::getCustomFields(),
-      'activityTypeId' => CRM_Volunteer_BAO_Assignment::volunteerActivityTypeId(),
-    )));
+    $ccr->addSetting(array(
+      'PseudoConstant' => array(
+        'volunteer_role' => CRM_Volunteer_BAO_Need::buildOptions('role_id', 'get'),
+      ),
+      'volunteerData' => array(
+        'customFields' => CRM_Volunteer_BAO_Assignment::getCustomFields(),
+        'activityTypeId' => CRM_Volunteer_BAO_Assignment::volunteerActivityTypeId(),
+      ),
+
+    ));
   }
 }
