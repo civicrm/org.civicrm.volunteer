@@ -36,10 +36,31 @@
 class CRM_Volunteer_BAO_Project extends CRM_Volunteer_DAO_Project {
 
   /**
+   * The title of the Project, inherited from its associated entity
+   *
+   * @var string
+   * @access public (via __get method)
+   */
+  private $title;
+
+  /**
    * class constructor
    */
   function __construct() {
     parent::__construct();
+  }
+
+  /**
+   * Implementation of PHP's magic __get() function.
+   *
+   * @param string $name The inaccessible property
+   * @return mixed Result of fetcher method
+   */
+  function __get($name) {
+    $f = "_get_$name";
+    if (function_exists($f)) {
+      return $this->$f();
+    }
   }
 
   /**
@@ -187,26 +208,26 @@ class CRM_Volunteer_BAO_Project extends CRM_Volunteer_DAO_Project {
   }
 
   /**
-   * Returns name of the entity associated with this project
+   * Sets and returns name of the entity associated with this Project
    *
-   * @param type $id
-   * @return String
-   * @access public
+   * @access private
    */
-  public static function getName($id) {
-    $params = array('id' => $id);
-    $projects = self::retrieve($params);
-    foreach ($projects as $project) {
-      switch ($project->entity_table) {
-        case 'civicrm_event' :
-          $value['name'] = CRM_Event_PseudoConstant::event($project->entity_id, FALSE, "( is_template IS NULL OR is_template != 1 )");
-          $value['id'] = $project->entity_id;
-          $value['entity'] = 'event';
-          break;
+  private function _get_title() {
+    if (!$this->title) {
+      if ($this->entity_table && $this->entity_id) {
+        switch ($this->entity_table) {
+          case 'civicrm_event' :
+            $params = array(
+              'version' => 3,
+              'id' => $this->entity_id,
+              'return' => array('title'),
+            );
+            $result = civicrm_api('Event', 'get', $params);
+            $this->title = $result[$this->entity_id]['title'];
+            break;
+        }
       }
     }
-
-    return $value;
+    return $this->title;
   }
-
 }

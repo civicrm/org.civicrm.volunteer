@@ -203,11 +203,16 @@ class CRM_Volunteer_Form_Log extends CRM_Core_Form {
    */
   public function postProcess() {
     $params = $this->controller->exportValues($this->_name);
-    $value = CRM_Volunteer_BAO_Project::getName($this->_vid);
+    $projects = CRM_Volunteer_BAO_Project::retrieve(array('id' => $this->_vid));
+    $project = $projects[$this->_vid];
 
-    $name = $value['name'];
-    $entityID = $value['id'];
-    $entity = $value['entity'];
+    $name = $project->title;
+    $entityID = $project->entity_id;
+
+    switch ($project->entity_table) {
+      case 'civicrm_event':
+        $redirect_url = 'civicrm/event/manage/volunteer';
+    }
 
     $count = 0;
     foreach ($params['field'] as $key => $value) {
@@ -275,7 +280,7 @@ class CRM_Volunteer_Form_Log extends CRM_Core_Form {
     $statusMsg = ts('Volunteer hours have been recorded for %1 volunteers',
       array(1 => $count));
     CRM_Core_Session::setStatus($statusMsg, '', 'info');
-    CRM_Utils_System::redirect(CRM_Utils_System::url("civicrm/{$entity}/manage/volunteer",
+    CRM_Utils_System::redirect(CRM_Utils_System::url($redirect_url,
       "reset=1&action=update&id={$entityID}"
     ));
   }
