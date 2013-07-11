@@ -58,7 +58,7 @@ class CRM_Volunteer_BAO_Project extends CRM_Volunteer_DAO_Project {
    */
   function __get($name) {
     $f = "_get_$name";
-    if (function_exists($f)) {
+    if (method_exists($this, $f)) {
       return $this->$f();
     }
   }
@@ -223,7 +223,7 @@ class CRM_Volunteer_BAO_Project extends CRM_Volunteer_DAO_Project {
               'return' => array('title'),
             );
             $result = civicrm_api('Event', 'get', $params);
-            $this->title = $result[$this->entity_id]['title'];
+            $this->title = $result['values'][$this->entity_id]['title'];
             break;
         }
       }
