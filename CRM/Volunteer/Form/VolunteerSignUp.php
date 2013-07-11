@@ -101,7 +101,7 @@ class CRM_Volunteer_Form_VolunteerSignUp extends CRM_Core_Form {
   }
 
   function buildQuickForm() {
-    CRM_Utils_System::setTitle(ts('TODO: Should this read something to the effect of "Sign Up to Volunteer for $nameOfEvent"?'));
+    CRM_Utils_System::setTitle(ts('Sign Up to Volunteer for ') . $this->_project->title);
 
     /**
      * @todo We probably need to create our own profile, and we shouldn't
