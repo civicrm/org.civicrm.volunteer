@@ -27,17 +27,22 @@
 {* Contains js templates for backbone-based volunteer assignment sub-application *}
 
 <script type="text/template" id="crm-vol-assign-layout-tpl">
-  <div id="crm-vol-assign-contact-region" class="crm-form-block">Hey</div>
-  <div id="crm-vol-assign-event-region" class="crm-form-block">Ho</div>
+  <div id="crm-vol-assign-flexible-region" class="crm-form-block">Loading...</div>
+  <div id="crm-vol-assign-scheduled-region" class="crm-form-block">Loading...</div>
 </script>
 
-<script type="text/template" id="crm-vol-individual-tpl">
+<script type="text/template" id="crm-vol-assignment-tpl">
   <%= display_name %>
 </script>
 
-<script type="text/template" id="crm-vol-contacts-tpl">
+<script type="text/template" id="crm-vol-scheduled-tpl">
+  <h3><%= role_id %> <%= start_time %></h3>
+  <div class="crm-vol-assignment-list"></div>
+</script>
+
+<script type="text/template" id="crm-vol-flexible-tpl">
   <h3>{ts}Available Volunteers{/ts}</h3>
-  <div id="crm-vol-contact-list"></div>
+  <div class="crm-vol-assignment-list"></div>
   <h4>Add Volunteer</h4>
   <input type="text" name="add-volunteer" placeholder="{ts escape='js'}Select Contact...{/ts}"/>
   <button>{ts}Add{/ts}</button>

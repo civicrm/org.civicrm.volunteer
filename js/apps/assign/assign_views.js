@@ -1,15 +1,19 @@
 // http://civicrm.org/licensing
-CRM.volunteerApp.module('Assign.Contact', function(Contact, volunteerApp, Backbone, Marionette, $, _) {
-  var individualView = Marionette.ItemView.extend({
-    template: '#crm-vol-individual-tpl',
-    className: "crm-volunteer-contact"
+CRM.volunteerApp.module('Assign', function(Assign, volunteerApp, Backbone, Marionette, $, _) {
+  var assignmentView = Marionette.ItemView.extend({
+    template: '#crm-vol-assignment-tpl',
+    className: 'crm-volunteer-assignment'
   });
 
-  Contact.ListView = Marionette.CompositeView.extend({
-    tagName: "div",
-    itemView: individualView,
-    itemViewContainer: '#crm-vol-contact-list',
-    template: '#crm-vol-contacts-tpl',
+  var needView = Marionette.CompositeView.extend({
+    itemView: assignmentView,
+    itemViewContainer: '.crm-vol-assignment-list',
+
+    initialize: function(){
+      this.collection = new volunteerApp.Entities.Assignments(_.toArray(this.model.get('api.volunteer_assignment.get').values));
+      var type = this.model.get('is_flexible') == '1' ? 'flexible' : 'scheduled';
+      this.template = '#crm-vol-' + type + '-tpl';
+    },
 
     events: {
       'change #crm-vol-create-contact-select': 'createContactDialog'
@@ -23,9 +27,10 @@ CRM.volunteerApp.module('Assign.Contact', function(Contact, volunteerApp, Backbo
           snippet: 5,
           gid: profile
         });
-        $('<div id="crm-vol-profile-form" class="crm-container"/>').dialog({
+        $('<div id="crm-vol-profile-form" class="crm-container">Loading...</div>').dialog({
           title: $(e.target).find(':selected').text(),
           modal: true,
+          minWidth: 400,
           open: function() {
             $(e.target).val('');
             $(this).load(url, function() {
@@ -51,4 +56,9 @@ CRM.volunteerApp.module('Assign.Contact', function(Contact, volunteerApp, Backbo
       }
     }
   });
+
+  Assign.needsView = Marionette.CollectionView.extend({
+    itemView: needView
+  });
+
 });
