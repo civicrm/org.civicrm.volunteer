@@ -1,10 +1,15 @@
 // http://civicrm.org/licensing
 CRM.volunteerApp.module('Assign', function(Assign, volunteerApp, Backbone, Marionette, $, _) {
-  var newContactId;
+  var newContactId, dragFrom;
 
   var assignmentView = Marionette.ItemView.extend({
     template: '#crm-vol-assignment-tpl',
-    className: 'crm-vol-assignment'
+    className: 'crm-vol-assignment',
+
+    onRender: function () {
+      // Store id to facilitate dragging & dropping
+      this.$el.attr('data-id', this.model.get('id'));
+    }
   });
 
   var needView = Marionette.CompositeView.extend({
@@ -25,15 +30,47 @@ CRM.volunteerApp.module('Assign', function(Assign, volunteerApp, Backbone, Mario
 
     events: {
       'change .crm-vol-create-contact-select': 'createContactDialog',
-      'click .crm-add-vol-contact': 'addContact'
+      'click .crm-add-vol-contact': 'addNewContact'
     },
 
     onRender: function() {
+      var thisView = this;
       this.isFlexible && this.initAutocomplete();
+      var quantity = this.model.get('quantity');
+      if (quantity > this.collection.length) {
+        var delta = quantity - this.collection.length;
+        var msg = this.collection.length ? ts('%1 More Needed', {1: delta}) : ts('%1 Needed', {1: delta});
+        $('.crm-vol-assignment-list', this.$el).append('<div class="crm-vol-vacancy">' + msg + '</div>')
+      }
+      // Allow volunteers to be dragged out of this view
+      $('.crm-vol-assignment', this.$el).draggable({
+        helper: "clone",
+        zindex: 99999999999,
+        containment: '#crm-volunteer-dialog',
+        start: function() {
+          dragFrom = thisView;
+        }
+      });
+      // If we have room for more volunteers (or quantity is flexible), accept dropping in more
+      if (!quantity || quantity > this.collection.length) {
+        $(this.itemViewContainer, this.$el).droppable({
+          activeClass: "ui-state-default",
+          hoverClass: "ui-state-hover",
+          drop: function(event, ui) {
+            var id = $(ui.draggable).data('id');
+            var assignment = dragFrom.collection.get(id);
+            dragFrom.collection.remove(assignment);
+            dragFrom.render();
+            assignment.set('volunteer_need_id', thisView.model.get('id'));
+            thisView.collection.add(assignment);
+            thisView.render();
+          }
+        });
+      }
     },
 
     createContactDialog: function(e) {
-      var that = this;
+      var thisView = this;
       var profile = $(e.target).val();
       if(profile.length) {
         var url = CRM.url('civicrm/profile/create', {
@@ -62,7 +99,7 @@ CRM.volunteerApp.module('Assign', function(Assign, volunteerApp, Backbone, Mario
                   $("#crm-vol-profile-form").dialog('close');
                   CRM.alert(ts('%1 has been created.', {1: response.displayName}), ts('Contact Saved'), 'success');
                   newContactId = response.cid;
-                  that.addContact();
+                  thisView.addNewContact();
                 }
               }).validate(CRM.validate.params);
             });
@@ -88,7 +125,7 @@ CRM.volunteerApp.module('Assign', function(Assign, volunteerApp, Backbone, Mario
       });
     },
 
-    addContact: function() {
+    addNewContact: function() {
       if (newContactId) {
         $('.crm-add-volunteer', this.$el).val('');
         var contact = new volunteerApp.Entities.Assignment({
