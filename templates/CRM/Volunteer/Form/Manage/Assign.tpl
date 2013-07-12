@@ -36,7 +36,7 @@
 </script>
 
 <script type="text/template" id="crm-vol-scheduled-tpl">
-  <h3><%= role_id %> <%= start_time %></h3>
+  <h3><%= pseudoConstant.volunteer_role[role_id] %> <%= start_time %></h3>
   <div class="crm-vol-assignment-list"></div>
 </script>
 
@@ -44,10 +44,10 @@
   <h3>{ts}Available Volunteers{/ts}</h3>
   <div class="crm-vol-assignment-list"></div>
   <h4>Add Volunteer</h4>
-  <input type="text" name="add-volunteer" placeholder="{ts escape='js'}Select Contact...{/ts}"/>
-  <button>{ts}Add{/ts}</button>
+  <input type="text" name="add-volunteer" class="crm-add-volunteer" placeholder="{ts escape='js'}Select Contact...{/ts}"/>
+  <button class="crm-add-vol-contact">{ts}Add{/ts}</button>
   <div>
-    OR <select id="crm-vol-create-contact-select">
+    OR <select class="crm-vol-create-contact-select">
       <option value="">{ts}- create new contact -{/ts}</option>
       {crmAPI var='UFGroup' entity='UFGroup' action='get' is_active=1 is_reserved=1}
       {foreach from=$UFGroup.values item=profile}
