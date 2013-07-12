@@ -48,7 +48,7 @@ class CRM_Volunteer_BAO_Assignment extends CRM_Activity_DAO_Activity {
 
   /**
    * Get a list of Assignments matching the params, where each param key is:
-   *  1. the key of a field in civicrm_activity (e.g., activity_id, not id),
+   *  1. the key of a field in civicrm_activity
    *     except for activity_type_id and activity_duration
    *  2. the key of a custom field on the activity
    *     (volunteer_need_id, time_scheduled, time_completed)
@@ -133,7 +133,7 @@ class CRM_Volunteer_BAO_Assignment extends CRM_Activity_DAO_Activity {
     $query = "
       SELECT civicrm_activity_contact.contact_id,
         civicrm_activity.status_id,
-        {$customTableName}.entity_id AS activity_id,
+        {$customTableName}.entity_id AS id,
         {$customSelect},
         civicrm_volunteer_need.start_time,
         civicrm_volunteer_need.is_flexible,
@@ -162,7 +162,7 @@ class CRM_Volunteer_BAO_Assignment extends CRM_Activity_DAO_Activity {
     $dao = CRM_Core_DAO::executeQuery($query, $placeholders);
     $rows = array();
     while ($dao->fetch()) {
-      $rows[$dao->activity_id] = $dao->toArray();
+      $rows[$dao->id] = $dao->toArray();
     }
     return $rows;
   }
