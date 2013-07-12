@@ -69,7 +69,7 @@
   <ProfileJoins>
     <ProfileJoin>
       <is_active>1</is_active>
-      <module>Profile</module>
+      <module>CiviVolunteer</module>
       <weight>10</weight>
       <profile_group_name>Volunteer Sign Up</profile_group_name>
     </ProfileJoin>

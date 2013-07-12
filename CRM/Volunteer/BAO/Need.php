@@ -121,7 +121,7 @@ class CRM_Volunteer_BAO_Need extends CRM_Volunteer_DAO_Need {
     $result = FALSE;
 
     if (strtotime($start)) {
-      $timeFormat = CRM_Core_Config::singleton()->dateformatTime;
+      $timeFormat = CRM_Core_Config::singleton()->dateformatDatetime;
       $result = CRM_Utils_Date::customFormat($start, $timeFormat);
 
       if (
