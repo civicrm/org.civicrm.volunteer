@@ -64,7 +64,7 @@ class CRM_Volunteer_Form_Manage {
 
     // Static variables
     $ccr->addSetting(array(
-      'PseudoConstant' => array(
+      'pseudoConstant' => array(
         'volunteer_role' => CRM_Volunteer_BAO_Need::buildOptions('role_id', 'get'),
       ),
       'volunteerData' => array(
