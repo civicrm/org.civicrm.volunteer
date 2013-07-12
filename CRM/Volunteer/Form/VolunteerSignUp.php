@@ -38,12 +38,12 @@ class CRM_Volunteer_Form_VolunteerSignUp extends CRM_Core_Form {
   protected $_needs = array();
 
   /**
-   * the id of the project we are proceessing
+   * the project we are processing
    *
-   * @var int
+   * @var CRM_Volunteer_BAO_Project
    * @protected
    */
-  protected $_projectId;
+  protected $_project;
 
   /**
    * ID-indexed array of the roles associated with this volunteer project
@@ -80,10 +80,17 @@ class CRM_Volunteer_Form_VolunteerSignUp extends CRM_Core_Form {
    * @access public
    */
   function preProcess() {
-    $this->_projectId = CRM_Utils_Request::retrieve('vid', 'Positive', $this, TRUE);
-    $this->assign('vid', $this->_projectId);
+    $vid = CRM_Utils_Request::retrieve('vid', 'Positive', $this, TRUE);
+    $projects = CRM_Volunteer_BAO_Project::retrieve(array('id' => $vid));
+
+    if (!count($projects)) {
+      CRM_Core_Error::fatal('Project does not exist');
+    }
+
+    $this->_project = $projects[$vid];
+    $this->assign('vid', $this->_project->id);
     if ($this->getVolunteerNeeds() === 0) {
-      CRM_Core_Error::fatal('Project does not exist or has no volunteer needs');
+      CRM_Core_Error::fatal('Project has no volunteer needs defined');
     }
     $this->getVolunteerRoles();
     $this->getVolunteerShifts();
@@ -94,15 +101,21 @@ class CRM_Volunteer_Form_VolunteerSignUp extends CRM_Core_Form {
   }
 
   function buildQuickForm() {
-    CRM_Utils_System::setTitle(ts('TODO: Should this read something to the effect of "Sign Up to Volunteer for $nameOfEvent"?'));
+    CRM_Utils_System::setTitle(ts('Sign Up to Volunteer for ') . $this->_project->title);
 
-    /**
-     * @todo We probably need to create our own profile, and we shouldn't
-     * hardcode the ID.
-     *
-     */
+    $params = array(
+      'version' => 3,
+      'name' => 'volunteer_sign_up',
+      'return' => 'id',
+    );
+    $result = civicrm_api('UFGroup', 'get', $params);
 
-    $this->buildCustom(12, 'volunteerProfile');
+    if (CRM_Utils_Array::value('is_error', $result)) {
+      CRM_Core_Error::fatal('CiviVolunteer custom profile could not be found');
+    }
+    $values = $result['values'];
+    $ufgroup = current($values);
+    $this->buildCustom($ufgroup['id'], 'volunteerProfile');
 
     // better UX not to display a select box with only one possible selection
     if (count($this->_roles) > 1) {
@@ -193,7 +206,7 @@ class CRM_Volunteer_Form_VolunteerSignUp extends CRM_Core_Form {
   function getVolunteerNeeds() {
     $params = array(
       'is_active' => '1',
-      'project_id' => $this->_projectId,
+      'project_id' => $this->_project->id,
       'version' => 3,
       'visibility_id' => CRM_Core_OptionGroup::getValue('visibility', 'public', 'name'),
     );
