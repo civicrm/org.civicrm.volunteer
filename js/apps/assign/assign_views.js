@@ -40,7 +40,10 @@ CRM.volunteerApp.module('Assign', function(Assign, volunteerApp, Backbone, Mario
       if (quantity > this.collection.length) {
         var delta = quantity - this.collection.length;
         var msg = this.collection.length ? ts('%1 More Needed', {1: delta}) : ts('%1 Needed', {1: delta});
-        $('.crm-vol-assignment-list', this.$el).append('<div class="crm-vol-vacancy">' + msg + '</div>')
+        $('.crm-vol-assignment-list', this.$el).append('<div class="crm-vol-vacancy">' + msg + '</div>');
+      }
+      if (this.isFlexible && !this.collection.length) {
+        $('.crm-vol-assignment-list', this.$el).append('<div class="crm-vol-placeholder">' + ts('None') + '</div>');
       }
       // Allow volunteers to be dragged out of this view
       $('.crm-vol-assignment', this.$el).draggable({
@@ -64,6 +67,7 @@ CRM.volunteerApp.module('Assign', function(Assign, volunteerApp, Backbone, Mario
             assignment.set('volunteer_need_id', thisView.model.get('id'));
             thisView.collection.add(assignment);
             thisView.render();
+            CRM.api('volunteer_assignment', 'create', {id: id, volunteer_need_id: thisView.model.get('id')});
           }
         });
       }
@@ -98,7 +102,7 @@ CRM.volunteerApp.module('Assign', function(Assign, volunteerApp, Backbone, Mario
                 success: function(response) {
                   $("#crm-vol-profile-form").dialog('close');
                   CRM.alert(ts('%1 has been created.', {1: response.displayName}), ts('Contact Saved'), 'success');
-                  newContactId = response.cid;
+                  newContactId = response.contactID;
                   thisView.addNewContact();
                 }
               }).validate(CRM.validate.params);
@@ -128,14 +132,9 @@ CRM.volunteerApp.module('Assign', function(Assign, volunteerApp, Backbone, Mario
     addNewContact: function() {
       if (newContactId) {
         $('.crm-add-volunteer', this.$el).val('');
-        var contact = new volunteerApp.Entities.Assignment({
-          contact_id: newContactId,
-          display_name: 'FIXME',
-          volunteer_need_id: this.model.get('id')
-        });
-        this.collection.add(contact);
+        this.collection.createNewAssignment({contact_id: newContactId, volunteer_need_id: this.model.get('id')});
+        newContactId = null;
       }
-      newContactId = null;
     }
 
   });
