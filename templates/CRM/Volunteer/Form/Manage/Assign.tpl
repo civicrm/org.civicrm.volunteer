@@ -31,19 +31,38 @@
   <div id="crm-vol-assign-scheduled-region">Loading...</div>
 </script>
 
-<script type="text/template" id="crm-vol-assignment-tpl">
-  <%= display_name %>
+<script type="text/template" id="crm-vol-scheduled-assignment-tpl">
+  <td class="crm-vol-name"><span class="icon"></span><%= display_name %></td>
+  <td><%= email %></td>
+  <td><%= phone %></td>
+</script>
+
+<script type="text/template" id="crm-vol-flexible-assignment-tpl">
+  <td class="crm-vol-name">
+    <span class="icon"></span><%= display_name %><a href="#" class="crm-vol-del"><img src="{$config->resourceBase}i/close.png" alt="{ts}Remove{/ts}" title="{ts}Remove{/ts}"/></a>
+  </td>
 </script>
 
 <script type="text/template" id="crm-vol-scheduled-tpl">
   <h3><%= pseudoConstant.volunteer_role[role_id] %>: <%= display_time %></h3>
-  <div class="crm-vol-assignment-list"></div>
+  <table class="row-highlight">
+    <thead><tr>
+      <th>{ts}Name{/ts}</th>
+      <th>{ts}Email{/ts}</th>
+      <th>{ts}Phone{/ts}</th>
+    </tr></thead>
+    <tbody class="crm-vol-assignment-list"></tbody>
+  </table>
 </script>
 
 <script type="text/template" id="crm-vol-flexible-tpl">
   <h3>{ts}Available Volunteers{/ts}</h3>
-  <div class="crm-vol-assignment-list"></div>
-  <hr />
+  <table class="row-highlight">
+    <thead><tr>
+      <th>{ts}Name{/ts}</th>
+    </tr></thead>
+    <tbody class="crm-vol-assignment-list"></tbody>
+  </table>
   <h4>Add Volunteer</h4>
   <input type="text" name="add-volunteer" class="crm-add-volunteer" placeholder="{ts escape='js'}Select Contact...{/ts}"/>
   <button class="crm-add-vol-contact">{ts}Add{/ts}</button>

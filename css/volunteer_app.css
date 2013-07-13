@@ -1,11 +1,11 @@
 #crm-vol-assign-flexible-region {
   float:left;
-  width: 40%;
+  width: 35%;
 }
 
 #crm-vol-assign-scheduled-region {
   float: left;
-  width: 60%;
+  width: 65%;
 }
 
 #crm-vol-assign-scheduled-region .crm-vol-assign-region-inner {
@@ -14,4 +14,19 @@
 
 .crm-vol-assignment {
   cursor: move;
+}
+
+#crm-volunteer-dialog .crm-vol-vacancy {
+  background-color: rgba(255, 0, 0, 0.25);
+  font-weight: bold;
+}
+
+.crm-vol-name .icon {
+  background-position: -2px -77px;
+}
+
+a.crm-vol-del {
+  float: right;
+  height: 12px;
+  width: 12px;
 }

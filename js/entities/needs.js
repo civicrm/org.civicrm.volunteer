@@ -4,6 +4,7 @@ CRM.volunteerApp.module('Entities', function(Entities, volunteerApp, Backbone, M
   var need = Backbone.Model.extend({
     defaults: {
       'is_flexible': 0,
+      'duration': 0,
       'role_id': null,
       'start_time': null
     }
