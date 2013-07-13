@@ -15,7 +15,7 @@ CRM.volunteerApp.module('Assign', function(Assign, volunteerApp, Backbone, Mario
   var needView = Marionette.CompositeView.extend({
     itemView: assignmentView,
     itemViewContainer: '.crm-vol-assignment-list',
-    className: 'crm-vol-need',
+    className: 'crm-vol-need crm-form-block',
 
     initialize: function() {
       this.collection = new volunteerApp.Entities.Assignments(_.toArray(this.model.get('api.volunteer_assignment.get').values));
