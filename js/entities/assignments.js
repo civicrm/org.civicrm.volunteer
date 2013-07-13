@@ -18,7 +18,6 @@ CRM.volunteerApp.module('Entities', function(Entities, volunteerApp, Backbone, M
         success: function(result) {
           var id = result.id;
           var assignment = new Entities.Assignment(result.values[id]);
-          console.log(assignment);
           thisCollection.add(assignment);
         }
       });
