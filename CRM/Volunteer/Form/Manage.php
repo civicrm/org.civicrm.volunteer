@@ -66,12 +66,8 @@ class CRM_Volunteer_Form_Manage {
     $ccr->addSetting(array(
       'pseudoConstant' => array(
         'volunteer_role' => CRM_Volunteer_BAO_Need::buildOptions('role_id', 'get'),
+        'volunteer_status' => CRM_Activity_BAO_Activity::buildOptions('status_id', 'validate'),
       ),
-      'volunteerData' => array(
-        'customFields' => CRM_Volunteer_BAO_Assignment::getCustomFields(),
-        'activityTypeId' => CRM_Volunteer_BAO_Assignment::volunteerActivityTypeId(),
-      ),
-
     ));
   }
 }
