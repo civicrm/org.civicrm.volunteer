@@ -26,27 +26,27 @@
  */
 
 /**
- * File for the CiviCRM APIv3 Volunteer Need functions
+ * File for the CiviCRM APIv3 Volunteer Project functions
  *
  * @package CiviVolunteer_APIv3
- * @subpackage API_Volunteer_Need
+ * @subpackage API_Volunteer_Project
  * @copyright CiviCRM LLC (c) 2004-2013
  */
 
 
 /**
- * Create or update a need
+ * Create or update a project
  *
  * @param array $params  Associative array of property
- *                       name/value pairs to insert in new 'need'
- * @example NeedCreate.php Std Create example
+ *                       name/value pairs to insert in new 'project'
+ * @example
  *
  * @return array api result array
- * {@getfields volunteer_need create}
+ * {@getfields volunteer_project_create}
  * @access public
  */
-function civicrm_api3_volunteer_need_create($params) {
-  return _civicrm_api3_basic_create('CRM_Volunteer_BAO_Need', $params);
+function civicrm_api3_volunteer_project_create($params) {
+  return _civicrm_api3_basic_create(_civicrm_api3_get_BAO(__FUNCTION__), $params);
 }
 
 /**
@@ -55,54 +55,42 @@ function civicrm_api3_volunteer_need_create($params) {
  * The metadata is used for setting defaults, documentation & validation
  * @param array $params array or parameters determined by getfields
  */
-function _civicrm_api3_volunteer_need_create_spec(&$params) {
-  $params['project_id']['api.required'] = 1;
-  $params['is_flexible']['api.default'] = 1;
+function _civicrm_api3_volunteer_project_create_spec(&$params) {
+  $params['entity_id']['api.required'] = 1;
+  $params['entity_table']['api.required'] = 1;
   $params['is_active']['api.default'] = 1;
 }
 
 /**
- * Returns array of needs  matching a set of one or more group properties
+ * Returns array of projects matching a set of one or more project properties
  *
- * @param array $params  (referance) Array of one or more valid
+ * @param array $params  Array of one or more valid
  *                       property_name=>value pairs. If $params is set
- *                       as null, all needs will be returned
+ *                       as null, all projects will be returned
  *
- * @return array  (referance) Array of matching needs
- * {@getfields need_get}
+ * @return array  Array of matching projects
+ * {@getfields volunteer_project_get}
  * @access public
  */
-function civicrm_api3_volunteer_need_get($params) {
-  $result = _civicrm_api3_basic_get(_civicrm_api3_get_BAO(__FUNCTION__), $params);
-  if (!empty($result['values'])) {
-    foreach ($result['values'] as &$need) {
-      if (!empty($need['start_time'])) {
-        $need['display_time'] = CRM_Volunteer_BAO_Need::getTimes($need['start_time'], CRM_Utils_Array::value('duration', $need));
-      }
-      else {
-        $need['display_time'] = ts('Flexible');
-      }
-    }
-  }
-  return $result;
+function civicrm_api3_volunteer_project_get($params) {
+  return _civicrm_api3_basic_get(_civicrm_api3_get_BAO(__FUNCTION__), $params);
 }
-function _civicrm_api3_volunteer_need_get_spec(&$params) {
+function _civicrm_api3_volunteer_project_get_spec(&$params) {
 }
 /**
- * delete an existing need
+ * delete an existing project
  *
- * This method is used to delete any existing need. id of the group
+ * This method is used to delete any existing project. id of the project
  * to be deleted is required field in $params array
  *
- * @param array $params  (reference) array containing id of the group
+ * @param array $params  array containing id of the project
  *                       to be deleted
  *
- * @return array  (referance) returns flag true if successfull, error
+ * @return array  returns flag true if successfull, error
  *                message otherwise
- * {@getfields need_delete}
+ * {@getfields volunteer_project_delete}
  * @access public
  */
-function civicrm_api3_volunteer_need_delete($params) {
-  return _civicrm_api3_basic_delete('CRM_Volunteer_BAO_Need', $params);
+function civicrm_api3_volunteer_project_delete($params) {
+  return _civicrm_api3_basic_delete(_civicrm_api3_get_BAO(__FUNCTION__), $params);
 }
-
