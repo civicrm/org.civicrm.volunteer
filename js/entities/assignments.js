@@ -3,8 +3,8 @@ CRM.volunteerApp.module('Entities', function(Entities, volunteerApp, Backbone, M
 
   Entities.Assignment = Backbone.Model.extend({
     defaults: {
-      'display_name': '',
-      'sort_name': ''
+      'phone': '',
+      'email': ''
     }
   });
 

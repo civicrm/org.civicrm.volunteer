@@ -135,23 +135,29 @@ class CRM_Volunteer_BAO_Assignment extends CRM_Activity_DAO_Activity {
     }
 
     $query = "
-      SELECT civicrm_activity_contact.contact_id,
-        civicrm_activity.status_id,
-        {$customTableName}.entity_id AS id,
+      SELECT
+        civicrm_activity.*,
+        civicrm_activity_contact.contact_id,
         {$customSelect},
         civicrm_volunteer_need.start_time,
         civicrm_volunteer_need.is_flexible,
         civicrm_volunteer_need.role_id,
         civicrm_contact.sort_name,
-        civicrm_contact.display_name
+        civicrm_contact.display_name,
+        civicrm_phone.phone, civicrm_phone.phone_ext,
+        civicrm_email.email
       FROM civicrm_activity
-      LEFT JOIN civicrm_activity_contact
+      INNER JOIN civicrm_activity_contact
         ON (
           civicrm_activity_contact.activity_id = civicrm_activity.id
           AND civicrm_activity_contact.record_type_id = %1
         )
-      LEFT JOIN civicrm_contact
+      INNER JOIN civicrm_contact
         ON civicrm_activity_contact.contact_id = civicrm_contact.id
+      LEFT JOIN civicrm_email
+        ON civicrm_email.contact_id = civicrm_contact.id AND civicrm_email.is_primary = 1
+      LEFT JOIN civicrm_phone
+        ON civicrm_phone.contact_id = civicrm_contact.id AND civicrm_phone.is_primary = 1
       INNER JOIN {$customTableName}
         ON ({$customTableName}.entity_id = civicrm_activity.id)
       INNER JOIN civicrm_volunteer_need
