@@ -2,18 +2,26 @@
 CRM.volunteerApp.module('Assign', function(Assign, volunteerApp, Backbone, Marionette, $, _) {
   var newContactId, dragFrom;
 
-  var assignmentView = Marionette.ItemView.extend({
-    template: '#crm-vol-assignment-tpl',
+  var assignmentViewSettings = {
+    tagName: 'tr',
     className: 'crm-vol-assignment',
 
     onRender: function () {
       // Store id to facilitate dragging & dropping
       this.$el.attr('data-id', this.model.get('id'));
     }
-  });
+  };
+
+  Assign.scheduledAssignmentView = Marionette.ItemView.extend(_.extend(assignmentViewSettings, {
+    template: '#crm-vol-scheduled-assignment-tpl'
+  }));
+
+  Assign.flexibleAssignmentView = Marionette.ItemView.extend(_.extend(assignmentViewSettings, {
+    template: '#crm-vol-flexible-assignment-tpl'
+  }));
 
   var needView = Marionette.CompositeView.extend({
-    itemView: assignmentView,
+    hasBeenInitialized: false,
     itemViewContainer: '.crm-vol-assignment-list',
     className: 'crm-vol-need crm-form-block',
 
@@ -22,6 +30,7 @@ CRM.volunteerApp.module('Assign', function(Assign, volunteerApp, Backbone, Mario
       var type = this.model.get('is_flexible') == '1' ? 'flexible' : 'scheduled';
       this.isFlexible = !(type == 'scheduled');
       this.template = '#crm-vol-' + type + '-tpl';
+      this.itemView = Assign[type + 'AssignmentView'];
     },
 
     templateHelpers: {
@@ -30,25 +39,58 @@ CRM.volunteerApp.module('Assign', function(Assign, volunteerApp, Backbone, Mario
 
     events: {
       'change .crm-vol-create-contact-select': 'createContactDialog',
-      'click .crm-add-vol-contact': 'addNewContact'
+      'click .crm-add-vol-contact': 'addNewContact',
+      'click .crm-vol-del': 'removeContact'
     },
+
+    onAfterItemAdded: function() { this.doCount(); },
+    onItemRemoved: function() { this.doCount(); },
 
     onRender: function() {
       var thisView = this;
+      $(this.itemViewContainer, this.$el).droppable({
+        activeClass: "ui-state-default",
+        hoverClass: "ui-state-hover",
+        drop: function(event, ui) {
+          var id = $(ui.draggable).data('id');
+          var assignment = dragFrom.collection.get(id);
+          dragFrom.collection.remove(assignment);
+          assignment.set('volunteer_need_id', thisView.model.get('id'));
+          thisView.collection.add(assignment);
+          var status = _.invert(CRM.pseudoConstant.volunteer_status);
+          CRM.api('volunteer_assignment', 'create', {
+            id: id,
+            volunteer_need_id: thisView.model.get('id'),
+            status_id: status[thisView.isFlexible ? 'Available' : 'Scheduled'],
+            time_scheduled_minutes: thisView.model.get('duration')
+          });
+        }
+      });
+      this.hasBeenInitialized = true;
+      this.doCount();
+    },
+
+    doCount: function() {
+      if (!this.hasBeenInitialized) {
+        return;
+      }
+      var thisView = this;
       this.isFlexible && this.initAutocomplete();
       var quantity = this.model.get('quantity');
+      $('.crm-vol-vacancy, .crm-vol-placeholder', this.$el).remove();
       if (quantity > this.collection.length) {
         var delta = quantity - this.collection.length;
         var msg = this.collection.length ? ts('%1 More Needed', {1: delta}) : ts('%1 Needed', {1: delta});
-        $('.crm-vol-assignment-list', this.$el).append('<div class="crm-vol-vacancy">' + msg + '</div>');
+        $('.crm-vol-assignment-list', this.$el).append('<tr class="crm-vol-vacancy"><td colspan="3">' + msg + '</td></tr>');
       }
       if (this.isFlexible && !this.collection.length) {
-        $('.crm-vol-assignment-list', this.$el).append('<div class="crm-vol-placeholder">' + ts('None') + '</div>');
+        $('.crm-vol-assignment-list', this.$el).append('<tr class="crm-vol-placeholder"><td>' + ts('None') + '</td></tr>');
       }
-      // Allow volunteers to be dragged out of this view
-      $('.crm-vol-assignment', this.$el).draggable({
+      // Initialize draggable on any new objects
+      $('.crm-vol-assignment:not(.ui-draggable)', this.$el).draggable({
         helper: "clone",
         zindex: 99999999999,
+        cancel: '.crm-vol-del',
         containment: '#crm-volunteer-dialog',
         start: function() {
           dragFrom = thisView;
@@ -56,20 +98,10 @@ CRM.volunteerApp.module('Assign', function(Assign, volunteerApp, Backbone, Mario
       });
       // If we have room for more volunteers (or quantity is flexible), accept dropping in more
       if (!quantity || quantity > this.collection.length) {
-        $(this.itemViewContainer, this.$el).droppable({
-          activeClass: "ui-state-default",
-          hoverClass: "ui-state-hover",
-          drop: function(event, ui) {
-            var id = $(ui.draggable).data('id');
-            var assignment = dragFrom.collection.get(id);
-            dragFrom.collection.remove(assignment);
-            dragFrom.render();
-            assignment.set('volunteer_need_id', thisView.model.get('id'));
-            thisView.collection.add(assignment);
-            thisView.render();
-            CRM.api('volunteer_assignment', 'create', {id: id, volunteer_need_id: thisView.model.get('id')});
-          }
-        });
+        $(this.itemViewContainer, this.$el).droppable("enable");
+      }
+      else {
+        $(this.itemViewContainer, this.$el).droppable("disable").removeClass('ui-state-disabled');
       }
     },
 
@@ -93,6 +125,7 @@ CRM.volunteerApp.module('Assign', function(Assign, volunteerApp, Backbone, Mario
                 $("#crm-vol-profile-form").dialog('close');
                 return false;
               });
+              $('#email-Primary').addClass('email');
               $("#crm-vol-profile-form form").ajaxForm({
                 // context=dialog triggers civi's profile to respond with json instead of an html redirect
                 // but it also results in lots of unwanted scripts being added to the form snippet, so we
@@ -135,6 +168,21 @@ CRM.volunteerApp.module('Assign', function(Assign, volunteerApp, Backbone, Mario
         this.collection.createNewAssignment({contact_id: newContactId, volunteer_need_id: this.model.get('id')});
         newContactId = null;
       }
+      return false;
+    },
+
+    removeContact: function(e) {
+      var thisView = this;
+      var id = $(e.currentTarget).closest('tr').data('id');
+      var assignment = this.collection.get(id);
+      CRM.confirm(function() {
+        thisView.collection.remove(assignment);
+        CRM.api('volunteer_assignment', 'delete', {id: id});
+      }, {
+        title: ts('Remove Volunteer'),
+        message: ts('Remove %1 from the available list?', {1: assignment.get('display_name')})
+      });
+      return false;
     }
 
   });
