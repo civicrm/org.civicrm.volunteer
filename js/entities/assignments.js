@@ -10,7 +10,18 @@ CRM.volunteerApp.module('Entities', function(Entities, volunteerApp, Backbone, M
 
   Entities.Assignments = Backbone.Collection.extend({
     model: Entities.Assignment,
-    comparator: 'sort_name'
+    comparator: 'sort_name',
+
+    createNewAssignment: function(params) {
+      var thisCollection = this;
+      CRM.api('volunteer_assignment', 'create', params, {
+        success: function(result) {
+          var id = result.id;
+          var assignment = new Entities.Assignment(result.values[id]);
+          thisCollection.add(assignment);
+        }
+      });
+    }
   });
 
 });

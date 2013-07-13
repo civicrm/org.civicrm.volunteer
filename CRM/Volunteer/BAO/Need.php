@@ -121,7 +121,8 @@ class CRM_Volunteer_BAO_Need extends CRM_Volunteer_DAO_Need {
     $result = FALSE;
 
     if (strtotime($start)) {
-      $timeFormat = CRM_Core_Config::singleton()->dateformatDatetime;
+      $config = CRM_Core_Config::singleton();
+      $timeFormat = $config->dateformatDatetime;
       $result = CRM_Utils_Date::customFormat($start, $timeFormat);
 
       if (
@@ -129,8 +130,13 @@ class CRM_Volunteer_BAO_Need extends CRM_Volunteer_DAO_Need {
         && (is_int($duration) || ctype_digit($duration))
       ) {
         $date = new DateTime($start);
+        $startDay = $date->format('Y-m-d');
         $date->add(new DateInterval("PT{$duration}M"));
         $end = $date->format('Y-m-d H:i:s');
+        // If days are the same, only show time
+        if ($date->format('Y-m-d') == $startDay) {
+          $timeFormat = $config->dateformatTime;
+        }
         $result .= ' - ' . CRM_Utils_Date::customFormat($end, $timeFormat);
       }
     }

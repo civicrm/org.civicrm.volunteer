@@ -73,7 +73,18 @@ function _civicrm_api3_volunteer_need_create_spec(&$params) {
  * @access public
  */
 function civicrm_api3_volunteer_need_get($params) {
-  return _civicrm_api3_basic_get(_civicrm_api3_get_BAO(__FUNCTION__), $params);
+  $result = _civicrm_api3_basic_get(_civicrm_api3_get_BAO(__FUNCTION__), $params);
+  if (!empty($result['values'])) {
+    foreach ($result['values'] as &$need) {
+      if (!empty($need['start_time'])) {
+        $need['display_time'] = CRM_Volunteer_BAO_Need::getTimes($need['start_time'], CRM_Utils_Array::value('duration', $need));
+      }
+      else {
+        $need['display_time'] = ts('Flexible');
+      }
+    }
+  }
+  return $result;
 }
 function _civicrm_api3_volunteer_need_get_spec(&$params) {
     $params['project_id']['api.required'] = 1;
