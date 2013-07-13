@@ -1,6 +1,15 @@
-#crm-volunteer-dialog .crm-form-block {
+#crm-vol-assign-flexible-region {
+  float:left;
+  width: 40%;
+}
+
+#crm-vol-assign-scheduled-region {
   float: left;
-  min-width: 300px;
+  width: 60%;
+}
+
+#crm-vol-assign-scheduled-region .crm-vol-assign-region-inner {
+  margin-left: 3%;
 }
 
 .crm-vol-assignment {

@@ -64,6 +64,10 @@ class CRM_Volunteer_BAO_Assignment extends CRM_Activity_DAO_Activity {
     $custom_fields = self::getCustomFields();
     $foreign_fields = array('project_id');
 
+    // This is the "real" id
+    $activity_fields['id'] = $activity_fields['activity_id'];
+    unset($activity_fields['activity_id']);
+
     // enforce restrictions on parameters
     $allowed_params = array_merge(
       array_keys($activity_fields),
