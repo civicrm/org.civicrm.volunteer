@@ -125,6 +125,7 @@ CRM.volunteerApp.module('Assign', function(Assign, volunteerApp, Backbone, Mario
                 $("#crm-vol-profile-form").dialog('close');
                 return false;
               });
+              $('#email-Primary').addClass('email');
               $("#crm-vol-profile-form form").ajaxForm({
                 // context=dialog triggers civi's profile to respond with json instead of an html redirect
                 // but it also results in lots of unwanted scripts being added to the form snippet, so we
