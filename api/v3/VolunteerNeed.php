@@ -87,7 +87,6 @@ function civicrm_api3_volunteer_need_get($params) {
   return $result;
 }
 function _civicrm_api3_volunteer_need_get_spec(&$params) {
-    $params['project_id']['api.required'] = 1;
 }
 /**
  * delete an existing need
