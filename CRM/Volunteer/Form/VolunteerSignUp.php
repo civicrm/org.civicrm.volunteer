@@ -64,6 +64,14 @@ class CRM_Volunteer_Form_VolunteerSignUp extends CRM_Core_Form {
   protected $_shifts = array();
 
   /**
+   * ID of profile used in this form
+   *
+   * @var int
+   * @protected
+   */
+  protected $_ufgroup_id;
+
+  /**
    * This function sets the default values for the form.
    *
    * @access public
@@ -98,11 +106,8 @@ class CRM_Volunteer_Form_VolunteerSignUp extends CRM_Core_Form {
 
     // current mode
     $this->_mode = ($this->_action == CRM_Core_Action::PREVIEW) ? 'test' : 'live';
-  }
 
-  function buildQuickForm() {
-    CRM_Utils_System::setTitle(ts('Sign Up to Volunteer for ') . $this->_project->title);
-
+    // get profile id
     $params = array(
       'version' => 3,
       'name' => 'volunteer_sign_up',
@@ -115,7 +120,13 @@ class CRM_Volunteer_Form_VolunteerSignUp extends CRM_Core_Form {
     }
     $values = $result['values'];
     $ufgroup = current($values);
-    $this->buildCustom($ufgroup['id'], 'volunteerProfile');
+    $this->_ufgroup_id = $ufgroup['id'];
+  }
+
+  function buildQuickForm() {
+    CRM_Utils_System::setTitle(ts('Sign Up to Volunteer for ') . $this->_project->title);
+
+    $this->buildCustom('volunteerProfile');
 
     // better UX not to display a select box with only one possible selection
     if (count($this->_roles) > 1) {
@@ -167,12 +178,15 @@ class CRM_Volunteer_Form_VolunteerSignUp extends CRM_Core_Form {
   /**
    * Function to assign profiles to a Smarty template
    *
+   * @param string $name The name to give the Smarty variable
    * @access public
    */
-  function buildCustom($id, $name) {
+  function buildCustom($name) {
     $fields = array();
     $session   = CRM_Core_Session::singleton();
     $contactID = $session->get('userID');
+
+    $id = $this->_ufgroup_id;
 
     if ($id && $contactID) {
       if (CRM_Core_BAO_UFGroup::filterUFGroups($id, $contactID)) {
