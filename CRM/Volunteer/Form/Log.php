@@ -221,16 +221,10 @@ class CRM_Volunteer_Form_Log extends CRM_Core_Form {
           // update the activity record
 
           $volunteer = array(
-            'params' => array(
-              'version' => 3,
-              'sequential' => 1,
-              'status_id' => $value['volunteer_status'],
-              'id' => $value['activity_id'],
-            ),
-            'custom' => array(
-              'time_completed_minutes' => CRM_Utils_Array::value('actual_duration', $value),
-              'time_scheduled_minutes' => CRM_Utils_Array::value('scheduled_duration', $value)
-            )
+            'status_id' => $value['volunteer_status'],
+            'id' => $value['activity_id'],
+            'time_completed_minutes' => CRM_Utils_Array::value('actual_duration', $value),
+            'time_scheduled_minutes' => CRM_Utils_Array::value('scheduled_duration', $value),
           );
           CRM_Volunteer_BAO_Assignment::createVolunteerActivity($volunteer);
         }
@@ -254,21 +248,15 @@ class CRM_Volunteer_Form_Log extends CRM_Core_Form {
 
           //create new Volunteer activity records
           $volunteer = array(
-            'params' => array(
-              'version' => 3,
-              'sequential' => 1,
-              'assignee_contact_id' => $params['primary_contact_select_id'][$key],
-              'status_id' => $value['volunteer_status'],
-              'subject' => $name . ' Volunteering',
-            ),
-            'custom' => array(
-              'volunteer_need_id' => $need->id,
-              'time_completed_minutes' => CRM_Utils_Array::value('actual_duration', $value),
-              'time_scheduled_minutes' => CRM_Utils_Array::value('scheduled_duration', $value)
-            )
+            'assignee_contact_id' => $params['primary_contact_select_id'][$key],
+            'status_id' => $value['volunteer_status'],
+            'subject' => $name . ' Volunteering',
+            'volunteer_need_id' => $need->id,
+            'time_completed_minutes' => CRM_Utils_Array::value('actual_duration', $value),
+            'time_scheduled_minutes' => CRM_Utils_Array::value('scheduled_duration', $value),
           );
           if (!empty($needs['start_time'])) {
-            $volunteer['params']['activity_date_time'] = $needs['start_time'];
+            $volunteer['activity_date_time'] = $needs['start_time'];
           }
 
           CRM_Volunteer_BAO_Assignment::createVolunteerActivity($volunteer);

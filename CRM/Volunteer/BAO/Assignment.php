@@ -248,20 +248,38 @@ class CRM_Volunteer_BAO_Assignment extends CRM_Activity_DAO_Activity {
     return $result;
   }
 
-  public static function createVolunteerActivity($volunteer) {
-    $params = $volunteer['params'];
-    $volunteerCustom = $volunteer['custom'];
+  /**
+   * Creates a volunteer activity
+   *
+   * Wrapper around activity create API. Volunteer field names are translated
+   * to the custom_n format expected by the API. Key volunteer_need_id is
+   * required in the params array.
+   *
+   * @param array $params An assoc array of name/value pairs
+   * @return mixed Boolean FALSE on failure; activity_id on success
+   */
+  public static function createVolunteerActivity(array $params) {
+    $result = FALSE;
+
+    if (!CRM_Utils_Array::value('volunteer_need_id', $params)) {
+      CRM_Core_Error::fatal('Mandatory key missing from params array: volunteer_need_id');
+    }
 
     $customFields = self::getCustomFields();
     $params['activity_type_id'] = self::volunteerActivityTypeId();
 
-    foreach ($volunteerCustom as $field => $val) {
-      $id = $customFields[$field]['id'];
-      $params['custom_' . $id] = $val;
+    foreach ($customFields as $field_name => $data) {
+      $params['custom_' . $data['id']] = CRM_Utils_Array::value($field_name, $params, NULL);
+      unset($params[$field_name]);
     }
 
-    $result = civicrm_api('Activity', 'create', $params);
+    $params['version'] = 3;
+    $activity = civicrm_api('Activity', 'create', $params);
 
+    if(!CRM_Utils_Array::value('is_error', $activity)) {
+      $result = $activity['id'];
+    }
+    return $result;
   }
 
   /**
