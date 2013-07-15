@@ -64,6 +64,14 @@ class CRM_Volunteer_Form_VolunteerSignUp extends CRM_Core_Form {
   protected $_shifts = array();
 
   /**
+   * ID of profile used in this form
+   *
+   * @var int
+   * @protected
+   */
+  protected $_ufgroup_id;
+
+  /**
    * This function sets the default values for the form.
    *
    * @access public
@@ -98,11 +106,8 @@ class CRM_Volunteer_Form_VolunteerSignUp extends CRM_Core_Form {
 
     // current mode
     $this->_mode = ($this->_action == CRM_Core_Action::PREVIEW) ? 'test' : 'live';
-  }
 
-  function buildQuickForm() {
-    CRM_Utils_System::setTitle(ts('Sign Up to Volunteer for ') . $this->_project->title);
-
+    // get profile id
     $params = array(
       'version' => 3,
       'name' => 'volunteer_sign_up',
@@ -115,13 +120,19 @@ class CRM_Volunteer_Form_VolunteerSignUp extends CRM_Core_Form {
     }
     $values = $result['values'];
     $ufgroup = current($values);
-    $this->buildCustom($ufgroup['id'], 'volunteerProfile');
+    $this->_ufgroup_id = $ufgroup['id'];
+  }
+
+  function buildQuickForm() {
+    CRM_Utils_System::setTitle(ts('Sign Up to Volunteer for ') . $this->_project->title);
+
+    $this->buildCustom('volunteerProfile');
 
     // better UX not to display a select box with only one possible selection
     if (count($this->_roles) > 1) {
       $this->add(
         'select',               // field type
-        'volunteer_role',       // field name
+        'volunteer_role_id',    // field name
         ts('Volunteer Role'),   // field label
         $this->_roles,          // list of options
         true                    // is required
@@ -132,7 +143,7 @@ class CRM_Volunteer_Form_VolunteerSignUp extends CRM_Core_Form {
     if (count($this->_shifts) > 1) {
       $this->add(
         'select',               // field type
-        'volunteer_need',       // field name
+        'volunteer_need_id',    // field name
         ts('Shift'),            // field label
         $this->_shifts,         // list of options
         true                    // is required
@@ -156,23 +167,46 @@ class CRM_Volunteer_Form_VolunteerSignUp extends CRM_Core_Form {
     parent::buildQuickForm();
   }
 
+  /**
+   * @todo Add subject. Get activity date from need. Get time scheduled from need.
+   */
   function postProcess() {
-    /**
-     * @todo Handle form submission
-     */
-    // $values = $this->exportValues();
-    // parent::postProcess();
+    $cid = CRM_Utils_Array::value('userID', $_SESSION['CiviCRM'], NULL);
+    $values = $this->controller->exportValues();
+    unset($values['volunteer_role_id']); // we don't need this
+
+    $profile_fields = CRM_Core_BAO_UFGroup::getFields($this->_ufgroup_id);
+    $profile_values = array_intersect_key($values, $profile_fields);
+    $builtin_values = array_diff_key($values, $profile_values);
+
+    $cid = CRM_Contact_BAO_Contact::createProfileContact(
+      $profile_values,
+      $profile_fields,
+      $cid,
+      NULL,
+      $this->_ufgroup_id
+    );
+
+    $activity_statuses = CRM_Activity_BAO_Activity::buildOptions('status_id', 'create');
+
+    $builtin_values['assignee_contact_id'] = $cid;
+    $builtin_values['is_test'] = ($this->_mode === 'test' ? 1 : 0);
+    $builtin_values['status_id'] = CRM_Utils_Array::key('Available', $activity_statuses);
+    CRM_Volunteer_BAO_Assignment::createVolunteerActivity($builtin_values);
   }
 
   /**
    * Function to assign profiles to a Smarty template
    *
+   * @param string $name The name to give the Smarty variable
    * @access public
    */
-  function buildCustom($id, $name) {
+  function buildCustom($name) {
     $fields = array();
     $session   = CRM_Core_Session::singleton();
     $contactID = $session->get('userID');
+
+    $id = $this->_ufgroup_id;
 
     if ($id && $contactID) {
       if (CRM_Core_BAO_UFGroup::filterUFGroups($id, $contactID)) {
