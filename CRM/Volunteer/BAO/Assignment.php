@@ -261,7 +261,7 @@ class CRM_Volunteer_BAO_Assignment extends CRM_Activity_DAO_Activity {
   public static function createVolunteerActivity(array $params) {
     $result = FALSE;
 
-    if (!CRM_Utils_Array::value('volunteer_need_id', $params)) {
+    if (!CRM_Utils_Array::value('id', $params) && !CRM_Utils_Array::value('volunteer_need_id', $params)) {
       CRM_Core_Error::fatal('Mandatory key missing from params array: volunteer_need_id');
     }
 
