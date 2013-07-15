@@ -2,12 +2,12 @@
   {include file="CRM/UF/Form/Block.tpl" fields=$volunteerProfile}
 
   <div class="crm-section volunteer_role-section">
-    <div class="label">{$form.volunteer_role.label}</div>
-    <div class="content">{$form.volunteer_role.html}</div>
+    <div class="label">{$form.volunteer_role_id.label}</div>
+    <div class="content">{$form.volunteer_role_id.html}</div>
   </div>
   <div class="crm-section volunteer_shift-section">
-    <div class="label">{$form.volunteer_need.label}</div>
-    <div class="content">{$form.volunteer_need.html}</div>
+    <div class="label">{$form.volunteer_need_id.label}</div>
+    <div class="content">{$form.volunteer_need_id.html}</div>
   </div>
   <div class="crm-section volunteer_details-section">
     <div class="label">{$form.details.label}</div>
