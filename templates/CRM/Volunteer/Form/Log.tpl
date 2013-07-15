@@ -25,7 +25,7 @@
 *}
 <div class="volunteer-log form-item">
   <div id="help">
-    {ts}Click Save below when you've logged all the volunteers for the event.{/ts}
+    {ts}Available and scheduled volunteers are listed below. Enter the time spent by each volunteer in minutes under Actual Duration and change status to Completed. Click 'Add Volunteer to record hours for volunteers not already listed below. Click Save to save your entries.{/ts}
   </div>
 
   <div class="crm-copy-fields crm-grid-table" id="crm-log-entry-table">
