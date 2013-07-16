@@ -178,13 +178,13 @@ class CRM_Volunteer_DAO_Need extends CRM_Core_DAO
   {
     if (!(self::$_fields)) {
       self::$_fields = array(
-        'civicrm_volunteer_need_id' => array(
+        'volunteer_need_id' => array(
           'name' => 'id',
           'type' => CRM_Utils_Type::T_INT,
           'title' => ts('CiviVolunteer Need ID') ,
           'required' => true,
         ) ,
-        'civicrm_volunteer_need_project_id' => array(
+        'volunteer_need_project_id' => array(
           'name' => 'project_id',
           'type' => CRM_Utils_Type::T_INT,
           'required' => true,
@@ -249,8 +249,8 @@ class CRM_Volunteer_DAO_Need extends CRM_Core_DAO
   {
     if (!(self::$_fieldKeys)) {
       self::$_fieldKeys = array(
-        'id' => 'civicrm_volunteer_need_id',
-        'project_id' => 'civicrm_volunteer_need_project_id',
+        'id' => 'volunteer_need_id',
+        'project_id' => 'volunteer_need_project_id',
         'start_time' => 'start_time',
         'duration' => 'duration',
         'is_flexible' => 'is_flexible',
