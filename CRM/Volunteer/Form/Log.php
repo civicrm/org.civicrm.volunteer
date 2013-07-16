@@ -64,6 +64,15 @@ class CRM_Volunteer_Form_Log extends CRM_Core_Form {
 
     $params = array('project_id' => $this->_vid);
     $this->_volunteerData = CRM_Volunteer_BAO_Assignment::retrieve($params);
+
+
+    $projects = CRM_Volunteer_BAO_Project::retrieve(array('id' => $this->_vid));
+    $project = $projects[$this->_vid];
+
+    $this->_entityID = $project->entity_id;
+    $this->_entityTable = $project->entity_table;
+    $this->_title = $project->title;
+
   }
 
   /**
@@ -74,7 +83,7 @@ class CRM_Volunteer_Form_Log extends CRM_Core_Form {
    * @return void
    */
   function buildQuickForm() {
-    CRM_Utils_System::setTitle(ts('Batch Data Entry for Logging Volunteer Hours'));
+    CRM_Utils_System::setTitle(ts('Log Volunteer Hours - %1', array(1 => $this->_title)));
 
     $this->addFormRule(array('CRM_Volunteer_Form_Log', 'formRule'), $this);
     $this->addButtons(array(
@@ -124,12 +133,19 @@ class CRM_Volunteer_Form_Log extends CRM_Core_Form {
       $this->add('text', "field[$rowNumber][activity_id]");
     }
 
-
     $this->assign('rowCount', $this->_batchInfo['item_count']);
     $this->assign('showVolunteerRow', $count);
 
-    // don't set the status message when form is submitted.
-    $buttonName = $this->controller->getButtonName('submit');
+    switch ($this->_entityTable) {
+      case 'civicrm_event':
+        $path = 'civicrm/event/manage/volunteer';
+        $query = "reset=1&action=update&id={$this->_entityID}";
+        break;
+    }
+    $url = CRM_Utils_System::url($path, $query);
+
+    $session = CRM_Core_Session::singleton();
+    $session->replaceUserContext($url);
   }
 
   /**
@@ -203,16 +219,6 @@ class CRM_Volunteer_Form_Log extends CRM_Core_Form {
    */
   public function postProcess() {
     $params = $this->controller->exportValues($this->_name);
-    $projects = CRM_Volunteer_BAO_Project::retrieve(array('id' => $this->_vid));
-    $project = $projects[$this->_vid];
-
-    $name = $project->title;
-    $entityID = $project->entity_id;
-
-    switch ($project->entity_table) {
-      case 'civicrm_event':
-        $redirect_url = 'civicrm/event/manage/volunteer';
-    }
 
     $count = 0;
     foreach ($params['field'] as $key => $value) {
@@ -250,7 +256,7 @@ class CRM_Volunteer_Form_Log extends CRM_Core_Form {
           $volunteer = array(
             'assignee_contact_id' => $params['primary_contact_select_id'][$key],
             'status_id' => $value['volunteer_status'],
-            'subject' => $name . ' Volunteering',
+            'subject' => $this->_title . ' Volunteering',
             'volunteer_need_id' => $need->id,
             'time_completed_minutes' => CRM_Utils_Array::value('actual_duration', $value),
             'time_scheduled_minutes' => CRM_Utils_Array::value('scheduled_duration', $value),
@@ -268,9 +274,7 @@ class CRM_Volunteer_Form_Log extends CRM_Core_Form {
     $statusMsg = ts('Volunteer hours have been recorded for %1 volunteers',
       array(1 => $count));
     CRM_Core_Session::setStatus($statusMsg, '', 'info');
-    CRM_Utils_System::redirect(CRM_Utils_System::url($redirect_url,
-      "reset=1&action=update&id={$entityID}"
-    ));
+
   }
 
 }
