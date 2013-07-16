@@ -127,7 +127,7 @@ class CRM_Volunteer_Form_Log extends CRM_Core_Form {
         $this->add('select', "field[$rowNumber][volunteer_role]", '', array('' => ts('-select-')) + $volunteerRole);
       }
 
-      $this->add('select', "field[$rowNumber][volunteer_status]", '', array('' => ts('-select-')) + $volunteerStatus);
+      $this->add('select', "field[$rowNumber][volunteer_status]", '', $volunteerStatus);
       $this->add('text', "field[$rowNumber][scheduled_duration]", '', array_merge($attributes, $extra));
       $this->add('text', "field[$rowNumber][actual_duration]", '', $attributes);
       $this->add('text', "field[$rowNumber][activity_id]");
@@ -166,11 +166,7 @@ class CRM_Volunteer_Form_Log extends CRM_Core_Form {
     $volunteerStatus = CRM_Activity_BAO_Activity::buildOptions('status_id', 'validate');
 
     foreach ($params['field'] as $key => $value) {
-      if (!empty($value['volunteer_status'])) {
-        if ($key > count($self->_volunteerData) && empty($params['primary_contact_select_id'][$key])) {
-          $errors["primary_contact[$key]"] = ts('Please enter the volunteer');
-        }
-
+      if ($key > count($self->_volunteerData) && !empty($params['primary_contact_select_id'][$key])) {
         if ((!$value['actual_duration']) && $value['volunteer_status'] == CRM_Utils_Array::key('Completed', $volunteerStatus) ) {
           $errors["field[$key][actual_duration]"] = ts('Please enter the actual duration for Completed volunteer activity');
         }
@@ -195,6 +191,7 @@ class CRM_Volunteer_Form_Log extends CRM_Core_Form {
     $defaults = array();
     $i = 1;
     $volunteerRole = CRM_Volunteer_BAO_Need::buildOptions('role_id', 'create');
+    $volunteerStatus = CRM_Activity_BAO_Activity::buildOptions('status_id', 'validate');
 
     foreach ($this->_volunteerData as $data) {
       $defaults['field'][$i]['scheduled_duration'] = $data['time_scheduled_minutes'];
@@ -207,6 +204,10 @@ class CRM_Volunteer_Form_Log extends CRM_Core_Form {
       $i++;
     }
 
+    $completed = CRM_Utils_Array::key('Completed', $volunteerStatus);
+    for ($j = $i; $j< $this->_batchInfo['item_count']; $j++) {
+      $defaults['field'][$j]['volunteer_status'] = $completed;
+    }
     return $defaults;
   }
 
