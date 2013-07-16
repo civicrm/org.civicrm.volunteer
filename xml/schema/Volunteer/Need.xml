@@ -8,7 +8,7 @@
   <log>true</log>
   <field>
     <name>id</name>
-    <uniqueName>civicrm_volunteer_need_id</uniqueName>
+    <uniqueName>volunteer_need_id</uniqueName>
     <title>CiviVolunteer Need ID</title>
     <type>int unsigned</type>
     <required>true</required>
@@ -23,7 +23,7 @@
     <name>project_id</name>
     <type>int unsigned</type>
     <required>true</required>
-    <uniqueName>civicrm_volunteer_need_project_id</uniqueName>
+    <uniqueName>volunteer_need_project_id</uniqueName>
     <comment>FK to civicrm_volunteer_project table which contains entity_table + entity for each volunteer project (initially civicrm_event + eventID).</comment>
     <add>4.4</add>
   </field>
