@@ -168,11 +168,20 @@ class CRM_Volunteer_Form_VolunteerSignUp extends CRM_Core_Form {
   }
 
   /**
-   * @todo Add subject. Get activity date from need. Get time scheduled from need.
+   * @todo per totten's suggestion, wrap all these writes in a transaction;
+   * see http://wiki.civicrm.org/confluence/display/CRMDOC43/Transaction+Reference
    */
   function postProcess() {
     $cid = CRM_Utils_Array::value('userID', $_SESSION['CiviCRM'], NULL);
     $values = $this->controller->exportValues();
+
+    $params = array(
+      'id' => CRM_Utils_Array::value('volunteer_need_id', $values),
+      'version' => 3,
+      'debug' => 1,
+    );
+    $need = civicrm_api('VolunteerNeed', 'getsingle', $params);
+
     unset($values['volunteer_role_id']); // we don't need this
 
     $profile_fields = CRM_Core_BAO_UFGroup::getFields($this->_ufgroup_id);
@@ -189,9 +198,12 @@ class CRM_Volunteer_Form_VolunteerSignUp extends CRM_Core_Form {
 
     $activity_statuses = CRM_Activity_BAO_Activity::buildOptions('status_id', 'create');
 
+    $builtin_values['activity_date_time'] = CRM_Utils_Array::value('start_time', $need);
     $builtin_values['assignee_contact_id'] = $cid;
     $builtin_values['is_test'] = ($this->_mode === 'test' ? 1 : 0);
     $builtin_values['status_id'] = CRM_Utils_Array::key('Available', $activity_statuses);
+    $builtin_values['subject'] = $this->_project->title;
+    $builtin_values['time_scheduled_minutes'] = CRM_Utils_Array::value('duration', $need);
     CRM_Volunteer_BAO_Assignment::createVolunteerActivity($builtin_values);
   }
 
