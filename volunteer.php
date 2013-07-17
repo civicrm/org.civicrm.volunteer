@@ -124,3 +124,44 @@ function volunteer_civicrm_entityTypes(&$entityTypes) {
     'table' => 'civicrm_volunteer_project',
   );
 }
+
+/**
+ * Implementation of hook_civicrm_alterContent
+ *
+ * Handler for alterContent hook.
+ */
+function volunteer_civicrm_alterContent(&$content, $context, $tplName, &$object) {
+  $f = '_volunteer_civicrm_alterContent_' . get_class($object);
+  if (function_exists($f)) {
+    $f($content, $context, $tplName, $object);
+  }
+}
+
+/**
+ * Callback for event info page
+ *
+ * Wires up JS for inserting "Volunteer Now" button if a project is associated
+ * with the event.
+ */
+function _volunteer_civicrm_alterContent_CRM_Event_Page_EventInfo(&$content, $context, $tplName, &$object) {
+  $params = array(
+    'entity_id' => $object->_id,
+    'entity_table' => 'civicrm_event',
+    'is_active' => 1,
+  );
+  $projects = CRM_Volunteer_BAO_Project::retrieve($params);
+
+  // only show volunteer button if this event has an active project
+  if (count($projects)) {
+    $project = current($projects);
+    $ccr = CRM_Core_Resources::singleton();
+    $ccr->addSetting(array('volunteer' => array(
+      'project_id' => $project->id,
+      'button_text' => ts('Volunteer Now'),
+    )));
+
+    $ccr->addScriptFile('org.civicrm.volunteer',
+      'templates/CRM/Event/Page/EventInfo.js',
+      $ccr::DEFAULT_WEIGHT, 'html-header');
+  }
+}
