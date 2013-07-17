@@ -173,7 +173,7 @@ function _volunteer_civicrm_pageRun_CRM_Event_Page_EventInfo(&$page) {
     $snippet['weight'] = 10;
     CRM_Core_Region::instance('event-page-eventinfo-actionlinks-bottom')->add($snippet);
 
-    CRM_Core_Resources::singleton()->addStyleUrl('org.civicrm.volunteer',
+    CRM_Core_Resources::singleton()->addStyleFile('org.civicrm.volunteer',
       'templates/CRM/Event/Page/EventInfo.css'
     );
   }

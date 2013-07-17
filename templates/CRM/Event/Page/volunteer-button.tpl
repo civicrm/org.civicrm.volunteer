@@ -23,7 +23,7 @@
  | see the CiviCRM license FAQ at http://civicrm.org/licensing        |
  +--------------------------------------------------------------------+
 *}
-<div class="action-link section register_link-section register_link-{$snippet.position}">
+<div class="action-link section volunteer_link-section register_link-{$snippet.position}">
   <a href="{$snippet.url}" title="{$snippet.button_text}" class="button crm-volunteer_signup-button">
     <span>{$snippet.button_text}</span>
   </a>
