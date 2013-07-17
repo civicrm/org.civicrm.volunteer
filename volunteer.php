@@ -124,3 +124,57 @@ function volunteer_civicrm_entityTypes(&$entityTypes) {
     'table' => 'civicrm_volunteer_project',
   );
 }
+
+/**
+ * Implementation of hook_civicrm_pageRun
+ *
+ * Handler for pageRun hook.
+ */
+function volunteer_civicrm_pageRun(&$page) {
+  $f = '_volunteer_civicrm_pageRun_' . get_class($page);
+  if (function_exists($f)) {
+    $f($page);
+  }
+}
+
+/**
+ * Callback for event info page
+ *
+ * Inserts "Volunteer Now" button via {crmRegion} if a project is associated
+ * with the event.
+ */
+function _volunteer_civicrm_pageRun_CRM_Event_Page_EventInfo(&$page) {
+  $params = array(
+    'entity_id' => $page->_id,
+    'entity_table' => 'civicrm_event',
+    'is_active' => 1,
+  );
+  $projects = CRM_Volunteer_BAO_Project::retrieve($params);
+
+  // show volunteer button only if this event has an active project
+  if (count($projects)) {
+    $project = current($projects);
+    $url = CRM_Utils_System::url('civicrm/volunteer/signup', array(
+      'reset' => 1,
+      'vid' => $project->id,
+    ));
+    $button_text = ts('Volunteer Now');
+
+    $snippet = array(
+      'template' => 'CRM/Event/Page/volunteer-button.tpl',
+      'button_text' => $button_text,
+      'position' => 'top',
+      'url' => $url,
+      'weight' => -10,
+    );
+    CRM_Core_Region::instance('event-page-eventinfo-actionlinks-top')->add($snippet);
+
+    $snippet['position'] = 'bottom';
+    $snippet['weight'] = 10;
+    CRM_Core_Region::instance('event-page-eventinfo-actionlinks-bottom')->add($snippet);
+
+    CRM_Core_Resources::singleton()->addStyleFile('org.civicrm.volunteer',
+      'templates/CRM/Event/Page/EventInfo.css'
+    );
+  }
+}
