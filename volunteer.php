@@ -126,14 +126,14 @@ function volunteer_civicrm_entityTypes(&$entityTypes) {
 }
 
 /**
- * Implementation of hook_civicrm_alterContent
+ * Implementation of hook_civicrm_pageRun
  *
- * Handler for alterContent hook.
+ * Handler for pageRun hook.
  */
-function volunteer_civicrm_alterContent(&$content, $context, $tplName, &$object) {
-  $f = '_volunteer_civicrm_alterContent_' . get_class($object);
+function volunteer_civicrm_pageRun(&$page) {
+  $f = '_volunteer_civicrm_pageRun_' . get_class($page);
   if (function_exists($f)) {
-    $f($content, $context, $tplName, $object);
+    $f($page);
   }
 }
 
@@ -143,9 +143,9 @@ function volunteer_civicrm_alterContent(&$content, $context, $tplName, &$object)
  * Inserts "Volunteer Now" button via {crmRegion} if a project is associated
  * with the event.
  */
-function _volunteer_civicrm_alterContent_CRM_Event_Page_EventInfo(&$content, $context, $tplName, &$object) {
+function _volunteer_civicrm_pageRun_CRM_Event_Page_EventInfo(&$page) {
   $params = array(
-    'entity_id' => $object->_id,
+    'entity_id' => $page->_id,
     'entity_table' => 'civicrm_event',
     'is_active' => 1,
   );
