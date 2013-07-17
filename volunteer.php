@@ -165,10 +165,16 @@ function _volunteer_civicrm_pageRun_CRM_Event_Page_EventInfo(&$page) {
       'button_text' => $button_text,
       'position' => 'top',
       'url' => $url,
+      'weight' => -10,
     );
     CRM_Core_Region::instance('event-page-eventinfo-actionlinks-top')->add($snippet);
 
     $snippet['position'] = 'bottom';
+    $snippet['weight'] = 10;
     CRM_Core_Region::instance('event-page-eventinfo-actionlinks-bottom')->add($snippet);
+
+    CRM_Core_Resources::singleton()->addStyleUrl('org.civicrm.volunteer',
+      'templates/CRM/Event/Page/EventInfo.css'
+    );
   }
 }
