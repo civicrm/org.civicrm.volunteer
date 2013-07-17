@@ -1,0 +1,8 @@
+#crm-container .actionlinks-bottom {
+  clear:both;
+  height: 27px;
+}
+#crm-container .register_link-bottom {
+  float: left;
+  padding-left: 8px;
+}
