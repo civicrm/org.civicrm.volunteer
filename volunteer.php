@@ -178,3 +178,13 @@ function _volunteer_civicrm_pageRun_CRM_Event_Page_EventInfo(&$page) {
     );
   }
 }
+
+/**
+ * Implementation of hook_civicrm_permission.
+ *
+ * @param type $permissions Does not contain core perms -- only extension-defined perms.
+ */
+function volunteer_civicrm_permission(array &$permissions) {
+  $prefix = ts('CiviVolunteer') . ': ';
+  $permissions['register to volunteer'] = $prefix . 'register to volunteer';
+}
