@@ -201,6 +201,9 @@ class CRM_Volunteer_Form_VolunteerSignUp extends CRM_Core_Form {
     $builtin_values['activity_date_time'] = CRM_Utils_Array::value('start_time', $need);
     $builtin_values['assignee_contact_id'] = $cid;
     $builtin_values['is_test'] = ($this->_mode === 'test' ? 1 : 0);
+    // below we assume that volunteers are always signing up only themselves;
+    // for now this is a safe assumption, but we may need to revisit this.
+    $builtin_values['source_contact_id'] = $cid;
     $builtin_values['status_id'] = CRM_Utils_Array::key('Available', $activity_statuses);
     $builtin_values['subject'] = $this->_project->title;
     $builtin_values['time_scheduled_minutes'] = CRM_Utils_Array::value('duration', $need);
