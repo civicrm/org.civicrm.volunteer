@@ -201,6 +201,9 @@ class CRM_Volunteer_Form_VolunteerSignUp extends CRM_Core_Form {
     $builtin_values['activity_date_time'] = CRM_Utils_Array::value('start_time', $need);
     $builtin_values['assignee_contact_id'] = $cid;
     $builtin_values['is_test'] = ($this->_mode === 'test' ? 1 : 0);
+    // below we assume that volunteers are always signing up only themselves;
+    // for now this is a safe assumption, but we may need to revisit this.
+    $builtin_values['source_contact_id'] = $cid;
     $builtin_values['status_id'] = CRM_Utils_Array::key('Available', $activity_statuses);
     $builtin_values['subject'] = $this->_project->title;
     $builtin_values['time_scheduled_minutes'] = CRM_Utils_Array::value('duration', $need);
@@ -220,27 +223,25 @@ class CRM_Volunteer_Form_VolunteerSignUp extends CRM_Core_Form {
 
     $id = $this->_ufgroup_id;
 
-    if ($id && $contactID) {
-      if (CRM_Core_BAO_UFGroup::filterUFGroups($id, $contactID)) {
-        $fields = CRM_Core_BAO_UFGroup::getFields($id, FALSE, CRM_Core_Action::ADD,
-          NULL, NULL, FALSE, NULL,
-          FALSE, NULL, CRM_Core_Permission::CREATE,
-          'field_name', TRUE
+    if ($id) {
+      $fields = CRM_Core_BAO_UFGroup::getFields($id, FALSE, CRM_Core_Action::ADD,
+        NULL, NULL, FALSE, NULL,
+        FALSE, NULL, CRM_Core_Permission::CREATE,
+        'field_name', TRUE
+      );
+
+      foreach ($fields as $key => $field) {
+        CRM_Core_BAO_UFGroup::buildProfile(
+          $this,
+          $field,
+          CRM_Profile_Form::MODE_CREATE,
+          $contactID,
+          TRUE
         );
-
-        foreach ($fields as $key => $field) {
-          CRM_Core_BAO_UFGroup::buildProfile(
-            $this,
-            $field,
-            CRM_Profile_Form::MODE_CREATE,
-            $contactID,
-            TRUE
-          );
-          $this->_fields[$key] = $field;
-        }
-
-        $this->assign($name, $fields);
+        $this->_fields[$key] = $field;
       }
+
+      $this->assign($name, $fields);
     }
   }
 
