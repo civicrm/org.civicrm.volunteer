@@ -220,27 +220,25 @@ class CRM_Volunteer_Form_VolunteerSignUp extends CRM_Core_Form {
 
     $id = $this->_ufgroup_id;
 
-    if ($id && $contactID) {
-      if (CRM_Core_BAO_UFGroup::filterUFGroups($id, $contactID)) {
-        $fields = CRM_Core_BAO_UFGroup::getFields($id, FALSE, CRM_Core_Action::ADD,
-          NULL, NULL, FALSE, NULL,
-          FALSE, NULL, CRM_Core_Permission::CREATE,
-          'field_name', TRUE
+    if ($id) {
+      $fields = CRM_Core_BAO_UFGroup::getFields($id, FALSE, CRM_Core_Action::ADD,
+        NULL, NULL, FALSE, NULL,
+        FALSE, NULL, CRM_Core_Permission::CREATE,
+        'field_name', TRUE
+      );
+
+      foreach ($fields as $key => $field) {
+        CRM_Core_BAO_UFGroup::buildProfile(
+          $this,
+          $field,
+          CRM_Profile_Form::MODE_CREATE,
+          $contactID,
+          TRUE
         );
-
-        foreach ($fields as $key => $field) {
-          CRM_Core_BAO_UFGroup::buildProfile(
-            $this,
-            $field,
-            CRM_Profile_Form::MODE_CREATE,
-            $contactID,
-            TRUE
-          );
-          $this->_fields[$key] = $field;
-        }
-
-        $this->assign($name, $fields);
+        $this->_fields[$key] = $field;
       }
+
+      $this->assign($name, $fields);
     }
   }
 
