@@ -29,8 +29,9 @@
 <div id="help">
   {if $form.is_active.value}
     <p>
-      Volunteer Management is enabled for this event. Click one of the buttons
-      below to get started.
+      Volunteer Management is enabled for this event. Note that only users with
+      the "register to volunteer" permission will be able to access the
+      volunteer sign-up form. Click one of the buttons below to get started.
     </p>
     <p>
       {ts}If you want to disable Volunteer Management for this event, uncheck
