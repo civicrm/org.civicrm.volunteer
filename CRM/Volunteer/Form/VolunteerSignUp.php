@@ -14,6 +14,15 @@ require_once 'CRM/Core/Form.php';
 class CRM_Volunteer_Form_VolunteerSignUp extends CRM_Core_Form {
 
   /**
+   * The URL to which the user should be redirected after successfully
+   * submitting the sign-up form
+   *
+   * @var string
+   * @protected
+   */
+  protected $_destination;
+
+  /**
    * The fields involved in this volunteer project sign-up page
    *
    * @var array
@@ -96,6 +105,7 @@ class CRM_Volunteer_Form_VolunteerSignUp extends CRM_Core_Form {
     }
 
     $this->_project = $projects[$vid];
+    $this->setDestination();
     $this->assign('vid', $this->_project->id);
     if ($this->getVolunteerNeeds() === 0) {
       CRM_Core_Error::fatal('Project has no volunteer needs defined');
@@ -163,8 +173,6 @@ class CRM_Volunteer_Form_VolunteerSignUp extends CRM_Core_Form {
         'isDefault' => TRUE,
       ),
     ));
-
-    parent::buildQuickForm();
   }
 
   /**
@@ -208,6 +216,10 @@ class CRM_Volunteer_Form_VolunteerSignUp extends CRM_Core_Form {
     $builtin_values['subject'] = $this->_project->title;
     $builtin_values['time_scheduled_minutes'] = CRM_Utils_Array::value('duration', $need);
     CRM_Volunteer_BAO_Assignment::createVolunteerActivity($builtin_values);
+
+    $statusMsg = ts('You are scheduled to volunteer. Thank you!');
+    CRM_Core_Session::setStatus($statusMsg, '', 'success');
+    CRM_Utils_System::redirect($this->_destination);
   }
 
   /**
@@ -314,5 +326,20 @@ class CRM_Volunteer_Form_VolunteerSignUp extends CRM_Core_Form {
 
     $this->_shifts = $shifts;
     return count($shifts);
+  }
+
+  /**
+   * Set $this->_destination, the URL to which the user should be redirected
+   * after successfully submitting the sign-up form
+   */
+  protected function setDestination() {
+    switch ($this->_project->entity_table) {
+      case 'civicrm_event':
+        $path = 'civicrm/event/info';
+        $query = "reset=1&id={$this->_project->entity_id}";
+        break;
+    }
+
+    $this->_destination = CRM_Utils_System::url($path, $query);
   }
 }
