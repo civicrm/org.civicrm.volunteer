@@ -27,8 +27,8 @@
 {* Contains js templates for backbone-based volunteer assignment sub-application *}
 
 <script type="text/template" id="crm-vol-assign-layout-tpl">
-  <div id="crm-vol-assign-flexible-region">Loading...</div>
-  <div id="crm-vol-assign-scheduled-region">Loading...</div>
+  <div id="crm-vol-assign-flexible-region">{ts}Loading{/ts}...</div>
+  <div id="crm-vol-assign-scheduled-region"></div>
 </script>
 
 <script type="text/template" id="crm-vol-scheduled-assignment-tpl">
@@ -39,7 +39,7 @@
 
 <script type="text/template" id="crm-vol-flexible-assignment-tpl">
   <td class="crm-vol-name">
-    <span class="icon"></span><%= display_name %><a href="#" class="crm-vol-del"><img src="{$config->resourceBase}i/close.png" alt="{ts}Remove{/ts}" title="{ts}Remove{/ts}"/></a>
+    <span class="icon"></span><%= display_name %><a href="#" class="crm-vol-del" title="{ts}Remove{/ts}"><img src="{$config->resourceBase}i/close.png" alt="{ts}Remove{/ts}"/></a>
   </td>
 </script>
 
@@ -64,10 +64,10 @@
     <tbody class="crm-vol-assignment-list"></tbody>
   </table>
   <h4>Add Volunteer</h4>
-  <input type="text" name="add-volunteer" class="crm-add-volunteer" placeholder="{ts escape='js'}Select Contact...{/ts}"/>
+  <input type="text" name="add-volunteer" class="crm-add-volunteer" placeholder="{ts escape='js'}Select Contact{/ts}..."/>
   <button class="crm-add-vol-contact">{ts}Add{/ts}</button>
   <div>
-    OR <select class="crm-vol-create-contact-select">
+    {ts}OR{/ts} <select class="crm-vol-create-contact-select">
       <option value="">{ts}- create new contact -{/ts}</option>
       {crmAPI var='UFGroup' entity='UFGroup' action='get' is_active=1 is_reserved=1}
       {foreach from=$UFGroup.values item=profile}

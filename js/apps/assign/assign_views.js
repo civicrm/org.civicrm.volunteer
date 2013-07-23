@@ -22,6 +22,7 @@ CRM.volunteerApp.module('Assign', function(Assign, volunteerApp, Backbone, Mario
 
   var needView = Marionette.CompositeView.extend({
     hasBeenInitialized: false,
+    profileUrl: '',
     itemViewContainer: '.crm-vol-assignment-list',
     className: 'crm-vol-need crm-form-block',
 
@@ -109,36 +110,19 @@ CRM.volunteerApp.module('Assign', function(Assign, volunteerApp, Backbone, Mario
       var thisView = this;
       var profile = $(e.target).val();
       if(profile.length) {
-        var url = CRM.url('civicrm/profile/create', {
+        thisView.profileUrl = CRM.url('civicrm/profile/create', {
           reset: 1,
-          snippet: 5,
+          snippet: 6,
           gid: profile
         });
-        $('<div id="crm-vol-profile-form" class="crm-container">Loading...</div>').dialog({
+        $('<div id="crm-vol-profile-form" class="crm-container">' + ts('Loading') + '...</div>').dialog({
           title: $(e.target).find(':selected').text(),
           modal: true,
           minWidth: 400,
           open: function() {
             $(e.target).val('');
-            $(this).load(url, function() {
-              $("#crm-vol-profile-form .cancel.form-submit").click(function() {
-                $("#crm-vol-profile-form").dialog('close');
-                return false;
-              });
-              $('#email-Primary').addClass('email');
-              $("#crm-vol-profile-form form").ajaxForm({
-                // context=dialog triggers civi's profile to respond with json instead of an html redirect
-                // but it also results in lots of unwanted scripts being added to the form snippet, so we
-                // add it here during submission and not during form retrieval.
-                url: url + '&context=dialog',
-                dataType: 'json',
-                success: function(response) {
-                  $("#crm-vol-profile-form").dialog('close');
-                  CRM.alert(ts('%1 has been created.', {1: response.displayName}), ts('Contact Saved'), 'success');
-                  newContactId = response.contactID;
-                  thisView.addNewContact();
-                }
-              }).validate(CRM.validate.params);
+            $.getJSON(thisView.profileUrl, function(data) {
+              thisView.displayNewContactProfile(data);
             });
           },
           close: function() {
@@ -147,6 +131,34 @@ CRM.volunteerApp.module('Assign', function(Assign, volunteerApp, Backbone, Mario
           }
         });
       }
+    },
+
+    displayNewContactProfile: function(data) {
+      var thisView = this;
+      $("#crm-vol-profile-form").html(data.content);
+      $("#crm-vol-profile-form .cancel.form-submit").click(function() {
+        $("#crm-vol-profile-form").dialog('close');
+        return false;
+      });
+      $('#email-Primary').addClass('email');
+      $("#crm-vol-profile-form form").ajaxForm({
+        // context=dialog triggers civi's profile to respond with json instead of an html redirect
+        // but it also results in lots of unwanted scripts being added to the form snippet, so we
+        // add it here during submission and not during form retrieval.
+        url: thisView.profileUrl + '&context=dialog',
+        dataType: 'json',
+        success: function(response) {
+          if (response.newContactSuccess) {
+            $("#crm-vol-profile-form").dialog('close');
+            CRM.alert(ts('%1 has been created.', {1: response.displayName}), ts('Contact Saved'), 'success');
+            newContactId = response.contactID;
+            thisView.addNewContact();
+          }
+          else {
+            thisView.displayNewContactProfile(response);
+          }
+        }
+      }).validate(CRM.validate.params);
     },
 
     initAutocomplete: function() {
