@@ -13,6 +13,8 @@ require_once 'CRM/Core/Form.php';
  */
 class CRM_Volunteer_Form_VolunteerSignUp extends CRM_Core_Form {
 
+  const FLEXIBLE_ROLE_ID = -1;
+
   /**
    * The URL to which the user should be redirected after successfully
    * submitting the sign-up form
@@ -65,7 +67,7 @@ class CRM_Volunteer_Form_VolunteerSignUp extends CRM_Core_Form {
   /**
    * ID-indexed array of the shifts associated with this volunteer project
    *
-   * i.e. Need_ID => 'Formatted start time - end time'
+   * i.e. Need_ID => array('label' => 'Formatted start time - end time', 'role_id' => '3')
    *
    * @var array
    * @protected
@@ -135,6 +137,8 @@ class CRM_Volunteer_Form_VolunteerSignUp extends CRM_Core_Form {
 
   function buildQuickForm() {
     CRM_Utils_System::setTitle(ts('Sign Up to Volunteer for ') . $this->_project->title);
+    CRM_Core_Resources::singleton()->addScriptFile('org.civicrm.volunteer',
+      'templates/CRM/Volunteer/Form/VolunteerSignUp.js');
 
     $this->buildCustom('volunteerProfile');
 
@@ -151,13 +155,17 @@ class CRM_Volunteer_Form_VolunteerSignUp extends CRM_Core_Form {
 
     // better UX not to display a select box with only one possible selection
     if (count($this->_shifts) > 1) {
-      $this->add(
+      $select = $this->add(
         'select',               // field type
         'volunteer_need_id',    // field name
         ts('Shift'),            // field label
-        $this->_shifts,         // list of options
+        array(),                // list of options
         true                    // is required
       );
+      foreach ($this->_shifts as $id => $data) {
+        $select->addOption($data['label'], $id, array('data-role' => $data['role_id']));
+      }
+
     }
 
     $this->add(
@@ -293,7 +301,7 @@ class CRM_Volunteer_Form_VolunteerSignUp extends CRM_Core_Form {
     foreach ($this->_needs as $id => $need) {
       $role_id = CRM_Utils_Array::value('role_id', $need);
       if (CRM_Utils_Array::value('is_flexible', $need) == '1') {
-        $roles[$role_id] = CRM_Volunteer_BAO_Need::getFlexibleRoleLabel();
+        $roles[self::FLEXIBLE_ROLE_ID] = CRM_Volunteer_BAO_Need::getFlexibleRoleLabel();
       } else {
         $roles[$role_id] = CRM_Core_OptionGroup::getLabel(
           CRM_Volunteer_Upgrader::customOptionGroupName,
@@ -320,7 +328,10 @@ class CRM_Volunteer_Form_VolunteerSignUp extends CRM_Core_Form {
 
     foreach ($this->_needs as $id => $need) {
       if (CRM_Utils_Array::value('start_time', $need)) {
-        $shifts[$id] = CRM_Volunteer_BAO_Need::getTimes($need['start_time'], $need['duration']);
+        $shifts[$id] = array(
+          'label' => CRM_Volunteer_BAO_Need::getTimes($need['start_time'], $need['duration']),
+          'role_id' => $need['role_id'],
+        );
       }
     }
 
