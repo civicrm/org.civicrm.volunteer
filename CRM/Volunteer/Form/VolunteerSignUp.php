@@ -208,7 +208,6 @@ class CRM_Volunteer_Form_VolunteerSignUp extends CRM_Core_Form {
     $params = array(
       'id' => CRM_Utils_Array::value('volunteer_need_id', $values),
       'version' => 3,
-      'debug' => 1,
     );
     $need = civicrm_api('VolunteerNeed', 'getsingle', $params);
 
