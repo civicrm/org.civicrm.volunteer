@@ -1,9 +1,4 @@
 <?php
-/**
- * @todo Add JS to make the Volunteer Role select box act as a filter for the
- * Shift select box, which contains the information we're really interested in
- */
-
 require_once 'CRM/Core/Form.php';
 
 /**
@@ -88,9 +83,16 @@ class CRM_Volunteer_Form_VolunteerSignUp extends CRM_Core_Form {
    * @access public
    */
   function setDefaultValues() {
-    /**
-     * @todo default to a flexible need
-     */
+    $defaults = array();
+    $defaults['volunteer_role_id'] = self::FLEXIBLE_ROLE_ID;
+
+    $cid = CRM_Utils_Array::value('userID', $_SESSION['CiviCRM'], NULL);
+    if ($cid) {
+      $fields = array_flip(array_keys(CRM_Core_BAO_UFGroup::getFields($this->_ufgroup_id)));
+      CRM_Core_BAO_UFGroup::setProfileDefaults($cid, $fields, $defaults);
+    }
+
+    return $defaults;
   }
 
   /**
@@ -191,14 +193,23 @@ class CRM_Volunteer_Form_VolunteerSignUp extends CRM_Core_Form {
     $cid = CRM_Utils_Array::value('userID', $_SESSION['CiviCRM'], NULL);
     $values = $this->controller->exportValues();
 
+    // if role id matches flexible role id constant, ignore the submitted need
+    // id and use the need id of the flexible need
+    if ((int) CRM_Utils_Array::value('volunteer_role_id', $values) === self::FLEXIBLE_ROLE_ID) {
+      foreach ($this->_needs as $n) {
+        if ($n['is_flexible'] === '1') {
+          $values['volunteer_need_id'] = $n['id'];
+          break;
+        }
+      }
+    }
+    unset($values['volunteer_role_id']); // we don't need this anymore
+
     $params = array(
       'id' => CRM_Utils_Array::value('volunteer_need_id', $values),
       'version' => 3,
-      'debug' => 1,
     );
     $need = civicrm_api('VolunteerNeed', 'getsingle', $params);
-
-    unset($values['volunteer_role_id']); // we don't need this
 
     $profile_fields = CRM_Core_BAO_UFGroup::getFields($this->_ufgroup_id);
     $profile_values = array_intersect_key($values, $profile_fields);
@@ -298,7 +309,7 @@ class CRM_Volunteer_Form_VolunteerSignUp extends CRM_Core_Form {
       $this->getVolunteerNeeds();
     }
 
-    foreach ($this->_needs as $id => $need) {
+    foreach ($this->_needs as $need) {
       $role_id = CRM_Utils_Array::value('role_id', $need);
       if (CRM_Utils_Array::value('is_flexible', $need) == '1') {
         $roles[self::FLEXIBLE_ROLE_ID] = CRM_Volunteer_BAO_Need::getFlexibleRoleLabel();
