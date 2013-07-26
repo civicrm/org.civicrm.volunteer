@@ -83,9 +83,16 @@ class CRM_Volunteer_Form_VolunteerSignUp extends CRM_Core_Form {
    * @access public
    */
   function setDefaultValues() {
-    /**
-     * @todo default to a flexible need
-     */
+    $defaults = array();
+    $defaults['volunteer_role_id'] = self::FLEXIBLE_ROLE_ID;
+
+    $cid = CRM_Utils_Array::value('userID', $_SESSION['CiviCRM'], NULL);
+    if ($cid) {
+      $fields = array_flip(array_keys(CRM_Core_BAO_UFGroup::getFields($this->_ufgroup_id)));
+      CRM_Core_BAO_UFGroup::setProfileDefaults($cid, $fields, $defaults);
+    }
+
+    return $defaults;
   }
 
   /**
