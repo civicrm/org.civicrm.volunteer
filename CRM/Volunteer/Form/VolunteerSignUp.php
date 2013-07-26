@@ -309,7 +309,7 @@ class CRM_Volunteer_Form_VolunteerSignUp extends CRM_Core_Form {
       $this->getVolunteerNeeds();
     }
 
-    foreach ($this->_needs as $id => $need) {
+    foreach ($this->_needs as $need) {
       $role_id = CRM_Utils_Array::value('role_id', $need);
       if (CRM_Utils_Array::value('is_flexible', $need) == '1') {
         $roles[self::FLEXIBLE_ROLE_ID] = CRM_Volunteer_BAO_Need::getFlexibleRoleLabel();
