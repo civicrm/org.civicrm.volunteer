@@ -1,7 +1,7 @@
 // http://civicrm.org/licensing
 CRM.volunteerApp.module('Entities', function(Entities, volunteerApp, Backbone, Marionette, $, _) {
 
-  var need = Backbone.Model.extend({
+  var needModel = Backbone.Model.extend({
     defaults: {
       'is_flexible': 0,
       'duration': 0,
@@ -11,7 +11,7 @@ CRM.volunteerApp.module('Entities', function(Entities, volunteerApp, Backbone, M
   });
 
   Entities.Needs = Backbone.Collection.extend({
-    model: need,
+    model: needModel,
     comparator: 'start_time'
   });
 
@@ -23,20 +23,19 @@ CRM.volunteerApp.module('Entities', function(Entities, volunteerApp, Backbone, M
     }
     CRM.api('volunteer_need', 'get', params, {
       success: function(data) {
-        var needs = new Entities.Needs(_.toArray(data.values));
-        defer.resolve(needs);
+        var needsCollection = new Entities.Needs(_.toArray(data.values));
+        defer.resolve(needsCollection);
       }
     });
     return defer.promise();
   };
 
-  Entities.sortNeeds = function(needs) {
-    var flexible = needs.where({is_flexible: '1'});
-    var scheduled = needs.where({is_flexible: '0'});
-    return {
-      flexible: new Entities.Needs(flexible),
-      scheduled: new Entities.Needs(scheduled)
-    }
+  Entities.Needs.getFlexible = function(needsCollection) {
+    return new Entities.Needs(needsCollection.where({is_flexible: '1'}));
   };
 
+  Entities.Needs.getScheduled = function(needsCollection) {
+    return new Entities.Needs(needsCollection.where({is_flexible: '0'}));
+  };
+  
 });

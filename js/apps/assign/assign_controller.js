@@ -4,15 +4,18 @@ CRM.volunteerApp.module('Assign', function(Assign, volunteerApp, Backbone, Mario
   // Initialize entities and views
   Assign.on('start', function() {
     var request = volunteerApp.Entities.getNeeds(true);
-    $.when(request).done(function(needs) {
-      needs = volunteerApp.Entities.sortNeeds(needs);
+    
+    request.done(function(needsCollection) {
+      
       var flexibleView = new Assign.needsView({
-        collection: needs.flexible
+        collection: volunteerApp.Entities.Needs.getFlexible(needsCollection)
       });
-      Assign.layout.flexibleRegion.show(flexibleView);
+      
       var scheduledView = new Assign.needsView({
-        collection: needs.scheduled
+        collection: volunteerApp.Entities.Needs.getScheduled(needsCollection)
       });
+
+      Assign.layout.flexibleRegion.show(flexibleView);
       Assign.layout.scheduledRegion.show(scheduledView);
     });
   });
