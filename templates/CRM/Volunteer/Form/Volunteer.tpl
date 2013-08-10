@@ -50,7 +50,7 @@
 {if $form.is_active.value}
 <table class="crm-block crm-form-block crm-event-manage-volunteer-form-block">
   <tr>
-    <td><a href="#" class="button crm-volunteer-popup" data-vid="{$vid}" data-tab="Needs"><span><div class="icon edit-icon"></div>{ts}Define Volunteer Needs{/ts}</span></a></td>
+    <td><a href="#" class="button crm-volunteer-popup" data-vid="{$vid}" data-tab="Define"><span><div class="icon edit-icon"></div>{ts}Define Volunteer Needs{/ts}</span></a></td>
     <td><a href="#" class="button crm-volunteer-popup" data-vid="{$vid}" data-tab="Assign"><span><div class="icon edit-icon"></div>{ts}Assign Volunteers{/ts}</span></a></td>
     <td><a href="{$volunteerLogURL}" class="button"><span><div class="icon edit-icon"></div>{ts}Log Volunteer Hours{/ts}</span></a></td>
   </tr>

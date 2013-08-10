@@ -24,16 +24,25 @@
  +--------------------------------------------------------------------+
 *}
 
-{* Contains js templates for backbone-based volunteer management *}
+<script type="text/template" id="crm-vol-define-layout-tpl">
+  <h2>{ts}Manage Volunteer Needs{/ts}</h2>
+  <table>
+    <thead><tr>
+      <th>{ts}Needed{/ts}</th><th>{ts}Filled{/ts}</th><th>{ts}Role{/ts}</th><th>{ts}Start Time{/ts}</th><th>{ts}Scheduled Durration{/ts}</th><th>{ts}Is Flexible?{/ts}</th><th>{ts}Visibility{/ts}</th><th></th>
+    </tr></thead>
+     <tbody id="crm-vol-define-needs-region"></tbody>
+  </table>
+</script>
 
-{* Main container for dialog *}
-<div id="crm-volunteer-dialog" class="crm-container"></div>
-
-{* Template file for each sub application *}
-{include file="CRM/Volunteer/Form/Manage/Assign.tpl"}
-
-{include file = "CRM/Volunteer/Form/Manage/Define.tpl"}
-
-
-{* jQuery validate *}
-{include file="CRM/Form/validate.tpl" form=0}
+<script type="text/template" id="crm-vol-define-newNeed-tpl">
+  <tr>
+    <td><%= num_needed %></td>
+    <td><%= filled %></td>
+    <td><%= role %></td>
+    <td><%= start_time %></td>
+    <td><%= durration %></td>
+    <td><%= is_flexible %></td>
+    <td><%= visibiliy %></td>
+    <td><%= links %></td>
+  </tr>
+  </script>
