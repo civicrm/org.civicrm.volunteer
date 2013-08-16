@@ -27,7 +27,7 @@
 {* Contains js templates for backbone-based volunteer assignment sub-application *}
 
 <script type="text/template" id="crm-vol-assign-layout-tpl">
-  <div id="crm-vol-assign-flexible-region">{ts}Loading{/ts}...</div>
+  <div id="crm-vol-assign-flexible-region"><div class="crm-loading-element">{ts}Loading{/ts}...</div></div>
   <div id="crm-vol-assign-scheduled-region"></div>
 </script>
 

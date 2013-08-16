@@ -115,7 +115,7 @@ CRM.volunteerApp.module('Assign', function(Assign, volunteerApp, Backbone, Mario
           snippet: 6,
           gid: profile
         });
-        $('<div id="crm-vol-profile-form" class="crm-container">' + ts('Loading') + '...</div>').dialog({
+        $('<div id="crm-vol-profile-form" class="crm-container"><div class="crm-loading-element">' + ts('Loading') + '...</div></div>').dialog({
           title: $(e.target).find(':selected').text(),
           modal: true,
           minWidth: 400,
