@@ -3,34 +3,24 @@ CRM.volunteerApp.module('Define', function(Define, volunteerApp, Backbone, Mario
 
 Define.startWithParent = false;
 
-var defineLayout = Marionette.Layout.extend({
-    template: "#crm-vol-define-layout-tpl",
-    regions: {
-      newNeeds: "#crm-vol-define-newNeed-tpl"
-    }
-  });
-
   // Kick everything off
   Define.addInitializer(function() {
-    Define.layout = new defineLayout();
-    volunteerApp.dialogRegion.show(Define.layout);
-  });
 
-  // Initialize entities and views
-  Define.on('start', function() {
     var request = volunteerApp.Entities.getNeeds(true);
-    request.done(bindNeeds);
 
+    request.done(
+      function(needsCollection) {
+        Define.manageNeeds = new Define.layout();
+        Define.needsTableView = new Define.defineNeedsView();
+        Define.needsTable = new Define.defineNeedsTable({collection: needsCollection});
+
+        volunteerApp.dialogRegion.show(Define.manageNeeds);
+        volunteerApp.dialogRegion.show(Define.needsTable);
   });
 
-  function bindNeeds(needsCollection) {
+    
+  });
 
-    var viewNeeds = new Define.defineNeedsView(
-          { collection: needsCollection }
-     );
-/* ain't workin'  */
-     Define.layout.newNeeds.show(viewNeeds);
-
-    };
-
+  
+ 
 });
