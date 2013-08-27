@@ -6,7 +6,11 @@ CRM.volunteerApp.module('Entities', function(Entities, volunteerApp, Backbone, M
       'is_flexible': 0,
       'duration': 0,
       'role_id': null,
-      'start_time': null
+      'start_time': null,
+      'num_needed': 'null',
+      'filled': null,
+      'visibility': null,
+      'links': null
     }
   });
 
