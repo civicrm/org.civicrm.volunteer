@@ -1,19 +1,33 @@
 // http://civicrm.org/licensing
 CRM.volunteerApp.module('Entities', function(Entities, volunteerApp, Backbone, Marionette, $, _) {
 
-  var need = Backbone.Model.extend({
+  var NeedModel = Backbone.Model.extend({
     defaults: {
       'is_flexible': 0,
+      'is_flexible_form_value': null,
       'duration': 0,
       'role_id': null,
-      'start_time': null
+      'start_time': null,
+      'display_start': null,
+      'num_needed': null,
+      'filled': null,
+      'visibility': null,
+      'links': null
     }
   });
 
   Entities.Needs = Backbone.Collection.extend({
-    model: need,
-    comparator: 'start_time'
-  });
+    model: NeedModel,
+    comparator: 'start_time',
+    createNewNeed : function(params) {
+        CRM.api('volunteer_need', 'create', params, {
+          success: function(result) {
+            var id = result.id;
+            var need = new NeedModel(result.values[id]);
+          }
+        });
+   }
+ });
 
   Entities.getNeeds = function(alsoFetchAssignments) {
     var defer = $.Deferred();
@@ -22,21 +36,30 @@ CRM.volunteerApp.module('Entities', function(Entities, volunteerApp, Backbone, M
       params['api.volunteer_assignment.get'] = {};
     }
     CRM.api('volunteer_need', 'get', params, {
+
       success: function(data) {
-        var needs = new Entities.Needs(_.toArray(data.values));
-        defer.resolve(needs);
+        var needsCollection = new Entities.Needs(_.toArray(data.values));
+
+        for( index in needsCollection.models) {
+          need = needsCollection.models[index];
+          if (need.attributes.is_flexible == 1) {
+            need.attributes.is_flexible_form_value = 'checked';
+          }
+        }
+
+        defer.resolve(needsCollection);
       }
+
     });
     return defer.promise();
   };
 
-  Entities.sortNeeds = function(needs) {
-    var flexible = needs.where({is_flexible: '1'});
-    var scheduled = needs.where({is_flexible: '0'});
-    return {
-      flexible: new Entities.Needs(flexible),
-      scheduled: new Entities.Needs(scheduled)
-    }
+  Entities.Needs.getFlexible = function(needsCollection) {
+    return new Entities.Needs(needsCollection.where({is_flexible: '1'}));
   };
 
+  Entities.Needs.getScheduled = function(needsCollection) {
+    return new Entities.Needs(needsCollection.where({is_flexible: '0'}));
+  };
+  
 });

@@ -78,6 +78,7 @@ function civicrm_api3_volunteer_need_get($params) {
     foreach ($result['values'] as &$need) {
       if (!empty($need['start_time'])) {
         $need['display_time'] = CRM_Volunteer_BAO_Need::getTimes($need['start_time'], CRM_Utils_Array::value('duration', $need));
+        $need['display_start'] = CRM_Volunteer_BAO_Need::getTimes($need['start_time']);
       }
       else {
         $need['display_time'] = ts('Flexible');
