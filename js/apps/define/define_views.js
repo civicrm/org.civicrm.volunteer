@@ -3,7 +3,11 @@ CRM.volunteerApp.module('Define', function(Define, volunteerApp, Backbone, Mario
 
   var myViewSettings = {
     tagName: 'tr',
-    className: 'crm-vol-definement'
+    className: 'crm-vol-define-need',
+
+    onRender: function() {
+      this.$el.attr('data-id', this.model.get('id'));
+    }
   };
 
 
@@ -27,7 +31,22 @@ CRM.volunteerApp.module('Define', function(Define, volunteerApp, Backbone, Mario
 
   appendHtml: function(collectionView, itemView){
     collectionView.$("tbody").append(itemView.el);
-  }
+  },
+
+   events: {
+      'click #addNewNeed': 'addNewNeed',
+      'change :input': 'updateNeed',
+    },
+
+    addNewNeed: function () {
+      var newNeed = new this.collection.model;
+      this.collection.add(newNeed);
+    },
+
+    updateNeed: function() {
+      
+    },
+
 });
 
 });

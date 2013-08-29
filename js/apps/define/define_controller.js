@@ -16,6 +16,8 @@ Define.startWithParent = false;
 
         volunteerApp.dialogRegion.show(Define.manageNeeds);
         volunteerApp.dialogRegion.show(Define.needsTable);
+        cj('#crm-vol-define-needs-dialog').attr('data-project_id', needsCollection.models[0].attributes.project_id);
+
   });
 
     
