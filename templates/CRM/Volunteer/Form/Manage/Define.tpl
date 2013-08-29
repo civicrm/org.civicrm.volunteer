@@ -13,13 +13,13 @@
 </script>
 
 <script type="text/template" id="crm-vol-define-new-need-tpl">
-    <td><input type="text" value="<%= num_needed %>" size="4"></td>
-    <!-- td><input type="text" value="<%= filled %>" size="4" disabled></td -->
-    <td><input type="text" value="<%= role_id %>" size="4"></td>
-    <td><input type="text" value="<%= display_start %>" size="30"></td>
-    <td><input type="text" value="<%= duration %>" size="6"></td>
+    <td><input type="text" name="num_needed" value="<%= num_needed %>" size="4"></td>
+    <td><input type="text" name="filled" value="<%= filled %>" size="4" disabled></td>
+    <td><input type="text" name="role_id" value="<%= role_id %>" size="4"></td>
+    <td><input type="text" name="display_start" value="<%= display_start %>" size="30"></td>
+    <td><input type="text" name="duration" value="<%= duration %>" size="6"></td>
     <td><input type="checkbox" name="is_flexible" disabled <%= is_flexible_form_value %>></td>
-    <td><input type="text" value="<%= visibility %>" size="4"></td>
+    <td><input type="text" name="visibility" value="<%= visibility %>" size="4"></td>
     <td><%= links %></td>
   </script>
   

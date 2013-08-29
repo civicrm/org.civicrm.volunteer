@@ -43,8 +43,19 @@ CRM.volunteerApp.module('Define', function(Define, volunteerApp, Backbone, Mario
       this.collection.add(newNeed);
     },
 
-    updateNeed: function() {
-      
+    updateNeed: function(e) {
+      var id = cj(e.currentTarget).closest('tr').data('id');
+      var need = {
+        id: id,
+        project_id: cj('#crm-vol-define-needs-dialog').data('project_id'),
+        };
+
+        var field_name = e.currentTarget.name;
+
+        //TODO: handle fields such as display_start that don't
+
+        need[field_name] = e.currentTarget.value;
+        this.collection.createNewNeed(need);
     },
 
 });

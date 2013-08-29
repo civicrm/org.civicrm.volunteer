@@ -18,19 +18,16 @@ CRM.volunteerApp.module('Entities', function(Entities, volunteerApp, Backbone, M
 
   Entities.Needs = Backbone.Collection.extend({
     model: NeedModel,
-    comparator: 'start_time'
-  });
-
-  Entities.createNewNeed = function(params) {
-      var thisCollection = this.Needs;
-      CRM.api('volunteer_need', 'create', params, {
-        success: function(result) {
-          var id = result.id;
-          var need = new Entities.NeedModel(result.values[id]);
-          thisCollection.add(need);
-        }
-      });
-    }
+    comparator: 'start_time',
+    createNewNeed : function(params) {
+        CRM.api('volunteer_need', 'create', params, {
+          success: function(result) {
+            var id = result.id;
+            var need = new NeedModel(result.values[id]);
+          }
+        });
+   }
+ });
 
   Entities.getNeeds = function(alsoFetchAssignments) {
     var defer = $.Deferred();
@@ -39,6 +36,7 @@ CRM.volunteerApp.module('Entities', function(Entities, volunteerApp, Backbone, M
       params['api.volunteer_assignment.get'] = {};
     }
     CRM.api('volunteer_need', 'get', params, {
+
       success: function(data) {
         var needsCollection = new Entities.Needs(_.toArray(data.values));
 
@@ -50,9 +48,8 @@ CRM.volunteerApp.module('Entities', function(Entities, volunteerApp, Backbone, M
         }
 
         defer.resolve(needsCollection);
-        console.log('getNeeds::needsCollection =>', needsCollection)
-        console.trace();
       }
+
     });
     return defer.promise();
   };
