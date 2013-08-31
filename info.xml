@@ -14,7 +14,7 @@
   <compatibility>
     <ver>4.4</ver>
   </compatibility>
-  <comments>This is a new, undeveloped module</comments>
+  <comments>Recruit and manage a variety of volunteers for your events.</comments>
   <civix>
     <namespace>CRM/Volunteer</namespace>
   </civix>
