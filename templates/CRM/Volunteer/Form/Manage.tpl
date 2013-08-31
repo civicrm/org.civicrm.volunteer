@@ -32,6 +32,8 @@
 {* Template file for each sub application *}
 {include file="CRM/Volunteer/Form/Manage/Assign.tpl"}
 
+{include file = "CRM/Volunteer/Form/Manage/Define.tpl"}
+
 
 {* jQuery validate *}
 {include file="CRM/Form/validate.tpl" form=0}
