@@ -74,7 +74,7 @@ class CRM_Volunteer_Form_VolunteerReport extends CRM_Report_Form {
           'contact_assignee' =>
           array(
             'name' => 'sort_name',
-            'title' => ts('Assignee Contact Name'),
+            'title' => ts('Volunteer Name'),
             'alias' => 'civicrm_contact_assignee',
             'default' => TRUE,
           ),
