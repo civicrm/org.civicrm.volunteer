@@ -75,7 +75,7 @@ class CRM_Volunteer_Form_VolunteerReport extends CRM_Report_Form {
           array(
             'name' => 'sort_name',
             'title' => ts('Volunteer Name'),
-            'alias' => 'civicrm_contact_assignee',
+            'alias' => 'civicrm_contact_assignee_civireport',
             'default' => TRUE,
           ),
           'contact_target' =>
@@ -99,8 +99,8 @@ class CRM_Volunteer_Form_VolunteerReport extends CRM_Report_Form {
           'contact_assignee' =>
           array(
             'name' => 'sort_name',
-            'alias' => 'civicrm_contact_assignee',
-            'title' => ts('Assignee Contact Name'),
+            'alias' => 'civicrm_contact_assignee_civireport',
+            'title' => ts('Volunteer Name'),
             'operator' => 'like',
             'type' => CRM_Report_Form::OP_STRING,
           ),
@@ -128,6 +128,7 @@ class CRM_Volunteer_Form_VolunteerReport extends CRM_Report_Form {
           array(
             'title' => ts('Last Name, First Name'), 'default' => '1'),
         ),
+          'alias' => 'civicrm_contact_assignee',
       ),
       'project' =>
       array(
@@ -307,11 +308,6 @@ class CRM_Volunteer_Form_VolunteerReport extends CRM_Report_Form {
             'default' => TRUE,
           ),
         ),
-        'statistics' =>
-        array(
-          'sum' => ts('Total Time Scheduled in Minutes'),
-        ),
-        // 'alias' => 'cg',
       ),
       'time_completed' =>
       array(
@@ -326,11 +322,6 @@ class CRM_Volunteer_Form_VolunteerReport extends CRM_Report_Form {
             'default' => TRUE,
           ),
         ),
-        'statistics' =>
-        array(
-          'sum' => ts('Total Time Completed in Minutes'),
-        ),
-        // 'alias' => 'cg',
       ),
         'civicrm_case_activity' =>
       array(
@@ -395,7 +386,6 @@ class CRM_Volunteer_Form_VolunteerReport extends CRM_Report_Form {
           if (CRM_Utils_Array::value('required', $field) ||
             CRM_Utils_Array::value($fieldName, $this->_params['fields'])
           ) {
-
             if (isset($this->_params['group_bys']) &&
                 !CRM_Utils_Array::value('activity_type_id', $this->_params['group_bys']) &&
               (in_array($fieldName, array(
@@ -415,20 +405,10 @@ class CRM_Volunteer_Form_VolunteerReport extends CRM_Report_Form {
             }
 
             $alias = "{$tableName}_{$fieldName}";
-            $select[] = "{$field['dbAlias']} as {$alias}";
             $this->_columnHeaders["{$tableName}_{$fieldName}"]['type'] = CRM_Utils_Array::value('type', $field);
             $this->_columnHeaders["{$tableName}_{$fieldName}"]['title'] = CRM_Utils_Array::value('title', $field);
             $this->_columnHeaders["{$tableName}_{$fieldName}"]['no_display'] = CRM_Utils_Array::value('no_display', $field);
-          }
-        }
-      }
-      if (array_key_exists('statistics', $table)) {
-        foreach ($table['statistics'] as $stat => $label) {
-          switch (strtolower($stat)) {
-          case 'sum':
-            $select[] = "SUM({$field['name']}) as {$tableName}_{$fieldName}_{$stat}";
-            $this->_statFields[] = "{$tableName}_{$fieldName}_{$stat}";
-            break;
+            $this->_selectAliases[] = $alias;
           }
         }
       }
@@ -464,8 +444,8 @@ class CRM_Volunteer_Form_VolunteerReport extends CRM_Report_Form {
                        {$this->_aliases['civicrm_activity_source']}.record_type_id = {$sourceID}
              LEFT JOIN civicrm_contact contact_civireport
                     ON {$this->_aliases['civicrm_activity_target']}.contact_id = contact_civireport.id
-             LEFT JOIN civicrm_contact civicrm_contact_assignee
-                    ON {$this->_aliases['civicrm_activity_assignment']}.contact_id = civicrm_contact_assignee.id
+             LEFT JOIN civicrm_contact civicrm_contact_assignee_civireport
+                    ON {$this->_aliases['civicrm_activity_assignment']}.contact_id = civicrm_contact_assignee_civireport.id
              LEFT JOIN civicrm_contact civicrm_contact_source
                     ON {$this->_aliases['civicrm_activity_source']}.contact_id = civicrm_contact_source.id
              {$this->_aclFrom}
@@ -561,6 +541,36 @@ class CRM_Volunteer_Form_VolunteerReport extends CRM_Report_Form {
       $this->_where .= " AND {$this->_aclWhere} ";
     }
   }
+function statistics(&$rows) {
+    $statistics = parent::statistics($rows);
+
+    $totalAmount =  array();
+    $count = 0;
+    $select = "
+      SELECT 
+      SUM( cg.{$this->customFields['time_scheduled_minutes']['column_name']} ) AS scheduled,
+      SUM( cg.{$this->customFields['time_completed_minutes']['column_name']} ) AS completed";
+    $sql = "{$select} {$this->_from} {$this->_where}";
+    $dao = CRM_Core_DAO::executeQuery($sql);
+
+    while ($dao->fetch()) {
+      $scheduled = $dao->scheduled;
+      $completed = $dao->completed;
+    }
+    $statistics['counts']['scheduled'] = array(
+      'title' => ts('Total Time Scheduled in Minutes'),
+      'value' => $scheduled,
+      'type' => CRM_Utils_Type::T_STRING,
+    );
+    $statistics['counts']['completed'] = array(
+      'title' => ts('Total Time Completed in Minutes'),
+      'value' => $completed,
+      'type' => CRM_Utils_Type::T_STRING,
+    );
+
+    return $statistics;
+  }
+
 
   function groupBy() {
      $this->_groupBy = "GROUP BY {$this->_aliases['civicrm_activity']}.id";
