@@ -23,3 +23,7 @@ CREATE TABLE IF NOT EXISTS civicrm_volunteer_need (
   CONSTRAINT `FK_civicrm_volunteer_need_project_id` FOREIGN KEY (`project_id`) REFERENCES `civicrm_volunteer_project`(`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci AUTO_INCREMENT=1 ;
 
+SELECT @opGId := id FROM civicrm_option_group WHERE name = 'report_template';
+
+INSERT IGNORE INTO `civicrm_option_value` (`option_group_id`, `label`, `value`, `name`, `grouping`, `filter`, `is_default`,`description`, `is_optgroup`, `is_reserved`, `is_active`, `component_id`, `domain_id`, `visibility_id`) VALUES
+(@opGId, 'Volunteer Report', 'volunteer', 'CRM_Volunteer_Form_VolunteerReport', NULL, 0, 0, 'Volunteer Report', 0, 0, 1, NULL, NULL, NULL);
