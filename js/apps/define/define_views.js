@@ -49,7 +49,7 @@ CRM.volunteerApp.module('Define', function(Define, volunteerApp, Backbone, Mario
 
    events: {
       'click #addNewNeed': 'addNewNeed',
-      'change :input': 'updateNeed',
+      'change :input': 'updateNeed'
     },
 
     addNewNeed: function () {
@@ -62,7 +62,7 @@ CRM.volunteerApp.module('Define', function(Define, volunteerApp, Backbone, Mario
       var id = row.data('id');
       var need = {
         id: id,
-        project_id: cj('#crm-vol-define-needs-dialog').data('project_id'),
+        project_id: cj('#crm-vol-define-needs-dialog').data('project_id')
         };
 
         var field_name = e.currentTarget.name;
@@ -80,7 +80,7 @@ CRM.volunteerApp.module('Define', function(Define, volunteerApp, Backbone, Mario
         }
 
         this.collection.createNewNeed(need);
-    },
+    }
 
 });
 
