@@ -4,7 +4,7 @@
   <h2>{ts}Manage Volunteer Needs{/ts}</h2>
   <form><table id="crm-vol-define-needs-dialog">
     <thead><tr>
-      <th>{ts}Needed{/ts}</th><!-- th>{ts}Filled{/ts}</th --><th>{ts}Role{/ts}</th><th>{ts}Start Time{/ts}</th><th>{ts}Scheduled Durration{/ts}</th><th>{ts}Is Flexible?{/ts}</th><th>{ts}Visibility{/ts}</th><th></th>
+      <th>{ts}Needed{/ts}</th><th>{ts}Filled{/ts}</th><th>{ts}Role{/ts}</th><th>{ts}Start Time{/ts}</th><th>{ts}Scheduled Duration{/ts}</th><th>{ts}Visibility{/ts}</th><th>&nbsp;</th>
     </tr></thead>
      <tbody id="crm-vol-define-needs-region"></tbody>
   </table>
@@ -18,7 +18,6 @@
     <td><input type="text" name="role_id" value="<%= role_id %>" size="4"></td>
     <td><input type="text" name="display_start" value="<%= display_start %>" size="30"></td>
     <td><input type="text" name="duration" value="<%= duration %>" size="6"></td>
-    <td><input type="checkbox" name="is_flexible" disabled <%= is_flexible_form_value %>></td>
     <td><input type="text" name="visibility" value="<%= visibility %>" size="4"></td>
     <td><%= links %></td>
   </script>
