@@ -3,12 +3,13 @@ CRM.volunteerApp.module('Entities', function(Entities, volunteerApp, Backbone, M
 
   var NeedModel = Backbone.Model.extend({
     defaults: {
+      'display_start_date': null, // generated in getNeeds
+      'display_start_time': null, // generated in getNeeds
       'is_flexible': 0,
       'is_flexible_form_value': null,
       'duration': 0,
       'role_id': null,
       'start_time': null,
-      'display_start': null,
       'num_needed': null,
       'filled': null,
       'visibility': null,
@@ -38,6 +39,16 @@ CRM.volunteerApp.module('Entities', function(Entities, volunteerApp, Backbone, M
     CRM.api('volunteer_need', 'get', params, {
 
       success: function(data) {
+        // generate user-friendly date and time strings
+        $.each(data.values, function (k, v){
+          if (data.values[k].start_time) {
+            // TODO: respect user-configured time formats
+            var timeDate = data.values[k].start_time.split(" ");
+            var date = $.datepicker.parseDate("yy-mm-dd", timeDate[0]);
+            data.values[k].display_start_date = $.datepicker.formatDate("MM d, yy", date);
+            data.values[k].display_start_time = timeDate[1].substring(0, 5);
+          }
+        });
         var needsCollection = new Entities.Needs(_.toArray(data.values));
 
         for( index in needsCollection.models) {
@@ -61,5 +72,5 @@ CRM.volunteerApp.module('Entities', function(Entities, volunteerApp, Backbone, M
   Entities.Needs.getScheduled = function(needsCollection) {
     return new Entities.Needs(needsCollection.where({is_flexible: '0'}));
   };
-  
+
 });
