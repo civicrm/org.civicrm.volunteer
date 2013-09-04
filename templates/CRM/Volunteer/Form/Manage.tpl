@@ -29,6 +29,8 @@
 {* Main container for dialog *}
 <div id="crm-volunteer-dialog" class="crm-container"></div>
 
+{include file="RenderUtils.tpl"}
+
 {* Template file for each sub application *}
 {include file="CRM/Volunteer/Form/Manage/Assign.tpl"}
 

@@ -20,8 +20,13 @@ CRM.volunteerApp.module('Define', function(Define, volunteerApp, Backbone, Mario
 
 // *** declare a view
   Define.defineNeedsView = Marionette.ItemView.extend(_.extend(myViewSettings, {
-    template: '#crm-vol-define-new-need-tpl'
+    template: '#crm-vol-define-new-need-tpl',
+    templateHelpers: {
+      pseudoConstant: CRM.pseudoConstant,
+      RenderUtil: CRM.volunteerApp.RenderUtil
+    }
   }));
+  console.log(CRM.volunteerApp);
 
   Define.defineNeedsTable = Marionette.CompositeView.extend({
   id: "manage_needs",
