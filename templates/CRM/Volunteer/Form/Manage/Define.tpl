@@ -24,9 +24,11 @@
                 selected: role_id
         }) %>
       {/literal}</td>
-    <td><input type="text" name="display_start" value="<%= display_start %>" size="30"></td>
+    <td>
+      <input type="text" name="display_start_date" value="<%= display_start_date %>" size="20">
+      <input type="text" name="display_start_time" value="<%= display_start_time %>" size="10">
+    </td>
     <td><input type="text" name="duration" value="<%= duration %>" size="6"></td>
     <td><input type="text" name="visibility" value="<%= visibility %>" size="4"></td>
     <td><%= links %></td>
   </script>
-  
