@@ -4,7 +4,13 @@
   <h2>{ts}Manage Volunteer Needs{/ts}</h2>
   <form><table id="crm-vol-define-needs-dialog">
     <thead><tr>
-      <th>{ts}Needed{/ts}</th><th>{ts}Filled{/ts}</th><th>{ts}Role{/ts}</th><th>{ts}Start Time{/ts}</th><th>{ts}Scheduled Duration{/ts}</th><th>{ts}Visibility{/ts}</th><th>&nbsp;</th>
+      <th>{ts}Needed{/ts}</th>
+      <th>{ts}Filled{/ts}</th>
+      <th>{ts}Role{/ts}</th>
+      <th>{ts}Start Time{/ts}</th>
+      <th>{ts}Scheduled Duration{/ts}</th>
+      <th>{ts}Visibility{/ts}</th>
+      <th>&nbsp;</th>
     </tr></thead>
      <tbody id="crm-vol-define-needs-region"></tbody>
   </table>
