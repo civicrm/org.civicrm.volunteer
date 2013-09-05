@@ -59,15 +59,20 @@ CRM.volunteerApp.module('Define', function(Define, volunteerApp, Backbone, Mario
     id: "manage_needs",
     template: "#crm-vol-define-layout-tpl",
     itemView: Define.defineNeedsView,
+    itemViewContainer: 'tbody',
     className: 'crm-block crm-form-block crm-event-manage-volunteer-form-block',
-
-    appendHtml: function(collectionView, itemView){
-      collectionView.$("tbody").append(itemView.el);
-    },
 
     events: {
       'click #addNewNeed': 'addNewNeed',
+      'click #crm-vol-define-needs-dialog .sorting' : 'changeSort',
       'change :input': 'updateNeed'
+    },
+
+    changeSort: function(sender) {
+
+      Define.sortField = $(sender.currentTarget).attr('id');
+      var request = volunteerApp.Entities.getNeeds(true);
+      request.done(this.getCollection);
     },
 
     // no API calls here; this just updates the UI
@@ -111,7 +116,30 @@ CRM.volunteerApp.module('Define', function(Define, volunteerApp, Backbone, Mario
         }
       });
 
-    }
+      this.collection.createNewNeed(need);
+    },
+
+    getCollection :   function(data_array) {
+      var needsCollection = new volunteerApp.Entities.Needs(data_array);
+
+        for( index in needsCollection.models) {
+          need = needsCollection.models[index];
+          if (need.attributes.is_flexible == 1) {
+            need.attributes.is_flexible_form_value = 'checked';
+          }
+        }
+
+        cj('#crm-vol-define-needs-dialog').attr('data-project_id', needsCollection.models[0].attributes.project_id);
+
+        Define.needsTable.collection = needsCollection;
+
+        if (Define.sortField) {
+          Define.needsTable.collection.comparator = Define.sortField;
+          Define.needsTable.collection.sort();
+        }
+
+        Define.needsTable.render();
+    },
 
   });
 

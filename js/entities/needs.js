@@ -49,8 +49,7 @@ CRM.volunteerApp.module('Entities', function(Entities, volunteerApp, Backbone, M
             data.values[k].display_start_time = timeDate[1].substring(0, 5);
           }
         });
-        var needsCollection = new Entities.Needs(_.toArray(data.values));
-        defer.resolve(needsCollection);
+        defer.resolve(_.toArray(data.values));
       }
 
     });
