@@ -54,7 +54,6 @@ CRM.volunteerApp.module('Define', function(Define, volunteerApp, Backbone, Mario
       RenderUtil: CRM.volunteerApp.RenderUtil
     }
   }));
-  console.log(CRM.volunteerApp);
 
   Define.defineNeedsTable = Marionette.CompositeView.extend({
     id: "manage_needs",
