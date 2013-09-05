@@ -7,7 +7,6 @@ CRM.volunteerApp.module('Entities', function(Entities, volunteerApp, Backbone, M
       'display_start_time': null, // generated in getNeeds
       'is_active' : 1,
       'is_flexible': 0,
-      'is_flexible_form_value': null,
       'duration': 0,
       'role_id': null,
       'start_time': null,
@@ -21,12 +20,13 @@ CRM.volunteerApp.module('Entities', function(Entities, volunteerApp, Backbone, M
     model: NeedModel,
     comparator: 'start_time',
     createNewNeed : function(params) {
-        CRM.api('volunteer_need', 'create', params, {
-          success: function(result) {
-            var id = result.id;
-            var need = new NeedModel(result.values[id]);
-          }
-        });
+      var defer = $.Deferred();
+      CRM.api('volunteer_need', 'create', params, {
+        success: function(result) {
+          defer.resolve(result.id);
+        }
+      });
+      return defer.promise();
    }
  });
 
@@ -50,14 +50,6 @@ CRM.volunteerApp.module('Entities', function(Entities, volunteerApp, Backbone, M
           }
         });
         var needsCollection = new Entities.Needs(_.toArray(data.values));
-
-        for( index in needsCollection.models) {
-          need = needsCollection.models[index];
-          if (need.attributes.is_flexible == 1) {
-            need.attributes.is_flexible_form_value = 'checked';
-          }
-        }
-
         defer.resolve(needsCollection);
       }
 

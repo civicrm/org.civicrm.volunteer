@@ -54,7 +54,6 @@ CRM.volunteerApp.module('Define', function(Define, volunteerApp, Backbone, Mario
       RenderUtil: CRM.volunteerApp.RenderUtil
     }
   }));
-  console.log(CRM.volunteerApp);
 
   Define.defineNeedsTable = Marionette.CompositeView.extend({
     id: "manage_needs",
@@ -71,6 +70,7 @@ CRM.volunteerApp.module('Define', function(Define, volunteerApp, Backbone, Mario
       'change :input': 'updateNeed'
     },
 
+    // no API calls here; this just updates the UI
     addNewNeed: function () {
       var newNeed = new this.collection.model;
       this.collection.add(newNeed);
@@ -104,7 +104,13 @@ CRM.volunteerApp.module('Define', function(Define, volunteerApp, Backbone, Mario
       }
       need[field_name] = value;
 
-      this.collection.createNewNeed(need);
+      var request = this.collection.createNewNeed(need);
+      request.done(function(need_id) {
+        if (!row.data('id')) {
+          row.data('id', need_id);
+        }
+      });
+
     }
 
   });
