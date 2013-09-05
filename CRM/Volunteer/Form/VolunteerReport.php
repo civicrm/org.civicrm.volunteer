@@ -226,7 +226,7 @@ class CRM_Volunteer_Form_VolunteerReport extends CRM_Report_Form {
           array('title' => ts('Project'),
             'operatorType' => CRM_Report_Form::OP_MULTISELECT,
             'options' => $this->title,
-            'alias' => 'ce',
+            'alias' => 'project_civireport',
             'type' => CRM_Utils_Type::T_INT,
           ),
           'status_id' =>
