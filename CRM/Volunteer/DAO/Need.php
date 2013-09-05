@@ -217,6 +217,9 @@ class CRM_Volunteer_DAO_Need extends CRM_Core_DAO
           'type' => CRM_Utils_Type::T_INT,
           'title' => ts('Visibility') ,
           'default' => 'UL',
+          'pseudoconstant' => array(
+            'optionGroupName' => 'visibility',
+          )
         ) ,
         'role_id' => array(
           'name' => 'role_id',
