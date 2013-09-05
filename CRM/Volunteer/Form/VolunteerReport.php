@@ -64,6 +64,14 @@ class CRM_Volunteer_Form_VolunteerReport extends CRM_Report_Form {
         'dao' => 'CRM_Contact_DAO_Contact',
         'fields' =>
         array(
+          'contact_assignee' =>
+          array(
+            'name' => 'sort_name',
+            'title' => ts('Volunteer Name'),
+            'alias' => 'civicrm_contact_assignee_civireport',
+            'default' => TRUE,
+            'required' => TRUE,
+          ),
           'contact_source' =>
           array(
             'name' => 'sort_name',
@@ -71,36 +79,28 @@ class CRM_Volunteer_Form_VolunteerReport extends CRM_Report_Form {
             'alias' => 'civicrm_contact_source',
             'no_repeat' => TRUE,
           ),
-          'contact_assignee' =>
-          array(
-            'name' => 'sort_name',
-            'title' => ts('Volunteer Name'),
-            'alias' => 'civicrm_contact_assignee_civireport',
-            'default' => TRUE,
-          ),
           'contact_target' =>
           array(
             'name' => 'sort_name',
             'title' => ts('Target Contact Name'),
             'alias' => 'contact_civireport',
-            'default' => TRUE,
           ),
         ),
         'filters' =>
         array(
-          'contact_source' =>
-          array(
-            'name' => 'sort_name',
-            'alias' => 'civicrm_contact_source',
-            'title' => ts('Source Contact Name'),
-            'operator' => 'like',
-            'type' => CRM_Report_Form::OP_STRING,
-          ),
           'contact_assignee' =>
           array(
             'name' => 'sort_name',
             'alias' => 'civicrm_contact_assignee_civireport',
             'title' => ts('Volunteer Name'),
+            'operator' => 'like',
+            'type' => CRM_Report_Form::OP_STRING,
+          ),
+          'contact_source' =>
+          array(
+            'name' => 'sort_name',
+            'alias' => 'civicrm_contact_source',
+            'title' => ts('Source Contact Name'),
             'operator' => 'like',
             'type' => CRM_Report_Form::OP_STRING,
           ),
