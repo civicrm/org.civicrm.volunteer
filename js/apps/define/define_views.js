@@ -17,7 +17,24 @@ CRM.volunteerApp.module('Define', function(Define, volunteerApp, Backbone, Mario
       this.$("[name='display_start_time']").timeEntry(
         'setTime',
         this.$("[name='display_start_time']").val()
-        );
+      );
+
+      var publicVisibilityValue = _.invert(CRM.pseudoConstant.volunteer_need_visibility).Public;
+
+      this.$("[name='visibility_id']").val(publicVisibilityValue);
+
+      this.$("[name='visibility_id']").each(function(){
+        if ($(this).data('stored') == publicVisibilityValue) {
+          $(this).prop("checked", true);
+        }
+      });
+
+      this.$("[name='is_active']").each(function(){
+        if ($(this).data('stored') == 1) {
+          $(this).prop("checked", true);
+        }
+      });
+
     }
   };
 
@@ -68,18 +85,24 @@ CRM.volunteerApp.module('Define', function(Define, volunteerApp, Backbone, Mario
       };
 
       var field_name = e.currentTarget.name;
+      var value = e.currentTarget.value;
 
       switch (field_name) {
         case 'display_start_date':
         case 'display_start_time':
           field_name = 'start_time';
-          need[field_name] = row.find("[name='display_start_date']").val()
-          + ' ' + row.find("[name='display_start_time']").val();
+          value = row.find("[name='display_start_date']").val()
+            + ' ' + row.find("[name='display_start_time']").val();
           break;
-        default:
-          need[field_name] = e.currentTarget.value;
+        case 'visibility_id':
+          value = e.currentTarget.checked ? e.currentTarget.value
+            : _.invert(CRM.pseudoConstant.volunteer_need_visibility).Admin;
+          break;
+        case 'is_active':
+          value = e.currentTarget.checked ? e.currentTarget.value : 0;
           break;
       }
+      need[field_name] = value;
 
       this.collection.createNewNeed(need);
     }

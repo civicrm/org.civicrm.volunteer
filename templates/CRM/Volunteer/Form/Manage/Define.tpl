@@ -9,8 +9,8 @@
       <th>{ts}Role{/ts}</th>
       <th>{ts}Start Time{/ts}</th>
       <th>{ts}Scheduled Duration{/ts}</th>
-      <th>{ts}Visibility{/ts}</th>
-      <th>&nbsp;</th>
+      <th>{ts}Visible{/ts}</th>
+      <th>{ts}Enabled{/ts}</th>
     </tr></thead>
      <tbody id="crm-vol-define-needs-region"></tbody>
   </table>
@@ -35,6 +35,6 @@
       <input type="text" name="display_start_time" value="<%= display_start_time %>" size="10">
     </td>
     <td><input type="text" name="duration" value="<%= duration %>" size="6"></td>
-    <td><input type="text" name="visibility" value="<%= visibility %>" size="4"></td>
-    <td><%= links %></td>
+    <td><input type="checkbox" name="visibility_id" data-stored="<%= visibility_id %>"></td>
+    <td><input type="checkbox" name="is_active" value="1" data-stored="<%= is_active %>"></td>
   </script>
