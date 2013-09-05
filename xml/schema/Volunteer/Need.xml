@@ -70,6 +70,9 @@
     <default>NULL</default>
     <comment> Indicates whether this need is offered on public volunteer signup forms. Implicit FK to option_value row in visibility option_group.</comment>
     <add>4.4</add>
+    <pseudoconstant>
+      <optionGroupName>visibility</optionGroupName>
+    </pseudoconstant>
   </field>
   <field>
     <name>role_id</name>
