@@ -5,6 +5,7 @@ CRM.volunteerApp.module('Entities', function(Entities, volunteerApp, Backbone, M
     defaults: {
       'display_start_date': null, // generated in getNeeds
       'display_start_time': null, // generated in getNeeds
+      'is_active' : 1,
       'is_flexible': 0,
       'is_flexible_form_value': null,
       'duration': 0,
@@ -12,8 +13,7 @@ CRM.volunteerApp.module('Entities', function(Entities, volunteerApp, Backbone, M
       'start_time': null,
       'num_needed': null,
       'filled': null,
-      'visibility': null,
-      'links': null
+      'visibility_id': _.invert(CRM.pseudoConstant.volunteer_need_visibility).Public
     }
   });
 
