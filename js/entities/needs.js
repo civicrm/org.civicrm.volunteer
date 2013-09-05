@@ -21,12 +21,13 @@ CRM.volunteerApp.module('Entities', function(Entities, volunteerApp, Backbone, M
     model: NeedModel,
     comparator: 'start_time',
     createNewNeed : function(params) {
-        CRM.api('volunteer_need', 'create', params, {
-          success: function(result) {
-            var id = result.id;
-            var need = new NeedModel(result.values[id]);
-          }
-        });
+      var defer = $.Deferred();
+      CRM.api('volunteer_need', 'create', params, {
+        success: function(result) {
+          defer.resolve(result.id);
+        }
+      });
+      return defer.promise();
    }
  });
 
