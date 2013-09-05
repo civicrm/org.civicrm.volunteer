@@ -54,7 +54,6 @@
     <td>
       {literal}
         <%= RenderUtil.select({
-                id: 'crm-vol-role-select',
                 name: 'role_id',
                 options: _.extend(pseudoConstant.volunteer_role, {0:''}),
                 selected: role_id
