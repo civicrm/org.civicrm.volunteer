@@ -59,6 +59,26 @@ class CRM_Volunteer_Form_VolunteerReport extends CRM_Report_Form {
     }
     asort($this->title);
     $this->_columns = array(
+      'project' =>
+      array(
+        'fields' => 
+        array(
+          'project' => 
+          array(
+            'name' => 'title',
+            'title' => ts('Project'),
+            'no_repeat' => TRUE,
+            'default' => TRUE,
+          ),
+        ),
+        'alias' => 'project',
+        'order_bys' =>
+        array(
+          'title' =>
+          array('title' => ts('Project'), 'default' => 1),
+        ),
+        'grouping' => 'project-fields',
+      ),
       'civicrm_contact' =>
       array(
         'dao' => 'CRM_Contact_DAO_Contact',
@@ -130,42 +150,22 @@ class CRM_Volunteer_Form_VolunteerReport extends CRM_Report_Form {
         ),
           'alias' => 'civicrm_contact_assignee',
       ),
-      'project' =>
-      array(
-        'fields' => 
-        array(
-          'project' => 
-          array(
-            'name' => 'title',
-            'title' => ts('Project'),
-            'no_repeat' => TRUE,
-            'default' => TRUE,
-          ),
-        ),
-        'alias' => 'project',
-        'order_bys' =>
-        array(
-          'title' =>
-          array('title' => ts('Project'), 'default' => 1),
-        ),
-        'grouping' => 'project-fields',
-      ),
       'civicrm_email' =>
       array(
         'dao' => 'CRM_Core_DAO_Email',
         'fields' =>
         array(
+          'contact_assignee_email' =>
+          array(
+            'name' => 'email',
+            'title' => ts('Volunteer Email'),
+            'alias' => 'civicrm_email_assignee',
+          ),
           'contact_source_email' =>
           array(
             'name' => 'email',
             'title' => ts('Source Contact Email'),
             'alias' => 'civicrm_email_source',
-          ),
-          'contact_assignee_email' =>
-          array(
-            'name' => 'email',
-            'title' => ts('Assignee Contact Email'),
-            'alias' => 'civicrm_email_assignee',
           ),
           'contact_target_email' =>
           array(
@@ -207,10 +207,6 @@ class CRM_Volunteer_Form_VolunteerReport extends CRM_Report_Form {
           array('title' => ts('Activity Status'),
             'default' => TRUE,
             'type' => CRM_Utils_Type::T_STRING,
-          ),
-          'duration' =>
-          array('title' => ts('Duration'),
-            'type' => CRM_Utils_Type::T_INT,
           ),
         ),
         'filters' =>
@@ -681,10 +677,10 @@ function statistics(&$rows) {
         if ($value = $row['civicrm_activity_activity_type_id']) {
           $rows[$rowNum]['civicrm_activity_activity_type_id'] = $activityType[$value];
           if ($viewLinks) {
-            // Check for target contact id(s) and use the first contact id in that list for view activity link if found,
+            // Check for assignee contact id(s) (since they are the volunteer and use the first contact id in that list for view activity link if found,
             // else use source contact id
-            if (!empty($rows[$rowNum]['civicrm_activity_target_target_contact_id'])) {
-              $targets = explode($seperator, $rows[$rowNum]['civicrm_activity_target_target_contact_id']);
+            if (!empty($rows[$rowNum]['civicrm_activity_assignment_contact_id'])) {
+              $targets = explode($seperator, $rows[$rowNum]['civicrm_activity_assignment_contact_id']);
               $cid = $targets[0];
             }
             else {
