@@ -32,7 +32,7 @@ CRM.volunteerApp.module('Entities', function(Entities, volunteerApp, Backbone, M
 
   Entities.getNeeds = function(alsoFetchAssignments) {
     var defer = $.Deferred();
-    var params = {project_id: volunteerApp.vid};
+    var params = {project_id: volunteerApp.project_id};
     if (alsoFetchAssignments) {
       params['api.volunteer_assignment.get'] = {};
     }
