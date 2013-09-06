@@ -12,7 +12,7 @@ CRM.volunteerApp.module('Define', function(Define, volunteerApp, Backbone, Mario
       if (this.model.get('is_flexible') == 1) {
         this.$("[name='is_active']").prop('disabled', true);
         this.$("[name='duration']").val('').prop('disabled', true);
-        this.$("[name='num_needed']").val('').prop('disabled', true);
+        this.$("[name='quantity']").val('').prop('disabled', true);
         this.$("[name='role_id']").prop('disabled', true);
         this.$("[name='display_start_date']").val('Any role, any time').prop('disabled', true);
         this.$("[name='display_start_time']").prop('disabled', true);
