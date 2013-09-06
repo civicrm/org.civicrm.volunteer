@@ -1,0 +1,45 @@
+{*
+ +--------------------------------------------------------------------+
+ | CiviCRM version 4.4                                                |
+ +--------------------------------------------------------------------+
+ | Copyright CiviCRM LLC (c) 2004-2013                                |
+ +--------------------------------------------------------------------+
+ | This file is a part of CiviCRM.                                    |
+ |                                                                    |
+ | CiviCRM is free software; you can copy, modify, and distribute it  |
+ | under the terms of the GNU Affero General Public License           |
+ | Version 3, 19 November 2007 and the CiviCRM Licensing Exception.   |
+ |                                                                    |
+ | CiviCRM is distributed in the hope that it will be useful, but     |
+ | WITHOUT ANY WARRANTY; without even the implied warranty of         |
+ | MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.               |
+ | See the GNU Affero General Public License for more details.        |
+ |                                                                    |
+ | You should have received a copy of the GNU Affero General Public   |
+ | License and the CiviCRM Licensing Exception along                  |
+ | with this program; if not, contact CiviCRM LLC                     |
+ | at info[AT]civicrm[DOT]org. If you have questions about the        |
+ | GNU Affero General Public License or the licensing of CiviCRM,     |
+ | see the CiviCRM license FAQ at http://civicrm.org/licensing        |
+ +--------------------------------------------------------------------+
+*}
+{crmAPI var='res' entity='OptionGroup' action='getsingle' sequential=1 name='volunteer_role'}
+{assign var=roleGid value=$res.id}
+{capture assign=volRoleURL}{crmURL p="civicrm/admin/optionValue" q="reset=1&action=browse&gid=$roleGid"}{/capture}
+
+{htxt id="volunteer-define-title"}
+  {ts}Volunteer Needs{/ts}
+{/htxt}
+{htxt id="volunteer-define"}
+  <p>{$volRoleURL}<br />
+    {ts 1=$volRoleURL}
+    <p>Use this form to define the number of volunteers needed for each role and time slot.
+    The first slot listed is a default 'flexible' slot (for volunteers who are available at any time for any role).
+    For each additional slot, you will select a role, set the number of volunteers needed, set a start date and time,
+    and indicate the duration in minutes. If you want to include a Sign Up button on the event information page, check
+    the 'Visible' column for at least one of the slots ('Visible' slots will be available on the public signup form).</p>
+    <p> If this is a new type of volunteer project, you may need to create additional volunteer roles first from
+    <a href=%1>Administer > System Settings > Option Groups > Volunteer Role</a>.
+    {/ts}
+  </p>
+{/htxt}

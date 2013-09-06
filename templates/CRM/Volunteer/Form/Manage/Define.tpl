@@ -1,20 +1,56 @@
+{*
+ +--------------------------------------------------------------------+
+ | CiviCRM version 4.4                                                |
+ +--------------------------------------------------------------------+
+ | Copyright CiviCRM LLC (c) 2004-2013                                |
+ +--------------------------------------------------------------------+
+ | This file is a part of CiviCRM.                                    |
+ |                                                                    |
+ | CiviCRM is free software; you can copy, modify, and distribute it  |
+ | under the terms of the GNU Affero General Public License           |
+ | Version 3, 19 November 2007 and the CiviCRM Licensing Exception.   |
+ |                                                                    |
+ | CiviCRM is distributed in the hope that it will be useful, but     |
+ | WITHOUT ANY WARRANTY; without even the implied warranty of         |
+ | MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.               |
+ | See the GNU Affero General Public License for more details.        |
+ |                                                                    |
+ | You should have received a copy of the GNU Affero General Public   |
+ | License and the CiviCRM Licensing Exception along                  |
+ | with this program; if not, contact CiviCRM LLC                     |
+ | at info[AT]civicrm[DOT]org. If you have questions about the        |
+ | GNU Affero General Public License or the licensing of CiviCRM,     |
+ | see the CiviCRM license FAQ at http://civicrm.org/licensing        |
+ +--------------------------------------------------------------------+
+*}
 
+{* Contains js templates for backbone-based volunteer needs sub-application *}
 
 <script type="text/template" id="crm-vol-define-layout-tpl">
-  <h2>{ts}Manage Volunteer Needs{/ts}</h2>
-  <form><div class="dataTables_wrapper"><table id="crm-vol-define-needs-dialog" class="display">
+	<div id="help">
+		{ts}Use this form to define the number of volunteers needed for each role and time slot. The first slot listed is a default 'flexible' slot (for volunteers who are available at any time for any role).{/ts} {help id="volunteer-define" file="CRM/Volunteer/Form/Manage/Define.hlp"}
+	</div>
+  <form>
+	<div class="dataTables_wrapper">
+	<table id="crm-vol-define-needs-dialog" class="display">
     <thead><tr>
-      <th class="sorting" id="num_needed">{ts}Needed{/ts}</th><th class="sorting" id="filled">{ts}Filled{/ts}</th><th class="sorting" id="role_id">{ts}Role{/ts}</th><th class="sorting" id="start_date">{ts}Start Time{/ts}</th><th class="sorting" id="duration">{ts}Scheduled Duration{/ts}</th><th class="sorting" id="visibility">{ts}Visibility{/ts}</th><th>&nbsp;</th>
+			<th class="sorting" id="role_id">{ts}Role{/ts}</th>
+      <th class="sorting" id="num_needed">{ts}Volunteers<br />Needed{/ts}</th>
+			<th class="sorting" id="start_date">{ts}Start Date/Time{/ts}</th>
+			<th class="sorting" id="duration">{ts}Scheduled<br />(minutes){/ts}</th>
+			<th class="sorting" id="visibility">{ts}Public?{/ts}</th>
+			<th>Enabled?</th>
     </tr></thead>
-     <tbody id="crm-vol-define-needs-region"></tbody>
-  </table></div>
-  <a class="button" id="addNewNeed" href="#"><span><div class="icon add-icon"></div>Add a Need</span></a>
+    <tbody id="crm-vol-define-needs-region"></tbody>
+  </table>
+	</div>
+	<div class="crm-submit-buttons">
+  	<a class="button" id="addNewNeed" href="#"><span><div class="icon add-icon"></div>Add a Need</span></a>
+	</div>
   </form>
 </script>
 
 <script type="text/template" id="crm-vol-define-new-need-tpl">
-    <td><input type="text" name="num_needed" value="<%= num_needed %>" size="4"></td>
-    <td><input type="text" name="filled" value="<%= filled %>" size="4" disabled></td>
     <td>
       {literal}
         <%= RenderUtil.select({
@@ -23,7 +59,9 @@
                 options: _.extend(pseudoConstant.volunteer_role, {0:''}),
                 selected: role_id
         }) %>
-      {/literal}</td>
+      {/literal}
+		</td>
+    <td><input type="text" name="num_needed" value="<%= num_needed %>" size="4"></td>
     <td>
       <input type="text" name="display_start_date" value="<%= display_start_date %>" size="20">
       <input type="text" name="display_start_time" value="<%= display_start_time %>" size="10">
