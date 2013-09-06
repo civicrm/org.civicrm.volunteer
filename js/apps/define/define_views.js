@@ -77,8 +77,9 @@ CRM.volunteerApp.module('Define', function(Define, volunteerApp, Backbone, Mario
 
     // no API calls here; this just updates the UI
     addNewNeed: function () {
-      var newNeed = new this.collection.model;
+      var newNeed = new this.collection.model();
       this.collection.add(newNeed);
+      this.render();
     },
 
     updateNeed: function(e) {
