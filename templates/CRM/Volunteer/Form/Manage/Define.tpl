@@ -2,18 +2,12 @@
 
 <script type="text/template" id="crm-vol-define-layout-tpl">
   <h2>{ts}Manage Volunteer Needs{/ts}</h2>
-  <form><table id="crm-vol-define-needs-dialog">
+  <form><div class="dataTables_wrapper"><table id="crm-vol-define-needs-dialog" class="display">
     <thead><tr>
-      <th>{ts}Needed{/ts}</th>
-      <th>{ts}Filled{/ts}</th>
-      <th>{ts}Role{/ts}</th>
-      <th>{ts}Start Time{/ts}</th>
-      <th>{ts}Scheduled Duration{/ts}</th>
-      <th>{ts}Visible{/ts}</th>
-      <th>{ts}Enabled{/ts}</th>
+      <th class="sorting" id="num_needed">{ts}Needed{/ts}</th><th class="sorting" id="filled">{ts}Filled{/ts}</th><th class="sorting" id="role_id">{ts}Role{/ts}</th><th class="sorting" id="start_date">{ts}Start Time{/ts}</th><th class="sorting" id="duration">{ts}Scheduled Duration{/ts}</th><th class="sorting" id="visibility">{ts}Visibility{/ts}</th><th>&nbsp;</th>
     </tr></thead>
      <tbody id="crm-vol-define-needs-region"></tbody>
-  </table>
+  </table></div>
   <a class="button" id="addNewNeed" href="#"><span><div class="icon add-icon"></div>Add a Need</span></a>
   </form>
 </script>
