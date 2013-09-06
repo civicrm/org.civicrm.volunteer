@@ -35,7 +35,7 @@
 	<table id="crm-vol-define-needs-dialog" class="display">
     <thead><tr>
 			<th class="sorting" id="role_id">{ts}Role{/ts}</th>
-      <th class="sorting" id="num_needed">{ts}Volunteers<br />Needed{/ts}</th>
+                        <th class="sorting" id="quantity">{ts}Volunteers<br />Needed{/ts}</th>
 			<th class="sorting" id="start_date">{ts}Start Date/Time{/ts}</th>
 			<th class="sorting" id="duration">{ts}Scheduled<br />(minutes){/ts}</th>
 			<th class="sorting" id="visibility">{ts}Public?{/ts}</th>
@@ -60,7 +60,7 @@
         }) %>
       {/literal}
 		</td>
-    <td><input type="text" name="num_needed" value="<%= num_needed %>" size="4"></td>
+    <td><input type="text" name="quantity" value="<%= quantity %>" size="4"></td>
     <td>
       <input type="text" name="display_start_date" value="<%= display_start_date %>" size="20">
       <input type="text" name="display_start_time" value="<%= display_start_time %>" size="10">

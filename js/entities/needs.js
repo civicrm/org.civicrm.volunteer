@@ -10,7 +10,7 @@ CRM.volunteerApp.module('Entities', function(Entities, volunteerApp, Backbone, M
       'duration': 0,
       'role_id': null,
       'start_time': null,
-      'num_needed': null,
+      'quantity': null,
       'filled': null,
       'visibility_id': _.invert(CRM.pseudoConstant.volunteer_need_visibility).Public
     }
