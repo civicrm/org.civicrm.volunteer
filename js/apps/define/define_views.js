@@ -122,9 +122,13 @@ CRM.volunteerApp.module('Define', function(Define, volunteerApp, Backbone, Mario
       need[field_name] = value;
 
       var request = this.collection.createNewNeed(need);
-      request.done(function(need_id) {
-        if (!row.data('id')) {
-          row.data('id', need_id);
+      request.done(function(r) {
+        console.log(r);
+        if (!row.data('id') && r.id != 'undefined') {
+          row.data('id', r.id);
+        }
+        if (r.is_error == 0) {
+          CRM.alert('', ts('Saved'), 'success');
         }
       });
 
