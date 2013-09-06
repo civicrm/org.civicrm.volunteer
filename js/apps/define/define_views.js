@@ -134,7 +134,6 @@ CRM.volunteerApp.module('Define', function(Define, volunteerApp, Backbone, Mario
         }
       });
 
-      this.collection.createNewNeed(need);
     },
 
     getCollection :   function(data_array) {
