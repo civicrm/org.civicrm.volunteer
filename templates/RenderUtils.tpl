@@ -9,7 +9,7 @@ FIXME: escape "value" attribute
 {* orginal: https://github.com/civicrm/civihr/blob/master/hrjob/templates/CRM/HRJob/Underscore/renderutil-select.tpl *}
 {literal}
 <script id="renderutil-select-template" type="text/template">
-<select id="<%= id %>" name="<%= name %>">
+<select name="<%= name %>">
 <% _.each(options, function(optionLabel, optionValue) { %>
     <option value="<%- optionValue %>" <%= selected == optionValue ? 'selected' : '' %>><%- optionLabel %></option>
     <% }); %>

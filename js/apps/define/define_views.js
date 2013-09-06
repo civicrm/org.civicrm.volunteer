@@ -6,7 +6,20 @@ CRM.volunteerApp.module('Define', function(Define, volunteerApp, Backbone, Mario
     className: 'crm-vol-define-need',
 
     onRender: function() {
+      $('#crm-vol-define-needs-region .crm-loading-element').closest('tr').remove();
+
       this.$el.attr('data-id', this.model.get('id'));
+
+      // special treatment for the flexible need
+      if (this.model.get('is_flexible') == 1) {
+        this.$("[name='is_active']").prop('disabled', true);
+        this.$("[name='duration']").val('').prop('disabled', true);
+        this.$("[name='quantity']").val('').prop('disabled', true);
+        this.$("[name='role_id']").prop('disabled', true);
+        this.$("[name='display_start_date']").val('Any role, any time').prop('disabled', true);
+        this.$("[name='display_start_time']").prop('disabled', true);
+      }
+
       // TODO: respect user-configured time formats
       this.$("[name='display_start_date']").addClass('dateplugin').datepicker({
         dateFormat: "MM d, yy"
@@ -79,6 +92,7 @@ CRM.volunteerApp.module('Define', function(Define, volunteerApp, Backbone, Mario
     addNewNeed: function () {
       var newNeed = new this.collection.model;
       this.collection.add(newNeed);
+      return false;
     },
 
     updateNeed: function(e) {
@@ -110,9 +124,12 @@ CRM.volunteerApp.module('Define', function(Define, volunteerApp, Backbone, Mario
       need[field_name] = value;
 
       var request = this.collection.createNewNeed(need);
-      request.done(function(need_id) {
-        if (!row.data('id')) {
-          row.data('id', need_id);
+      request.done(function(r) {
+        if (!row.data('id') && r.id != 'undefined') {
+          row.data('id', r.id);
+        }
+        if (r.is_error == 0) {
+          CRM.alert('', ts('Saved'), 'success');
         }
       });
 
