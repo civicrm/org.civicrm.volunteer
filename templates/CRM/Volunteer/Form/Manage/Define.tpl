@@ -35,13 +35,13 @@
 	<table id="crm-vol-define-needs-dialog" class="display">
     <thead><tr>
 			<th class="sorting" id="role_id">{ts}Role{/ts}</th>
-      <th class="sorting" id="num_needed">{ts}Volunteers<br />Needed{/ts}</th>
+                        <th class="sorting" id="quantity">{ts}Volunteers<br />Needed{/ts}</th>
 			<th class="sorting" id="start_date">{ts}Start Date/Time{/ts}</th>
 			<th class="sorting" id="duration">{ts}Scheduled<br />(minutes){/ts}</th>
 			<th class="sorting" id="visibility">{ts}Public?{/ts}</th>
 			<th>Enabled?</th>
     </tr></thead>
-    <tbody id="crm-vol-define-needs-region"></tbody>
+    <tbody id="crm-vol-define-needs-region"><tr><td colspan="6"><div class="crm-loading-element">{ts}Loading{/ts}...</div></td></tr></tbody>
   </table>
 	</div>
 	<div class="crm-submit-buttons">
@@ -54,14 +54,13 @@
     <td>
       {literal}
         <%= RenderUtil.select({
-                id: 'crm-vol-role-select',
                 name: 'role_id',
                 options: _.extend(pseudoConstant.volunteer_role, {0:''}),
                 selected: role_id
         }) %>
       {/literal}
 		</td>
-    <td><input type="text" name="num_needed" value="<%= num_needed %>" size="4"></td>
+    <td><input type="text" name="quantity" value="<%= quantity %>" size="4"></td>
     <td>
       <input type="text" name="display_start_date" value="<%= display_start_date %>" size="20">
       <input type="text" name="display_start_time" value="<%= display_start_time %>" size="10">
