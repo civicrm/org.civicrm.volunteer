@@ -123,7 +123,6 @@ CRM.volunteerApp.module('Define', function(Define, volunteerApp, Backbone, Mario
 
       var request = this.collection.createNewNeed(need);
       request.done(function(r) {
-        console.log(r);
         if (!row.data('id') && r.id != 'undefined') {
           row.data('id', r.id);
         }
