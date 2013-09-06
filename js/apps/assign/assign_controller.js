@@ -5,14 +5,14 @@ CRM.volunteerApp.module('Assign', function(Assign, volunteerApp, Backbone, Mario
   Assign.on('start', function() {
     var request = volunteerApp.Entities.getNeeds(true);
     
-    request.done(function(needsCollection) {
-      
+    request.done(function(arrData) {
+
       var flexibleView = new Assign.needsView({
-        collection: volunteerApp.Entities.Needs.getFlexible(needsCollection)
+        collection: volunteerApp.Entities.Needs.getFlexible(arrData)
       });
       
       var scheduledView = new Assign.needsView({
-        collection: volunteerApp.Entities.Needs.getScheduled(needsCollection)
+        collection: volunteerApp.Entities.Needs.getScheduled(arrData)
       });
 
       Assign.layout.flexibleRegion.show(flexibleView);
