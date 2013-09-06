@@ -56,11 +56,13 @@ CRM.volunteerApp.module('Entities', function(Entities, volunteerApp, Backbone, M
     return defer.promise();
   };
 
-  Entities.Needs.getFlexible = function(needsCollection) {
+  Entities.Needs.getFlexible = function(arrData) {
+    var needsCollection = new Entities.Needs(arrData);
     return new Entities.Needs(needsCollection.where({is_flexible: '1'}));
   };
 
-  Entities.Needs.getScheduled = function(needsCollection) {
+  Entities.Needs.getScheduled = function(arrData) {
+    var needsCollection = new Entities.Needs(arrData);
     return new Entities.Needs(needsCollection.where({is_flexible: '0'}));
   };
 
