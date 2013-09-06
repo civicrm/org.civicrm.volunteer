@@ -15,7 +15,8 @@ cj(function($) {
     $('#crm-volunteer-dialog').dialog({
       modal: true,
       title: $(this).text(),
-      minWidth: 700,
+      minWidth: 800,
+      position: {my: 'top', at: 'top+25%', of: window},
       close: function() {
         CRM.volunteerApp.module(CRM.volunteerApp.tab).stop();
       }
