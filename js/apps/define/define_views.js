@@ -6,6 +6,8 @@ CRM.volunteerApp.module('Define', function(Define, volunteerApp, Backbone, Mario
     className: 'crm-vol-define-need',
 
     onRender: function() {
+      $('#crm-vol-define-needs-region .crm-loading-element').closest('tr').remove();
+
       this.$el.attr('data-id', this.model.get('id'));
 
       // special treatment for the flexible need

@@ -41,7 +41,7 @@
 			<th class="sorting" id="visibility">{ts}Public?{/ts}</th>
 			<th>Enabled?</th>
     </tr></thead>
-    <tbody id="crm-vol-define-needs-region"></tbody>
+    <tbody id="crm-vol-define-needs-region"><tr><td colspan="6"><div class="crm-loading-element">{ts}Loading{/ts}...</div></td></tr></tbody>
   </table>
 	</div>
 	<div class="crm-submit-buttons">
