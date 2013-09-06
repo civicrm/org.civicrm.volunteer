@@ -91,6 +91,7 @@ CRM.volunteerApp.module('Define', function(Define, volunteerApp, Backbone, Mario
       var newNeed = new this.collection.model();
       this.collection.add(newNeed);
       this.render();
+      return false;
     },
 
     updateNeed: function(e) {
