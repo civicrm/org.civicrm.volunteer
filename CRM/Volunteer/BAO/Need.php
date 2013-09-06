@@ -69,32 +69,6 @@ class CRM_Volunteer_BAO_Need extends CRM_Volunteer_DAO_Need {
     return $need;
   }
 
-  function delete($params) {
-      if (empty($params)) {
-          CRM_Core_Error::fatal('No parameters supplied.');
-      }
-
-      $custom_group = civicrm_api('CustomGroup', 'getsingle',
-              array('name' => 'CiviVolunteer')
-              );
-      if (isset($custom_group['is_error']) && $custom_group['is_error'] == 1) {
-          CRM_Core_Error::fatal('CiviVolunteer Custom Group not defined.');
-      } else {
-          $group_id = $custom_group['id'];
-          $table_name = $custom_group['table_name'];
-      }
-
-      $result = civicrm_api('CustomFields', 'getFields', $params);
-
-      $need = new CRM_Volunteer_DAO_Need();
-      $need->copyValues($params);
-
-      $need->is_active = 0;
-      $result = $need->save();
-
-      return $result;
-  }
-
   /**
    * Gets label to be used for Flexible Needs.
    *
