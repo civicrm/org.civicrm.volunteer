@@ -101,7 +101,7 @@ CRM.volunteerApp.module('Define', function(Define, volunteerApp, Backbone, Mario
       var id = row.data('id');
       var need = {
         id: id,
-        project_id: cj('#crm-vol-define-needs-dialog').data('project_id')
+        project_id: CRM.volunteerApp.project_id
       };
 
       var field_name = e.currentTarget.name;
@@ -134,7 +134,6 @@ CRM.volunteerApp.module('Define', function(Define, volunteerApp, Backbone, Mario
         }
       });
 
-      this.collection.createNewNeed(need);
     },
 
     getCollection :   function(data_array) {
@@ -146,8 +145,6 @@ CRM.volunteerApp.module('Define', function(Define, volunteerApp, Backbone, Mario
             need.attributes.is_flexible_form_value = 'checked';
           }
         }
-
-        cj('#crm-vol-define-needs-dialog').attr('data-project_id', needsCollection.models[0].attributes.project_id);
 
         Define.needsTable.collection = needsCollection;
 
