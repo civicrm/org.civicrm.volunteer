@@ -175,6 +175,31 @@ class CRM_Volunteer_Form_VolunteerReport extends CRM_Report_Form {
           ),
         ),
       ),
+      'civicrm_phone' =>
+      array(
+        'dao' => 'CRM_Core_DAO_Phone',
+        'fields' =>
+        array(
+          'contact_assignee_phone' =>
+          array(
+            'name' => 'phone',
+            'title' => ts('Volunteer Phone'),
+            'alias' => 'civicrm_phone_assignee',
+          ),
+          'contact_source_phone' =>
+          array(
+            'name' => 'phone',
+            'title' => ts('Source Contact Phone'),
+            'alias' => 'civicrm_phone_source',
+          ),
+          'contact_target_phone' =>
+          array(
+            'name' => 'phone',
+            'title' => ts('Target Contact Phone'),
+            'alias' => 'civicrm_phone_target',
+          ),
+        ),
+      ),
       'civicrm_activity' =>
       array(
         'dao' => 'CRM_Activity_DAO_Activity',
@@ -469,6 +494,20 @@ class CRM_Volunteer_Form_VolunteerReport extends CRM_Report_Form {
             LEFT JOIN civicrm_email civicrm_email_assignee
                    ON {$this->_aliases['civicrm_activity_assignment']}.contact_id = civicrm_email_assignee.contact_id AND
                       civicrm_email_assignee.is_primary = 1 ";
+    }
+    if ($this->isTableSelected('civicrm_phone')) {
+      $this->_from .= "
+            LEFT JOIN civicrm_phone civicrm_phone_source
+                   ON {$this->_aliases['civicrm_activity_source']}.contact_id = civicrm_phone_source.contact_id AND
+                      civicrm_phone_source.is_primary = 1
+
+            LEFT JOIN civicrm_phone civicrm_phone_target
+                   ON {$this->_aliases['civicrm_activity_target']}.contact_id = civicrm_phone_target.contact_id AND
+                      civicrm_phone_target.is_primary = 1
+
+            LEFT JOIN civicrm_phone civicrm_phone_assignee
+                   ON {$this->_aliases['civicrm_activity_assignment']}.contact_id = civicrm_phone_assignee.contact_id AND
+                      civicrm_phone_assignee.is_primary = 1 ";
     }
   }
 
