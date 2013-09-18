@@ -9,6 +9,12 @@ CRM.volunteerApp.module('Assign', function(Assign, volunteerApp, Backbone, Mario
     onRender: function () {
       // Store id to facilitate dragging & dropping
       this.$el.attr('data-id', this.model.get('id'));
+    },
+
+    templateHelpers: {
+      contactUrl: function(cid) {
+        return CRM.url('civicrm/contact/view', {reset: 1, cid: cid});
+      }
     }
   };
 
