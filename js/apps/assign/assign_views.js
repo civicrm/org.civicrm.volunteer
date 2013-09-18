@@ -62,8 +62,7 @@ CRM.volunteerApp.module('Assign', function(Assign, volunteerApp, Backbone, Mario
           CRM.api('volunteer_assignment', 'create', {
             id: id,
             volunteer_need_id: thisView.model.get('id'),
-            status_id: status[thisView.isFlexible ? 'Available' : 'Scheduled'],
-            time_scheduled_minutes: thisView.model.get('duration')
+            status_id: status[thisView.isFlexible ? 'Available' : 'Scheduled']
           });
         }
       });

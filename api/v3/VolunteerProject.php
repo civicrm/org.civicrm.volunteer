@@ -76,6 +76,7 @@ function civicrm_api3_volunteer_project_get($params) {
   return _civicrm_api3_basic_get(_civicrm_api3_get_BAO(__FUNCTION__), $params);
 }
 function _civicrm_api3_volunteer_project_get_spec(&$params) {
+  $params['id']['api.aliases'] = array('project_id');
 }
 /**
  * delete an existing project
