@@ -219,9 +219,9 @@ class CRM_Volunteer_Form_VolunteerSignUp extends CRM_Core_Form {
     $cid = CRM_Utils_Array::value('userID', $_SESSION['CiviCRM'], NULL);
     $values = $this->controller->exportValues();
 
-    // if role id matches flexible role id constant, ignore the submitted need
-    // id and use the need id of the flexible need
-    if ((int) CRM_Utils_Array::value('volunteer_role_id', $values) === self::FLEXIBLE_ROLE_ID) {
+    // Role id is not present in form $values when the only public need is the flexible need.
+    // So if role id is net set OR if it matches flexible role id constant then use the flexible need id
+    if (! isset($values['volunteer_role_id']) || (int) CRM_Utils_Array::value('volunteer_role_id', $values) === self::FLEXIBLE_ROLE_ID) {
       foreach ($this->_needs as $n) {
         if ($n['is_flexible'] === '1') {
           $values['volunteer_need_id'] = $n['id'];
