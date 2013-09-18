@@ -259,27 +259,43 @@ class CRM_Volunteer_BAO_Assignment extends CRM_Activity_DAO_Activity {
    * @return mixed Boolean FALSE on failure; activity_id on success
    */
   public static function createVolunteerActivity(array $params) {
-    $result = FALSE;
-
-    if (!CRM_Utils_Array::value('id', $params) && !CRM_Utils_Array::value('volunteer_need_id', $params)) {
+    if (empty($params['id']) && empty($params['volunteer_need_id'])) {
       CRM_Core_Error::fatal('Mandatory key missing from params array: volunteer_need_id');
     }
 
-    $customFields = self::getCustomFields();
+    // Set default date & duration
+    if (!empty($params['volunteer_need_id']) && (empty($params['activity_date_time']) || empty($params['time_scheduled_minutes']))) {
+      $need = civicrm_api3('volunteer_need', 'getsingle', array('id' => $params['volunteer_need_id']));
+      $params['time_scheduled_minutes'] = CRM_Utils_Array::value('time_scheduled_minutes', $params, CRM_Utils_Array::value('duration', $need));
+      // Look up the base entity (e.g. event) as a fallback default
+      if (empty($need['start_time'])) {
+        $project = civicrm_api3('volunteer_project', 'getsingle', array('id' => $need['project_id']));
+        $event = civicrm_api(str_replace('civicrm_', '', $project['entity_table']), 'getsingle', array('id' => $project['entity_id'], 'version' => 3));
+        $need['start_time'] = CRM_Utils_Array::value('start_date', $event);
+      }
+      $params['activity_date_time'] = CRM_Utils_Array::value('activity_date_time', $params, CRM_Utils_Array::value('start_time', $need));
+    }
+
+    if (!isset($params['duration'])) {
+      $params['duration'] = $params['time_scheduled_minutes'];
+    }
+
     $params['activity_type_id'] = self::volunteerActivityTypeId();
 
-    foreach ($customFields as $field_name => $data) {
-      $params['custom_' . $data['id']] = CRM_Utils_Array::value($field_name, $params, NULL);
-      unset($params[$field_name]);
+    foreach(self::getCustomFields() as $fieldName => $field) {
+      if (isset($params[$fieldName])) {
+        $params['custom_' . $field['id']] = $params[$fieldName];
+        unset($params[$fieldName]);
+      }
     }
 
     $params['version'] = 3;
     $activity = civicrm_api('Activity', 'create', $params);
 
-    if(!CRM_Utils_Array::value('is_error', $activity)) {
-      $result = $activity['id'];
+    if (!empty($activity['id'])) {
+      return $activity['id'];
     }
-    return $result;
+    return FALSE;
   }
 
   /**
