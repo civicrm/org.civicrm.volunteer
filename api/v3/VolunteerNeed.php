@@ -64,7 +64,7 @@ function _civicrm_api3_volunteer_need_create_spec(&$params) {
 /**
  * Returns array of needs  matching a set of one or more group properties
  *
- * @param array $params  (referance) Array of one or more valid
+ * @param array $params  Array of one or more valid
  *                       property_name=>value pairs. If $params is set
  *                       as null, all needs will be returned
  *

@@ -46,23 +46,11 @@
  * @access public
  */
 function civicrm_api3_volunteer_assignment_create($params) {
-  $params['activity_type_id'] = CRM_Volunteer_BAO_Assignment::volunteerActivityTypeId();
-  $customFields = CRM_Volunteer_BAO_Assignment::getCustomFields();
-  foreach($customFields as $fieldName => $field) {
-    if (isset($params[$fieldName])) {
-      $params['custom_' . $field['id']] = $params[$fieldName];
-      unset($params[$fieldName]);
-    }
+  $result = CRM_Volunteer_BAO_Assignment::createVolunteerActivity($params);
+  if ($result) {
+    return civicrm_api('volunteer_assignment', 'get', array('version' => 3, 'id' => $result));
   }
-  if (isset($params['contact_id'])) {
-    $params['assignee_contact_id'] = $params['contact_id'];
-    unset($params['contact_id']);
-  }
-  $result = civicrm_api('activity', 'create', $params);
-  if (!empty($result['is_error'])) {
-    return $result;
-  }
-  return civicrm_api('volunteer_assignment', 'get', array('version' => 3, 'id' => $result['id']));
+  return civicrm_api3_create_error('unable to create activity');
 }
 
 /**
@@ -72,9 +60,10 @@ function civicrm_api3_volunteer_assignment_create($params) {
  * @param array $params array or parameters determined by getfields
  */
 function _civicrm_api3_volunteer_assignment_create_spec(&$params) {
-  $params['contact_id']['api.required'] = 1;
-  $volunteerStatus = CRM_Activity_BAO_Activity::buildOptions('status_id', 'validate');
-  $params['status_id']['api.default'] = array_search('Scheduled', $volunteerStatus);
+  $params['volunteer_need_id']['api.required'] = 1;
+  $params['assignee_contact_id']['api.required'] = 1;
+  $params['assignee_contact_id']['api.aliases'] = array('contact_id');
+  $params['status_id']['api.default'] = 'Scheduled';
 }
 
 /**
