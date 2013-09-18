@@ -63,7 +63,8 @@ function _civicrm_api3_volunteer_assignment_create_spec(&$params) {
   $params['volunteer_need_id']['api.required'] = 1;
   $params['assignee_contact_id']['api.required'] = 1;
   $params['assignee_contact_id']['api.aliases'] = array('contact_id');
-  $params['status_id']['api.default'] = 'Scheduled';
+  $volunteerStatus = CRM_Activity_BAO_Activity::buildOptions('status_id', 'validate');
+  $params['status_id']['api.default'] = array_search('Scheduled', $volunteerStatus);
 }
 
 /**

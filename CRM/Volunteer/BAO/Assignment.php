@@ -263,6 +263,23 @@ class CRM_Volunteer_BAO_Assignment extends CRM_Activity_DAO_Activity {
       CRM_Core_Error::fatal('Mandatory key missing from params array: volunteer_need_id');
     }
 
+    // Set default date & duration
+    if (!empty($params['volunteer_need_id']) && (empty($params['activity_date_time']) || empty($params['time_scheduled_minutes']))) {
+      $need = civicrm_api3('volunteer_need', 'getsingle', array('id' => $params['volunteer_need_id']));
+      $params['time_scheduled_minutes'] = CRM_Utils_Array::value('duration', $need);
+      // Look up the base entity (e.g. event) as a fallback default
+      if (empty($need['start_time'])) {
+        $project = civicrm_api3('volunteer_project', 'getsingle', array('id' => $need['project_id']));
+        $event = civicrm_api(str_replace('civicrm_', '', $project['entity_table']), 'getsingle', array('id' => $project['entity_id'], 'version' => 3));
+        $need['start_time'] = CRM_Utils_Array::value('start_date', $event);
+      }
+      $params['activity_date_time'] = CRM_Utils_Array::value('start_time', $need);
+    }
+
+    if (!isset($params['duration'])) {
+      $params['duration'] = $params['time_scheduled_minutes'];
+    }
+
     $params['activity_type_id'] = self::volunteerActivityTypeId();
 
     foreach(self::getCustomFields() as $fieldName => $field) {
