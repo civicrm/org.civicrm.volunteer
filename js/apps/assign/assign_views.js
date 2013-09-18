@@ -63,7 +63,8 @@ CRM.volunteerApp.module('Assign', function(Assign, volunteerApp, Backbone, Mario
             id: id,
             volunteer_need_id: thisView.model.get('id'),
             status_id: status[thisView.isFlexible ? 'Available' : 'Scheduled'],
-            time_scheduled_minutes: thisView.model.get('duration')
+            time_scheduled_minutes: thisView.model.get('duration'),
+            activity_date_time: thisView.model.get('start_time') || 'now'
           });
         }
       });
