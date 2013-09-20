@@ -164,7 +164,7 @@ class CRM_Volunteer_Form_VolunteerSignUp extends CRM_Core_Form {
   }
 
   function buildQuickForm() {
-    CRM_Utils_System::setTitle(ts('Sign Up to Volunteer for ') . $this->_project->title);
+    CRM_Utils_System::setTitle(ts('Sign Up to Volunteer for %1', array(1 => $this->_project->title)));
     CRM_Core_Resources::singleton()->addScriptFile('org.civicrm.volunteer',
       'templates/CRM/Volunteer/Form/VolunteerSignUp.js');
 
@@ -240,6 +240,16 @@ class CRM_Volunteer_Form_VolunteerSignUp extends CRM_Core_Form {
     $profile_fields = CRM_Core_BAO_UFGroup::getFields($this->_ufgroup_id);
     $profile_values = array_intersect_key($values, $profile_fields);
     $builtin_values = array_diff_key($values, $profile_values);
+
+    // Search for duplicate
+    if (!$cid) {
+      $dedupeParams = CRM_Dedupe_Finder::formatParams($profile_values, 'Individual');
+      $dedupeParams['check_permission'] = FALSE;
+      $ids = CRM_Dedupe_Finder::dupesByParams($dedupeParams, 'Individual');
+      if ($ids) {
+        $cid = $ids[0];
+      }
+    }
 
     $cid = CRM_Contact_BAO_Contact::createProfileContact(
       $profile_values,
