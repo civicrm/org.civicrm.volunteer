@@ -21,8 +21,14 @@
   font-weight: bold;
 }
 
-.crm-vol-name .icon {
+.crm-vol-name .icon.crm-vol-drag {
   background-position: -2px -77px;
+}
+
+.crm-vol-name a.icon.crm-vol-info {
+  float: none;
+  display: inline-block;
+  background-position: -127px -95px;
 }
 
 a.crm-vol-del {

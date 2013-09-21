@@ -32,14 +32,15 @@
 </script>
 
 <script type="text/template" id="crm-vol-scheduled-assignment-tpl">
-  <td class="crm-vol-name"><span class="icon"></span><a target="_blank" href="<%= contactUrl(contact_id) %>"><%= display_name %></a></td>
+  {literal}
+  <td class="crm-vol-name"><span class="icon crm-vol-drag"></span><a target="_blank" href="<%= contactUrl(contact_id) %>"><%= display_name %></a> <%if (details){%><a href="#" class="icon crm-vol-info"> </a><%}%></td>
   <td><%= email %></td>
   <td><%= phone %></td>
 </script>
 
 <script type="text/template" id="crm-vol-flexible-assignment-tpl">
   <td class="crm-vol-name">
-    <span class="icon"></span><a target="_blank" href="<%= contactUrl(contact_id) %>"><%= display_name %></a><a href="#" class="crm-vol-del" title="{ts}Remove{/ts}"><img src="{$config->resourceBase}i/close.png" alt="{ts}Remove{/ts}"/></a>
+    <span class="icon crm-vol-drag"></span><a target="_blank" href="<%= contactUrl(contact_id) %>"><%= display_name %></a> <%if (details){%><a href="#" class="icon crm-vol-info"> </a><%}%>{/literal}<a href="#" class="crm-vol-del" title="{ts}Remove{/ts}"><img src="{$config->resourceBase}i/close.png" alt="{ts}Remove{/ts}"/></a>
   </td>
 </script>
 

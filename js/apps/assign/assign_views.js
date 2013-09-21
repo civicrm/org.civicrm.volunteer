@@ -1,6 +1,6 @@
 // http://civicrm.org/licensing
 CRM.volunteerApp.module('Assign', function(Assign, volunteerApp, Backbone, Marionette, $, _) {
-  var newContactId, dragFrom;
+  var newContactId, dragFrom, infoDialog;
 
   var assignmentViewSettings = {
     tagName: 'tr',
@@ -14,6 +14,14 @@ CRM.volunteerApp.module('Assign', function(Assign, volunteerApp, Backbone, Mario
     templateHelpers: {
       contactUrl: function(cid) {
         return CRM.url('civicrm/contact/view', {reset: 1, cid: cid});
+      }
+    },
+
+    events: {
+      'click a.crm-vol-info': function() {
+        infoDialog && infoDialog.close && infoDialog.close();
+        infoDialog = CRM.alert(this.model.get('details'), this.model.get('display_name'), 'info', {expires: 0});
+        return false;
       }
     }
   };
