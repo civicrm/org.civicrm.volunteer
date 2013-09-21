@@ -60,7 +60,7 @@
       <visibility>User and User Admin Only</visibility>
       <in_selector>0</in_selector>
       <is_searchable>0</is_searchable>
-      <label>Email (Primary)</label>
+      <label>Email</label>
       <field_type>Contact</field_type>
       <is_multi_summary>0</is_multi_summary>
       <profile_group_name>Volunteer Sign Up</profile_group_name>
@@ -76,7 +76,7 @@
       <visibility>User and User Admin Only</visibility>
       <in_selector>0</in_selector>
       <is_searchable>0</is_searchable>
-      <label>Phone (preferred)</label>
+      <label>Phone</label>
       <field_type>Contact</field_type>
       <is_multi_summary>0</is_multi_summary>
       <profile_group_name>Volunteer Sign Up</profile_group_name>
