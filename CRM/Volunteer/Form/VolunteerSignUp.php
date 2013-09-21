@@ -218,10 +218,12 @@ class CRM_Volunteer_Form_VolunteerSignUp extends CRM_Core_Form {
   function postProcess() {
     $cid = CRM_Utils_Array::value('userID', $_SESSION['CiviCRM'], NULL);
     $values = $this->controller->exportValues();
+    $isFlexible = FALSE;
 
     // Role id is not present in form $values when the only public need is the flexible need.
     // So if role id is net set OR if it matches flexible role id constant then use the flexible need id
     if (! isset($values['volunteer_role_id']) || (int) CRM_Utils_Array::value('volunteer_role_id', $values) === self::FLEXIBLE_ROLE_ID) {
+      $isFlexible = TRUE;
       foreach ($this->_needs as $n) {
         if ($n['is_flexible'] === '1') {
           $values['volunteer_need_id'] = $n['id'];
@@ -267,7 +269,13 @@ class CRM_Volunteer_Form_VolunteerSignUp extends CRM_Core_Form {
     // below we assume that volunteers are always signing up only themselves;
     // for now this is a safe assumption, but we may need to revisit this.
     $builtin_values['source_contact_id'] = $cid;
-    $builtin_values['status_id'] = CRM_Utils_Array::key('Available', $activity_statuses);
+    
+    // Set status to Available if user selected Flexible Need, else set to Scheduled.
+    if ($isFlexible) {
+      $builtin_values['status_id'] = CRM_Utils_Array::key('Available', $activity_statuses);      
+    } else {
+      $builtin_values['status_id'] = CRM_Utils_Array::key('Scheduled', $activity_statuses);
+    }
     $builtin_values['subject'] = $this->_project->title;
     $builtin_values['time_scheduled_minutes'] = CRM_Utils_Array::value('duration', $need);
     CRM_Volunteer_BAO_Assignment::createVolunteerActivity($builtin_values);
