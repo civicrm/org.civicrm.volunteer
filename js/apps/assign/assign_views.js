@@ -9,6 +9,7 @@ CRM.volunteerApp.module('Assign', function(Assign, volunteerApp, Backbone, Mario
     onRender: function () {
       // Store id to facilitate dragging & dropping
       this.$el.attr('data-id', this.model.get('id'));
+      this.$el.attr('data-cid', this.model.get('contact_id'));
     },
 
     templateHelpers: {
@@ -78,6 +79,9 @@ CRM.volunteerApp.module('Assign', function(Assign, volunteerApp, Backbone, Mario
             volunteer_need_id: thisView.model.get('id'),
             status_id: status[thisView.isFlexible ? 'Available' : 'Scheduled']
           });
+        },
+        accept: function($item) {
+          return thisView.acceptVolunteers($item);
         }
       });
       this.hasBeenInitialized = true;
@@ -97,8 +101,8 @@ CRM.volunteerApp.module('Assign', function(Assign, volunteerApp, Backbone, Mario
         var msg = this.collection.length ? ts('%1 More Needed', {1: delta}) : ts('%1 Needed', {1: delta});
         $('.crm-vol-assignment-list', this.$el).append('<tr class="crm-vol-vacancy"><td colspan="3">' + msg + '</td></tr>');
       }
-      if (this.isFlexible && !this.collection.length) {
-        $('.crm-vol-assignment-list', this.$el).append('<tr class="crm-vol-placeholder"><td>' + ts('None') + '</td></tr>');
+      if (!quantity && !this.collection.length) {
+        $('.crm-vol-assignment-list', this.$el).append('<tr class="crm-vol-placeholder"><td colspan="3">' + ts('None') + '</td></tr>');
       }
       // Initialize draggable on any new objects
       $('.crm-vol-assignment:not(.ui-draggable)', this.$el).draggable({
@@ -108,15 +112,25 @@ CRM.volunteerApp.module('Assign', function(Assign, volunteerApp, Backbone, Mario
         containment: '#crm-volunteer-dialog',
         start: function() {
           dragFrom = thisView;
+          $('.crm-vol-need table').removeClass('row-highlight');
+        },
+        stop: function() {
+          $('.crm-vol-need table').addClass('row-highlight');
         }
       });
-      // If we have room for more volunteers (or quantity is flexible), accept dropping in more
-      if (!quantity || quantity > this.collection.length) {
-        $(this.itemViewContainer, this.$el).droppable("enable");
+    },
+
+    acceptVolunteers: function($item) {
+      // If we have no room for more volunteers
+      if (this.model.get('quantity') && this.model.get('quantity') <= this.collection.length) {
+        return false;
       }
-      else {
-        $(this.itemViewContainer, this.$el).droppable("disable").removeClass('ui-state-disabled');
+      // If this activity is already in the collection
+      if (this.collection.get($item.data('id'))) {
+        return false;
       }
+      // If any activity for the same contact is already in a non-flexible collection
+      return this.isFlexible || !(this.collection.where({contact_id: $item.attr('data-cid')}).length);
     },
 
     createContactDialog: function(e) {

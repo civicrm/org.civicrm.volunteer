@@ -45,7 +45,7 @@
 </script>
 
 <script type="text/template" id="crm-vol-scheduled-tpl">
-  <h3><%= pseudoConstant.volunteer_role[role_id] %>: <%= display_time %></h3>
+  <h3><%= pseudoConstant.volunteer_role[role_id] %> (<%= quantity || '{ts escape='js'}Any{/ts}' %>): <%= display_time %></h3>
   <table class="row-highlight">
     <thead><tr>
       <th>{ts}Name{/ts}</th>
