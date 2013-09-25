@@ -138,7 +138,7 @@ class CRM_Volunteer_Form_VolunteerSignUp extends CRM_Core_Form {
     $this->setDestination();
     $this->assign('vid', $this->_project->id);
     if ($this->getVolunteerNeeds() === 0) {
-      CRM_Core_Error::fatal('Project has no volunteer needs defined');
+      CRM_Core_Error::fatal('Project has no public volunteer needs enabled');
     }
     $this->getVolunteerRoles();
     $this->getVolunteerShifts();
