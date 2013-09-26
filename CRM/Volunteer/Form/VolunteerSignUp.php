@@ -188,7 +188,7 @@ class CRM_Volunteer_Form_VolunteerSignUp extends CRM_Core_Form {
         'volunteer_need_id',    // field name
         ts('Shift'),            // field label
         array(),                // list of options
-        true                    // is required
+        false                    // is required
       );
       foreach ($this->_shifts as $id => $data) {
         $select->addOption($data['label'], $id, array('data-role' => $data['role_id']));
@@ -221,7 +221,7 @@ class CRM_Volunteer_Form_VolunteerSignUp extends CRM_Core_Form {
     $isFlexible = FALSE;
 
     // Role id is not present in form $values when the only public need is the flexible need.
-    // So if role id is net set OR if it matches flexible role id constant then use the flexible need id
+    // So if role id is not set OR if it matches flexible role id constant then use the flexible need id
     if (! isset($values['volunteer_role_id']) || (int) CRM_Utils_Array::value('volunteer_role_id', $values) === self::FLEXIBLE_ROLE_ID) {
       $isFlexible = TRUE;
       foreach ($this->_needs as $n) {
@@ -269,10 +269,10 @@ class CRM_Volunteer_Form_VolunteerSignUp extends CRM_Core_Form {
     // below we assume that volunteers are always signing up only themselves;
     // for now this is a safe assumption, but we may need to revisit this.
     $builtin_values['source_contact_id'] = $cid;
-    
+
     // Set status to Available if user selected Flexible Need, else set to Scheduled.
     if ($isFlexible) {
-      $builtin_values['status_id'] = CRM_Utils_Array::key('Available', $activity_statuses);      
+      $builtin_values['status_id'] = CRM_Utils_Array::key('Available', $activity_statuses);
     } else {
       $builtin_values['status_id'] = CRM_Utils_Array::key('Scheduled', $activity_statuses);
     }
