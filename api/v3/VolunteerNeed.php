@@ -59,6 +59,7 @@ function _civicrm_api3_volunteer_need_create_spec(&$params) {
   $params['project_id']['api.required'] = 1;
   $params['is_flexible']['api.default'] = 0;
   $params['is_active']['api.default'] = 1;
+  $params['visibility_id']['api.default'] = CRM_Core_OptionGroup::getValue('visibility', 'public', 'name');
 }
 
 /**
