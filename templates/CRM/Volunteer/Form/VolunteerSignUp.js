@@ -18,32 +18,30 @@ cj(function($) {
   /**
    * Update Shift options on change of Volunteer Role
    */
-  function filterShifts() {
-    var role = $('#volunteer_role_id').val();
+  function filterShifts(event) {
+    var selected_role = $('#volunteer_role_id').val();
 
-    // hide all options
-    $('#volunteer_need_id option').hide();
+    // remove all options
+    $('#volunteer_need_id').empty();
 
-    // show options for this role
-    $('#volunteer_need_id option[data-role="' + role + '"]').show();
-
-    // jQuery's :visible pseudo-class doesn't work for options in some browsers,
-    // so we resort to this to select the first visible option
-    var i = 0;
-    $('#volunteer_need_id option').each(function(){
-      if ($(this).css('display') != 'none') {
-        i++;
-        $(this).prop('selected', true);
-        return false;
+    // add only options for this role
+    var shifts = event.data;
+    shifts.each(function() {
+      if (selected_role == $(this).data('role')) {
+        $('#volunteer_need_id').append($(this));
       }
     });
 
-    // if there are no visible shift options, hide the shift select box altogether
-    toggleShiftSelection(i);
+    // if there are no shift options, hide the shift select box altogether
+    var shift_count = $('#volunteer_need_id option').length;
+    toggleShiftSelection(shift_count);
   }
 
+  // capture all shifts as they were on page load; this is a static list
+  var shifts = $('#volunteer_need_id option');
+
   // wire up our functions...
-  $('#volunteer_role_id').change(filterShifts);
-  $(document).ready(filterShifts);
+  $('#volunteer_role_id').change(shifts, filterShifts);
+  $('#volunteer_role_id').trigger('change');
 
 });
