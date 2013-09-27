@@ -263,10 +263,11 @@ class CRM_Volunteer_BAO_Assignment extends CRM_Activity_DAO_Activity {
       CRM_Core_Error::fatal('Mandatory key missing from params array: volunteer_need_id');
     }
 
-    // Set default date & duration
-    if (!empty($params['volunteer_need_id']) && (empty($params['activity_date_time']) || empty($params['time_scheduled_minutes']))) {
+    // Set default date role & duration if need is specified
+    if (!empty($params['volunteer_need_id'])) {
       $need = civicrm_api3('volunteer_need', 'getsingle', array('id' => $params['volunteer_need_id']));
-      $params['time_scheduled_minutes'] = CRM_Utils_Array::value('time_scheduled_minutes', $params, CRM_Utils_Array::value('duration', $need));
+      $params['volunteer_role_id'] = CRM_Utils_Array::value('volunteer_role_id', $params, CRM_Utils_Array::value('role_id', $need));
+      $params['time_completed_minutes'] = CRM_Utils_Array::value('time_completed_minutes', $params, CRM_Utils_Array::value('duration', $need));
       // Look up the base entity (e.g. event) as a fallback default
       if (empty($need['start_time'])) {
         $project = civicrm_api3('volunteer_project', 'getsingle', array('id' => $need['project_id']));
@@ -276,8 +277,9 @@ class CRM_Volunteer_BAO_Assignment extends CRM_Activity_DAO_Activity {
       $params['activity_date_time'] = CRM_Utils_Array::value('activity_date_time', $params, CRM_Utils_Array::value('start_time', $need));
     }
 
-    if (!isset($params['duration'])) {
-      $params['duration'] = $params['time_scheduled_minutes'];
+    // Might as well sync these, but seems redundant
+    if (!isset($params['duration']) && isset($params['time_completed_minutes'])) {
+      $params['duration'] = $params['time_completed_minutes'];
     }
 
     $params['activity_type_id'] = self::volunteerActivityTypeId();
@@ -303,7 +305,6 @@ class CRM_Volunteer_BAO_Assignment extends CRM_Activity_DAO_Activity {
    * @return integer
    */
   public static function volunteerActivityTypeId() {
-    $activityTypes = CRM_Activity_BAO_Activity::buildOptions('activity_type_id', 'validate');
-    return CRM_Utils_Array::key(CRM_Volunteer_Upgrader::customActivityTypeName, $activityTypes);
+    return CRM_Core_PseudoConstant::getKey('CRM_Activity_BAO_Activity', 'activity_type_id', CRM_Volunteer_Upgrader::customActivityTypeName);
   }
 }
