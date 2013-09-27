@@ -305,7 +305,6 @@ class CRM_Volunteer_BAO_Assignment extends CRM_Activity_DAO_Activity {
    * @return integer
    */
   public static function volunteerActivityTypeId() {
-    $activityTypes = CRM_Activity_BAO_Activity::buildOptions('activity_type_id', 'validate');
-    return CRM_Utils_Array::key(CRM_Volunteer_Upgrader::customActivityTypeName, $activityTypes);
+    return CRM_Core_PseudoConstant::getKey('CRM_Activity_BAO_Activity', 'activity_type_id', CRM_Volunteer_Upgrader::customActivityTypeName);
   }
 }
