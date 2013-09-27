@@ -277,7 +277,8 @@ class CRM_Volunteer_BAO_Assignment extends CRM_Activity_DAO_Activity {
       $params['activity_date_time'] = CRM_Utils_Array::value('activity_date_time', $params, CRM_Utils_Array::value('start_time', $need));
     }
 
-    if (!isset($params['duration'])) {
+    // Might as well sync these, but seems redundant
+    if (!isset($params['duration']) && isset($params['time_completed_minutes'])) {
       $params['duration'] = $params['time_completed_minutes'];
     }
 
