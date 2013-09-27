@@ -25,7 +25,7 @@
   <CustomFields>
     <CustomField>
       <name>Volunteer_Need_Id</name>
-      <label>Volunteer Need Id</label>
+      <label>Volunteer Need</label>
       <data_type>Int</data_type>
       <html_type>Text</html_type>
       <is_required>0</is_required>
@@ -38,6 +38,24 @@
       <note_columns>60</note_columns>
       <note_rows>4</note_rows>
       <column_name>volunteer_need_id_{$customIDs.customFieldID}</column_name>
+      <custom_group_name>CiviVolunteer</custom_group_name>
+    </CustomField>
+    <CustomField>
+      <name>Volunteer_Role_Id</name>
+      <label>Volunteer Role</label>
+      <data_type>String</data_type>
+      <html_type>Select</html_type>
+      <is_required>0</is_required>
+      <is_searchable>1</is_searchable>
+      <is_search_range>0</is_search_range>
+      <weight>2</weight>
+      <is_active>1</is_active>
+      <is_view>0</is_view>
+      <text_length>64</text_length>
+      <note_columns>60</note_columns>
+      <note_rows>4</note_rows>
+      <column_name>role_id_{$customIDs.customFieldID+1}</column_name>
+      <option_group_name>{$volunteer_custom_option_group_name}</option_group_name>
       <custom_group_name>CiviVolunteer</custom_group_name>
     </CustomField>
     <CustomField>
@@ -54,7 +72,7 @@
       <text_length>255</text_length>
       <note_columns>60</note_columns>
       <note_rows>4</note_rows>
-      <column_name>time_scheduled_in_minutes_{$customIDs.customFieldID+1}</column_name>
+      <column_name>time_scheduled_in_minutes_{$customIDs.customFieldID+2}</column_name>
       <custom_group_name>CiviVolunteer</custom_group_name>
     </CustomField>
     <CustomField>
@@ -71,7 +89,7 @@
       <text_length>255</text_length>
       <note_columns>60</note_columns>
       <note_rows>4</note_rows>
-      <column_name>time_completed_in_minutes_{$customIDs.customFieldID+2}</column_name>
+      <column_name>time_completed_in_minutes_{$customIDs.customFieldID+3}</column_name>
       <custom_group_name>CiviVolunteer</custom_group_name>
     </CustomField>
   </CustomFields>
