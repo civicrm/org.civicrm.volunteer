@@ -302,9 +302,9 @@ class CRM_Volunteer_Form_VolunteerReport extends CRM_Report_Form {
         array(
           'role' => 
           array(
-            'name' => 'label',
+            'name' => $this->customFields['volunteer_role_id']['column_name'],
             'title' => ts('Volunteer Role'),
-            'alias' => 'ov_civireport',
+            'alias' => 'cg',
             'no_repeat' => TRUE,
             'default' => TRUE,
           ),
@@ -452,7 +452,7 @@ class CRM_Volunteer_Form_VolunteerReport extends CRM_Report_Form {
                     ON {$this->_aliases['civicrm_activity']}.id = cg.entity_id
              LEFT JOIN civicrm_volunteer_need n
                     ON n.id = cg.{$this->customFields['volunteer_need_id']['column_name']}
-             LEFT JOIN civicrm_option_value {$this->_aliases['role']} ON ( {$this->_aliases['role']}.value = n.role_id AND {$this->_aliases['role']}.option_group_id = {$roleID} )
+             LEFT JOIN civicrm_option_value {$this->_aliases['role']} ON ( {$this->_aliases['role']}.value = cg.{$this->customFields['volunteer_role_id']['column_name']} AND {$this->_aliases['role']}.option_group_id = {$roleID} )
              LEFT JOIN civicrm_volunteer_project vp
                     ON vp.id = n.project_id
              LEFT JOIN civicrm_event {$this->_aliases['project']}
@@ -649,6 +649,7 @@ function statistics(&$rows) {
     $entryFound     = FALSE;
     $activityType   = CRM_Core_PseudoConstant::activityType(TRUE, TRUE, FALSE, 'label', TRUE);
     $activityStatus = CRM_Core_PseudoConstant::activityStatus();
+    $volunteerRoles = CRM_Volunteer_BAO_Need::buildOptions('role_id', 'create');
     $viewLinks      = FALSE;
     $seperator      = CRM_CORE_DAO::VALUE_SEPARATOR;
     $context        = CRM_Utils_Request::retrieve('context', 'String', $this, FALSE, 'report');
@@ -750,6 +751,13 @@ function statistics(&$rows) {
       if (array_key_exists('civicrm_activity_status_id', $row)) {
         if ($value = $row['civicrm_activity_status_id']) {
           $rows[$rowNum]['civicrm_activity_status_id'] = $activityStatus[$value];
+          $entryFound = TRUE;
+        }
+      }
+
+      if (array_key_exists('role_role', $row)) {
+        if ($value = $row['role_role']) {
+          $rows[$rowNum]['role_role'] = $volunteerRoles[$value];
           $entryFound = TRUE;
         }
       }
