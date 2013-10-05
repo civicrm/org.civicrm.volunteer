@@ -57,7 +57,7 @@ class CRM_Volunteer_BAO_Need extends CRM_Volunteer_DAO_Need {
    */
   static function &create($params) {
 
-      if (empty($params)) {
+    if (empty($params)) {
       return;
     }
 
@@ -116,5 +116,44 @@ class CRM_Volunteer_BAO_Need extends CRM_Volunteer_DAO_Need {
     }
 
     return $result;
+  }
+
+  /**
+   * Delete a need, reassign its activities to the project's default flexible need
+   * @param $id
+   * @return bool
+   */
+  static function del($id) {
+    $need = civicrm_api3('volunteer_need', 'getsingle', array('id' => $id));
+
+    // TODO: What do we do with associated activities when deleting a flexible need?
+    if (empty($need['is_flexible'])) {
+      // Lookup the flexible need
+      $flexibleNeed = civicrm_api3('volunteer_need', 'getsingle', array('is_flexible' => 1, 'is_active' => 1, 'project_id' => $need['project_id']));
+
+      // Reassign any activities back to the flexible need
+      $acts = civicrm_api3('volunteer_assignment', 'get', array('volunteer_need_id' => $id));
+      $status = CRM_Core_PseudoConstant::getKey('CRM_Activity_BAO_Activity', 'status_id', 'Available');
+      foreach ($acts['values'] as $act) {
+        civicrm_api3('volunteer_assignment', 'create', array(
+          'id' => $act['id'],
+          'volunteer_need_id' => $flexibleNeed['id'],
+          'status_id' => $status,
+          'time_scheduled_minutes' => 0,
+        ));
+      }
+    }
+
+    $dao = new CRM_Volunteer_DAO_Need();
+    $dao->id = $id;
+    if ($dao->find()) {
+      while ($dao->fetch()) {
+        $dao->delete();
+      }
+    }
+    else {
+      return FALSE;
+    }
+    return TRUE;
   }
 }
