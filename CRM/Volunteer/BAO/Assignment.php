@@ -267,7 +267,7 @@ class CRM_Volunteer_BAO_Assignment extends CRM_Activity_DAO_Activity {
     if (!empty($params['volunteer_need_id'])) {
       $need = civicrm_api3('volunteer_need', 'getsingle', array('id' => $params['volunteer_need_id']));
       $params['volunteer_role_id'] = CRM_Utils_Array::value('volunteer_role_id', $params, CRM_Utils_Array::value('role_id', $need));
-      $params['time_completed_minutes'] = CRM_Utils_Array::value('time_completed_minutes', $params, CRM_Utils_Array::value('duration', $need));
+      $params['time_scheduled_minutes'] = CRM_Utils_Array::value('time_scheduled_minutes', $params, CRM_Utils_Array::value('duration', $need));
       // Look up the base entity (e.g. event) as a fallback default
       if (empty($need['start_time'])) {
         $project = civicrm_api3('volunteer_project', 'getsingle', array('id' => $need['project_id']));
