@@ -30,13 +30,9 @@ CRM.volunteerApp.module('Define', function(Define, volunteerApp, Backbone, Mario
       this.$("[name='display_start_date']").addClass('dateplugin').datepicker({
         dateFormat: "MM d, yy"
       });
-      this.$("[name='display_start_time']").addClass('timeplugin').timeEntry();
-
-      // format the times
-      this.$("[name='display_start_time']").timeEntry(
-        'setTime',
-        this.$("[name='display_start_time']").val()
-      );
+      this.$("[name='display_start_time']").addClass('timeplugin').timeEntry({
+        defaultTime: this.$("[name='display_start_time']").val()
+      });
 
       var publicVisibilityValue = _.invert(CRM.pseudoConstant.volunteer_need_visibility).Public;
 
