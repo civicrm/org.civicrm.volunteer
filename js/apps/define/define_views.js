@@ -1,14 +1,30 @@
 // http://civicrm.org/licensing
 CRM.volunteerApp.module('Define', function(Define, volunteerApp, Backbone, Marionette, $, _) {
 
-  var myViewSettings = {
+  Define.layout = Marionette.Layout.extend({
+    template: "#crm-vol-define-layout-tpl",
+    regions: {
+      newNeeds: "#crm-vol-define-needs-region"
+    }
+  });
+
+  Define.defineNeedsView = Marionette.ItemView.extend({
+    template: '#crm-vol-define-new-need-tpl',
     tagName: 'tr',
     className: 'crm-vol-define-need',
 
+    templateHelpers: {
+      pseudoConstant: CRM.pseudoConstant,
+      RenderUtil: CRM.volunteerApp.RenderUtil
+    },
+
+    events: {
+      'change :input': 'updateNeed',
+      'click .crm-vol-del': 'deleteNeed'
+    },
+
     onRender: function() {
       $('#crm-vol-define-needs-region .crm-loading-element').closest('tr').remove();
-
-      this.$el.attr('data-id', this.model.get('id'));
 
       // TODO: respect user-configured time formats
       this.$("[name='display_start_date']").addClass('dateplugin').datepicker({
@@ -37,26 +53,48 @@ CRM.volunteerApp.module('Define', function(Define, volunteerApp, Backbone, Mario
           $(this).prop("checked", true);
         }
       });
+    },
 
-    }
-  };
+    updateNeed: function(e) {console.log(e);
+      var thisView = this;
+      var field_name = e.currentTarget.name;
+      var value = e.currentTarget.value;
 
+      switch (field_name) {
+        case 'display_start_date':
+        case 'display_start_time':
+          field_name = 'start_time';
+          value = this.$("[name='display_start_date']").val()
+              + ' ' + this.$("[name='display_start_time']").val();
+          break;
+        case 'visibility_id':
+          value = e.currentTarget.checked ? e.currentTarget.value
+              : _.invert(CRM.pseudoConstant.volunteer_need_visibility).Admin;
+          break;
+        case 'is_active':
+          value = e.currentTarget.checked ? e.currentTarget.value : 0;
+          break;
+      }
+      this.model.set(field_name, value);
 
-  Define.layout = Marionette.Layout.extend({
-    template: "#crm-vol-define-layout-tpl",
-    regions: {
-      newNeeds: "#crm-vol-define-needs-region"
+      var request = Define.needsTable.collection.createNewNeed(this.model);
+      request.done(function(r) {
+        if (r.is_error == 0) {
+          CRM.alert('', ts('Saved'), 'success');
+          thisView.model.set('id', r.id);
+        }
+      });
+    },
+
+    // Todo: CRM.confirm
+    deleteNeed: function() {
+      var id = this.model.get('id');
+      Define.needsTable.collection.remove(id);
+      CRM.api('volunteer_need', 'delete', {id: id});
+      Define.needsTable.render();
+      return false;
     }
   });
-
-  // *** declare a view
-  Define.defineNeedsView = Marionette.ItemView.extend(_.extend(myViewSettings, {
-    template: '#crm-vol-define-new-need-tpl',
-    templateHelpers: {
-      pseudoConstant: CRM.pseudoConstant,
-      RenderUtil: CRM.volunteerApp.RenderUtil
-    }
-  }));
 
   Define.defineNeedsTable = Marionette.CompositeView.extend({
     id: "manage_needs",
@@ -67,8 +105,7 @@ CRM.volunteerApp.module('Define', function(Define, volunteerApp, Backbone, Mario
 
     events: {
       'click #addNewNeed': 'addNewNeed',
-      'click #crm-vol-define-needs-dialog .sorting' : 'changeSort',
-      'change :input': 'updateNeed'
+      'click #crm-vol-define-needs-dialog .sorting' : 'changeSort'
     },
 
     changeSort: function(sender) {
@@ -80,53 +117,13 @@ CRM.volunteerApp.module('Define', function(Define, volunteerApp, Backbone, Mario
 
     // no API calls here; this just updates the UI
     addNewNeed: function () {
-      var newNeed = new this.collection.model();
+      var newNeed = new this.collection.model({project_id: volunteerApp.project_id});
       this.collection.add(newNeed);
       this.render();
       return false;
     },
 
-    updateNeed: function(e) {
-      var row = cj(e.currentTarget).closest('tr') ;
-      var id = row.data('id');
-      var need = {
-        id: id,
-        project_id: CRM.volunteerApp.project_id
-      };
-
-      var field_name = e.currentTarget.name;
-      var value = e.currentTarget.value;
-
-      switch (field_name) {
-        case 'display_start_date':
-        case 'display_start_time':
-          field_name = 'start_time';
-          value = row.find("[name='display_start_date']").val()
-            + ' ' + row.find("[name='display_start_time']").val();
-          break;
-        case 'visibility_id':
-          value = e.currentTarget.checked ? e.currentTarget.value
-            : _.invert(CRM.pseudoConstant.volunteer_need_visibility).Admin;
-          break;
-        case 'is_active':
-          value = e.currentTarget.checked ? e.currentTarget.value : 0;
-          break;
-      }
-      need[field_name] = value;
-
-      var request = this.collection.createNewNeed(need);
-      request.done(function(r) {
-        if (!row.data('id') && r.id != 'undefined') {
-          row.data('id', r.id);
-        }
-        if (r.is_error == 0) {
-          CRM.alert('', ts('Saved'), 'success');
-        }
-      });
-
-    },
-
-    getCollection :   function(data_array) {
+    getCollection: function(data_array) {
       Define.needsTable.collection = volunteerApp.Entities.Needs.getScheduled(data_array);
 
       if (Define.sortField) {
