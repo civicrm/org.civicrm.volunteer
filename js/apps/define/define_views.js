@@ -10,16 +10,6 @@ CRM.volunteerApp.module('Define', function(Define, volunteerApp, Backbone, Mario
 
       this.$el.attr('data-id', this.model.get('id'));
 
-      // special treatment for the flexible need
-      if (this.model.get('is_flexible') == 1) {
-        this.$("[name='is_active']").prop('disabled', true);
-        this.$("[name='duration']").val('').prop('disabled', true);
-        this.$("[name='quantity']").val('').prop('disabled', true);
-        this.$("[name='role_id']").prop('disabled', true);
-        this.$("[name='display_start_date']").val('Any role, any time').prop('disabled', true);
-        this.$("[name='display_start_time']").prop('disabled', true);
-      }
-
       // TODO: respect user-configured time formats
       this.$("[name='display_start_date']").addClass('dateplugin').datepicker({
         dateFormat: "MM d, yy"
@@ -137,24 +127,15 @@ CRM.volunteerApp.module('Define', function(Define, volunteerApp, Backbone, Mario
     },
 
     getCollection :   function(data_array) {
-      var needsCollection = new volunteerApp.Entities.Needs(data_array);
+      Define.needsTable.collection = volunteerApp.Entities.Needs.getScheduled(data_array);
 
-        for( index in needsCollection.models) {
-          need = needsCollection.models[index];
-          if (need.attributes.is_flexible == 1) {
-            need.attributes.is_flexible_form_value = 'checked';
-          }
-        }
+      if (Define.sortField) {
+        Define.needsTable.collection.comparator = Define.sortField;
+        Define.needsTable.collection.sort();
+      }
 
-        Define.needsTable.collection = needsCollection;
-
-        if (Define.sortField) {
-          Define.needsTable.collection.comparator = Define.sortField;
-          Define.needsTable.collection.sort();
-        }
-
-        Define.needsTable.render();
-    },
+      Define.needsTable.render();
+    }
 
   });
 

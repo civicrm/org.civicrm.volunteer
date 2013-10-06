@@ -57,13 +57,11 @@ CRM.volunteerApp.module('Entities', function(Entities, volunteerApp, Backbone, M
   };
 
   Entities.Needs.getFlexible = function(arrData) {
-    var needsCollection = new Entities.Needs(arrData);
-    return new Entities.Needs(needsCollection.where({is_flexible: '1'}));
+    return new Entities.Needs(_.where(arrData, {is_flexible: '1'}));
   };
 
   Entities.Needs.getScheduled = function(arrData) {
-    var needsCollection = new Entities.Needs(arrData);
-    return new Entities.Needs(needsCollection.where({is_flexible: '0'}));
+    return new Entities.Needs(_.where(arrData, {is_flexible: '0'}));
   };
 
 });
