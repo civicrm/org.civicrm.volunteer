@@ -82,12 +82,17 @@ CRM.volunteerApp.module('Define', function(Define, volunteerApp, Backbone, Mario
       });
     },
 
-    // Todo: CRM.confirm
     deleteNeed: function() {
-      var id = this.model.get('id');
-      Define.needsTable.collection.remove(id);
-      CRM.api('volunteer_need', 'delete', {id: id});
-      Define.needsTable.render();
+      var thisView = this;
+      CRM.confirm(function() {
+        var id = thisView.model.get('id');
+        Define.needsTable.collection.remove(id);
+        CRM.api('volunteer_need', 'delete', {id: id});
+        Define.needsTable.render();
+      }, {
+        title: ts('Delete Need'),
+        message: ts('There are currently %1 volunteer(s) assigned to this need.', {1: thisView.model.get('api.volunteer_assignment.getcount')})
+      });
       return false;
     }
   });
