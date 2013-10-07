@@ -5,6 +5,15 @@ CRM.volunteerApp.module('Define', function(Define, volunteerApp, Backbone, Mario
     template: "#crm-vol-define-layout-tpl",
     regions: {
       newNeeds: "#crm-vol-define-needs-region"
+    },
+
+    events: {
+      'click #crm-vol-define-done': 'closeModal'
+    },
+
+    closeModal: function() {
+      $('#crm-volunteer-dialog').dialog('close');
+      return false;
     }
   });
 
@@ -24,8 +33,6 @@ CRM.volunteerApp.module('Define', function(Define, volunteerApp, Backbone, Mario
     },
 
     onRender: function() {
-      $('#crm-vol-define-needs-region .crm-loading-element').closest('tr').remove();
-
       // TODO: respect user-configured time formats
       this.$("[name='display_start_date']").addClass('dateplugin').datepicker({
         dateFormat: "MM d, yy"
@@ -73,22 +80,17 @@ CRM.volunteerApp.module('Define', function(Define, volunteerApp, Backbone, Mario
       }
       this.model.set(field_name, value);
 
-      var request = Define.needsTable.collection.createNewNeed(this.model);
-      request.done(function(r) {
-        if (r.is_error == 0) {
-          CRM.alert('', ts('Saved'), 'success');
-          thisView.model.set('id', r.id);
-        }
-      });
+      var params = {'id': this.model.get('id')};
+      params[field_name] = value;
+      CRM.api('VolunteerNeed', 'create', params);
     },
 
     deleteNeed: function() {
       var thisView = this;
       CRM.confirm(function() {
         var id = thisView.model.get('id');
-        Define.needsTable.collection.remove(id);
+        Define.collectionView.collection.remove(id);
         CRM.api('volunteer_need', 'delete', {id: id});
-        Define.needsTable.render();
       }, {
         title: ts('Delete Need'),
         message: ts('There are currently %1 volunteer(s) assigned to this need.', {1: thisView.model.get('api.volunteer_assignment.getcount')})
@@ -99,7 +101,7 @@ CRM.volunteerApp.module('Define', function(Define, volunteerApp, Backbone, Mario
 
   Define.defineNeedsTable = Marionette.CompositeView.extend({
     id: "manage_needs",
-    template: "#crm-vol-define-layout-tpl",
+    template: "#crm-vol-define-table-tpl",
     itemView: Define.defineNeedsView,
     itemViewContainer: 'tbody',
     className: 'crm-block crm-form-block crm-event-manage-volunteer-form-block',
@@ -122,19 +124,7 @@ CRM.volunteerApp.module('Define', function(Define, volunteerApp, Backbone, Mario
       this.collection.add(newNeed);
       this.render();
       return false;
-    },
-
-    getCollection: function(data_array) {
-      Define.needsTable.collection = volunteerApp.Entities.Needs.getScheduled(data_array);
-
-      if (Define.sortField) {
-        Define.needsTable.collection.comparator = Define.sortField;
-        Define.needsTable.collection.sort();
-      }
-
-      Define.needsTable.render();
     }
-
   });
 
 });

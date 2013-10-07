@@ -5,16 +5,16 @@ Define.startWithParent = false;
 
   // Kick everything off
   Define.addInitializer(function() {
-
-    Define.manageNeeds = new Define.layout();
-    Define.needsTableView = new Define.defineNeedsView();
-    Define.needsTable = new Define.defineNeedsTable();
-
-    volunteerApp.dialogRegion.show(Define.manageNeeds);
-    volunteerApp.dialogRegion.show(Define.needsTable);
+    var layout = new Define.layout();
+    volunteerApp.dialogRegion.show(layout);
 
     var request = volunteerApp.Entities.getNeeds({'api.volunteer_assignment.getcount': {}});
-    request.done(Define.needsTable.getCollection);
+    request.done(function(arrData) {
+      Define.collectionView = new Define.defineNeedsTable({
+        'collection': volunteerApp.Entities.Needs.getScheduled(arrData)
+      });
+      layout.newNeeds.show(Define.collectionView);
+    });
   });
 
 });

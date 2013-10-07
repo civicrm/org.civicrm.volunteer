@@ -31,23 +31,28 @@
 		{ts}Use this form to define the number of volunteers needed for each role and time slot. The first slot listed is a default 'flexible' slot (for volunteers who are available at any time for any role).{/ts} {help id="volunteer-define" file="CRM/Volunteer/Form/Manage/Define.hlp"}
 	</div>
   <form>
-	<div class="dataTables_wrapper">
-	<table id="crm-vol-define-needs-dialog" class="display">
-    <thead><tr>
-			<th class="sorting" id="role_id">{ts}Role{/ts}</th>
-                        <th class="sorting" id="quantity">{ts}Volunteers<br />Needed{/ts}</th>
-			<th class="sorting" id="start_date">{ts}Start Date/Time{/ts}</th>
-			<th class="sorting" id="duration">{ts}Scheduled<br />(minutes){/ts}</th>
-			<th class="sorting" id="visibility">{ts}Public?{/ts}</th>
-			<th>Enabled?</th>
-    </tr></thead>
-    <tbody id="crm-vol-define-needs-region"><tr><td colspan="6"><div class="crm-loading-element">{ts}Loading{/ts}...</div></td></tr></tbody>
-  </table>
+	<div class="dataTables_wrapper" id="crm-vol-define-needs-region">
+          <div class="crm-loading-element">{ts}Loading{/ts}...</div>
 	</div>
 	<div class="crm-submit-buttons">
-  	<a class="button" id="addNewNeed" href="#"><span><div class="icon add-icon"></div>Add a Need</span></a>
+  	<a class="button" id="crm-vol-define-done" href="#"><span>{ts}Done{/ts}</span></a>
 	</div>
   </form>
+</script>
+
+<script type="text/template" id="crm-vol-define-table-tpl">
+  <table id="crm-vol-define-needs-dialog" class="display">
+    <thead><tr>
+      <th class="sorting" id="role_id">{ts}Role{/ts}</th>
+      <th class="sorting" id="quantity">{ts}Volunteers<br />Needed{/ts}</th>
+      <th class="sorting" id="start_date">{ts}Start Date/Time{/ts}</th>
+      <th class="sorting" id="duration">{ts}Scheduled<br />(minutes){/ts}</th>
+      <th class="sorting" id="visibility">{ts}Public?{/ts}</th>
+      <th>Enabled?</th>
+      <th></th>
+    </tr></thead>
+    <tbody></tbody>
+  </table>
 </script>
 
 <script type="text/template" id="crm-vol-define-new-need-tpl">
@@ -55,7 +60,7 @@
       {literal}
         <%= RenderUtil.select({
                 name: 'role_id',
-                options: _.extend(pseudoConstant.volunteer_role, {0:''}),
+                options: pseudoConstant.volunteer_role,
                 selected: role_id
         }) %>
       {/literal}
@@ -67,5 +72,20 @@
     </td>
     <td><input type="text" name="duration" value="<%= duration %>" size="6"></td>
     <td><input type="checkbox" name="visibility_id" data-stored="<%= visibility_id %>"></td>
-    <td><input type="checkbox" name="is_active" value="1" data-stored="<%= is_active %>"><a href="#" class="crm-vol-del" title="{ts}Remove{/ts}"><img src="{$config->resourceBase}i/close.png" alt="{ts}Remove{/ts}"/></a></td>
+    <td><input type="checkbox" name="is_active" value="1" data-stored="<%= is_active %>"></td>
+    <td><a href="#" class="crm-vol-del" title="{ts}Remove{/ts}"><img src="{$config->resourceBase}i/close.png" alt="{ts}Remove{/ts}"/></a></td>
+  </script>
+
+  <script type="text/template" id="crm-vol-define-add-row">
+    <tr>
+      <td>
+        <select id="crm-vol-define-add-need">
+          <option value="">- {ts}Create new{/ts} -</option>
+          {crmAPI var='result' entity='VolunteerNeed' action='getoptions' field='role_id'}
+          {foreach from=$result.values item=VolunteerNeed key=id}
+            <option id="{$id}">{$VolunteerNeed}</option>
+          {/foreach}
+        </select>
+      </td>
+    </tr>
   </script>
