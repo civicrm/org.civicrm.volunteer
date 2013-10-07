@@ -44,6 +44,22 @@ class CRM_Volunteer_BAO_Project extends CRM_Volunteer_DAO_Project {
   private $title;
 
   /**
+   * The start_date of the Project, inherited from its associated entity
+   *
+   * @var string
+   * @access public (via __get method)
+   */
+  private $start_date;
+
+  /**
+   * The end_date of the Project, inherited from its associated entity
+   *
+   * @var string
+   * @access public (via __get method)
+   */
+  private $end_date;
+
+  /**
    * class constructor
    */
   function __construct() {
@@ -230,4 +246,53 @@ class CRM_Volunteer_BAO_Project extends CRM_Volunteer_DAO_Project {
     }
     return $this->title;
   }
+
+  /**
+   * Sets and returns name of the entity associated with this Project
+   *
+   * @access private
+   */
+  private function _get_start_date() {
+    if (!$this->start_date) {
+      if ($this->entity_table && $this->entity_id) {
+        switch ($this->entity_table) {
+          case 'civicrm_event' :
+            $params = array(
+              'version' => 3,
+              'id' => $this->entity_id,
+              'return' => array('start_date'),
+            );
+            $result = civicrm_api('Event', 'get', $params);
+            $this->start_date = $result['values'][$this->entity_id]['start_date'];
+            break;
+        }
+      }
+    }
+    return $this->start_date;
+  }
+
+  /**
+   * Sets and returns name of the entity associated with this Project
+   *
+   * @access private
+   */
+  private function _get_end_date() {
+    if (!$this->end_date) {
+      if ($this->entity_table && $this->entity_id) {
+        switch ($this->entity_table) {
+          case 'civicrm_event' :
+            $params = array(
+              'version' => 3,
+              'id' => $this->entity_id,
+              'return' => array('end_date'),
+            );
+            $result = civicrm_api('Event', 'get', $params);
+            $this->end_date = CRM_Utils_Array::value('end_date', $result['values'][$this->entity_id]);
+            break;
+        }
+      }
+    }
+    return $this->end_date;
+  }
+
 }
