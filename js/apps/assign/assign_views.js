@@ -2,6 +2,14 @@
 CRM.volunteerApp.module('Assign', function(Assign, volunteerApp, Backbone, Marionette, $, _) {
   var newContactId, dragFrom, infoDialog;
 
+  Assign.layoutClass = Marionette.Layout.extend({
+    template: "#crm-vol-assign-layout-tpl",
+    regions: {
+      flexibleRegion: "#crm-vol-assign-flexible-region",
+      scheduledRegion: "#crm-vol-assign-scheduled-region"
+    }
+  });
+
   var assignmentViewSettings = {
     tagName: 'tr',
     className: 'crm-vol-assignment',
