@@ -1,91 +1,91 @@
 {*
- +--------------------------------------------------------------------+
- | CiviCRM version 4.4                                                |
- +--------------------------------------------------------------------+
- | Copyright CiviCRM LLC (c) 2004-2013                                |
- +--------------------------------------------------------------------+
- | This file is a part of CiviCRM.                                    |
- |                                                                    |
- | CiviCRM is free software; you can copy, modify, and distribute it  |
- | under the terms of the GNU Affero General Public License           |
- | Version 3, 19 November 2007 and the CiviCRM Licensing Exception.   |
- |                                                                    |
- | CiviCRM is distributed in the hope that it will be useful, but     |
- | WITHOUT ANY WARRANTY; without even the implied warranty of         |
- | MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.               |
- | See the GNU Affero General Public License for more details.        |
- |                                                                    |
- | You should have received a copy of the GNU Affero General Public   |
- | License and the CiviCRM Licensing Exception along                  |
- | with this program; if not, contact CiviCRM LLC                     |
- | at info[AT]civicrm[DOT]org. If you have questions about the        |
- | GNU Affero General Public License or the licensing of CiviCRM,     |
- | see the CiviCRM license FAQ at http://civicrm.org/licensing        |
- +--------------------------------------------------------------------+
++--------------------------------------------------------------------+
+| CiviCRM version 4.4                                                |
++--------------------------------------------------------------------+
+| Copyright CiviCRM LLC (c) 2004-2013                                |
++--------------------------------------------------------------------+
+| This file is a part of CiviCRM.                                    |
+|                                                                    |
+| CiviCRM is free software; you can copy, modify, and distribute it  |
+| under the terms of the GNU Affero General Public License           |
+| Version 3, 19 November 2007 and the CiviCRM Licensing Exception.   |
+|                                                                    |
+| CiviCRM is distributed in the hope that it will be useful, but     |
+| WITHOUT ANY WARRANTY; without even the implied warranty of         |
+| MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.               |
+| See the GNU Affero General Public License for more details.        |
+|                                                                    |
+| You should have received a copy of the GNU Affero General Public   |
+| License and the CiviCRM Licensing Exception along                  |
+| with this program; if not, contact CiviCRM LLC                     |
+| at info[AT]civicrm[DOT]org. If you have questions about the        |
+| GNU Affero General Public License or the licensing of CiviCRM,     |
+| see the CiviCRM license FAQ at http://civicrm.org/licensing        |
++--------------------------------------------------------------------+
 *}
 
 {* Contains js templates for backbone-based volunteer needs sub-application *}
 
 <script type="text/template" id="crm-vol-define-layout-tpl">
-	<div id="help">
-		{ts}Use this form to define the number of volunteers needed for each role and time slot. The first slot listed is a default 'flexible' slot (for volunteers who are available at any time for any role).{/ts} {help id="volunteer-define" file="CRM/Volunteer/Form/Manage/Define.hlp"}
-	</div>
+  <div id="help">
+    {ts}Use this form to define the number of volunteers needed for each role and time slot. The first slot listed is a default 'flexible' slot (for volunteers who are available at any time for any role).{/ts} {help id="volunteer-define" file="CRM/Volunteer/Form/Manage/Define.hlp"}
+  </div>
   <form>
-	<div class="dataTables_wrapper" id="crm-vol-define-needs-region">
-          <div class="crm-loading-element">{ts}Loading{/ts}...</div>
-	</div>
-	<div class="crm-submit-buttons">
-  	<a class="button" id="crm-vol-define-done" href="#"><span>{ts}Done{/ts}</span></a>
-	</div>
+    <div class="dataTables_wrapper" id="crm-vol-define-needs-region">
+      <div class="crm-loading-element">{ts}Loading{/ts}...</div>
+    </div>
+    <div class="crm-submit-buttons">
+      <a class="button" id="crm-vol-define-done" href="#"><span>{ts}Done{/ts}</span></a>
+    </div>
   </form>
 </script>
 
 <script type="text/template" id="crm-vol-define-table-tpl">
   <table id="crm-vol-define-needs-table" class="display">
     <thead><tr>
-      <th id="role_id">{ts}Role{/ts}</th>
-      <th id="quantity">{ts}Volunteers<br />Needed{/ts}</th>
-      <th id="start_date">{ts}Start Date/Time{/ts}</th>
-      <th id="duration">{ts}Scheduled<br />(minutes){/ts}</th>
-      <th id="visibility">{ts}Public?{/ts}</th>
-      <th>Enabled?</th>
-      <th></th>
-    </tr></thead>
+        <th id="role_id">{ts}Role{/ts}</th>
+        <th id="quantity">{ts}Volunteers<br />Needed{/ts}</th>
+        <th id="start_date">{ts}Start Date/Time{/ts}</th>
+        <th id="duration">{ts}Scheduled<br />(minutes){/ts}</th>
+        <th id="visibility">{ts}Public?{/ts}</th>
+        <th>Enabled?</th>
+        <th></th>
+      </tr></thead>
     <tbody></tbody>
   </table>
 </script>
 
 <script type="text/template" id="crm-vol-define-new-need-tpl">
-    <td>
-      {literal}
-        <%= RenderUtil.select({
-                name: 'role_id',
-                options: pseudoConstant.volunteer_role,
-                selected: role_id
-        }) %>
-      {/literal}
-		</td>
-    <td><input type="text" name="quantity" value="<%= quantity %>" size="4"></td>
-    <td>
-      <input type="text" name="display_start_date" value="<%= display_start_date %>" size="20">
-      <input type="text" name="display_start_time" value="<%= display_start_time %>" size="10">
-    </td>
-    <td><input type="text" name="duration" value="<%= duration %>" size="6"></td>
-    <td><input type="checkbox" name="visibility_id" data-stored="<%= visibility_id %>"></td>
-    <td><input type="checkbox" name="is_active" value="1" data-stored="<%= is_active %>"></td>
-    <td><a href="#" class="crm-vol-del" title="{ts}Delete{/ts}"><img src="{$config->resourceBase}i/close.png" alt="{ts}Delete{/ts}"/></a></td>
-  </script>
+  <td>
+    {literal}
+      <%= RenderUtil.select({
+      name: 'role_id',
+      options: pseudoConstant.volunteer_role,
+      selected: role_id
+      }) %>
+    {/literal}
+  </td>
+  <td><input type="text" name="quantity" value="<%= quantity %>" size="4"></td>
+  <td>
+    <input type="text" name="display_start_date" value="<%= display_start_date %>" size="20">
+    <input type="text" name="display_start_time" value="<%= display_start_time %>" size="10">
+  </td>
+  <td><input type="text" name="duration" value="<%= duration %>" size="6"></td>
+  <td><input type="checkbox" name="visibility_id" data-stored="<%= visibility_id %>"></td>
+  <td><input type="checkbox" name="is_active" value="1" data-stored="<%= is_active %>"></td>
+  <td><a href="#" class="crm-vol-del" title="{ts}Delete{/ts}"><img src="{$config->resourceBase}i/close.png" alt="{ts}Delete{/ts}"/></a></td>
+</script>
 
-  <script type="text/template" id="crm-vol-define-add-row">
-    <tr>
-      <td colspan="7">
-        <select id="crm-vol-define-add-need">
-          <option value="">- {ts}Create new{/ts} -</option>
-          {crmAPI var='result' entity='VolunteerNeed' action='getoptions' field='role_id'}
-          {foreach from=$result.values item=VolunteerNeed key=id}
-            <option value="{$id}">{$VolunteerNeed}</option>
-          {/foreach}
-        </select>
-      </td>
-    </tr>
-  </script>
+<script type="text/template" id="crm-vol-define-add-row">
+  <tr>
+    <td colspan="7">
+      <select id="crm-vol-define-add-need">
+        <option value="">- {ts}Create new{/ts} -</option>
+        {crmAPI var='result' entity='VolunteerNeed' action='getoptions' field='role_id'}
+        {foreach from=$result.values item=VolunteerNeed key=id}
+          <option value="{$id}">{$VolunteerNeed}</option>
+        {/foreach}
+      </select>
+    </td>
+  </tr>
+</script>
