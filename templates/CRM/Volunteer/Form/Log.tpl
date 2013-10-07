@@ -33,7 +33,7 @@
       <div class="crm-grid-cell">&nbsp;</div>
       <div class="crm-grid-cell">{ts}Contact{/ts}</div>
       <div class="crm-grid-cell">{ts}Role{/ts}</div>
-      <div class="crm-grid-cell">{ts}Start Time{/ts}</div>
+      <div class="crm-grid-cell">{ts}Start Date{/ts}</div>
       <div class="crm-grid-cell">{ts}Scheduled Duration{/ts}</div>
       <div class="crm-grid-cell"><img src="{$config->resourceBase}i/copy.png"
                                       alt="{ts}Click to copy Actual Duration from row one to all rows.{/ts}"

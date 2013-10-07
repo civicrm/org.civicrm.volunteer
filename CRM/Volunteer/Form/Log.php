@@ -65,7 +65,6 @@ class CRM_Volunteer_Form_Log extends CRM_Core_Form {
     $params = array('project_id' => $this->_vid);
     $this->_volunteerData = CRM_Volunteer_BAO_Assignment::retrieve($params);
 
-
     $projects = CRM_Volunteer_BAO_Project::retrieve(array('id' => $this->_vid));
     $project = $projects[$this->_vid];
 
@@ -73,6 +72,15 @@ class CRM_Volunteer_Form_Log extends CRM_Core_Form {
     $this->_entityTable = $project->entity_table;
     $this->_title = $project->title;
 
+    $this->_title .= ' ( ' . CRM_Utils_Date::customFormat($project->start_date);
+    $this->_start_date = $project->start_date;
+
+    if ($project->end_date) {
+      $this->_title .= ' - ' . CRM_Utils_Date::customFormat($project->end_date) . ' )';
+    }
+    else {
+      $this->_title .= ' )';
+    }
   }
 
   /**
@@ -207,7 +215,12 @@ class CRM_Volunteer_Form_Log extends CRM_Core_Form {
     $completed = CRM_Utils_Array::key('Completed', $volunteerStatus);
     for ($j = $i; $j< $this->_batchInfo['item_count']; $j++) {
       $defaults['field'][$j]['volunteer_status'] = $completed;
+      $startDate  = CRM_Utils_Date::customFormat($this->_start_date, "%m/%E/%Y  %l:%M %P");
+      $date = explode('  ', $startDate);
+      $defaults['field'][$j]['start_date'] = $date[0];
+      $defaults['field'][$j]['start_date_time'] = $date[1];
     }
+
     return $defaults;
   }
 
