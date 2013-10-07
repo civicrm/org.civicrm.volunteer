@@ -73,7 +73,7 @@
     <td><input type="text" name="duration" value="<%= duration %>" size="6"></td>
     <td><input type="checkbox" name="visibility_id" data-stored="<%= visibility_id %>"></td>
     <td><input type="checkbox" name="is_active" value="1" data-stored="<%= is_active %>"></td>
-    <td><a href="#" class="crm-vol-del" title="{ts}Remove{/ts}"><img src="{$config->resourceBase}i/close.png" alt="{ts}Remove{/ts}"/></a></td>
+    <td><a href="#" class="crm-vol-del" title="{ts}Delete{/ts}"><img src="{$config->resourceBase}i/close.png" alt="{ts}Delete{/ts}"/></a></td>
   </script>
 
   <script type="text/template" id="crm-vol-define-add-row">
