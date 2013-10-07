@@ -30,12 +30,10 @@ CRM.volunteerApp.module('Entities', function(Entities, volunteerApp, Backbone, M
    }
  });
 
-  Entities.getNeeds = function(alsoFetchAssignments) {
+  Entities.getNeeds = function(params) {
+    params = params || {};
     var defer = $.Deferred();
-    var params = {project_id: volunteerApp.project_id};
-    if (alsoFetchAssignments) {
-      params['api.volunteer_assignment.get'] = {};
-    }
+    params.project_id = volunteerApp.project_id;
     CRM.api('volunteer_need', 'get', params, {
 
       success: function(data) {
