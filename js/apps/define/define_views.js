@@ -108,15 +108,7 @@ CRM.volunteerApp.module('Define', function(Define, volunteerApp, Backbone, Mario
     className: 'crm-block crm-form-block crm-event-manage-volunteer-form-block',
 
     events: {
-      'change #crm-vol-define-add-need': 'addNewNeed',
-      'click #crm-vol-define-needs-table .sorting' : 'changeSort'
-    },
-
-    changeSort: function(sender) {
-      // FIXME: no need to pull data again to sort it
-      Define.sortField = $(sender.currentTarget).attr('id');
-      var request = volunteerApp.Entities.getNeeds({'api.volunteer_assignment.getcount': {}});
-      request.done(this.getCollection);
+      'change #crm-vol-define-add-need': 'addNewNeed'
     },
 
     addNewNeed: function() {

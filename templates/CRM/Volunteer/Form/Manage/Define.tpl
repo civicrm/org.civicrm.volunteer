@@ -43,11 +43,11 @@
 <script type="text/template" id="crm-vol-define-table-tpl">
   <table id="crm-vol-define-needs-table" class="display">
     <thead><tr>
-      <th class="sorting" id="role_id">{ts}Role{/ts}</th>
-      <th class="sorting" id="quantity">{ts}Volunteers<br />Needed{/ts}</th>
-      <th class="sorting" id="start_date">{ts}Start Date/Time{/ts}</th>
-      <th class="sorting" id="duration">{ts}Scheduled<br />(minutes){/ts}</th>
-      <th class="sorting" id="visibility">{ts}Public?{/ts}</th>
+      <th id="role_id">{ts}Role{/ts}</th>
+      <th id="quantity">{ts}Volunteers<br />Needed{/ts}</th>
+      <th id="start_date">{ts}Start Date/Time{/ts}</th>
+      <th id="duration">{ts}Scheduled<br />(minutes){/ts}</th>
+      <th id="visibility">{ts}Public?{/ts}</th>
       <th>Enabled?</th>
       <th></th>
     </tr></thead>
