@@ -1,6 +1,14 @@
 // http://civicrm.org/licensing
 CRM.volunteerApp.module('Assign', function(Assign, volunteerApp, Backbone, Marionette, $, _) {
 
+  Assign.startWithParent = false;
+
+  // Kick everything off
+  Assign.addInitializer(function() {
+    Assign.layout = new Assign.layoutClass();
+    volunteerApp.dialogRegion.show(Assign.layout);
+  });
+
   // Initialize entities and views
   Assign.on('start', function() {
     var request = volunteerApp.Entities.getNeeds({'api.volunteer_assignment.get': {}, 'is_active': 1});
