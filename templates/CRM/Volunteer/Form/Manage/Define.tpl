@@ -40,6 +40,7 @@
 			<th class="sorting" id="duration">{ts}Scheduled<br />(minutes){/ts}</th>
 			<th class="sorting" id="visibility">{ts}Public?{/ts}</th>
 			<th>Enabled?</th>
+                        <th></th>
     </tr></thead>
     <tbody id="crm-vol-define-needs-region"><tr><td colspan="6"><div class="crm-loading-element">{ts}Loading{/ts}...</div></td></tr></tbody>
   </table>
@@ -67,5 +68,6 @@
     </td>
     <td><input type="text" name="duration" value="<%= duration %>" size="6"></td>
     <td><input type="checkbox" name="visibility_id" data-stored="<%= visibility_id %>"></td>
-    <td><input type="checkbox" name="is_active" value="1" data-stored="<%= is_active %>"><a href="#" class="crm-vol-del" title="{ts}Remove{/ts}"><img src="{$config->resourceBase}i/close.png" alt="{ts}Remove{/ts}"/></a></td>
+    <td><input type="checkbox" name="is_active" value="1" data-stored="<%= is_active %>"></td>
+    <td><a href="#" class="crm-vol-del" title="{ts}Delete{/ts}"><img src="{$config->resourceBase}i/close.png" alt="{ts}Delete{/ts}"/></a></td>
   </script>
