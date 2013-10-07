@@ -41,7 +41,7 @@
 </script>
 
 <script type="text/template" id="crm-vol-define-table-tpl">
-  <table id="crm-vol-define-needs-dialog" class="display">
+  <table id="crm-vol-define-needs-table" class="display">
     <thead><tr>
       <th class="sorting" id="role_id">{ts}Role{/ts}</th>
       <th class="sorting" id="quantity">{ts}Volunteers<br />Needed{/ts}</th>
@@ -78,12 +78,12 @@
 
   <script type="text/template" id="crm-vol-define-add-row">
     <tr>
-      <td>
+      <td colspan="7">
         <select id="crm-vol-define-add-need">
           <option value="">- {ts}Create new{/ts} -</option>
           {crmAPI var='result' entity='VolunteerNeed' action='getoptions' field='role_id'}
           {foreach from=$result.values item=VolunteerNeed key=id}
-            <option id="{$id}">{$VolunteerNeed}</option>
+            <option value="{$id}">{$VolunteerNeed}</option>
           {/foreach}
         </select>
       </td>

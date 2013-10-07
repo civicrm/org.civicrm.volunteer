@@ -10,7 +10,7 @@ Define.startWithParent = false;
 
     var request = volunteerApp.Entities.getNeeds({'api.volunteer_assignment.getcount': {}});
     request.done(function(arrData) {
-      Define.collectionView = new Define.defineNeedsTable({
+      Define.collectionView = new Define.needsCompositeView({
         'collection': volunteerApp.Entities.Needs.getScheduled(arrData)
       });
       layout.newNeeds.show(Define.collectionView);

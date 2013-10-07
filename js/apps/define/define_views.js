@@ -17,7 +17,7 @@ CRM.volunteerApp.module('Define', function(Define, volunteerApp, Backbone, Mario
     }
   });
 
-  Define.defineNeedsView = Marionette.ItemView.extend({
+  Define.needItemView = Marionette.ItemView.extend({
     template: '#crm-vol-define-new-need-tpl',
     tagName: 'tr',
     className: 'crm-vol-define-need',
@@ -28,7 +28,8 @@ CRM.volunteerApp.module('Define', function(Define, volunteerApp, Backbone, Mario
     },
 
     events: {
-      'change :input': 'updateNeed',
+      'change :input:not(.timeplugin)': 'updateNeed',
+      'blur :input.timeplugin': 'updateNeed',
       'click .crm-vol-del': 'deleteNeed'
     },
 
@@ -58,7 +59,7 @@ CRM.volunteerApp.module('Define', function(Define, volunteerApp, Backbone, Mario
       });
     },
 
-    updateNeed: function(e) {console.log(e);
+    updateNeed: function(e) {
       var thisView = this;
       var field_name = e.currentTarget.name;
       var value = e.currentTarget.value;
@@ -99,16 +100,16 @@ CRM.volunteerApp.module('Define', function(Define, volunteerApp, Backbone, Mario
     }
   });
 
-  Define.defineNeedsTable = Marionette.CompositeView.extend({
+  Define.needsCompositeView = Marionette.CompositeView.extend({
     id: "manage_needs",
     template: "#crm-vol-define-table-tpl",
-    itemView: Define.defineNeedsView,
+    itemView: Define.needItemView,
     itemViewContainer: 'tbody',
     className: 'crm-block crm-form-block crm-event-manage-volunteer-form-block',
 
     events: {
-      'click #addNewNeed': 'addNewNeed',
-      'click #crm-vol-define-needs-dialog .sorting' : 'changeSort'
+      'change #crm-vol-define-add-need': 'addNewNeed',
+      'click #crm-vol-define-needs-table .sorting' : 'changeSort'
     },
 
     changeSort: function(sender) {
@@ -118,13 +119,25 @@ CRM.volunteerApp.module('Define', function(Define, volunteerApp, Backbone, Mario
       request.done(this.getCollection);
     },
 
-    // no API calls here; this just updates the UI
-    addNewNeed: function () {
-      var newNeed = new this.collection.model({project_id: volunteerApp.project_id});
+    addNewNeed: function() {
+      var params = {project_id: volunteerApp.project_id, role_id: $('#crm-vol-define-add-need').val()};
+      var newNeed = new this.collection.model(params);
       this.collection.add(newNeed);
-      this.render();
+      // restore add another text
+      $('#crm-vol-define-add-need').val('');
+      $('#crm-vol-define-needs-table').block();
+      CRM.api('VolunteerNeed', 'create', params, {
+        success: function (data) {
+          newNeed.set('id', data.id);
+          $('#crm-vol-define-needs-table').unblock();
+          CRM.alert('', ts('Saved'), 'success');
+        }
+      });
       return false;
+    },
+
+    onRender: function() {
+      this.$('#crm-vol-define-needs-table').append($('#crm-vol-define-add-row').html());
     }
   });
-
 });
