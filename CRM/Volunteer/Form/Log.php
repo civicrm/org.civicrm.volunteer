@@ -233,7 +233,6 @@ class CRM_Volunteer_Form_Log extends CRM_Core_Form {
    */
   public function postProcess() {
     $params = $this->controller->exportValues($this->_name);
-
     $count = 0;
     foreach ($params['field'] as $key => $value) {
       if (!empty($params['primary_contact_select_id'][$key]) or !empty($params['primary_contact'][$key])) {
@@ -249,34 +248,20 @@ class CRM_Volunteer_Form_Log extends CRM_Core_Form {
           CRM_Volunteer_BAO_Assignment::createVolunteerActivity($volunteer);
         }
         else {
-          //create need record
-          $needs = array(
-            'project_id' => $this->_vid,
-            'duration' => CRM_Utils_Array::value('actual_duration', $value),
-            'role_id' => CRM_Utils_Array::value('volunteer_role', $value),
-            'is_active' => 1,
-          );
-          if (empty($value['start_date'])) {
-            $needs['is_flexible'] = 1;
-          }
-          else {
-            $needs['is_flexible'] = 0;
-            $needs['start_time'] = CRM_Utils_Date::processDate($value['start_date'], $value['start_date_time'], TRUE);
-          }
-
-          $need = CRM_Volunteer_BAO_Need::create($needs);
-
+          
+          $flexibleNeedId = CRM_Volunteer_BAO_Project::getFlexibleNeedID($this->_vid);
           //create new Volunteer activity records
           $volunteer = array(
             'assignee_contact_id' => $params['primary_contact_select_id'][$key],
             'status_id' => $value['volunteer_status'],
             'subject' => $this->_title . ' Volunteering',
-            'volunteer_need_id' => $need->id,
+            'volunteer_need_id' => $flexibleNeedId,
+            'volunteer_role_id' => CRM_Utils_Array::value('volunteer_role', $value),
             'time_completed_minutes' => CRM_Utils_Array::value('actual_duration', $value),
             'time_scheduled_minutes' => CRM_Utils_Array::value('scheduled_duration', $value),
           );
           if (!empty($needs['start_time'])) {
-            $volunteer['activity_date_time'] = $needs['start_time'];
+            $volunteer['activity_date_time'] = CRM_Utils_Date::processDate($value['start_date'], $value['start_date_time'], TRUE);
           }
 
           CRM_Volunteer_BAO_Assignment::createVolunteerActivity($volunteer);
