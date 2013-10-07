@@ -44,6 +44,14 @@ class CRM_Volunteer_BAO_Project extends CRM_Volunteer_DAO_Project {
   private $title;
 
   /**
+   * The ID of the flexible Need for this Project
+   *
+   * @var int
+   */
+  // TODO: populate this based on result from getFlexibleNeedID()
+  private $flexible_need_id;
+
+  /**
    * class constructor
    */
   function __construct() {
@@ -229,5 +237,26 @@ class CRM_Volunteer_BAO_Project extends CRM_Volunteer_DAO_Project {
       }
     }
     return $this->title;
+  }
+
+  /**
+   * Given project_id, return ID of flexible Need
+   *
+   * @param int $project_id
+   * @return mixed Integer on success, else NULL
+   */
+  public static function getFlexibleNeedID ($project_id) {
+    $result = NULL;
+
+    if (is_int($project_id) || ctype_digit($project_id)) {
+      $flexibleNeed = civicrm_api3('volunteer_need', 'getsingle', array(
+        'is_active' => 1,
+        'is_flexible' => 1,
+        'project_id' => $project_id,
+      ));
+      $result = (int) $flexibleNeed['id'];
+    }
+
+    return $result;
   }
 }
