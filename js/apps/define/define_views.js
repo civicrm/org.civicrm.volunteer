@@ -105,9 +105,9 @@ CRM.volunteerApp.module('Define', function(Define, volunteerApp, Backbone, Mario
     },
 
     changeSort: function(sender) {
-
+      // FIXME: no need to pull data again to sort it
       Define.sortField = $(sender.currentTarget).attr('id');
-      var request = volunteerApp.Entities.getNeeds(true);
+      var request = volunteerApp.Entities.getNeeds({'api.volunteer_assignment.getcount': {}});
       request.done(this.getCollection);
     },
 

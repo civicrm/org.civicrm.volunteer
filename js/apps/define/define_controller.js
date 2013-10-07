@@ -13,8 +13,8 @@ Define.startWithParent = false;
     volunteerApp.dialogRegion.show(Define.manageNeeds);
     volunteerApp.dialogRegion.show(Define.needsTable);
 
-    var request = volunteerApp.Entities.getNeeds(true);
+    var request = volunteerApp.Entities.getNeeds({'api.volunteer_assignment.getcount': {}});
     request.done(Define.needsTable.getCollection);
   });
-  
+
 });
