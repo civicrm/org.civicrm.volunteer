@@ -42,6 +42,10 @@ CRM.volunteerApp.module('Define', function(Define, volunteerApp, Backbone, Mario
         dateFormat: "MM d, yy"
       });
 
+      if (this.model.get('display_start_date')) {
+        this.$("[name='display_start_date']").datepicker('setDate', this.model.get('display_start_date'));
+      }
+
       this.$("[name='display_start_time']").addClass('timeplugin').timeEntry();
 
       // populate and format time
