@@ -54,7 +54,7 @@
       <text_length>64</text_length>
       <note_columns>60</note_columns>
       <note_rows>4</note_rows>
-      <column_name>role_id_{$customIDs.customFieldID+1}</column_name>
+      <column_name>volunteer_role_id_{$customIDs.customFieldID+1}</column_name>
       <option_group_name>{$volunteer_custom_option_group_name}</option_group_name>
       <custom_group_name>CiviVolunteer</custom_group_name>
     </CustomField>
