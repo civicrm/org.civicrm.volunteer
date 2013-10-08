@@ -28,7 +28,10 @@
 
 <script type="text/template" id="crm-vol-define-layout-tpl">
   <div id="help">
-    {ts}Use this form to define the number of volunteers needed for each role and time slot. The first slot listed is a default 'flexible' slot (for volunteers who are available at any time for any role).{/ts} {help id="volunteer-define" file="CRM/Volunteer/Form/Manage/Define.hlp"}
+    {ts}Use this form to specify the number of volunteers needed for each role
+    and time slot. If no needs are specified, volunteers will be considered to
+    be generally available.{/ts}
+    {help id="volunteer-define" file="CRM/Volunteer/Form/Manage/Define.hlp"}
   </div>
   <form>
     <div id="crm-vol-define-scheduled-needs-region">
