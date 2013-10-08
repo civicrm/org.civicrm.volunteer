@@ -33,7 +33,7 @@
     be generally available.{/ts}
     {help id="volunteer-define" file="CRM/Volunteer/Form/Manage/Define.hlp"}
   </div>
-  <form>
+  <form class="crm-block crm-form-block crm-event-manage-volunteer-form-block">
     <div id="crm-vol-define-scheduled-needs-region">
       <div class="crm-loading-element">{ts}Loading{/ts}...</div>
     </div>
@@ -75,13 +75,13 @@
     <input type="text" name="display_start_time" value="<%= display_start_time %>" size="10">
   </td>
   <td><input type="text" name="duration" value="<%= duration %>" size="6"></td>
-  <td><input type="checkbox" name="visibility_id"></td>
+  <td><input type="checkbox" name="visibility_id" value="<%= visibilityValue %>"></td>
   <td><input type="checkbox" name="is_active" value="1"></td>
   <td><a href="#" class="crm-vol-del" title="{ts}Delete{/ts}"><img src="{$config->resourceBase}i/close.png" alt="{ts}Delete{/ts}"/></a></td>
 </script>
 
 <script type="text/template" id="crm-vol-define-flexible-need-tpl">
-  <input type="checkbox" name="visibility_id" id="crm-vol-visibility-id">
+  <input type="checkbox" name="visibility_id" id="crm-vol-visibility-id" value="<%= visibilityValue %>">
   <label for="crm-vol-visibility-id">Allow users to sign up without specifying a shift.</label>
 </script>
 

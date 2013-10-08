@@ -12,7 +12,7 @@ CRM.volunteerApp.module('Entities', function(Entities, volunteerApp, Backbone, M
       'start_time': null,
       'quantity': null,
       'filled': null,
-      'visibility_id': _.invert(CRM.pseudoConstant.volunteer_need_visibility).Public
+      'visibility_id': CRM.pseudoConstant.volunteer_need_visibility.public
     }
   });
 

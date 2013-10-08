@@ -1,6 +1,8 @@
 // http://civicrm.org/licensing
 CRM.volunteerApp.module('Define', function(Define, volunteerApp, Backbone, Marionette, $, _) {
 
+  var visibility = CRM.pseudoConstant.volunteer_need_visibility;
+
   Define.layout = Marionette.Layout.extend({
     template: "#crm-vol-define-layout-tpl",
     regions: {
@@ -24,7 +26,8 @@ CRM.volunteerApp.module('Define', function(Define, volunteerApp, Backbone, Mario
 
     templateHelpers: {
       pseudoConstant: CRM.pseudoConstant,
-      RenderUtil: CRM.volunteerApp.RenderUtil
+      RenderUtil: CRM.volunteerApp.RenderUtil,
+      visibilityValue: visibility.public
     },
 
     events: {
@@ -42,11 +45,7 @@ CRM.volunteerApp.module('Define', function(Define, volunteerApp, Backbone, Mario
         defaultTime: this.$("[name='display_start_time']").val()
       });
 
-      var publicVisibilityValue = _.invert(CRM.pseudoConstant.volunteer_need_visibility).Public;
-
-      this.$("[name='visibility_id']").val(publicVisibilityValue);
-
-      if (this.model.get('visibility_id') == publicVisibilityValue) {
+      if (this.model.get('visibility_id') == visibility.public) {
         this.$("[name='visibility_id']").prop("checked", true);
       }
 
@@ -69,7 +68,7 @@ CRM.volunteerApp.module('Define', function(Define, volunteerApp, Backbone, Mario
           break;
         case 'visibility_id':
           value = e.currentTarget.checked ? e.currentTarget.value
-              : _.invert(CRM.pseudoConstant.volunteer_need_visibility).Admin;
+              : visibility.admin;
           break;
         case 'is_active':
           value = e.currentTarget.checked ? e.currentTarget.value : 0;
@@ -101,8 +100,6 @@ CRM.volunteerApp.module('Define', function(Define, volunteerApp, Backbone, Mario
     }
   };
 
-
-
   Define.scheduledNeedItemView = Marionette.ItemView.extend(_.extend(itemViewSettings, {
     template: '#crm-vol-define-scheduled-need-tpl',
     tagName: 'tr'
@@ -118,17 +115,20 @@ CRM.volunteerApp.module('Define', function(Define, volunteerApp, Backbone, Mario
     template: "#crm-vol-define-table-tpl",
     itemView: Define.scheduledNeedItemView,
     itemViewContainer: 'tbody',
-    className: 'crm-block crm-form-block crm-event-manage-volunteer-form-block',
 
     events: {
       'change #crm-vol-define-add-need': 'addNewNeed'
     },
 
     addNewNeed: function() {
-      var params = {project_id: volunteerApp.project_id, role_id: $('#crm-vol-define-add-need').val()};
+      var params = {
+        project_id: volunteerApp.project_id,
+        role_id: $('#crm-vol-define-add-need').val(),
+        visibility_id: $('#crm-vol-visibility-id:checked').length ? visibility.public : visibility.admin
+      };console.log(params);
       var newNeed = new this.collection.model(params);
       this.collection.add(newNeed);
-      // restore add another text
+      // Reset add another select
       $('#crm-vol-define-add-need').val('');
       $('#crm-vol-define-needs-table').block();
       CRM.api('VolunteerNeed', 'create', params, {
