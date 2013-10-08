@@ -1,20 +1,23 @@
 // http://civicrm.org/licensing
 CRM.volunteerApp.module('Define', function(Define, volunteerApp, Backbone, Marionette, $, _) {
-
-Define.startWithParent = false;
+  var layout;
+  Define.startWithParent = false;
 
   // Kick everything off
   Define.addInitializer(function() {
-    var layout = new Define.layout();
+    layout = new Define.layout();
     volunteerApp.dialogRegion.show(layout);
+  });
 
-    var request = volunteerApp.Entities.getNeeds({'api.volunteer_assignment.getcount': {}});
-    request.done(function(arrData) {
-      Define.collectionView = new Define.needsCompositeView({
-        'collection': volunteerApp.Entities.Needs.getScheduled(arrData)
+  // Initialize entities and views
+  Define.on('start', function() {
+    volunteerApp.Entities.getNeeds({'api.volunteer_assignment.getcount': {}})
+      .done(function(arrData) {
+        Define.collectionView = new Define.needsCompositeView({
+          'collection': volunteerApp.Entities.Needs.getScheduled(arrData)
+        });
+        layout.newNeeds.show(Define.collectionView);
       });
-      layout.newNeeds.show(Define.collectionView);
-    });
   });
 
 });
