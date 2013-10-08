@@ -87,14 +87,15 @@ CRM.volunteerApp.module('Define', function(Define, volunteerApp, Backbone, Mario
     },
 
     deleteNeed: function() {
-      var thisView = this;
+      var id = this.model.get('id');
+      var count = this.model.get('api.volunteer_assignment.getcount') || 0;
+      var role = CRM.pseudoConstant.volunteer_role[this.model.get('role_id')];
       CRM.confirm(function() {
-        var id = thisView.model.get('id');
         Define.collectionView.collection.remove(id);
         CRM.api('volunteer_need', 'delete', {id: id});
       }, {
-        title: ts('Delete Need'),
-        message: ts('There are currently %1 volunteer(s) assigned to this need.', {1: thisView.model.get('api.volunteer_assignment.getcount') || '0'})
+        title: ts('Delete %1', {1: role}),
+        message: count == 1 ? ts('There is currently 1 volunteer assigned to this need.') : ts('There are currently %1 volunteers assigned to this need.', {1: count})
       });
       return false;
     }
