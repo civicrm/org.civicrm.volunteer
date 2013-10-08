@@ -45,6 +45,16 @@ CRM.volunteerApp.module('Define', function(Define, volunteerApp, Backbone, Mario
         defaultTime: this.$("[name='display_start_time']").val()
       });
 
+      // populate and format time
+      if (this.model.get('display_start_time')) {
+        this.$("[name='display_start_time']").timeEntry('setTime', this.model.get('display_start_time'));
+
+        // update model value to match timeEntry-formatted time; thus detect
+        // whether the user changed the time (in which case the database should
+        // be updated) or the widget changed the time (nothing need be done)
+        this.model.set('display_start_time', this.$("[name='display_start_time']").val());
+      }
+
       if (this.model.get('visibility_id') == visibility.public) {
         this.$("[name='visibility_id']").prop("checked", true);
       }
@@ -59,9 +69,16 @@ CRM.volunteerApp.module('Define', function(Define, volunteerApp, Backbone, Mario
       var field_name = e.currentTarget.name;
       var value = e.currentTarget.value;
 
+      // preprocess special-case fields
       switch (field_name) {
         case 'display_start_date':
         case 'display_start_time':
+          // don't concat display date and time if no real change has occurred
+          // (prevents formatting changes from triggering API call)
+          if (this.model.get(field_name) == value) {
+            break;
+          }
+
           field_name = 'start_time';
           value = this.$("[name='display_start_date']").val()
               + ' ' + this.$("[name='display_start_time']").val();
