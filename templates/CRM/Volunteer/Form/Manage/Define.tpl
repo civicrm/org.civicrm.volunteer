@@ -31,7 +31,7 @@
     {ts}Use this form to define the number of volunteers needed for each role and time slot. The first slot listed is a default 'flexible' slot (for volunteers who are available at any time for any role).{/ts} {help id="volunteer-define" file="CRM/Volunteer/Form/Manage/Define.hlp"}
   </div>
   <form>
-    <div class="dataTables_wrapper" id="crm-vol-define-needs-region">
+    <div id="crm-vol-define-needs-region">
       <div class="crm-loading-element">{ts}Loading{/ts}...</div>
     </div>
     <div class="crm-submit-buttons">
@@ -41,12 +41,12 @@
 </script>
 
 <script type="text/template" id="crm-vol-define-table-tpl">
-  <table id="crm-vol-define-needs-table" class="display">
+  <table id="crm-vol-define-needs-table">
     <thead><tr>
         <th id="role_id">{ts}Role{/ts}</th>
-        <th id="quantity">{ts}Volunteers<br />Needed{/ts}</th>
+        <th id="quantity">{ts}Volunteers Needed{/ts}</th>
         <th id="start_date">{ts}Start Date/Time{/ts}</th>
-        <th id="duration">{ts}Scheduled<br />(minutes){/ts}</th>
+        <th id="duration">{ts}Minutes{/ts}</th>
         <th id="visibility">{ts}Public?{/ts}</th>
         <th>Enabled?</th>
         <th></th>
