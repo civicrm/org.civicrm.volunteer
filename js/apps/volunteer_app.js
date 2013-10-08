@@ -10,7 +10,7 @@ cj(function($) {
 
   // FIXME: This could be rendered and managed by the volunteerApp for more internal consistency
   $("#crm-container").on('click', 'a.crm-volunteer-popup', function() {
-    var moduleName = CRM.volunteerApp.tab = $(this).data('tab');
+    CRM.volunteerApp.tab = $(this).data('tab');
     CRM.volunteerApp.project_id = $(this).data('vid');
     $('#crm-volunteer-dialog').dialog({
       modal: true,
@@ -21,7 +21,7 @@ cj(function($) {
         CRM.volunteerApp.module(CRM.volunteerApp.tab).stop();
       }
     });
-    CRM.volunteerApp.module(moduleName).start();
+    CRM.volunteerApp.module(CRM.volunteerApp.tab).start();
     return false;
   });
 });
