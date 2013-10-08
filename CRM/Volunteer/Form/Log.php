@@ -274,7 +274,7 @@ class CRM_Volunteer_Form_Log extends CRM_Core_Form {
 
     $statusMsg = ts('Volunteer hours have been recorded for %1 volunteers', array(1 => $count));
 
-    if (CRM_Utils_Array::value('snippet', $_REQUEST) == 6) {
+    if (CRM_Utils_Array::value('snippet', $_REQUEST) == CRM_Core_Smarty::PRINT_JSON) {
       CRM_Utils_System::civiExit(json_encode(array(
         'message' => $statusMsg,
       )));
