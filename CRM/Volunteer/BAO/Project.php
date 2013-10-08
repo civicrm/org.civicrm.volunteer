@@ -242,11 +242,10 @@ class CRM_Volunteer_BAO_Project extends CRM_Volunteer_DAO_Project {
         switch ($this->entity_table) {
           case 'civicrm_event' :
             $params = array(
-              'version' => 3,
               'id' => $this->entity_id,
               'return' => array('title'),
             );
-            $result = civicrm_api('Event', 'get', $params);
+            $result = civicrm_api3('Event', 'get', $params);
             $this->title = $result['values'][$this->entity_id]['title'];
             break;
         }
@@ -287,11 +286,10 @@ class CRM_Volunteer_BAO_Project extends CRM_Volunteer_DAO_Project {
         switch ($this->entity_table) {
           case 'civicrm_event' :
             $params = array(
-              'version' => 3,
               'id' => $this->entity_id,
               'return' => array('start_date'),
             );
-            $result = civicrm_api('Event', 'get', $params);
+            $result = civicrm_api3('Event', 'get', $params);
             $this->start_date = $result['values'][$this->entity_id]['start_date'];
             break;
         }
@@ -311,11 +309,10 @@ class CRM_Volunteer_BAO_Project extends CRM_Volunteer_DAO_Project {
         switch ($this->entity_table) {
           case 'civicrm_event' :
             $params = array(
-              'version' => 3,
               'id' => $this->entity_id,
               'return' => array('end_date'),
             );
-            $result = civicrm_api('Event', 'get', $params);
+            $result = civicrm_api3('Event', 'get', $params);
             $this->end_date = CRM_Utils_Array::value('end_date', $result['values'][$this->entity_id]);
             break;
         }
