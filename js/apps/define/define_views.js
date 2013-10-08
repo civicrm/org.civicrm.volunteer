@@ -79,11 +79,15 @@ CRM.volunteerApp.module('Define', function(Define, volunteerApp, Backbone, Mario
           value = e.currentTarget.checked ? e.currentTarget.value : 0;
           break;
       }
-      this.model.set(field_name, value);
 
-      var params = {'id': this.model.get('id')};
-      params[field_name] = value;
-      CRM.api('VolunteerNeed', 'create', params);
+      // update only if a change occurred
+      if(this.model.get(field_name) != value) {
+        this.model.set(field_name, value);
+
+        var params = {'id': this.model.get('id')};
+        params[field_name] = value;
+        CRM.api('VolunteerNeed', 'create', params);
+      }
     },
 
     deleteNeed: function() {
