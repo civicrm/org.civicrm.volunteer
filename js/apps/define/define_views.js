@@ -89,12 +89,24 @@ CRM.volunteerApp.module('Define', function(Define, volunteerApp, Backbone, Mario
       var id = this.model.get('id');
       var count = this.model.get('api.volunteer_assignment.getcount') || 0;
       var role = CRM.pseudoConstant.volunteer_role[this.model.get('role_id')];
+      // FIXME: the JS implementation of CiviCRM's string translator doesn't yet support plurals
+      // DESIRED CODE:
+      // var msg = ts("There is currently %count volunteer assigned to this need. The volunteer's activity history will be preserved, but they will be disconnected from this shift.", {count: count,plural: "There are currently %count volunteers assigned to this need. The volunteers' activity histories will be preserved, but they will be disconnected from this shift."});
+      // STOPGAP CODE:
+      var msg = (count == 1
+        ? ts("There is currently %1 volunteer assigned to this need. The volunteer's activity history will be preserved, but they will be disconnected from this shift.", {1: count})
+        : (count == 0
+            ? ts("There are currently %1 volunteers assigned to this need.", {1: count})
+            : ts("There are currently %1 volunteers assigned to this need. The volunteers' activity histories will be preserved, but they will be disconnected from this shift.", {1: count})
+          )
+      );
+      // END FIXME
       CRM.confirm(function() {
         Define.collectionView.collection.remove(id);
         CRM.api('volunteer_need', 'delete', {id: id});
       }, {
         title: ts('Delete %1', {1: role}),
-        message: count == 1 ? ts('There is currently 1 volunteer assigned to this need.') : ts('There are currently %1 volunteers assigned to this need.', {1: count})
+        message: msg
       });
       return false;
     }
