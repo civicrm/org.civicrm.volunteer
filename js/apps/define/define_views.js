@@ -157,7 +157,7 @@ CRM.volunteerApp.module('Define', function(Define, volunteerApp, Backbone, Mario
         project_id: volunteerApp.project_id,
         role_id: $('#crm-vol-define-add-need').val(),
         visibility_id: $('#crm-vol-visibility-id:checked').length ? visibility.public : visibility.admin
-      };console.log(params);
+      };
       var newNeed = new this.collection.model(params);
       this.collection.add(newNeed);
       // Reset add another select
