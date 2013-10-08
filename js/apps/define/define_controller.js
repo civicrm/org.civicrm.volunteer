@@ -16,7 +16,12 @@ CRM.volunteerApp.module('Define', function(Define, volunteerApp, Backbone, Mario
         Define.collectionView = new Define.needsCompositeView({
           'collection': volunteerApp.Entities.Needs.getScheduled(arrData)
         });
-        layout.newNeeds.show(Define.collectionView);
+        layout.scheduledNeeds.show(Define.collectionView);
+
+        var flexibleNeedModel = new CRM.volunteerApp.Entities.NeedModel(_.findWhere(arrData, {is_flexible: '1'}));
+        var flexibleItemView = new Define.flexibleNeedItemView(flexibleNeedModel);
+        flexibleItemView.model = flexibleNeedModel;
+        layout.flexibleNeeds.show(flexibleItemView);
       });
   });
 

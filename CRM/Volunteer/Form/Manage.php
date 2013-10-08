@@ -64,7 +64,7 @@ class CRM_Volunteer_Form_Manage {
     // Static variables
     $ccr->addSetting(array(
       'pseudoConstant' => array(
-        'volunteer_need_visibility' => CRM_Volunteer_BAO_Need::buildOptions('visibility_id', 'get'),
+        'volunteer_need_visibility' => array_flip(CRM_Volunteer_BAO_Need::buildOptions('visibility_id', 'validate')),
         'volunteer_role' => CRM_Volunteer_BAO_Need::buildOptions('role_id', 'get'),
         'volunteer_status' => CRM_Activity_BAO_Activity::buildOptions('status_id', 'validate'),
       ),
