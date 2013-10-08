@@ -94,7 +94,7 @@ CRM.volunteerApp.module('Define', function(Define, volunteerApp, Backbone, Mario
         CRM.api('volunteer_need', 'delete', {id: id});
       }, {
         title: ts('Delete Need'),
-        message: ts('There are currently %1 volunteer(s) assigned to this need.', {1: thisView.model.get('api.volunteer_assignment.getcount')})
+        message: ts('There are currently %1 volunteer(s) assigned to this need.', {1: thisView.model.get('api.volunteer_assignment.getcount') || '0'})
       });
       return false;
     }
@@ -128,8 +128,19 @@ CRM.volunteerApp.module('Define', function(Define, volunteerApp, Backbone, Mario
       return false;
     },
 
+    appendHtml: function(thisView, itemView) {
+      var container = thisView.$(thisView.itemViewContainer);
+      var addRow = thisView.$('#crm-vol-define-add-row');
+      if (addRow.length) {
+        addRow.before(itemView.el);
+      }
+      else {
+        container.append(itemView.el);
+      }
+    },
+
     onRender: function() {
-      this.$('#crm-vol-define-needs-table').append($('#crm-vol-define-add-row').html());
+      this.$('tbody').append($('#crm-vol-define-add-row-tpl').html());
     }
   });
 });
