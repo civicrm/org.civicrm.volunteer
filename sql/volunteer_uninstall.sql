@@ -23,3 +23,7 @@ DELETE FROM `civicrm_option_group` WHERE name = 'volunteer_role';
 
 /* drop custom field group from Activities (FK takes care of fields) */
 DELETE FROM `civicrm_custom_group` WHERE `name` = 'CiviVolunteer';
+
+/* drop volunteer sign-up profile (FK takes care of profile fields) */
+DELETE FROM `civicrm_uf_join` WHERE `module` = 'CiviVolunteer';
+DELETE FROM `civicrm_uf_group` WHERE `name` = 'volunteer_sign_up';
