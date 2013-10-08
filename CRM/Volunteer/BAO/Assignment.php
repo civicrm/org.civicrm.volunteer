@@ -194,10 +194,9 @@ class CRM_Volunteer_BAO_Assignment extends CRM_Activity_DAO_Activity {
       'is_active' => 1,
       'name' => CRM_Volunteer_Upgrader::customGroupName,
       'return' => array('id', 'table_name'),
-      'version' => 3
     );
 
-    $custom_group = civicrm_api('CustomGroup', 'getsingle', $params);
+    $custom_group = civicrm_api3('CustomGroup', 'getsingle', $params);
 
     if (CRM_Utils_Array::value('is_error', $custom_group) == 1) {
       CRM_Core_Error::fatal('CiviVolunteer custom group appears to be missing.');
@@ -225,10 +224,9 @@ class CRM_Volunteer_BAO_Assignment extends CRM_Activity_DAO_Activity {
       'custom_group_id' => $custom_group['id'],
       'is_active' => 1,
       'return' => array('id', 'column_name', 'name', 'data_type'),
-      'version' => 3,
     );
 
-    $fields = civicrm_api('CustomField', 'get', $params);
+    $fields = civicrm_api3('CustomField', 'get', $params);
 
     if (
       CRM_Utils_Array::value('is_error', $fields) == 1 ||
@@ -271,7 +269,7 @@ class CRM_Volunteer_BAO_Assignment extends CRM_Activity_DAO_Activity {
       // Look up the base entity (e.g. event) as a fallback default
       if (empty($need['start_time'])) {
         $project = civicrm_api3('volunteer_project', 'getsingle', array('id' => $need['project_id']));
-        $event = civicrm_api(str_replace('civicrm_', '', $project['entity_table']), 'getsingle', array('id' => $project['entity_id'], 'version' => 3));
+        $event = civicrm_api3(str_replace('civicrm_', '', $project['entity_table']), 'getsingle', array('id' => $project['entity_id']));
         $need['start_time'] = CRM_Utils_Array::value('start_date', $event);
       }
       $params['activity_date_time'] = CRM_Utils_Array::value('activity_date_time', $params, CRM_Utils_Array::value('start_time', $need));
@@ -291,8 +289,7 @@ class CRM_Volunteer_BAO_Assignment extends CRM_Activity_DAO_Activity {
       }
     }
 
-    $params['version'] = 3;
-    $activity = civicrm_api('Activity', 'create', $params);
+    $activity = civicrm_api3('Activity', 'create', $params);
 
     if (!empty($activity['id'])) {
       return $activity['id'];

@@ -48,7 +48,7 @@
 function civicrm_api3_volunteer_assignment_create($params) {
   $result = CRM_Volunteer_BAO_Assignment::createVolunteerActivity($params);
   if ($result) {
-    return civicrm_api('volunteer_assignment', 'get', array('version' => 3, 'id' => $result));
+    return civicrm_api3('volunteer_assignment', 'get', array('id' => $result));
   }
   return civicrm_api3_create_error('unable to create activity');
 }
