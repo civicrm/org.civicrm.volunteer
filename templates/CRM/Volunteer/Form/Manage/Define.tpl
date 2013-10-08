@@ -31,9 +31,10 @@
     {ts}Use this form to define the number of volunteers needed for each role and time slot. The first slot listed is a default 'flexible' slot (for volunteers who are available at any time for any role).{/ts} {help id="volunteer-define" file="CRM/Volunteer/Form/Manage/Define.hlp"}
   </div>
   <form>
-    <div id="crm-vol-define-needs-region">
+    <div id="crm-vol-define-scheduled-needs-region">
       <div class="crm-loading-element">{ts}Loading{/ts}...</div>
     </div>
+    <div id="crm-vol-define-flexible-needs-region"></div>
     <div class="crm-submit-buttons">
       <a class="button" id="crm-vol-define-done" href="#"><span>{ts}Done{/ts}</span></a>
     </div>
@@ -55,7 +56,7 @@
   </table>
 </script>
 
-<script type="text/template" id="crm-vol-define-new-need-tpl">
+<script type="text/template" id="crm-vol-define-scheduled-need-tpl">
   <td>
     {literal}
       <%= RenderUtil.select({
@@ -71,9 +72,14 @@
     <input type="text" name="display_start_time" value="<%= display_start_time %>" size="10">
   </td>
   <td><input type="text" name="duration" value="<%= duration %>" size="6"></td>
-  <td><input type="checkbox" name="visibility_id" data-stored="<%= visibility_id %>"></td>
-  <td><input type="checkbox" name="is_active" value="1" data-stored="<%= is_active %>"></td>
+  <td><input type="checkbox" name="visibility_id"></td>
+  <td><input type="checkbox" name="is_active" value="1"></td>
   <td><a href="#" class="crm-vol-del" title="{ts}Delete{/ts}"><img src="{$config->resourceBase}i/close.png" alt="{ts}Delete{/ts}"/></a></td>
+</script>
+
+<script type="text/template" id="crm-vol-define-flexible-need-tpl">
+  <input type="checkbox" name="visibility_id" id="crm-vol-visibility-id">
+  <label for="crm-vol-visibility-id">Allow users to sign up without specifying a shift.</label>
 </script>
 
 <script type="text/template" id="crm-vol-define-add-row-tpl">

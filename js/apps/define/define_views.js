@@ -4,7 +4,8 @@ CRM.volunteerApp.module('Define', function(Define, volunteerApp, Backbone, Mario
   Define.layout = Marionette.Layout.extend({
     template: "#crm-vol-define-layout-tpl",
     regions: {
-      newNeeds: "#crm-vol-define-needs-region"
+      scheduledNeeds: "#crm-vol-define-scheduled-needs-region",
+      flexibleNeeds: "#crm-vol-define-flexible-needs-region"
     },
 
     events: {
@@ -17,9 +18,8 @@ CRM.volunteerApp.module('Define', function(Define, volunteerApp, Backbone, Mario
     }
   });
 
-  Define.needItemView = Marionette.ItemView.extend({
-    template: '#crm-vol-define-new-need-tpl',
-    tagName: 'tr',
+  // allows us to toggle different views for the same model
+  var itemViewSettings = {
     className: 'crm-vol-define-need',
 
     templateHelpers: {
@@ -46,17 +46,13 @@ CRM.volunteerApp.module('Define', function(Define, volunteerApp, Backbone, Mario
 
       this.$("[name='visibility_id']").val(publicVisibilityValue);
 
-      this.$("[name='visibility_id']").each(function(){
-        if ($(this).data('stored') == publicVisibilityValue) {
-          $(this).prop("checked", true);
-        }
-      });
+      if (this.model.get('visibility_id') == publicVisibilityValue) {
+        this.$("[name='visibility_id']").prop("checked", true);
+      }
 
-      this.$("[name='is_active']").each(function(){
-        if ($(this).data('stored') == 1) {
-          $(this).prop("checked", true);
-        }
-      });
+      if (this.model.get('is_active') == '1') {
+        this.$("[name='is_active']").prop("checked", true);
+      }
     },
 
     updateNeed: function(e) {
@@ -103,12 +99,24 @@ CRM.volunteerApp.module('Define', function(Define, volunteerApp, Backbone, Mario
       });
       return false;
     }
-  });
+  };
+
+
+
+  Define.scheduledNeedItemView = Marionette.ItemView.extend(_.extend(itemViewSettings, {
+    template: '#crm-vol-define-scheduled-need-tpl',
+    tagName: 'tr'
+  }));
+
+  Define.flexibleNeedItemView = Marionette.ItemView.extend(_.extend(itemViewSettings, {
+    template: '#crm-vol-define-flexible-need-tpl',
+    tagName: 'div'
+  }));
 
   Define.needsCompositeView = Marionette.CompositeView.extend({
     id: "manage_needs",
     template: "#crm-vol-define-table-tpl",
-    itemView: Define.needItemView,
+    itemView: Define.scheduledNeedItemView,
     itemViewContainer: 'tbody',
     className: 'crm-block crm-form-block crm-event-manage-volunteer-form-block',
 

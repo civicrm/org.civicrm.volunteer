@@ -1,7 +1,7 @@
 // http://civicrm.org/licensing
 CRM.volunteerApp.module('Entities', function(Entities, volunteerApp, Backbone, Marionette, $, _) {
 
-  var NeedModel = Backbone.Model.extend({
+  Entities.NeedModel = Backbone.Model.extend({
     defaults: {
       'display_start_date': null, // generated in getNeeds
       'display_start_time': null, // generated in getNeeds
@@ -17,7 +17,7 @@ CRM.volunteerApp.module('Entities', function(Entities, volunteerApp, Backbone, M
   });
 
   Entities.Needs = Backbone.Collection.extend({
-    model: NeedModel,
+    model: Entities.NeedModel,
     comparator: 'start_time',
     createNewNeed : function(params) {
       var defer = $.Deferred();
