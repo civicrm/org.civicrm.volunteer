@@ -267,12 +267,17 @@ class CRM_Volunteer_BAO_Assignment extends CRM_Activity_DAO_Activity {
       $params['volunteer_role_id'] = CRM_Utils_Array::value('volunteer_role_id', $params, CRM_Utils_Array::value('role_id', $need));
       $params['time_scheduled_minutes'] = CRM_Utils_Array::value('time_scheduled_minutes', $params, CRM_Utils_Array::value('duration', $need));
       // Look up the base entity (e.g. event) as a fallback default
-      if (empty($need['start_time'])) {
+      if (empty($need['start_time']) || (empty($params['subject']) && empty($params['id']))) {
         $project = civicrm_api3('volunteer_project', 'getsingle', array('id' => $need['project_id']));
         $event = civicrm_api3(str_replace('civicrm_', '', $project['entity_table']), 'getsingle', array('id' => $project['entity_id']));
         $need['start_time'] = CRM_Utils_Array::value('start_date', $event);
       }
-      $params['activity_date_time'] = CRM_Utils_Array::value('activity_date_time', $params, CRM_Utils_Array::value('start_time', $need));
+      if (empty($need['start_time'])) {
+        $params['activity_date_time'] = CRM_Utils_Array::value('activity_date_time', $params, CRM_Utils_Array::value('start_time', $need));
+      }
+      if (empty($params['subject']) && empty($params['id'])) {
+        $params['subject'] = CRM_Utils_Array::value('title', $event);
+      }
     }
 
     // Might as well sync these, but seems redundant
