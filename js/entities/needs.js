@@ -9,7 +9,7 @@ CRM.volunteerApp.module('Entities', function(Entities, volunteerApp, Backbone, M
       'is_flexible': 0,
       'duration': 0,
       'role_id': null,
-      'start_time': null,
+      'start_time': CRM.volunteer.default_date,
       'quantity': null,
       'filled': null,
       'visibility_id': CRM.pseudoConstant.volunteer_need_visibility.public
@@ -38,14 +38,8 @@ CRM.volunteerApp.module('Entities', function(Entities, volunteerApp, Backbone, M
 
       success: function(data) {
         // generate user-friendly date and time strings
-        $.each(data.values, function (k, v){
-          if (data.values[k].start_time) {
-            // TODO: respect user-configured time formats
-            var timeDate = data.values[k].start_time.split(" ");
-            var date = $.datepicker.parseDate("yy-mm-dd", timeDate[0]);
-            data.values[k].display_start_date = $.datepicker.formatDate("MM d, yy", date);
-            data.values[k].display_start_time = timeDate[1].substring(0, 5);
-          }
+        $.each(data.values, function (k, v) {
+          Entities.Needs.formatDate(data.values[k]);
         });
         defer.resolve(_.toArray(data.values));
       }
@@ -53,6 +47,16 @@ CRM.volunteerApp.module('Entities', function(Entities, volunteerApp, Backbone, M
     });
     return defer.promise();
   };
+  
+  Entities.Needs.formatDate = function(arrayData) {
+    if (arrayData.start_time) {
+      // TODO: respect user-configured time formats
+      var timeDate = arrayData.start_time.split(" ");
+      var date = $.datepicker.parseDate("yy-mm-dd", timeDate[0]);
+      arrayData.display_start_date = $.datepicker.formatDate("MM d, yy", date);
+      arrayData.display_start_time = timeDate[1].substring(0, 5);
+    }
+  }
 
   Entities.Needs.getFlexible = function(arrData) {
     return new Entities.Needs(_.where(arrData, {is_flexible: '1'}));

@@ -42,10 +42,6 @@ CRM.volunteerApp.module('Define', function(Define, volunteerApp, Backbone, Mario
         dateFormat: "MM d, yy"
       });
 
-      if (this.model.get('display_start_date')) {
-        this.$("[name='display_start_date']").datepicker('setDate', this.model.get('display_start_date'));
-      }
-
       this.$("[name='display_start_time']").addClass('timeplugin').timeEntry();
 
       // populate and format time
@@ -156,8 +152,10 @@ CRM.volunteerApp.module('Define', function(Define, volunteerApp, Backbone, Mario
       var params = {
         project_id: volunteerApp.project_id,
         role_id: $('#crm-vol-define-add-need').val(),
+        start_time: CRM.volunteer.default_date,
         visibility_id: $('#crm-vol-visibility-id:checked').length ? visibility.public : visibility.admin
       };
+      CRM.volunteerApp.Entities.Needs.formatDate(params);
       var newNeed = new this.collection.model(params);
       this.collection.add(newNeed);
       // Reset add another select

@@ -30,7 +30,7 @@ class CRM_Volunteer_Form_Manage {
   /**
    * Load needed JS, CSS and settings for the backend Volunteer Management UI
    */
-  public static function addResources() {
+  public static function addResources($entity_id, $entity_table) {
     static $loaded = FALSE;
     if ($loaded) {
       return;
@@ -61,6 +61,10 @@ class CRM_Volunteer_Form_Manage {
       'template' => 'CRM/Volunteer/Form/Manage.tpl',
     ));
 
+    // Fetch event so we can set the default start time for needs
+    // FIXME: Not the greatest for supporting non-events
+    $entity = civicrm_api3(str_replace('civicrm_', '', $entity_table), 'getsingle', array('id' => $entity_id));
+
     // Static variables
     $ccr->addSetting(array(
       'pseudoConstant' => array(
@@ -68,6 +72,9 @@ class CRM_Volunteer_Form_Manage {
         'volunteer_role' => CRM_Volunteer_BAO_Need::buildOptions('role_id', 'get'),
         'volunteer_status' => CRM_Activity_BAO_Activity::buildOptions('status_id', 'validate'),
       ),
+      'volunteer' => array(
+        'default_date' => CRM_Utils_Array::value('start_date', $entity),
+      )
     ));
   }
 }
