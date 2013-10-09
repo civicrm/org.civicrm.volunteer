@@ -65,7 +65,7 @@ function volunteer_civicrm_tabset($tabsetName, &$tabs, $context) {
       );
       // If volunteer mngmt is enabled, add necessary UI elements
       if (CRM_Volunteer_BAO_Project::isActive($eventID, CRM_Event_DAO_Event::$_tableName)) {
-        CRM_Volunteer_Form_Manage::addResources();
+        CRM_Volunteer_Form_Manage::addResources($eventID, CRM_Event_DAO_Event::$_tableName);
       }
     }
     else {
