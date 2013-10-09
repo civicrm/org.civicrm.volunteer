@@ -22,6 +22,9 @@ form as part of your public event. A "Volunteer Now" button will appear on your 
 info page (next to the "Register" button). Volunteers can select a shift, or let you
 know that they are available for any shift.
 
+You will need to enable the "CiviVolunteer: register to volunteer permission" if you
+want to provide self-service signup for anonymous and / or authenticated users.
+
 Manage Volunteer Assignments
 =============================
 The 'Manage Assignments' widget allows you to assign flexible volunteers to shifts,
@@ -34,6 +37,14 @@ funder reports (click "Log Volunteer Hours" from the event's Volunteer tab). The
 access the new Volunteer Activity Report (Contacts > Contact Reports) to get statistics
 statistics on volunteering. You can even add that report as a dashlet on your dashboard if
 you want to keep track of your organization's cumulative volunteering totals.
+
+Known Issues
+============
+The installer will not create the "register to volunteer" permission automatically for
+Joomla and WordPress installations.
+
+When editing an existing volunteer activity record, the Need field in the CiviVolunteer
+custom data set appears as an integer, rather than a dropdown.
 
 What's Next
 ===========
