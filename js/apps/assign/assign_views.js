@@ -7,6 +7,15 @@ CRM.volunteerApp.module('Assign', function(Assign, volunteerApp, Backbone, Mario
     regions: {
       flexibleRegion: "#crm-vol-assign-flexible-region",
       scheduledRegion: "#crm-vol-assign-scheduled-region"
+    },
+
+    events: {
+      'click #crm-vol-define-done': 'closeModal'
+    },
+
+    closeModal: function() {
+      $('#crm-volunteer-dialog').dialog('close');
+      return false;
     }
   });
 
