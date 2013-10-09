@@ -40,7 +40,7 @@
     sign up without specifying a shift. 'Public' slots will be visible on the
     public signup form.</p>
     <p>If this is a new type of volunteer project, you may need to create
-    additional volunteer roles first from<a href=%1>Administer > System
+    additional volunteer roles first from <a href=%1>Administer > System
     Settings > Option Groups > Volunteer Role</a>.</p>
     {/ts}
 {/htxt}
