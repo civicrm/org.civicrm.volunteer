@@ -1,3 +1,7 @@
+#crm-volunteer-dialog .crm-submit-buttons {
+  clear: both;
+}
+
 #crm-vol-assign-flexible-region {
   float:left;
   width: 35%;
