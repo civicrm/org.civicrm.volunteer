@@ -159,17 +159,17 @@ class CRM_Volunteer_Upgrader extends CRM_Volunteer_Upgrader_Base {
   } // */
 
   public function findCustomGroupValueIDs() {
-    $params = array(
-      'version' => 3,
-      'sequential' => 1,
-    );
-    $customGroupID = civicrm_api('CustomGroup', 'getcount', $params);
-    $customFieldID = civicrm_api('CustomField', 'getcount', $params);
-    $customData = array(
-      'customGroupID' => $customGroupID+1,
-      'customFieldID' => $customFieldID+1
-    );
-    return $customData;
+    $result = array();
+
+    $query = "SELECT `table_name`, `AUTO_INCREMENT` FROM `information_schema`.`TABLES`
+      WHERE `table_schema` = DATABASE()
+      AND `table_name` IN ('civicrm_custom_group', 'civicrm_custom_field')";
+    $dao = CRM_Core_DAO::executeQuery($query);
+    while ($dao->fetch()) {
+      $result[$dao->table_name] = (int) $dao->AUTO_INCREMENT;
+    }
+
+    return $result;
   }
   /**
    * @return int
