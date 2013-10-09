@@ -38,7 +38,7 @@
     <p>If you want to include a Sign Up button on the event information page, check
     the 'Public' column for at least one of the slots, or check the box to allow users to
     sign up without specifying a shift. 'Public' slots will be visible on the
-    public signup form. You will also need to ensure the 'CiviVolunteer: register to volunteer'
+    public signup form. You will also need to ensure that the 'CiviVolunteer: register to volunteer'
     permission has been enabled.
     </p>
     <p>If this is a new type of volunteer project, you may need to create
