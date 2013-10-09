@@ -27,12 +27,13 @@ VALUES
   (NULL, @volunteerActivityTypeId, 'Fall Fundraiser Volunteering', '2013-12-17 16:00:00', NULL, NULL, NULL, NULL, NULL, 1, 2, NULL, 0, NULL, 0, NULL, 1, NULL, NULL, 0, NULL, NULL, NULL);
 
 SELECT @activityLastID := max(id) from civicrm_activity;
-SELECT @contactID := max(id) from civicrm_contact;
+SELECT @contactID1 := max(id) from civicrm_contact where `contact_type` = 'Individual';
+SELECT @contactID2 := min(id) from civicrm_contact where `contact_type` = 'Individual';
 INSERT INTO `civicrm_activity_contact`
   (`activity_id`, `contact_id`, `record_type_id`)
 VALUES
-  (@activityLastID, @contactID-1, 1),
-  (@activityLastID, @contactID-2, 2);
+  (@activityLastID, @contactID1, 1),
+  (@activityLastID, @contactID2, 2);
 
 SELECT @customGroupId := max(id)
 FROM civicrm_custom_group
