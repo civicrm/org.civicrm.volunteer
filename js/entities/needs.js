@@ -20,9 +20,17 @@ CRM.volunteerApp.module('Entities', function(Entities, volunteerApp, Backbone, M
     model: Entities.NeedModel,
     comparator: 'start_time',
     createNewNeed : function(params) {
+      params = _.extend({
+        project_id: volunteerApp.project_id,
+        start_time: CRM.volunteer.default_date
+      }, params);
+      formatDate(params);
       var defer = $.Deferred();
+      var need = new this.model(params);
+      this.add(need);
       CRM.api('volunteer_need', 'create', params, {
         success: function(result) {
+          need.set('id', result.id);
           defer.resolve(result);
         }
       });
@@ -35,20 +43,18 @@ CRM.volunteerApp.module('Entities', function(Entities, volunteerApp, Backbone, M
     var defer = $.Deferred();
     params.project_id = volunteerApp.project_id;
     CRM.api('volunteer_need', 'get', params, {
-
       success: function(data) {
         // generate user-friendly date and time strings
         $.each(data.values, function (k, v) {
-          Entities.Needs.formatDate(data.values[k]);
+          formatDate(data.values[k]);
         });
         defer.resolve(_.toArray(data.values));
       }
-
     });
     return defer.promise();
   };
   
-  Entities.Needs.formatDate = function(arrayData) {
+  function formatDate (arrayData) {
     if (arrayData.start_time) {
       // TODO: respect user-configured time formats
       var timeDate = arrayData.start_time.split(" ");
