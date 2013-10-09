@@ -150,23 +150,15 @@ CRM.volunteerApp.module('Define', function(Define, volunteerApp, Backbone, Mario
 
     addNewNeed: function() {
       var params = {
-        project_id: volunteerApp.project_id,
         role_id: $('#crm-vol-define-add-need').val(),
-        start_time: CRM.volunteer.default_date,
         visibility_id: $('#crm-vol-visibility-id:checked').length ? visibility.public : visibility.admin
       };
-      CRM.volunteerApp.Entities.Needs.formatDate(params);
-      var newNeed = new this.collection.model(params);
-      this.collection.add(newNeed);
       // Reset add another select
       $('#crm-vol-define-add-need').val('');
       $('#crm-vol-define-needs-table').block();
-      CRM.api('VolunteerNeed', 'create', params, {
-        success: function (data) {
-          newNeed.set('id', data.id);
-          $('#crm-vol-define-needs-table').unblock();
-          CRM.alert('', ts('Saved'), 'success');
-        }
+      this.collection.createNewNeed(params).done(function() {
+        $('#crm-vol-define-needs-table').unblock();
+        CRM.alert('', ts('Saved'), 'success');
       });
       return false;
     },
