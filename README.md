@@ -3,7 +3,7 @@ CiviVolunteer
 
 The CiviVolunteer extension provides tools for signing up, managing and tracking volunteers.
 The features for this release focus on volunteering at events, but the design creates a
-foundation for adding support for volunteering in a wide variety of situations
+foundation for adding support for volunteering in a wide variety of situations.
 
 What Volunteers are Needed and When
 ===================================
@@ -12,7 +12,7 @@ you'll see a new Volunteers tab for each event (Manage Events > Configure). Chec
 'Enable Volunteer Management' box to get started.
 
 You can then build a list of volunteer shifts by clicking 'Define Volunteer Needs'.
-Shifts consists of a volunteer role (e.g. Usher, Box Office, etc.) plus a date and time
+Shifts consist of a volunteer role (e.g. Usher, Box Office, etc.) plus a date and time
 period. For each shift you can specify the number of volunteers required.
 
 Self-service Volunteer Signup
