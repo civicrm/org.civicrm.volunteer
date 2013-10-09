@@ -160,16 +160,19 @@ class CRM_Volunteer_Upgrader extends CRM_Volunteer_Upgrader_Base {
 
   public function findCustomGroupValueIDs() {
     $params = array(
-      'version' => 3,
-      'sequential' => 1,
+      'sequential' => 0,
+      'option.sort' => 'id DESC',
     );
-    $customGroupID = civicrm_api('CustomGroup', 'getcount', $params);
-    $customFieldID = civicrm_api('CustomField', 'getcount', $params);
-    $customData = array(
-      'customGroupID' => $customGroupID+1,
-      'customFieldID' => $customFieldID+1
+    $cg = civicrm_api3('CustomGroup', 'get', $params);
+    reset($cg['values']);
+
+    $cf = civicrm_api3('CustomField', 'get', $params);
+    reset($cf['values']);
+
+    return array(
+      'customGroupID' => (int) key($cg['values']) + 1,
+      'customFieldID' => (int) key($cf['values']) + 1,
     );
-    return $customData;
   }
   /**
    * @return int
