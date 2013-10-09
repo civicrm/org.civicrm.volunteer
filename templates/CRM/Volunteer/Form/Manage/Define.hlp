@@ -33,12 +33,14 @@
 {htxt id="volunteer-define"}
     {ts 1=$volRoleURL}
     <p>Use this form to define the number of volunteers needed for each role and time slot.
-    The first slot listed is a default 'flexible' slot (for volunteers who are available at any time for any role).
-    For each additional slot, you will select a role, set the number of volunteers needed, set a start date and time,
-    and indicate the duration in minutes. If you want to include a Sign Up button on the event information page, check
-    the 'Public' column for at least one of the slots ('Public' slots will be available on the public signup form).</p>
-    <p> If this is a new type of volunteer project, you may need to create additional volunteer roles first from
-    <a href=%1>Administer > System Settings > Option Groups > Volunteer Role</a>.
+    For each slot, you will select a role, set the number of volunteers needed,
+    set a start date and time, and indicate the duration in minutes.</p>
+    <p>If you want to include a Sign Up button on the event information page, check
+    the 'Public' column for at least one of the slots, or check the box to allow users to
+    sign up without specifying a shift. 'Public' slots will be visible on the
+    public signup form.</p>
+    <p>If this is a new type of volunteer project, you may need to create
+    additional volunteer roles first from<a href=%1>Administer > System
+    Settings > Option Groups > Volunteer Role</a>.</p>
     {/ts}
-  </p>
 {/htxt}
