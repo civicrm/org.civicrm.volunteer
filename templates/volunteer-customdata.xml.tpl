@@ -15,7 +15,7 @@
       <help_post></help_post>
       <weight>2</weight>
       <is_active>1</is_active>
-      <table_name>civicrm_value_civivolunteer_{$customIDs.customGroupID}</table_name>
+      <table_name>civicrm_value_civivolunteer_{$customIDs.civicrm_custom_group}</table_name>
       <is_multiple>0</is_multiple>
       <collapse_adv_display>0</collapse_adv_display>
       <created_date>0000-00-00 00:00:00</created_date>
@@ -37,7 +37,7 @@
       <text_length>255</text_length>
       <note_columns>60</note_columns>
       <note_rows>4</note_rows>
-      <column_name>volunteer_need_id_{$customIDs.customFieldID}</column_name>
+      <column_name>volunteer_need_id_{$customIDs.civicrm_custom_field}</column_name>
       <custom_group_name>CiviVolunteer</custom_group_name>
     </CustomField>
     <CustomField>
@@ -54,7 +54,7 @@
       <text_length>64</text_length>
       <note_columns>60</note_columns>
       <note_rows>4</note_rows>
-      <column_name>volunteer_role_id_{$customIDs.customFieldID+1}</column_name>
+      <column_name>volunteer_role_id_{$customIDs.civicrm_custom_field+1}</column_name>
       <option_group_name>{$volunteer_custom_option_group_name}</option_group_name>
       <custom_group_name>CiviVolunteer</custom_group_name>
     </CustomField>
@@ -72,7 +72,7 @@
       <text_length>255</text_length>
       <note_columns>60</note_columns>
       <note_rows>4</note_rows>
-      <column_name>time_scheduled_in_minutes_{$customIDs.customFieldID+2}</column_name>
+      <column_name>time_scheduled_in_minutes_{$customIDs.civicrm_custom_field+2}</column_name>
       <custom_group_name>CiviVolunteer</custom_group_name>
     </CustomField>
     <CustomField>
@@ -89,7 +89,7 @@
       <text_length>255</text_length>
       <note_columns>60</note_columns>
       <note_rows>4</note_rows>
-      <column_name>time_completed_in_minutes_{$customIDs.customFieldID+3}</column_name>
+      <column_name>time_completed_in_minutes_{$customIDs.civicrm_custom_field+3}</column_name>
       <custom_group_name>CiviVolunteer</custom_group_name>
     </CustomField>
   </CustomFields>
