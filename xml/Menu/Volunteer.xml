@@ -39,4 +39,14 @@
     <title>VolunteerSignUp</title>
     <access_arguments>register to volunteer</access_arguments>
   </item>
+  <item>
+    <path>civicrm/admin/options/volunteer_role</path>
+    <title>Volunteer Roles</title>
+    <desc>Roles available to volunteer projects.</desc>
+    <path_arguments>group=volunteer_role</path_arguments>
+    <page_callback>CRM_Admin_Page_Options</page_callback>
+    <adminGroup>Customize Data and Screens</adminGroup>
+    <icon>admin/small/08.png</icon>
+    <weight>80</weight>
+  </item>
 </menu>
