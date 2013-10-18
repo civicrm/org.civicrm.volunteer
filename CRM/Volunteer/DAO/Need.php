@@ -210,13 +210,13 @@ class CRM_Volunteer_DAO_Need extends CRM_Core_DAO
           'name' => 'quantity',
           'type' => CRM_Utils_Type::T_INT,
           'title' => ts('Quantity') ,
-          'default' => 'UL',
+          'default' => 'NULL',
         ) ,
         'visibility_id' => array(
           'name' => 'visibility_id',
           'type' => CRM_Utils_Type::T_INT,
           'title' => ts('Visibility') ,
-          'default' => 'UL',
+          'default' => 'NULL',
           'pseudoconstant' => array(
             'optionGroupName' => 'visibility',
           )
@@ -225,7 +225,7 @@ class CRM_Volunteer_DAO_Need extends CRM_Core_DAO
           'name' => 'role_id',
           'type' => CRM_Utils_Type::T_INT,
           'title' => ts('Role') ,
-          'default' => 'UL',
+          'default' => 'NULL',
           'pseudoconstant' => array(
             'optionGroupName' => 'volunteer_role',
           )
@@ -235,7 +235,7 @@ class CRM_Volunteer_DAO_Need extends CRM_Core_DAO
           'type' => CRM_Utils_Type::T_BOOLEAN,
           'title' => ts('Enabled') ,
           'required' => true,
-          'default' => '',
+          'default' => '1',
         ) ,
       );
     }

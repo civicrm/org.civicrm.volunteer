@@ -35,6 +35,21 @@
     <comment>Implicit FK project entity (initially eventID).</comment>
   </field>
   <field>
+    <name>target_contact_id</name>
+    <type>int unsigned</type>
+    <required>false</required>
+    <add>4.4</add>
+    <comment>FK to civicrm_contact. The target (or beneficiary) of the volunteer activity
+    </comment>
+  </field>
+  <foreignKey>
+    <name>target_contact_id</name>
+    <table>civicrm_contact</table>
+    <key>id</key>
+    <add>4.4</add>
+    <onDelete>SET NULL</onDelete>
+  </foreignKey>
+  <field>
     <name>is_active</name>
     <type>boolean</type>
     <title>Enabled</title>
