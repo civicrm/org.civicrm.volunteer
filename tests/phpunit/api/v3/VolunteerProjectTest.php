@@ -16,14 +16,6 @@ class api_v3_VolunteerProjectTest extends VolunteerTestAbstract {
   }
 
   /**
-   * tearDown
-   *
-   */
-  function tearDown() {
-    parent::tearDown();
-  }
-
-  /**
    *
    * [testCreateDeleteVolunteerProject description]
    * @return [type] [description]

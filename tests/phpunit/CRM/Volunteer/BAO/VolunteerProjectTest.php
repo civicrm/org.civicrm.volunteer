@@ -16,14 +16,6 @@ class CRM_Volunteer_BAO_VolunteerProjectTest extends VolunteerTestAbstract {
   }
 
   /**
-   * tearDown
-   *
-   */
-  function tearDown() {
-    parent::tearDown();
-  }
-
-  /**
    * [testProjectCreateBAO description]
    * @return [type] [description]
    */
