@@ -16,94 +16,35 @@ class api_v3_VolunteerProjectTest extends VolunteerTestAbstract {
   }
 
   /**
-   *
-   * [testCreateDeleteVolunteerProject description]
-   * @return [type] [description]
+   * Test simple create via API
    */
-  function testCreateDeleteVolunteerProject() {
-
-    $event_id = $this->createEvent();
+  function testCreateProject() {
     $params = array(
-        'entity_id' => $event_id,
-        'entity_table' => 'civicrm_event'
+      'entity_id' => 1,
+      'entity_table' => 'civicrm_event',
+      'is_active' => 1,
     );
 
-    $project = $this->callAPIAndDocument('VolunteerProject', 'create', $params, __FUNCTION__, __FILE__);
-    $this->assertArrayHasKey('id', $project, 'Failed to prepopulate Volunteer Project');
-
-    //Is necessary a sequence to control the order the execution and don't lost the id from project
-    $this->getVolunteerProject($project['id']);
-    $this->deleteVolunteerProject($project['id']);
+    $this->callAPIAndDocument('VolunteerProject', 'create', $params, __FUNCTION__, __FILE__);
   }
 
   /**
-   * [getVolunteerProject description]
-   * @param  [type] $id [description]
-   * @return [type]     [description]
+   * Test simple delete via API
    */
-  function getVolunteerProject($id) {
-    $params = array('id' => $id);
-    $this->callAPIAndDocument('VolunteerProject', 'get', $params, __FUNCTION__, __FILE__);
-  }
-
-  /**
-   * [deleteVolunteerProject description]
-   * @param  [type] $id [description]
-   * @return [type]     [description]
-   */
-  function deleteVolunteerProject($id) {
-    $params = array('id' => $id);
-    $this->callAPIAndDocument('VolunteerProject', 'delete', $params, __FUNCTION__, __FILE__);
-  }
-
-  /**
-   * [testVolunteerProjectDeleteError description]
-   * @return [type] [description]
-   */
-  function testVolunteerProjectDeleteError() {
-    $params = array('id' => 999);
-    $this->callAPIFailure('VolunteerProject', 'delete', $params, __FUNCTION__, __FILE__);
-  }
-
-  /**
-   * [testVolunteerProjectAdd description]
-   * @return [type] [description]
-   */
-  function testVolunteerProjectAdd() {
-    $oldCount = CRM_Core_DAO::singleValueQuery('select count(*) from civicrm_volunteer_project');
-    $event_id = $this->createEvent();
-    $params = array(
-        'entity_id' => $event_id,
-        'entity_table' => 'civicrm_event',
-    );
-
-    $volunteerProject = $this->callAPISuccess('VolunteerProject', 'create', $params);
-    $this->assertTrue(is_numeric($volunteerProject['id']), "In line " . __LINE__);
-    $this->assertTrue($volunteerProject['id'] > 0, "In line " . __LINE__);
-    $newCount = CRM_Core_DAO::singleValueQuery('select count(*) from civicrm_volunteer_project');
-    $this->assertEquals($oldCount + 1, $newCount);
-  }
-
-  /**
-   * [testProjectCreate description]
-   * @return [type] [description]
-   */
-  function testProjectCreate() {
+  function testDeleteProjectByID() {
     $project = CRM_Core_DAO::createTestObject('CRM_Volunteer_BAO_Project');
     $this->assertObjectHasAttribute('id', $project, 'Failed to prepopulate Volunteer Project');
+
+    $this->callAPIAndDocument('VolunteerProject', 'delete', array('id' => $project->id), __FUNCTION__, __FILE__);
   }
 
   /**
-   * [createEvent description]
-   * @return [type] [description]
+   * Test simple get via API
    */
-  function createEvent() {
-    $event = $this->eventCreate();
-    $this->assertArrayHasKey('id', $event, 'Failed to creating Event');
-    $event = array_shift($event['values']);
-    $event_id = $event['id'];
-    return $event_id;
+  function testGetProjectByID() {
+    $project = CRM_Core_DAO::createTestObject('CRM_Volunteer_BAO_Project');
+    $this->assertObjectHasAttribute('id', $project, 'Failed to prepopulate Volunteer Project');
+
+    $this->callAPIAndDocument('VolunteerProject', 'get', array('id' => $project->id), __FUNCTION__, __FILE__);
   }
-
 }
-
