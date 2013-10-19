@@ -5,7 +5,7 @@ require_once 'VolunteerTestAbstract.php';
 /**
  * Test class for Volunteer Project BAO - volunteer_project
  */
-class CRM_Volunteer_BAO_VolunteerProjectTest extends VolunteerTestAbstract {
+class CRM_Volunteer_BAO_ProjectTest extends VolunteerTestAbstract {
 
   /**
    * Clean table civicrm_volunteer_project
