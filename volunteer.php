@@ -102,7 +102,7 @@ function volunteer_civicrm_uninstall() {
  * Implementation of hook_civicrm_enable
  */
 function volunteer_civicrm_enable() {
-  $url = CRM_Utils_System::url('civicrm/event/manage', '?reset=1');
+  $url = CRM_Utils_System::url('civicrm/event/manage', 'reset=1');
   CRM_Core_Session::setStatus(
     // as long as the message contains a link, the pop-up will not automatically close
     ts('<p>Thank you for installing the beta version of CiviVolunteer! Documentation is still a work in progress.</p><p>To get started, visit <a href="%1">Manage Events</a> and enable volunteer management from the new Volunteer tab on one of your events.</p>', array(1 => $url)),
