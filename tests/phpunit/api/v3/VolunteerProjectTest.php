@@ -1,13 +1,13 @@
 <?php
 
-require_once 'CiviTest/CiviUnitTestCase.php';
+require_once 'VolunteerTestAbstract.php';
 /**
  * PHPUnit for API and BAO from CIVIVolunteer Project
  */
 
 
-class api_v3_VolunteerProjectTest extends CiviUnitTestCase {
-  
+class api_v3_VolunteerProjectTest extends VolunteerTestAbstract {
+
   /**
    * Clean table civicrm_volunteer_project
    */
