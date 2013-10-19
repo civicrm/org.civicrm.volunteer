@@ -15,116 +15,67 @@ class CRM_Volunteer_BAO_VolunteerProjectTest extends VolunteerTestAbstract {
     parent::setUp();
   }
 
-  /**
-   * [testProjectCreateBAO description]
-   * @return [type] [description]
-   */
-  function testProjectCreateBAO() {
-    $project = CRM_Core_DAO::createTestObject('CRM_Volunteer_BAO_Project');
+  function testProjectCreate() {
+    $params = array(
+      'entity_id' => 1,
+      'entity_table' => 'civicrm_event',
+    );
+
+    $project = CRM_Volunteer_BAO_Project::create($params);
     $this->assertObjectHasAttribute('id', $project);
   }
 
-  /**
-   * [testProjectDisableBAO description]
-   * @return [type] [description]
-   */
-  function testProjectDisableBAO() {
-    $project = CRM_Core_DAO::createTestObject('CRM_Volunteer_BAO_Project');
+  function testProjectDisable() {
+    $project = CRM_Core_DAO::createTestObject('CRM_Volunteer_BAO_Project', array('is_active' => 1));
+    $this->assertEquals(1, $project->is_active, 'Failed to prepopulate active Volunteer Project');
     $project->disable();
-    $this->assertEquals($project->is_active, 0);
+    $this->assertEquals(0, $project->is_active, 'Failed to disable Volunteer Project');
   }
 
-  /**
-   * [testProjectEnableBAO description]
-   * @return [type] [description]
-   */
-  function testProjectEnableBAO() {
-    $project = CRM_Core_DAO::createTestObject('CRM_Volunteer_BAO_Project');
+  function testProjectEnable() {
+    $project = CRM_Core_DAO::createTestObject('CRM_Volunteer_BAO_Project', array('is_active' => 0));
+    $this->assertEquals(0, $project->is_active, 'Failed to prepopulate inactive Volunteer Project');
     $project->enable();
-    $this->assertEquals($project->is_active, 1);
+    $this->assertEquals(1, $project->is_active, 'Failed to enable Volunteer Project');
   }
 
-  /**
-   * [testProjectRetrieveBAO description]
-   * @return [type] [description]
-   */
-  function testProjectRetrieveBAO() {
+  function testProjectRetrieve() {
     $project = CRM_Core_DAO::createTestObject('CRM_Volunteer_BAO_Project');
-    $projectRetriveds = CRM_Volunteer_BAO_Project::retrieve(array('id' => $project->id));
-    $this->assertArrayHasKey('1', $projectRetriveds);
+    $this->assertObjectHasAttribute('id', $project, 'Failed to prepopulate Volunteer Project');
+
+    $projectRetrieved = CRM_Volunteer_BAO_Project::retrieve(array('id' => $project->id));
+    $this->assertNotEmpty($projectRetrieved);
   }
 
   /**
-   * [testProjectDataExistBAO description]
-   * @return [type] [description]
+   * Test helper method isOff, which should return TRUE passed an "off" value
    */
-  function testProjectDataExistBAO() {
-    $project = CRM_Core_DAO::createTestObject('CRM_Volunteer_BAO_Project');
-    $params = array('id' => $project->id, 'entity_id' => $project->entity_id, 'entity_table' => $project->entity_table);
-    $valueDataExist = CRM_Volunteer_BAO_Project::dataExists($params);
-    $this->assertEquals($valueDataExist, TRUE);
+  function testProjectIsOff() {
+    $this->assertTrue(CRM_Volunteer_BAO_Project::isOff(FALSE));
+    $this->assertTrue(CRM_Volunteer_BAO_Project::isOff(0));
+    $this->assertTrue(CRM_Volunteer_BAO_Project::isOff('0'));
   }
 
   /**
-   * [testProjectIsOffBAO description]
-   * @return [type] [description]
+   * A project should inherit the title of its associated entity; effectively we
+   * are testing our magic __get() method and its delegate _get_title();
    */
-  function testProjectIsOffBAO() {
-    $project = CRM_Core_DAO::createTestObject('CRM_Volunteer_BAO_Project');
-    $isOff = CRM_Volunteer_BAO_Project::isOff($project->is_active);
-    $this->assertEquals($isOff, FALSE);
-  }
+  function testGetEventProjectTitle() {
+    $title = 'CiviVolunteer Unit Testing Sprint';
+    $entity_table = 'civicrm_event';
 
-  /**
-   * [testProjectCopyValuesBAO description]
-   * @return [type] [description]
-   * It's not using CRM_Core_DAO::createTestObject because this method create in field entity_table
-   * not corrects values(entity_table_)
-   */
-  function testProjectCopyValuesBAO() {
+    // create Event with specified title
+    $event = CRM_Core_DAO::createTestObject('CRM_Event_BAO_Event', array('title' => $title));
+    $this->assertEquals($title, $event->title, 'Failed to prepopulate named Event');
+
+    // create Project associated with our Event
     $params = array(
-        'entity_id' => $this->eventCreate(),
-        'entity_table' => 'civicrm_event'
+      'entity_id' => $event->id,
+      'entity_table' => $entity_table,
     );
+    $project = CRM_Core_DAO::createTestObject('CRM_Volunteer_BAO_Project', $params);
 
-    $this->callAPIAndDocument('VolunteerProject', 'create', $params, __FUNCTION__, __FILE__);
-    $project = new CRM_Volunteer_BAO_Project();
-    $project->entity_id = $params['entity_id'];
-    $project->entity_table = $params['entity_table'];
-    $project->find();
-
-    $this->assertObjectHasAttribute('id', $project->copyValues($params));
+    // test project title
+    $this->assertEquals($title, $project->title, 'Project title does not match associated Event title');
   }
-
-  /**
-   * [testProjectGetTitleBAO description]
-   * @return [type] [description]
-   */
-  function testProjectGetTitleBAO() {
-    $params = array(
-        'entity_id' => $this->createEvent(),
-        'entity_table' => 'civicrm_event'
-    );
-    $this->callAPIAndDocument('VolunteerProject', 'create', $params, __FUNCTION__, __FILE__);
-
-    $project = new CRM_Volunteer_BAO_Project();
-    $project->entity_id = $params['entity_id'];
-    $project->entity_table = $params['entity_table'];
-    $project->find();
-
-    $this->assertTrue(is_string($project->title));
-  }
-
-  /**
-   * [createEvent description]
-   * @return [type] [description]
-   */
-  function createEvent() {
-    $event = $this->eventCreate();
-    $this->assertArrayHasKey('id', $event, 'Failed to creating Event');
-    $event = array_shift($event['values']);
-    $event_id = $event['id'];
-    return $event_id;
-  }
-
 }
