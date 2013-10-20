@@ -67,6 +67,7 @@
             <span class="description">{ts}Enable or disable volunteer management for this event.{/ts}</span>
           </td>
        </tr>
+       {include file="CRM/Contact/Form/NewContact.tpl" blockNo=1 prefix="volunteer_target_"}
    </table>
   </div>
   <div class="crm-submit-buttons">

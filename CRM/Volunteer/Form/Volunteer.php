@@ -48,6 +48,33 @@ class CRM_Volunteer_Form_Volunteer extends CRM_Event_Form_ManageEvent {
    */
   function preProcess() {
     parent::preProcess();
+
+    // CRM_Contact_Form_NewContact needs to believe it is engaged in an add
+    // operation, else it expects a contact ID, which we don't have yet. For
+    // some reason, setting this in buildQuickForm doesn't work.
+    $this->_action = CRM_Core_Action::ADD;
+
+    // get the domain information
+    $params = array(
+      'api.contact.getsingle' => array(
+        'return' => array('display_name'),
+      ),
+      'sequential' => 1,
+    );
+    $result = civicrm_api3('Domain', 'get', $params);
+    $domain = $result['values'][0]; // if more than one domain, just take the first for now
+
+    $ccr = CRM_Core_Resources::singleton();
+    $ccr->addScriptFile('org.civicrm.volunteer', 'templates/CRM/Volunteer/Form/Volunteer.js');
+    $ccr->addSetting(array(
+      'volunteer' => array(
+        'domain' => array(
+          'contact_id' => $domain['api.contact.getsingle']['contact_id'],
+          'display_name' => $domain['api.contact.getsingle']['display_name'],
+          'email' => $domain['domain_email'],
+        ),
+      )
+    ));
   }
 
   /**
@@ -81,6 +108,8 @@ class CRM_Volunteer_Form_Volunteer extends CRM_Event_Form_ManageEvent {
       ts('Enable Volunteer Management?')
     );
 
+    CRM_Contact_Form_NewContact::buildQuickForm($this, 1, NULL, FALSE, 'volunteer_target_', ts('Select Beneficiary'));
+
     $params = array(
       'entity_id' => $this->_id,
       'entity_table' => CRM_Event_DAO_Event::$_tableName,
@@ -108,6 +137,9 @@ class CRM_Volunteer_Form_Volunteer extends CRM_Event_Form_ManageEvent {
   public function postProcess() {
     $form = $this->exportValues();
     $form['is_active'] = CRM_Utils_Array::value('is_active', $form, FALSE);
+
+    // form does not allow more than one target, so just grab the first one
+    $target_contact_id = $form['volunteer_target_contact_select_id'][0];
 
     $params = array(
       'entity_id' => $this->_id,
