@@ -59,19 +59,22 @@ function volunteer_civicrm_tabset($tabsetName, &$tabs, $context) {
       $tab['volunteer'] = array(
         'title' => ts('Volunteers'),
         'link' => $url,
-        'valid' => 1,
-        'active' => 1,
+        'valid' => TRUE,
+        'active' => TRUE,
         'current' => false,
       );
       // If volunteer mngmt is enabled, add necessary UI elements
       if (CRM_Volunteer_BAO_Project::isActive($eventID, CRM_Event_DAO_Event::$_tableName)) {
         CRM_Volunteer_Form_Manage::addResources($eventID, CRM_Event_DAO_Event::$_tableName);
+      } else {
+        $tab['volunteer']['valid'] = FALSE;
       }
     }
     else {
       $tab['volunteer'] = array(
         'title' => ts('Volunteers'),
-        'url' => 'civicrm/event/manage/volunteer',
+        'url'   => 'civicrm/event/manage/volunteer',
+        'field' => 'is_volunteer',
       );
     }
     // Insert this tab into position 4
@@ -82,6 +85,11 @@ function volunteer_civicrm_tabset($tabsetName, &$tabs, $context) {
     );
   }
 
+  // on manage events listing screen, this section sets volunteer tab in configuration popup as enabled/disabled.
+  if ($tabsetName == 'civicrm/event/manage/rows' && CRM_Utils_Array::value('event_id', $context)) {
+    $eventID = $context['event_id'];
+    $tabs[$eventID]['is_volunteer'] = CRM_Volunteer_BAO_Project::isActive($eventID, CRM_Event_DAO_Event::$_tableName);
+  }
 }
 
 /**
