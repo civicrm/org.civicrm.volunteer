@@ -90,7 +90,7 @@
     <td colspan="7">
       <select id="crm-vol-define-add-need">
         <option value="">- {ts}Create new{/ts} -</option>
-        {crmAPI var='result' entity='VolunteerNeed' action='getoptions' field='role_id'}
+        {crmAPI var='result' entity='VolunteerNeed' action='getoptions' field='role_id' sequential=0}
         {foreach from=$result.values item=VolunteerNeed key=id}
           <option value="{$id}">{$VolunteerNeed}</option>
         {/foreach}
