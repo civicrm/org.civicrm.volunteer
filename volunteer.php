@@ -86,7 +86,7 @@ function volunteer_civicrm_tabset($tabsetName, &$tabs, $context) {
   }
 
   // on manage events listing screen, this section sets volunteer tab in configuration popup as enabled/disabled.
-  if ($tabsetName == 'civicrm/event/manage/rows' && !empty($context)) {
+  if ($tabsetName == 'civicrm/event/manage/rows' && CRM_Utils_Array::value('event_id', $context)) {
     $eventID = $context['event_id'];
     $tabs[$eventID]['is_volunteer'] = CRM_Volunteer_BAO_Project::isActive($eventID, CRM_Event_DAO_Event::$_tableName);
   }
