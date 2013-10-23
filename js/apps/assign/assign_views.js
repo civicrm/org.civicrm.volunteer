@@ -92,6 +92,7 @@ CRM.volunteerApp.module('Assign', function(Assign, volunteerApp, Backbone, Mario
           thisView.collection.add(assignment);
           var status = _.invert(CRM.pseudoConstant.volunteer_status);
           CRM.api('volunteer_assignment', 'create', {
+            activity_date_time: thisView.model.get('start_time'),
             id: id,
             volunteer_need_id: thisView.model.get('id'),
             status_id: status[thisView.isFlexible ? 'Available' : 'Scheduled']
