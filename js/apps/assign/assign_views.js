@@ -221,8 +221,11 @@ CRM.volunteerApp.module('Assign', function(Assign, volunteerApp, Backbone, Mario
 
     addNewContact: function() {
       if (newContactId) {
+        var status = _.invert(CRM.pseudoConstant.volunteer_status);
         $('.crm-add-volunteer', this.$el).val('');
-        var params = {contact_id: newContactId, volunteer_need_id: this.model.get('id'),
+        var params = {
+          contact_id: newContactId, volunteer_need_id: this.model.get('id'),
+          status_id: status['Available'],
           activity_date_time: this.model.get('start_time')
         };
         this.collection.createNewAssignment(params);
