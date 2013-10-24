@@ -54,6 +54,7 @@ class CRM_Volunteer_Form_VolunteerReport extends CRM_Report_Form {
       INNER JOIN civicrm_volunteer_project p ON e.id = p.entity_id
       WHERE p.is_active = 1";
     $titles = CRM_Core_DAO::executeQuery($titleQuery);
+    $this->title = array();
     while ($titles->fetch()) {
       $this->title[$titles->id] = $titles->title;
     }
