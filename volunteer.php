@@ -172,7 +172,7 @@ function volunteer_civicrm_entityTypes(&$entityTypes) {
  * Handler for pageRun hook.
  */
 function volunteer_civicrm_pageRun(&$page) {
-  $f = '_volunteer_civicrm_pageRun_' . get_class($page);
+  $f = '_' . __FUNCTION__ . '_' . get_class($page);
   if (function_exists($f)) {
     $f($page);
   }
@@ -217,6 +217,63 @@ function _volunteer_civicrm_pageRun_CRM_Event_Page_EventInfo(&$page) {
     CRM_Core_Resources::singleton()->addStyleFile('org.civicrm.volunteer',
       'templates/CRM/Event/Page/EventInfo.css'
     );
+  }
+}
+
+/**
+ * Implementation of hook_civicrm_buildForm
+ *
+ * Handler for buildForm hook.
+ */
+function volunteer_civicrm_buildForm($formName, &$form) {
+  $f = '_' . __FUNCTION__ . '_' . $formName;
+  if (function_exists($f)) {
+    $f($formName, $form);
+  }
+}
+
+function _volunteer_civicrm_buildForm_CRM_Activity_Form_Activity($formName, &$form) {
+  // determine name that the Volunteer Need ID field would be given in this form
+  $params = array(
+    'name' => CRM_Volunteer_Upgrader::customGroupName,
+    'return' => 'id',
+    'api.CustomField.getsingle' => array(
+      'name' => 'Volunteer_Need_Id',
+      'return' => 'id',
+    ),
+  );
+  $result = civicrm_api3('CustomGroup', 'getsingle', $params);
+  $field_id = $result['api.CustomField.getsingle']['id'];
+  $element_name = 'custom_' . $field_id . '_1';
+
+  // target only activity forms that contain the Volunteer Need ID field
+  if ($form->elementExists($element_name)) {
+    $field = $form->getElement($element_name);
+    $form->removeElement($element_name);
+
+    // If need_id isn't set, do not re-add need_id field as a dropdown.
+    // See http://issues.civicrm.org/jira/browse/VOL-24?focusedCommentId=53836#comment-53836
+    if (($need_id = $field->_attributes['value'])) {
+      $need = civicrm_api3('VolunteerNeed', 'getsingle', array(
+        'id' => $need_id,
+        'return' => 'project_id'
+      ));
+      $Project = CRM_Volunteer_BAO_Project::retrieveByID($need['project_id']);
+
+      $shifts = array();
+      foreach ($Project->shifts as $key => $value) {
+        $shifts[$key] = $value['role_label'] . ' - ' . $value['label'];
+      }
+      asort($shifts);
+
+      $form->add(
+        'select',               // field type
+        $element_name,          // field name
+        $field->_label,         // field label
+        $shifts,                // list of options (value => label)
+        TRUE                    // required
+      );
+    }
   }
 }
 
