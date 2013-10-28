@@ -34,8 +34,6 @@ require_once 'CRM/Core/Form.php';
  */
 class CRM_Volunteer_Form_VolunteerSignUp extends CRM_Core_Form {
 
-  const FLEXIBLE_ROLE_ID = -1;
-
   /**
    * The URL to which the user should be redirected after successfully
    * submitting the sign-up form
@@ -62,38 +60,12 @@ class CRM_Volunteer_Form_VolunteerSignUp extends CRM_Core_Form {
   protected $_mode;
 
   /**
-   * ID-indexed array of the needs to be filled for this volunteer project
-   *
-   * @var array
-   * @protected
-   */
-  protected $_needs = array();
-
-  /**
    * the project we are processing
    *
    * @var CRM_Volunteer_BAO_Project
    * @protected
    */
   protected $_project;
-
-  /**
-   * ID-indexed array of the roles associated with this volunteer project
-   *
-   * @var array
-   * @protected
-   */
-  protected $_roles = array();
-
-  /**
-   * ID-indexed array of the shifts associated with this volunteer project
-   *
-   * i.e. Need_ID => array('label' => 'Formatted start time - end time', 'role_id' => '3')
-   *
-   * @var array
-   * @protected
-   */
-  protected $_shifts = array();
 
   /**
    * ID of profile used in this form
@@ -110,7 +82,7 @@ class CRM_Volunteer_Form_VolunteerSignUp extends CRM_Core_Form {
    */
   function setDefaultValues() {
     $defaults = array();
-    $defaults['volunteer_role_id'] = self::FLEXIBLE_ROLE_ID;
+    $defaults['volunteer_role_id'] = CRM_Volunteer_BAO_Need::FLEXIBLE_ROLE_ID;
 
     $cid = CRM_Utils_Array::value('userID', $_SESSION['CiviCRM'], NULL);
     if ($cid) {
@@ -128,20 +100,13 @@ class CRM_Volunteer_Form_VolunteerSignUp extends CRM_Core_Form {
    */
   function preProcess() {
     $vid = CRM_Utils_Request::retrieve('vid', 'Positive', $this, TRUE);
-    $projects = CRM_Volunteer_BAO_Project::retrieve(array('id' => $vid));
+    $this->_project = CRM_Volunteer_BAO_Project::retrieveByID($vid);
 
-    if (!count($projects)) {
-      CRM_Core_Error::fatal('Project does not exist');
-    }
-
-    $this->_project = $projects[$vid];
     $this->setDestination();
     $this->assign('vid', $this->_project->id);
-    if ($this->getVolunteerNeeds() === 0) {
+    if (empty($this->_project->needs)) {
       CRM_Core_Error::fatal('Project has no public volunteer needs enabled');
     }
-    $this->getVolunteerRoles();
-    $this->getVolunteerShifts();
     $this->_action = CRM_Utils_Request::retrieve('action', 'String', $this, FALSE);
 
     // current mode
@@ -171,18 +136,18 @@ class CRM_Volunteer_Form_VolunteerSignUp extends CRM_Core_Form {
     $this->buildCustom('volunteerProfile');
 
     // better UX not to display a select box with only one possible selection
-    if (count($this->_roles) > 1) {
+    if (count($this->_project->roles) > 1) {
       $this->add(
         'select',               // field type
         'volunteer_role_id',    // field name
         ts('Volunteer Role'),   // field label
-        $this->_roles,          // list of options
+        $this->_project->roles, // list of options
         true                    // is required
       );
     }
 
     // better UX not to display a select box with only one possible selection
-    if (count($this->_shifts) > 1) {
+    if (count($this->_project->shifts) > 1) {
       $select = $this->add(
         'select',               // field type
         'volunteer_need_id',    // field name
@@ -190,7 +155,7 @@ class CRM_Volunteer_Form_VolunteerSignUp extends CRM_Core_Form {
         array(),                // list of options
         false                    // is required
       );
-      foreach ($this->_shifts as $id => $data) {
+      foreach ($this->_project->shifts as $id => $data) {
         $select->addOption($data['label'], $id, array('data-role' => $data['role_id']));
       }
 
@@ -222,9 +187,9 @@ class CRM_Volunteer_Form_VolunteerSignUp extends CRM_Core_Form {
 
     // Role id is not present in form $values when the only public need is the flexible need.
     // So if role id is not set OR if it matches flexible role id constant then use the flexible need id
-    if (! isset($values['volunteer_role_id']) || (int) CRM_Utils_Array::value('volunteer_role_id', $values) === self::FLEXIBLE_ROLE_ID) {
+    if (! isset($values['volunteer_role_id']) || (int) CRM_Utils_Array::value('volunteer_role_id', $values) === CRM_Volunteer_BAO_Need::FLEXIBLE_ROLE_ID) {
       $isFlexible = TRUE;
-      foreach ($this->_needs as $n) {
+      foreach ($this->_projects->needs as $n) {
         if ($n['is_flexible'] === '1') {
           $values['volunteer_need_id'] = $n['id'];
           break;
@@ -318,82 +283,6 @@ class CRM_Volunteer_Form_VolunteerSignUp extends CRM_Core_Form {
 
       $this->assign($name, $fields);
     }
-  }
-
-  /**
-   * Retrieves the Needs associated with this Project via API
-   *
-   * @return int Number of Needs associated with this Project
-   */
-  function getVolunteerNeeds() {
-    $params = array(
-      'is_active' => '1',
-      'project_id' => $this->_project->id,
-      'version' => 3,
-      'visibility_id' => CRM_Core_OptionGroup::getValue('visibility', 'public', 'name'),
-    );
-    $params['options'] = array('sort' => 'start_time');
-
-    $result = civicrm_api('VolunteerNeed', 'get', $params);
-
-    if (CRM_Utils_Array::value('is_error', $result) === 0) {
-      $this->_needs = $result['values'];
-    }
-
-    return CRM_Utils_Array::value('count', $result, 0);
-  }
-
-  /**
-   * Sets $this->_roles
-   *
-   * @return int Number of Roles associated with this Project
-   */
-  function getVolunteerRoles() {
-    $roles = array();
-
-    if (empty($this->_needs)) {
-      $this->getVolunteerNeeds();
-    }
-
-    foreach ($this->_needs as $need) {
-      $role_id = CRM_Utils_Array::value('role_id', $need);
-      if (CRM_Utils_Array::value('is_flexible', $need) == '1') {
-        $roles[self::FLEXIBLE_ROLE_ID] = CRM_Volunteer_BAO_Need::getFlexibleRoleLabel();
-      } else {
-        $roles[$role_id] = CRM_Core_OptionGroup::getLabel(
-          CRM_Volunteer_Upgrader::customOptionGroupName,
-          $role_id
-        );
-      }
-    }
-    asort($roles);
-    $this->_roles = $roles;
-    return count($roles);
-  }
-
-  /**
-   * Set $this->_shifts
-   *
-   * @return int Number of shifts associated with this Project
-   */
-  function getVolunteerShifts() {
-    $shifts = array();
-
-    if (empty($this->_needs)) {
-      $this->getVolunteerNeeds();
-    }
-
-    foreach ($this->_needs as $id => $need) {
-      if (CRM_Utils_Array::value('start_time', $need)) {
-        $shifts[$id] = array(
-          'label' => CRM_Volunteer_BAO_Need::getTimes($need['start_time'], $need['duration']),
-          'role_id' => $need['role_id'],
-        );
-      }
-    }
-
-    $this->_shifts = $shifts;
-    return count($shifts);
   }
 
   /**

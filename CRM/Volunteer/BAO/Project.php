@@ -52,6 +52,27 @@ class CRM_Volunteer_BAO_Project extends CRM_Volunteer_DAO_Project {
   private $flexible_need_id;
 
   /**
+   * Array of associated Needs. Accessible via __get method.
+   *
+   * @var array
+   */
+  private $needs = array();
+
+  /**
+   * Array of associated Roles. Accessible via __get method.
+   *
+   * @var array Role labels keyed by IDs
+   */
+  private $roles = array();
+
+  /**
+   * Array of associated Shifts. Accessible via __get method.
+   *
+   * @var array Keyed by Need ID, with a subarray keyed by 'label' and 'role_id'
+   */
+  private $shifts = array();
+
+  /**
    * The start_date of the Project, inherited from its associated entity
    *
    * @var string
@@ -85,6 +106,22 @@ class CRM_Volunteer_BAO_Project extends CRM_Volunteer_DAO_Project {
     if (method_exists($this, $f)) {
       return $this->$f();
     }
+  }
+
+  /**
+   * Implementation of PHP's magic __isset() function.
+   *
+   * @param string $name The inaccessible property
+   * @return boolean
+   */
+  function __isset($name) {
+    $result = FALSE;
+    $f = "_get_$name";
+    if (method_exists($this, $f)) {
+      $v = $this->$f();
+      $result = !empty($v);
+    }
+    return $result;
   }
 
   /**
@@ -167,12 +204,33 @@ class CRM_Volunteer_BAO_Project extends CRM_Volunteer_DAO_Project {
     $project->find();
 
     while ($project->fetch()) {
-      $result[$project->id] = clone $project;
+      $result[(int) $project->id] = clone $project;
     }
 
     $project->free();
 
     return $result;
+  }
+
+  /**
+   * Wrapper method for retrieve
+   *
+   * @param mixed $id Int or int-like string representing project ID
+   * @return CRM_Volunteer_BAO_Project
+   */
+  static function retrieveByID($id) {
+    if (!is_int($id) && !ctype_digit($id)) {
+      CRM_Core_Error::fatal(__CLASS__ . '::' . __FUNCTION__ . ' expects an integer.');
+    }
+    $id = (int) $id;
+
+    $projects = self::retrieve(array('id' => $id));
+
+    if (!array_key_exists($id, $projects)) {
+      CRM_Core_Error::fatal("No project with ID $id exists.");
+    }
+
+    return $projects[$id];
   }
 
   /**
@@ -321,4 +379,86 @@ class CRM_Volunteer_BAO_Project extends CRM_Volunteer_DAO_Project {
     return $this->end_date;
   }
 
+  /**
+   * Sets $this->needs and returns the Needs associated with this Project. Delegate of __get().
+   * Note: only active, visible needs are returned.
+   *
+   * @return array Needs as returned by API
+   */
+  private function _get_needs() {
+    if (empty($this->needs)) {
+      $params = array(
+        'is_active' => '1',
+        'project_id' => $this->id,
+        'version' => 3,
+        'visibility_id' => CRM_Core_OptionGroup::getValue('visibility', 'public', 'name'),
+      );
+      $params['options'] = array('sort' => 'start_time');
+      $result = civicrm_api3('VolunteerNeed', 'get', $params);
+      $this->needs = $result['values'];
+    }
+
+    return $this->needs;
+  }
+
+  /**
+   * Sets $this->roles and returns the Roles associated with this Project. Delegate of __get().
+   * Note: only roles for active, visible needs are returned.
+   *
+   * @return array Roles, labels keyed by IDs
+   */
+  private function _get_roles() {
+    if (empty($this->roles)) {
+      $roles = array();
+
+      if (empty($this->needs)) {
+        $this->_get_needs();
+      }
+
+      foreach ($this->needs as $need) {
+        if (CRM_Utils_Array::value('is_flexible', $need) == '1') {
+          $roles[CRM_Volunteer_BAO_Need::FLEXIBLE_ROLE_ID] = CRM_Volunteer_BAO_Need::getFlexibleRoleLabel();
+        } else {
+          $role_id = CRM_Utils_Array::value('role_id', $need);
+          $roles[$role_id] = CRM_Core_OptionGroup::getLabel(
+            CRM_Volunteer_Upgrader::customOptionGroupName,
+            $role_id
+          );
+        }
+      }
+      asort($roles);
+      $this->roles = $roles;
+    }
+
+    return $this->roles;
+  }
+
+  /**
+   * Sets $this->shifts and returns the shifts associated with this Project. Delegate of __get().
+   * Note: only shifts for active, visible needs are returned.
+   *    *
+   * @return array Shifts array is keyed by Need ID, with a subarray keyed by 'label' and 'role_id'
+   */
+  private function _get_shifts() {
+    if (empty($this->shifts)) {
+      $shifts = array();
+
+      if (empty($this->needs)) {
+        $this->_get_needs();
+      }
+
+      foreach ($this->needs as $id => $need) {
+        if (CRM_Utils_Array::value('start_time', $need)) {
+          $shifts[$id] = array(
+            'label' => CRM_Volunteer_BAO_Need::getTimes($need['start_time'], $need['duration']),
+            'role_id' => $need['role_id'],
+          );
+        }
+      }
+
+      $this->shifts = $shifts;
+    }
+
+    return $this->shifts;
+  }
 }
