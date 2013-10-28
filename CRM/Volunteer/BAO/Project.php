@@ -452,10 +452,6 @@ class CRM_Volunteer_BAO_Project extends CRM_Volunteer_DAO_Project {
           $shifts[$id] = array(
             'label' => CRM_Volunteer_BAO_Need::getTimes($need['start_time'], $need['duration']),
             'role_id' => $need['role_id'],
-            'role_label' => CRM_Core_OptionGroup::getLabel(
-              CRM_Volunteer_Upgrader::customOptionGroupName,
-              $need['role_id']
-            ),
           );
         }
       }

@@ -260,17 +260,17 @@ function _volunteer_civicrm_buildForm_CRM_Activity_Form_Activity($formName, &$fo
       ));
       $Project = CRM_Volunteer_BAO_Project::retrieveByID($need['project_id']);
 
-      $shifts = array();
-      foreach ($Project->shifts as $key => $value) {
-        $shifts[$key] = $value['role_label'] . ' - ' . $value['label'];
+      $needs = array();
+      foreach ($Project->needs as $key => $value) {
+        $needs[$key] = $value['role_label'] . ': ' . $value['display_time'];
       }
-      asort($shifts);
+      asort($needs);
 
       $form->add(
         'select',               // field type
         $element_name,          // field name
         $field->_label,         // field label
-        $shifts,                // list of options (value => label)
+        $needs,                 // list of options (value => label)
         TRUE                    // required
       );
     }

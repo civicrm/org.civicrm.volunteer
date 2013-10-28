@@ -227,12 +227,6 @@ class CRM_Volunteer_BAO_ProjectTest extends VolunteerTestAbstract {
     $this->assertArrayKeyExists('role_id', $test[$need->id]);
     $this->assertEquals($role_id, $test[$need->id]['role_id']);
     $this->assertArrayKeyExists('label', $test[$need->id]);
-    $this->assertArrayKeyExists('role_label', $test[$need->id]);
-    $expected = CRM_Core_OptionGroup::getLabel(
-      CRM_Volunteer_Upgrader::customOptionGroupName,
-      $role_id
-    );
-    $this->assertEquals($expected, $test[$need->id]['role_label']);
   }
 
   /**
