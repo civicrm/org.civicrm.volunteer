@@ -232,6 +232,12 @@ function volunteer_civicrm_buildForm($formName, &$form) {
   }
 }
 
+/**
+ * Callback for core Activity view and form
+ *
+ * Display user-friendly label for Need ID rather than an integer, or hide
+ * the field altogether, depending on context.
+ */
 function _volunteer_civicrm_buildForm_CRM_Activity_Form_Activity($formName, &$form) {
   // determine name that the Volunteer Need ID field would be given in this form
   $params = array(
