@@ -244,10 +244,22 @@ function _volunteer_civicrm_buildForm_CRM_Activity_Form_Activity($formName, &$fo
   );
   $result = civicrm_api3('CustomGroup', 'getsingle', $params);
   $field_id = $result['api.CustomField.getsingle']['id'];
-  $element_name = 'custom_' . $field_id . '_1';
+
+  // element name varies depending on context
+  $possible_element_names = array(
+    'custom_' . $field_id . '_1',
+    'custom_' . $field_id . '_-1',
+  );
+  $element_name = NULL;
+  foreach ($possible_element_names as $name) {
+    if ($form->elementExists($name)) {
+      $element_name = $name;
+      break;
+    }
+  }
 
   // target only activity forms that contain the Volunteer Need ID field
-  if ($form->elementExists($element_name)) {
+  if (isset($element_name)) {
     $field = $form->getElement($element_name);
     $form->removeElement($element_name);
 
