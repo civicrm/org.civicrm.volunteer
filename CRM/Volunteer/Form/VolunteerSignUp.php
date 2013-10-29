@@ -189,7 +189,7 @@ class CRM_Volunteer_Form_VolunteerSignUp extends CRM_Core_Form {
     // So if role id is not set OR if it matches flexible role id constant then use the flexible need id
     if (! isset($values['volunteer_role_id']) || (int) CRM_Utils_Array::value('volunteer_role_id', $values) === CRM_Volunteer_BAO_Need::FLEXIBLE_ROLE_ID) {
       $isFlexible = TRUE;
-      foreach ($this->_projects->needs as $n) {
+      foreach ($this->_project->needs as $n) {
         if ($n['is_flexible'] === '1') {
           $values['volunteer_need_id'] = $n['id'];
           break;
