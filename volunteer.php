@@ -249,6 +249,7 @@ function _volunteer_civicrm_buildForm_CRM_Activity_Form_Activity($formName, &$fo
     ),
   );
   $result = civicrm_api3('CustomGroup', 'getsingle', $params);
+  $group_id = $result['id'];
   $field_id = $result['api.CustomField.getsingle']['id'];
 
   // element name varies depending on context
@@ -264,7 +265,7 @@ function _volunteer_civicrm_buildForm_CRM_Activity_Form_Activity($formName, &$fo
     }
   }
 
-  // target only activity forms that contain the Volunteer Need ID field
+  // If it contains the Volunteer Need ID field, this is an edit form
   if (isset($element_name)) {
     $field = $form->getElement($element_name);
     $form->removeElement($element_name);
@@ -291,6 +292,19 @@ function _volunteer_civicrm_buildForm_CRM_Activity_Form_Activity($formName, &$fo
         $needs,                 // list of options (value => label)
         TRUE                    // required
       );
+    }
+  }
+  // In "View" mode
+  elseif (isset($form->_activityTypeName) && $form->_activityTypeName == 'Volunteer') {
+    $custom = $form->get_template_vars('viewCustomData');
+    if (!empty($custom[$group_id])) {
+      $value = $custom[$group_id][1]['fields'][$field_id]['field_value'];
+      if ($value) {
+        $need = civicrm_api3('VolunteerNeed', 'getsingle', array('id' => $value));
+        $display = $need['role_label'] . ': ' . $need['display_time'];
+        $custom[$group_id][1]['fields'][$field_id]['field_value'] = $display;
+        $form->assign('viewCustomData', $custom);
+      }
     }
   }
 }
