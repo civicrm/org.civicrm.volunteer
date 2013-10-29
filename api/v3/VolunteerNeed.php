@@ -83,6 +83,14 @@ function civicrm_api3_volunteer_need_get($params) {
       else {
         $need['display_time'] = ts('Flexible');
       }
+      if (isset($need['role_id'])) {
+        $need['role_label'] = CRM_Core_OptionGroup::getLabel(
+          CRM_Volunteer_Upgrader::customOptionGroupName,
+          $need['role_id']
+        );
+      } elseif ($need['is_flexible']) {
+        $need['role_label'] = CRM_Volunteer_BAO_Need::getFlexibleRoleLabel();
+      }
     }
   }
   return $result;

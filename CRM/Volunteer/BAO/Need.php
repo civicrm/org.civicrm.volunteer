@@ -35,6 +35,8 @@
 
 class CRM_Volunteer_BAO_Need extends CRM_Volunteer_DAO_Need {
 
+  const FLEXIBLE_ROLE_ID = -1;
+
    /**
    * class constructor
    */
