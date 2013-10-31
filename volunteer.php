@@ -112,13 +112,15 @@ function volunteer_civicrm_uninstall() {
 function volunteer_civicrm_enable() {
   $doc_url = 'https://github.com/civicrm/civivolunteer/blob/1.0/README.md';
   $forum_url = 'http://forum.civicrm.org/index.php/board,84.0.html';
-  $manage_events_url = CRM_Utils_System::url('civicrm/event/manage', 'reset=1');
-  CRM_Core_Session::setStatus(
-    // as long as the message contains a link, the pop-up will not automatically close
-    ts('<p>Thank you for installing CiviVolunteer 1.0! <a href="%1" target="_blank">Documentation</a> is a work in progress. Please report any issues or ask for help on the <a href="%2" target="_blank">CiviVolunteer forum</a>.</p><p>To get started, visit <a href="%3">Manage Events</a> and enable volunteer management from the new Volunteer tab on one of your events.</p>', array(1 => $doc_url, 2 => $forum_url, 3 => $manage_events_url)),
-    ts('Getting Started with CiviVolunteer'),
-    'info'
-  );
+  $role_url = CRM_Utils_System::url('civicrm/admin/options/volunteer_role', 'group=volunteer_role&reset=1');
+  $events_url = CRM_Utils_System::url('civicrm/event/manage', 'reset=1');
+  $message = "<p>" . ts("Getting Started:") . "<p><ul>
+    <li>" . ts('Read <a href="%1" target="_blank">documentation</a>', array(1 => $doc_url)) . "</li>
+    <li>" . ts('Ask questions on the <a href="%1" target="_blank">forum</a>', array(1 => $forum_url)) . "</li>
+    <li>" . ts('Configure <a href="%1" target="_blank">volunteer roles</a>', array(1 => $role_url)) . "</li>
+    <li>" . ts('Enable volunteer management for one or more <a href="%1" target="_blank">events</a>', array(1 => $events_url)) . "</li></ul>";
+  // As long as the message contains a link, the pop-up will not automatically close
+  CRM_Core_Session::setStatus($message, ts('CiviVolunteer Installed'), 'success');
   return _volunteer_civix_civicrm_enable();
 }
 
