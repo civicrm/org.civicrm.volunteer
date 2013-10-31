@@ -300,11 +300,11 @@ function _volunteer_civicrm_buildForm_CRM_Activity_Form_Activity($formName, &$fo
   elseif (isset($form->_activityTypeName) && $form->_activityTypeName == 'Volunteer') {
     $custom = $form->get_template_vars('viewCustomData');
     if (!empty($custom[$group_id])) {
-      $value = $custom[$group_id][1]['fields'][$field_id]['field_value'];
-      if ($value) {
+      $index = key($custom[$group_id]);
+      if (!empty($custom[$group_id][$index]['fields'][$field_id]['field_value'])) {
+        $value =& $custom[$group_id][$index]['fields'][$field_id]['field_value'];
         $need = civicrm_api3('VolunteerNeed', 'getsingle', array('id' => $value));
-        $display = $need['role_label'] . ': ' . $need['display_time'];
-        $custom[$group_id][1]['fields'][$field_id]['field_value'] = $display;
+        $value = $need['role_label'] . ': ' . $need['display_time'];
         $form->assign('viewCustomData', $custom);
       }
     }
