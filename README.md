@@ -34,17 +34,20 @@ Log and Report on Volunteer Hours
 =================================
 Finally, staff can log actual hours worked by each volunteer on a regular basis if needed for
 funder reports (click "Log Volunteer Hours" from the event's Volunteer tab). Then you can
-access the new Volunteer Activity Report (Contacts > Contact Reports) to get statistics
+access the new Volunteer Activity Report (Contacts > Contact Reports) to get
 statistics on volunteering. You can even add that report as a dashlet on your dashboard if
 you want to keep track of your organization's cumulative volunteering totals.
 
 Known Issues
 ============
-The installer will not create the "register to volunteer" permission automatically for
-Joomla and WordPress installations.
+For versions of CiviCRM prior to and including 4.4.0, the installer will not
+create the "register to volunteer" permission automatically for
+Joomla installations.
 
-When editing an existing volunteer activity record, the Need field in the CiviVolunteer
-custom data set appears as an integer, rather than a dropdown.
+For versions of CiviCRM prior to and including 4.4.0, when viewing an existing
+volunteer activity record, the Need field in the CiviVolunteer
+custom data set appears as an integer, rather than as user-friendly text. This is
+fixed in CiviCRM 4.4.1.
 
 What's Next
 ===========
