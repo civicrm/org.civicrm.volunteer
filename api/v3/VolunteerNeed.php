@@ -88,7 +88,7 @@ function civicrm_api3_volunteer_need_get($params) {
           CRM_Volunteer_Upgrader::customOptionGroupName,
           $need['role_id']
         );
-      } elseif ($need['is_flexible']) {
+      } elseif (CRM_Utils_Array::value('is_flexible', $need)) {
         $need['role_label'] = CRM_Volunteer_BAO_Need::getFlexibleRoleLabel();
       }
     }
