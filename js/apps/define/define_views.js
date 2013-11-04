@@ -38,20 +38,13 @@ CRM.volunteerApp.module('Define', function(Define, volunteerApp, Backbone, Mario
 
     onRender: function() {
       // TODO: respect user-configured time formats
-      this.$("[name='display_start_date']").addClass('dateplugin').datepicker({
-        dateFormat: "MM d, yy"
-      });
+      this.$("[name='display_start_date']").addClass('dateplugin').datepicker();
 
       this.$("[name='display_start_time']").addClass('timeplugin').timeEntry();
 
       // populate and format time
       if (this.model.get('display_start_time')) {
         this.$("[name='display_start_time']").timeEntry('setTime', this.model.get('display_start_time'));
-
-        // update model value to match timeEntry-formatted time; thus detect
-        // whether the user changed the time (in which case the database should
-        // be updated) or the widget changed the time (nothing need be done)
-        this.model.set('display_start_time', this.$("[name='display_start_time']").val());
       }
 
       if (this.model.get('visibility_id') == visibility.public) {
@@ -68,23 +61,22 @@ CRM.volunteerApp.module('Define', function(Define, volunteerApp, Backbone, Mario
       var field_name = e.currentTarget.name;
       var value = e.currentTarget.value;
 
+      function pad(number) {
+        var r = String(number);
+        return (r.length === 1) ? '0' + r : r;
+      }
+
       // preprocess special-case fields
       switch (field_name) {
         case 'display_start_date':
         case 'display_start_time':
-          // don't concat display date and time if no real change has occurred
-          // (prevents formatting changes from triggering API call)
-          if (this.model.get(field_name) == value) {
-            break;
-          }
-
           field_name = 'start_time';
-          value = this.$("[name='display_start_date']").val()
-              + ' ' + this.$("[name='display_start_time']").val();
+          var date =  this.$("[name='display_start_date']").datepicker('getDate');
+          var time = this.$("[name='display_start_time']").timeEntry('getTime').toTimeString().split(' ')[0];
+          value = '' + date.getFullYear() + '-' + pad(1 + date.getMonth()) + '-' + pad(date.getDate()) + ' ' + time;
           break;
         case 'visibility_id':
-          value = e.currentTarget.checked ? e.currentTarget.value
-              : visibility.admin;
+          value = e.currentTarget.checked ? e.currentTarget.value : visibility.admin;
           break;
         case 'is_active':
           value = e.currentTarget.checked ? e.currentTarget.value : 0;
