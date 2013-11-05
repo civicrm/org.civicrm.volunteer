@@ -37,10 +37,11 @@ CRM.volunteerApp.module('Define', function(Define, volunteerApp, Backbone, Mario
     },
 
     onRender: function() {
-      // TODO: respect user-configured time formats
       this.$("[name='display_start_date']").addClass('dateplugin').datepicker();
 
-      this.$("[name='display_start_time']").addClass('timeplugin').timeEntry();
+      this.$("[name='display_start_time']").addClass('timeplugin').timeEntry({
+        show24Hours: CRM.config.timeInputFormat == 2
+      });
 
       // populate and format time
       if (this.model.get('display_start_time')) {

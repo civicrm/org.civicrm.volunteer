@@ -56,7 +56,6 @@ CRM.volunteerApp.module('Entities', function(Entities, volunteerApp, Backbone, M
   
   function formatDate (arrayData) {
     if (arrayData.start_time) {
-      // TODO: respect user-configured time formats
       var timeDate = arrayData.start_time.split(" ");
       var date = $.datepicker.parseDate("yy-mm-dd", timeDate[0]);
       arrayData.display_start_date = $.datepicker.formatDate($.datepicker._defaults.dateFormat, date);

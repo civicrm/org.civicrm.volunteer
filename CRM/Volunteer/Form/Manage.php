@@ -36,6 +36,7 @@ class CRM_Volunteer_Form_Manage {
       return;
     }
     $loaded = TRUE;
+    $config = CRM_Core_Config::singleton();
     $ccr = CRM_Core_Resources::singleton();
 
     // Vendor libraries
@@ -74,7 +75,10 @@ class CRM_Volunteer_Form_Manage {
       ),
       'volunteer' => array(
         'default_date' => CRM_Utils_Array::value('start_date', $entity),
-      )
+      ),
+      'config' => array(
+        'timeInputFormat' => $config->timeInputFormat,
+      ),
     ));
   }
 }
