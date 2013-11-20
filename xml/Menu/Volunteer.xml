@@ -36,8 +36,9 @@
   <item>
     <path>civicrm/volunteer/signup</path>
     <page_callback>CRM_Volunteer_Form_VolunteerSignUp</page_callback>
-    <title>VolunteerSignUp</title>
+    <title>Volunteer Signup</title>
     <access_arguments>register to volunteer</access_arguments>
+    <is_public>true</is_public>
   </item>
   <item>
     <path>civicrm/admin/options/volunteer_role</path>
