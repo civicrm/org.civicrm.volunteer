@@ -199,10 +199,13 @@ function _volunteer_civicrm_pageRun_CRM_Event_Page_EventInfo(&$page) {
   // show volunteer button only if user has CiviVolunteer: register to volunteer AND this event has an active project
   if (CRM_Core_Permission::check('register to volunteer') && count($projects)) {
     $project = current($projects);
-    $url = CRM_Utils_System::url('civicrm/volunteer/signup', array(
-      'reset' => 1,
-      'vid' => $project->id,
-    ));
+    $url = CRM_Utils_System::url('civicrm/volunteer/signup',
+      array('reset' => 1, 'vid' => $project->id),
+      FALSE, // absolute?
+      NULL, // fragment
+      TRUE, // htmlize?
+      TRUE // is frontend?
+    );
     $button_text = ts('Volunteer Now');
 
     $snippet = array(
