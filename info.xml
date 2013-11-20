@@ -9,7 +9,7 @@
     <email>info@civicrm.org</email>
   </maintainer>
   <releaseDate>2013-10-31</releaseDate>
-  <version>1.0</version>
+  <version>1.1</version>
   <develStage>stable</develStage>
   <compatibility>
     <ver>4.4</ver>
@@ -19,6 +19,6 @@
     <namespace>CRM/Volunteer</namespace>
   </civix>
   <urls>
-    <url desc="Documentation">https://github.com/civicrm/civivolunteer/blob/1.0/README.md</url>
+    <url desc="Documentation">https://github.com/civicrm/civivolunteer/blob/1.1/README.md</url>
   </urls>
 </extension>
