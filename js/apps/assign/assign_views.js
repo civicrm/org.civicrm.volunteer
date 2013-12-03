@@ -23,9 +23,9 @@ CRM.volunteerApp.module('Assign', function(Assign, volunteerApp, Backbone, Mario
 
   var assignmentViewSettings = {
     tagName: 'tr',
-    className: 'crm-vol-assignment',
     attributes: function() {
       return {
+        class: 'crm-vol-assignment ' + (this.model.collection.indexOf(this.model) % 2 ? 'even' : 'odd'),
         // Store ids to facilitate dragging & dropping
         'data-id': this.model.get('id'),
         'data-cid': this.model.get('contact_id')

@@ -22,7 +22,11 @@ CRM.volunteerApp.module('Define', function(Define, volunteerApp, Backbone, Mario
 
   // allows us to toggle different views for the same model
   var itemViewSettings = {
-    className: 'crm-vol-define-need',
+    attributes: function() {
+      return {
+        class: 'crm-vol-define-need ' + (this.model.collection.indexOf(this.model) % 2 ? 'even' : 'odd')
+      };
+    },
 
     templateHelpers: {
       pseudoConstant: CRM.pseudoConstant,
