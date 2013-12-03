@@ -436,7 +436,7 @@ class CRM_Volunteer_BAO_Project extends CRM_Volunteer_DAO_Project {
   /**
    * Sets $this->shifts and returns the shifts associated with this Project. Delegate of __get().
    * Note: only shifts for active, visible needs are returned.
-   *    *
+   *
    * @return array Shifts array is keyed by Need ID, with a subarray keyed by 'label' and 'role_id'
    */
   private function _get_shifts() {
@@ -448,9 +448,9 @@ class CRM_Volunteer_BAO_Project extends CRM_Volunteer_DAO_Project {
       }
 
       foreach ($this->needs as $id => $need) {
-        if (CRM_Utils_Array::value('start_time', $need)) {
+        if (!empty($need['start_time'])) {
           $shifts[$id] = array(
-            'label' => CRM_Volunteer_BAO_Need::getTimes($need['start_time'], $need['duration']),
+            'label' => CRM_Volunteer_BAO_Need::getTimes($need['start_time'], CRM_Utils_Array::value('duration', $need)),
             'role_id' => $need['role_id'],
           );
         }
