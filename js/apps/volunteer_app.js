@@ -13,7 +13,7 @@ cj(function($) {
       modal: true,
       title: $el.text(),
       width: '85%',
-      position: {my: 'top', at: 'top+25%', of: window}
+      height: parseInt($(window).height() * .80)
     };
     if ($el.is('a.crm-volunteer-popup')) {
       settings['close'] = function() {
@@ -61,3 +61,6 @@ cj(function($) {
     return false;
   });
 });
+
+// Workaround for plugin namespace collision
+cj.widget("civicrm.crmVolMenu", cj.ui.menu, {});

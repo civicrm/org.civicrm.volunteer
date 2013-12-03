@@ -35,8 +35,55 @@
   background-position: -127px -95px;
 }
 
-a.crm-vol-del {
+#crm-volunteer-dialog .crm-vol-menu {
   float: right;
+  position: relative;
+  border: 1px solid #d3d3d3;
+  margin-top: 4px;
   height: 12px;
   width: 12px;
+}
+#crm-volunteer-dialog .crm-vol-menu-button {
+  display: block;
+  height: 20px;
+  width: 20px;
+  margin-left: -5px;
+  margin-top: -5px;
+}
+/* css triangle */
+#crm-volunteer-dialog .crm-vol-menu-button span {
+  display: block;
+  width: 0;
+  height: 0;
+  border-left: 5px solid transparent;
+  border-right: 5px solid transparent;
+  border-top: 5px solid #808080;
+  position: absolute;
+  left: 1px;
+  top: 3px;
+}
+
+#crm-volunteer-dialog .crm-vol-menu:hover {
+  border: 1px solid #a9a9a9;
+}
+#crm-volunteer-dialog .crm-vol-menu-button:hover span {
+  border-top: 5px solid black;
+}
+
+#crm-volunteer-dialog .crm-vol-menu-items {
+  position: absolute;
+  top: 10px;
+  left: 0;
+  z-index: 9999;
+}
+
+#crm-volunteer-dialog .ui-menu {
+  box-shadow: 0 0 12px rgba(0, 0, 0, 0.3);
+}
+
+#crm-volunteer-dialog .ui-menu .ui-menu-item {
+  width: 8em;
+}
+#crm-volunteer-dialog .ui-menu .ui-menu-item .ui-menu-item {
+  width: 18em;
 }

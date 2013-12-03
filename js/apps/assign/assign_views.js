@@ -19,14 +19,17 @@ CRM.volunteerApp.module('Assign', function(Assign, volunteerApp, Backbone, Mario
     }
   });
 
+  var menuItemTemplate = _.template($('#crm-vol-menu-item-tpl').html());
+
   var assignmentViewSettings = {
     tagName: 'tr',
-    className: 'crm-vol-assignment',
-
-    onRender: function () {
-      // Store id to facilitate dragging & dropping
-      this.$el.attr('data-id', this.model.get('id'));
-      this.$el.attr('data-cid', this.model.get('contact_id'));
+    attributes: function() {
+      return {
+        class: 'crm-vol-assignment ' + (this.model.collection.indexOf(this.model) % 2 ? 'even' : 'odd'),
+        // Store ids to facilitate dragging & dropping
+        'data-id': this.model.get('id'),
+        'data-cid': this.model.get('contact_id')
+      };
     },
 
     templateHelpers: {
@@ -40,16 +43,33 @@ CRM.volunteerApp.module('Assign', function(Assign, volunteerApp, Backbone, Mario
         infoDialog && infoDialog.close && infoDialog.close();
         infoDialog = CRM.alert(this.model.get('details'), this.model.get('display_name'), 'info', {expires: 0});
         return false;
+      },
+      'click a.crm-vol-menu-parent': function () {return false;},
+      'click a.crm-vol-menu-button': function() {
+        var $menu = $($('#crm-vol-menu-tpl').html());
+        $((this.isFlexible ? '' : '.crm-vol-menu-move-to, ') + '.crm-vol-menu-copy-to', $menu).append(menuItemTemplate({
+          cid: 'flexible',
+          title: '<em>' + ts('Available Volunteers') + '</em>',
+          time: ''
+        }));
+        $.each(Assign.scheduledView.getOpenSlots(this.$el), function() {
+          $('.crm-vol-menu-move-to, .crm-vol-menu-copy-to', $menu).append(menuItemTemplate(this));
+        });
+        $menu.appendTo($('.crm-vol-menu', this.$el));
+        this.$('.crm-vol-menu-list').crmVolMenu();
+        return false;
       }
     }
   };
 
   Assign.scheduledAssignmentView = Marionette.ItemView.extend(_.extend(assignmentViewSettings, {
-    template: '#crm-vol-scheduled-assignment-tpl'
+    template: '#crm-vol-scheduled-assignment-tpl',
+    isFlexible: false
   }));
 
   Assign.flexibleAssignmentView = Marionette.ItemView.extend(_.extend(assignmentViewSettings, {
-    template: '#crm-vol-flexible-assignment-tpl'
+    template: '#crm-vol-flexible-assignment-tpl',
+    isFlexible: true
   }));
 
   var needView = Marionette.CompositeView.extend({
@@ -73,6 +93,7 @@ CRM.volunteerApp.module('Assign', function(Assign, volunteerApp, Backbone, Mario
     events: {
       'change .crm-vol-create-contact-select': 'createContactDialog',
       'click .crm-add-vol-contact': 'addNewContact',
+      'click .crm-vol-menu-item a': 'moveContact',
       'click .crm-vol-del': 'removeContact'
     },
 
@@ -87,16 +108,8 @@ CRM.volunteerApp.module('Assign', function(Assign, volunteerApp, Backbone, Mario
         drop: function(event, ui) {
           var id = $(ui.draggable).data('id');
           var assignment = dragFrom.collection.get(id);
+          thisView.addAssignment(assignment.clone());
           dragFrom.collection.remove(assignment);
-          assignment.set('volunteer_need_id', thisView.model.get('id'));
-          thisView.collection.add(assignment);
-          var status = _.invert(CRM.pseudoConstant.volunteer_status);
-          CRM.api('volunteer_assignment', 'create', {
-            activity_date_time: thisView.model.get('start_time'),
-            id: id,
-            volunteer_need_id: thisView.model.get('id'),
-            status_id: status[thisView.isFlexible ? 'Available' : 'Scheduled']
-          });
         },
         accept: function($item) {
           return thisView.acceptVolunteers($item);
@@ -104,6 +117,33 @@ CRM.volunteerApp.module('Assign', function(Assign, volunteerApp, Backbone, Mario
       });
       this.hasBeenInitialized = true;
       this.doCount();
+    },
+
+    // Adds a cloned or existing assignment to the view
+    addAssignment: function(assignment) {
+      var thisView = this, callback;
+      assignment.set('volunteer_need_id', this.model.get('id'));
+      this.collection.add(assignment);
+      var status = _.invert(CRM.pseudoConstant.volunteer_status),
+        params = {
+          activity_date_time: this.model.get('start_time'),
+          volunteer_need_id: this.model.get('id'),
+          status_id: status[this.isFlexible ? 'Available' : 'Scheduled']
+        };
+      // A simple move
+      if (assignment.get('id')) {
+        params.id = assignment.get('id');
+      }
+      // Cloning - need to copy all params and set ID when returned by server
+      else {
+        params = _.extend(assignment.attributes, params);
+        callback = {success: function(result) {
+          assignment.set('id', result.id);
+          // refresh the data-id property
+          thisView.render();
+        }};
+      }
+      CRM.api('volunteer_assignment', 'create', params, callback);
     },
 
     doCount: function() {
@@ -126,7 +166,7 @@ CRM.volunteerApp.module('Assign', function(Assign, volunteerApp, Backbone, Mario
       $('.crm-vol-assignment:not(.ui-draggable)', this.$el).draggable({
         helper: "clone",
         zindex: 99999999999,
-        cancel: '.crm-vol-del',
+        cancel: '.crm-vol-menu',
         containment: '#crm-volunteer-dialog',
         start: function() {
           dragFrom = thisView;
@@ -224,7 +264,8 @@ CRM.volunteerApp.module('Assign', function(Assign, volunteerApp, Backbone, Mario
         var status = _.invert(CRM.pseudoConstant.volunteer_status);
         $('.crm-add-volunteer', this.$el).val('');
         var params = {
-          contact_id: newContactId, volunteer_need_id: this.model.get('id'),
+          contact_id: newContactId,
+          volunteer_need_id: this.model.get('id'),
           status_id: status['Available'],
           activity_date_time: this.model.get('start_time')
         };
@@ -242,9 +283,35 @@ CRM.volunteerApp.module('Assign', function(Assign, volunteerApp, Backbone, Mario
         thisView.collection.remove(assignment);
         CRM.api('volunteer_assignment', 'delete', {id: id});
       }, {
-        title: ts('Remove Volunteer'),
-        message: ts('Remove %1 from the available list?', {1: assignment.get('display_name')})
+        title: ts('Delete Volunteer'),
+        message: ts('Remove %1 from %2?', {
+          1: assignment.get('display_name'),
+          2: this.isFlexible ? ts('Available Volunteers') : CRM.pseudoConstant.volunteer_role[this.model.get('role_id')]
+        })
       });
+      return false;
+    },
+
+    moveContact: function(e) {
+      var targetView, newAssignment,
+        id = $(e.currentTarget).closest('tr').data('id'),
+        assignment = this.collection.get(id),
+        cid = $(e.currentTarget).attr('href').substr(1);
+      if (cid === 'flexible') {
+        targetView = Assign.flexibleView.children.findByIndex(0);
+      }
+      else {
+        targetView = Assign.scheduledView.children.findByCid(cid);
+      }
+      if ($(e.currentTarget).is('.crm-vol-menu-move-to a')) {
+        this.collection.remove(assignment);
+        newAssignment = assignment;
+      }
+      else {
+        newAssignment = assignment.clone();
+        newAssignment.set('id', null);
+      }
+      targetView.addAssignment(newAssignment);
       return false;
     }
 
@@ -252,7 +319,20 @@ CRM.volunteerApp.module('Assign', function(Assign, volunteerApp, Backbone, Mario
 
   Assign.needsView = Marionette.CollectionView.extend({
     itemView: needView,
-    className: 'crm-vol-assign-region-inner'
+    className: 'crm-vol-assign-region-inner',
+    getOpenSlots: function($el) {
+      var slots = [];
+      this.children.each(function(view) {
+        if (view.acceptVolunteers($el)) {
+          slots.push({
+            cid: view.cid,
+            title: CRM.pseudoConstant.volunteer_role[view.model.get('role_id')],
+            time: view.model.get('display_time')
+          });
+        }
+      });
+      return slots;
+    }
   });
 
 });

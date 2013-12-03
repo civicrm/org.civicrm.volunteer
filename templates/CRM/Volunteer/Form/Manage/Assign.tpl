@@ -35,15 +35,22 @@
 </script>
 
 <script type="text/template" id="crm-vol-scheduled-assignment-tpl">
-  {literal}
-  <td class="crm-vol-name"><span class="icon crm-vol-drag"></span><a target="_blank" href="<%= contactUrl(contact_id) %>"><%= display_name %></a> <%if (details){%><a href="#" class="icon crm-vol-info"> </a><%}%></td>
+  <td class="crm-vol-name">
+    <span class="icon crm-vol-drag"></span>
+    <a target="_blank" href="<%= contactUrl(contact_id) %>"><%= display_name %></a>
+    {literal}<%if (details){%><a href="#" class="icon crm-vol-info"> </a><%}%>{/literal}
+    <div class="crm-vol-menu"><a class="crm-vol-menu-button" href="#" title="{ts}Actions{/ts}"><span></span></a></div>
+  </td>
   <td><%= email %></td>
   <td><%= phone %></td>
 </script>
 
 <script type="text/template" id="crm-vol-flexible-assignment-tpl">
   <td class="crm-vol-name">
-    <span class="icon crm-vol-drag"></span><a target="_blank" href="<%= contactUrl(contact_id) %>"><%= display_name %></a> <%if (details){%><a href="#" class="icon crm-vol-info"> </a><%}%>{/literal}<a href="#" class="crm-vol-del" title="{ts}Remove{/ts}"><img src="{$config->resourceBase}i/close.png" alt="{ts}Remove{/ts}"/></a>
+    <span class="icon crm-vol-drag"></span>
+    <a target="_blank" href="<%= contactUrl(contact_id) %>"><%= display_name %></a>
+    {literal}<%if (details){%><a href="#" class="icon crm-vol-info"> </a><%}%>{/literal}
+    <div class="crm-vol-menu"><a class="crm-vol-menu-button" href="#" title="{ts}Actions{/ts}"><span></span></a></div>
   </td>
 </script>
 
@@ -81,4 +88,24 @@
       {/foreach}
     </select>
   </div>
+</script>
+
+<script type="text/template" id="crm-vol-menu-tpl">
+  <div class="crm-vol-menu-items">
+    <ul class="crm-vol-menu-list">
+      <li>
+        <a href="#" class="crm-vol-menu-parent">{ts}Move To:{/ts}</a>
+        <ul class="crm-vol-menu-move-to"></ul>
+      </li>
+      <li>
+        <a href="#" class="crm-vol-menu-parent">{ts}Copy To:{/ts}</a>
+        <ul class="crm-vol-menu-copy-to"></ul>
+      </li>
+      <li><a class="crm-vol-del" href="#">{ts}Delete{/ts}</a></li>
+    </ul>
+  </div>
+</script>
+
+<script type="text/template" id="crm-vol-menu-item-tpl">
+  <li class="crm-vol-menu-item"><a href="#<%= cid %>"><strong><%= title %></strong> <%= time %></a></li>
 </script>
