@@ -80,5 +80,8 @@ class CRM_Volunteer_Form_Manage {
         'timeInputFormat' => $config->timeInputFormat,
       ),
     ));
+
+    // Check for problems
+    _volunteer_civicrm_check_resource_url();
   }
 }
