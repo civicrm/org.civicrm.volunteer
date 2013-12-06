@@ -133,6 +133,8 @@ CRM.volunteerApp.module('Assign', function(Assign, volunteerApp, Backbone, Mario
       // A simple move
       if (assignment.get('id')) {
         params.id = assignment.get('id');
+        // hack - fix order and even/odd problems
+        thisView.render();
       }
       // Cloning - copy params and set ID when returned by server
       else {
@@ -140,7 +142,7 @@ CRM.volunteerApp.module('Assign', function(Assign, volunteerApp, Backbone, Mario
         callback = {success: function(result) {
           assignment.set('id', result.id);
           CRM.alert('', ts('Copied'), 'success');
-          // refresh the data-id property
+          // refresh the data-id property (also needed for other reasons - see above hack)
           thisView.render();
         }};
       }
