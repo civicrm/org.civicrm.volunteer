@@ -285,6 +285,7 @@ CRM.volunteerApp.module('Assign', function(Assign, volunteerApp, Backbone, Mario
       var assignment = this.collection.get(id);
       CRM.confirm(function() {
         thisView.collection.remove(assignment);
+        $('.crm-vol-menu-items').remove();
         CRM.api('volunteer_assignment', 'delete', {id: id});
       }, {
         title: ts('Delete Volunteer'),
@@ -314,6 +315,7 @@ CRM.volunteerApp.module('Assign', function(Assign, volunteerApp, Backbone, Mario
       else {
         newAssignment = assignment.clone();
         newAssignment.set('id', null);
+        $('.crm-vol-menu-items').remove();
       }
       targetView.addAssignment(newAssignment);
       return false;
