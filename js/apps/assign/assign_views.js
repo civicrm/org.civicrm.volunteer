@@ -134,11 +134,12 @@ CRM.volunteerApp.module('Assign', function(Assign, volunteerApp, Backbone, Mario
       if (assignment.get('id')) {
         params.id = assignment.get('id');
       }
-      // Cloning - need to copy all params and set ID when returned by server
+      // Cloning - copy params and set ID when returned by server
       else {
-        params = _.extend(assignment.attributes, params);
+        _.extend(params, _.pick(assignment.attributes, 'contact_id', 'details'));
         callback = {success: function(result) {
           assignment.set('id', result.id);
+          CRM.alert('', ts('Copied'), 'success');
           // refresh the data-id property
           thisView.render();
         }};
