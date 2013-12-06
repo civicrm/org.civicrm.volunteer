@@ -46,6 +46,7 @@ CRM.volunteerApp.module('Assign', function(Assign, volunteerApp, Backbone, Mario
       },
       'click a.crm-vol-menu-parent': function () {return false;},
       'click a.crm-vol-menu-button': function() {
+        $('.crm-vol-menu-items').remove();
         var $menu = $($('#crm-vol-menu-tpl').html());
         $((this.isFlexible ? '' : '.crm-vol-menu-move-to, ') + '.crm-vol-menu-copy-to', $menu).append(menuItemTemplate({
           cid: 'flexible',
@@ -133,13 +134,16 @@ CRM.volunteerApp.module('Assign', function(Assign, volunteerApp, Backbone, Mario
       // A simple move
       if (assignment.get('id')) {
         params.id = assignment.get('id');
+        // hack - fix order and even/odd problems
+        thisView.render();
       }
-      // Cloning - need to copy all params and set ID when returned by server
+      // Cloning - copy params and set ID when returned by server
       else {
-        params = _.extend(assignment.attributes, params);
+        _.extend(params, _.pick(assignment.attributes, 'contact_id', 'details'));
         callback = {success: function(result) {
           assignment.set('id', result.id);
-          // refresh the data-id property
+          CRM.alert('', ts('Copied'), 'success');
+          // refresh the data-id property (also needed for other reasons - see above hack)
           thisView.render();
         }};
       }
@@ -281,6 +285,7 @@ CRM.volunteerApp.module('Assign', function(Assign, volunteerApp, Backbone, Mario
       var assignment = this.collection.get(id);
       CRM.confirm(function() {
         thisView.collection.remove(assignment);
+        $('.crm-vol-menu-items').remove();
         CRM.api('volunteer_assignment', 'delete', {id: id});
       }, {
         title: ts('Delete Volunteer'),
@@ -310,6 +315,7 @@ CRM.volunteerApp.module('Assign', function(Assign, volunteerApp, Backbone, Mario
       else {
         newAssignment = assignment.clone();
         newAssignment.set('id', null);
+        $('.crm-vol-menu-items').remove();
       }
       targetView.addAssignment(newAssignment);
       return false;
