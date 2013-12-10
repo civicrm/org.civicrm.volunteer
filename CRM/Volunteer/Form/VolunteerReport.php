@@ -192,8 +192,9 @@ class CRM_Volunteer_Form_VolunteerReport extends CRM_Report_Form {
             'default' => TRUE,
           ),
           'activity_date_time' => array(
-            'title' => ts('Activity Date'),
+            'title' => ts('Scheduled Date/Time'),
             'default' => TRUE,
+            'type' => CRM_Utils_Type::T_STRING,
           ),
           'status_id' => array(
             'title' => ts('Activity Status'),
@@ -673,8 +674,11 @@ class CRM_Volunteer_Form_VolunteerReport extends CRM_Report_Form {
         }
       }
 
-      if (array_key_exists('civicrm_activity_activity_date_time', $row) && array_key_exists('civicrm_activity_status_id', $row)) {
-        if (CRM_Utils_Date::overdue($rows[$rowNum]['civicrm_activity_activity_date_time']) &&
+      if (array_key_exists('civicrm_activity_activity_date_time', $row)) {
+        $rows[$rowNum]['civicrm_activity_activity_date_time'] = CRM_Utils_Date::customFormat($row['civicrm_activity_activity_date_time']);
+        // Display overdue marker
+        if (array_key_exists('civicrm_activity_status_id', $row) &&
+          CRM_Utils_Date::overdue($rows[$rowNum]['civicrm_activity_activity_date_time']) &&
           $activityStatus[$row['civicrm_activity_status_id']] != 'Completed'
         ) {
           $rows[$rowNum]['class'] = "status-overdue";
