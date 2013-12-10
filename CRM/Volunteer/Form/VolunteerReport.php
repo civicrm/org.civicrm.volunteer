@@ -40,13 +40,6 @@ class CRM_Volunteer_Form_VolunteerReport extends CRM_Report_Form {
 
   function __construct() {
     $config = CRM_Core_Config::singleton();
-    $campaignEnabled = in_array("CiviCampaign", $config->enableComponents);
-    if ($campaignEnabled) {
-      $getCampaigns = CRM_Campaign_BAO_Campaign::getPermissionedCampaigns(NULL, NULL, TRUE, FALSE, TRUE);
-      $this->activeCampaigns = $getCampaigns['campaigns'];
-      asort($this->activeCampaigns);
-      $this->engagementLevels = CRM_Campaign_PseudoConstant::engagementLevel();
-    }
     $this->customGroup = CRM_Volunteer_BAO_Assignment::getCustomGroup();
     $this->customFields = CRM_Volunteer_BAO_Assignment::getCustomFields();
     $this->activityTypeID = CRM_Volunteer_BAO_Assignment::volunteerActivityTypeId();
@@ -191,9 +184,8 @@ class CRM_Volunteer_Form_VolunteerReport extends CRM_Report_Form {
             'required' => TRUE,
           ),
           'activity_type_id' => array(
-            'title' => ts('Activity Type'),
-            'default' => TRUE,
-            'type' => CRM_Utils_Type::T_STRING,
+            'no_display' => TRUE,
+            'required' => TRUE,
           ),
           'activity_subject' => array(
             'title' => ts('Subject'),
@@ -311,41 +303,6 @@ class CRM_Volunteer_Form_VolunteerReport extends CRM_Report_Form {
       ),
     );
 
-    if ($campaignEnabled) {
-      // Add display column and filter for Survey Results, Campaign and Engagement Index if CiviCampaign is enabled
-
-      $this->_columns['civicrm_activity']['fields']['result'] = array(
-        'title' => 'Survey Result',
-        'default' => 'false',
-      );
-      $this->_columns['civicrm_activity']['filters']['result'] = array(
-        'title' => ts('Survey Result'),
-        'operator' => 'like',
-        'type' => CRM_Utils_Type::T_STRING,
-      );
-      if (!empty($this->activeCampaigns)) {
-        $this->_columns['civicrm_activity']['fields']['campaign_id'] = array(
-          'title' => 'Campaign',
-          'default' => 'false',
-        );
-        $this->_columns['civicrm_activity']['filters']['campaign_id'] = array(
-          'title' => ts('Campaign'),
-          'operatorType' => CRM_Report_Form::OP_MULTISELECT,
-          'options' => $this->activeCampaigns,
-        );
-      }
-      if (!empty($this->engagementLevels)) {
-        $this->_columns['civicrm_activity']['fields']['engagement_level'] = array(
-          'title' => 'Engagement Index',
-          'default' => 'false',
-        );
-        $this->_columns['civicrm_activity']['filters']['engagement_level'] = array(
-          'title' => ts('Engagement Index'),
-          'operatorType' => CRM_Report_Form::OP_MULTISELECT,
-          'options' => $this->engagementLevels,
-        );
-      }
-    }
     $this->_groupFilter = TRUE;
     $this->_tagFilter = TRUE;
     parent::__construct();
@@ -712,20 +669,6 @@ class CRM_Volunteer_Form_VolunteerReport extends CRM_Report_Form {
       if (array_key_exists('role_role', $row)) {
         if ($value = $row['role_role']) {
           $rows[$rowNum]['role_role'] = $volunteerRoles[$value];
-          $entryFound = TRUE;
-        }
-      }
-
-      if (array_key_exists('civicrm_activity_campaign_id', $row)) {
-        if ($value = $row['civicrm_activity_campaign_id']) {
-          $rows[$rowNum]['civicrm_activity_campaign_id'] = $this->activeCampaigns[$value];
-          $entryFound = TRUE;
-        }
-      }
-
-      if (array_key_exists('civicrm_activity_engagement_level', $row)) {
-        if ($value = $row['civicrm_activity_engagement_level']) {
-          $rows[$rowNum]['civicrm_activity_engagement_level'] = $this->engagementLevels[$value];
           $entryFound = TRUE;
         }
       }
