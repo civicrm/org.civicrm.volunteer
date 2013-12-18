@@ -23,7 +23,7 @@
  | see the CiviCRM license FAQ at http://civicrm.org/licensing        |
  +--------------------------------------------------------------------+
 *}
-
+{strip}
 {* Contains js templates for backbone-based volunteer assignment sub-application *}
 
 <script type="text/template" id="crm-vol-assign-layout-tpl">
@@ -109,3 +109,4 @@
 <script type="text/template" id="crm-vol-menu-item-tpl">
   <li class="crm-vol-menu-item"><a href="#<%= cid %>"><strong><%= title %></strong> <%= time %></a></li>
 </script>
+{/strip}

@@ -23,7 +23,7 @@
 | see the CiviCRM license FAQ at http://civicrm.org/licensing        |
 +--------------------------------------------------------------------+
 *}
-
+{strip}
 {* Contains js templates for backbone-based volunteer needs sub-application *}
 
 <script type="text/template" id="crm-vol-define-layout-tpl">
@@ -98,3 +98,4 @@
     </td>
   </tr>
 </script>
+{/strip}
