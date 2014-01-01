@@ -51,22 +51,6 @@ class CRM_Volunteer_Form_Volunteer extends CRM_Event_Form_ManageEvent {
   }
 
   /**
-   * This function sets the default values for the form. For edit/view mode
-   * the default values are retrieved from the database
-   *
-   * @access public
-   *
-   * @return array
-   */
-  function setDefaultValues() {
-    $defaults = array(
-      'is_active' => CRM_Volunteer_BAO_Project::isActive($this->_id, CRM_Event_DAO_Event::$_tableName),
-    );
-
-    return $defaults;
-  }
-
-  /**
    * Function to build the form
    *
    * @return None
@@ -75,11 +59,8 @@ class CRM_Volunteer_Form_Volunteer extends CRM_Event_Form_ManageEvent {
   public function buildQuickForm() {
     $vid = NULL;
 
-    $this->add(
-      'checkbox',
-      'is_active',
-      ts('Enable Volunteer Management?')
-    );
+    $active = CRM_Volunteer_BAO_Project::isActive($this->_id, CRM_Event_DAO_Event::$_tableName);
+    $this->assign('active', $active);
 
     $params = array(
       'entity_id' => $this->_id,
@@ -94,7 +75,14 @@ class CRM_Volunteer_Form_Volunteer extends CRM_Event_Form_ManageEvent {
 
     $this->assign('vid', $vid);
 
-    parent::buildQuickForm();
+    $buttons = array(
+      array(
+        'type' => 'upload',
+        'name' => $active ? ts('Disable Volunteer Management') : ts('Enable Volunteer Management'),
+        'isDefault' => TRUE,
+      ),
+    );
+    $this->addButtons($buttons);
   }
 
   /**
@@ -106,9 +94,6 @@ class CRM_Volunteer_Form_Volunteer extends CRM_Event_Form_ManageEvent {
    * @return None
    */
   public function postProcess() {
-    $form = $this->exportValues();
-    $form['is_active'] = CRM_Utils_Array::value('is_active', $form, FALSE);
-
     $params = array(
       'entity_id' => $this->_id,
       'entity_table' => CRM_Event_DAO_Event::$_tableName,
@@ -119,13 +104,13 @@ class CRM_Volunteer_Form_Volunteer extends CRM_Event_Form_ManageEvent {
 
     if (count($projects) === 1) {
       $p = current($projects);
-      if ($form['is_active'] === '1') {
-        $p->enable();
-      } else {
+      if ($p->is_active) {
         $p->disable();
+      } else {
+        $p->enable();
       }
     // if the project doesn't already exist and the user enabled vol management
-    } elseif ($form['is_active'] === '1') {
+    } else {
       $project = CRM_Volunteer_BAO_Project::create($params);
 
       $need = array(
