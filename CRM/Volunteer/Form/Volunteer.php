@@ -78,7 +78,7 @@ class CRM_Volunteer_Form_Volunteer extends CRM_Event_Form_ManageEvent {
     $buttons = array(
       array(
         'type' => 'upload',
-        'name' => $active ? ts('Disable Volunteer Management') : ts('Enable Volunteer Management'),
+        'name' => $active ? ts('Disable') : ts('Enable Volunteer Management'),
         'isDefault' => TRUE,
       ),
     );
