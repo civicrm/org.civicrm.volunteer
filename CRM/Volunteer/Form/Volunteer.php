@@ -41,41 +41,54 @@
 class CRM_Volunteer_Form_Volunteer extends CRM_Event_Form_ManageEvent {
 
   /**
-   * Function to set variables up before form is built
+   * This function sets the default values for the form. For edit/view mode
+   * the default values are retrieved from the database
    *
-   * @return void
    * @access public
+   *
+   * @return array
    */
-  function preProcess() {
-    parent::preProcess();
+  function setDefaultValues() {
+    $project = current(CRM_Volunteer_BAO_Project::retrieve(array(
+      'entity_id' => $this->_id,
+      'entity_table' => CRM_Event_DAO_Event::$_tableName,
+    )));
 
-    // CRM_Contact_Form_NewContact needs to believe it is engaged in an add
-    // operation, else it expects a contact ID, which we don't have yet. For
-    // some reason, setting this in buildQuickForm doesn't work.
-    $this->_action = CRM_Core_Action::ADD;
-
-    // get the domain information
-    $params = array(
-      'api.contact.getsingle' => array(
-        'return' => array('display_name'),
-      ),
-      'sequential' => 1,
-    );
-    $result = civicrm_api3('Domain', 'get', $params);
-    $domain = $result['values'][0]; // if more than one domain, just take the first for now
-
-    $ccr = CRM_Core_Resources::singleton();
-    $ccr->addScriptFile('org.civicrm.volunteer', 'templates/CRM/Volunteer/Form/Volunteer.js');
-    $ccr->addSetting(array(
-      'volunteer' => array(
-        'domain' => array(
-          'contact_id' => $domain['api.contact.getsingle']['contact_id'],
-          'display_name' => $domain['api.contact.getsingle']['display_name'],
-          'email' => $domain['domain_email'],
+    if ($project->target_contact_id) {
+      // use the database value if available
+      $result = civicrm_api3('Contact', 'getsingle', array(
+        'id' => $project->target_contact_id,
+        'return' => array('display_name', 'email'),
+      ));
+      $target_contact_display_name = $result['display_name'];
+      $target_contact_email = $result['email'];
+      $target_contact_id = $project->target_contact_id;
+    } else {
+      // otherwise default to the domain information
+      $result = civicrm_api3('Domain', 'get', array(
+        'api.contact.getsingle' => array(
+          'return' => array('display_name'),
         ),
-      )
-    ));
-  }
+        'sequential' => 1,
+      ));
+      $domain = $result['values'][0]; // if more than one domain, just take the first for now
+
+      $target_contact_display_name = $domain['api.contact.getsingle']['display_name'];
+      $target_contact_email = $domain['domain_email'];
+      $target_contact_id = $domain['api.contact.getsingle']['contact_id'];
+    }
+
+    // prepopulate the NewContact widget
+    $this->assign('contactId', $target_contact_id);
+    $defaults = array(
+      'is_active' => $project->is_active,
+      'volunteer_target_contact[1]' => $target_contact_display_name .
+        ($target_contact_email ? ' :: ' . $target_contact_email : ''),
+      'volunteer_target_contact_select_id[1]' => $target_contact_id,
+    );
+
+    return $defaults;
+   }
 
   /**
    * This function sets the default values for the form. For edit/view mode
