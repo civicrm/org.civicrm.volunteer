@@ -25,20 +25,6 @@ class CRM_Volunteer_BAO_ProjectTest extends VolunteerTestAbstract {
     $this->assertObjectHasAttribute('id', $project);
   }
 
-  function testProjectDisable() {
-    $project = CRM_Core_DAO::createTestObject('CRM_Volunteer_BAO_Project', array('is_active' => 1));
-    $this->assertEquals(1, $project->is_active, 'Failed to prepopulate active Volunteer Project');
-    $project->disable();
-    $this->assertEquals(0, $project->is_active, 'Failed to disable Volunteer Project');
-  }
-
-  function testProjectEnable() {
-    $project = CRM_Core_DAO::createTestObject('CRM_Volunteer_BAO_Project', array('is_active' => 0));
-    $this->assertEquals(0, $project->is_active, 'Failed to prepopulate inactive Volunteer Project');
-    $project->enable();
-    $this->assertEquals(1, $project->is_active, 'Failed to enable Volunteer Project');
-  }
-
   function testProjectRetrieve() {
     $project = CRM_Core_DAO::createTestObject('CRM_Volunteer_BAO_Project');
     $this->assertObjectHasAttribute('id', $project, 'Failed to prepopulate Volunteer Project');
