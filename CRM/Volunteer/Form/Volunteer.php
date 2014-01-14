@@ -149,10 +149,10 @@ class CRM_Volunteer_Form_Volunteer extends CRM_Event_Form_ManageEvent {
    */
   public function postProcess() {
     $form = $this->exportValues();
-    $form['is_active'] = CRM_Utils_Array::value('is_active', $form, FALSE);
+    $form['is_active'] = CRM_Utils_Array::value('is_active', $form, 0);
 
     // form does not allow more than one target, so just grab the first one
-    $target_contact_id = $form['volunteer_target_contact_select_id'][0];
+    $target_contact_id = current($form['volunteer_target_contact_select_id']);
 
     $params = array(
       'entity_id' => $this->_id,
@@ -162,17 +162,21 @@ class CRM_Volunteer_Form_Volunteer extends CRM_Event_Form_ManageEvent {
     // see if this project already exists
     $projects = CRM_Volunteer_BAO_Project::retrieve($params);
 
-    if (count($projects) === 1) {
-      $p = current($projects);
-      if ($form['is_active'] === '1') {
-        $p->enable();
-      } else {
-        $p->disable();
-      }
-    // if the project doesn't already exist and the user enabled vol management
-    } elseif ($form['is_active'] === '1') {
-      $project = CRM_Volunteer_BAO_Project::create($params);
+    if (count($projects)) {
+      // force an update rather than an insert
+      $params['id'] = current($projects)->id;
+    }
 
+    // update the project record
+    $params += array(
+      'is_active' => $form['is_active'],
+      'target_contact_id' => $target_contact_id,
+    );
+    $project = CRM_Volunteer_BAO_Project::create($params);
+
+    // if the project doesn't already exist and the user enabled vol management,
+    // create the flexible need
+    if (count($projects) !== 1 && $form['is_active'] === '1') {
       $need = array(
         'project_id' => $project->id,
         'is_flexible' => '1',
