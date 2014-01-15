@@ -91,22 +91,6 @@ class CRM_Volunteer_Form_Volunteer extends CRM_Event_Form_ManageEvent {
    }
 
   /**
-   * This function sets the default values for the form. For edit/view mode
-   * the default values are retrieved from the database
-   *
-   * @access public
-   *
-   * @return array
-   */
-  function setDefaultValues() {
-    $defaults = array(
-      'is_active' => CRM_Volunteer_BAO_Project::isActive($this->_id, CRM_Event_DAO_Event::$_tableName),
-    );
-
-    return $defaults;
-  }
-
-  /**
    * Function to build the form
    *
    * @return None
