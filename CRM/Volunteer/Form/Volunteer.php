@@ -167,7 +167,7 @@ class CRM_Volunteer_Form_Volunteer extends CRM_Event_Form_ManageEvent {
       $params['id'] = current($projects)->id;
     }
 
-    // update the project record
+    // save the project record
     $params += array(
       'is_active' => $form['is_active'],
       'target_contact_id' => $target_contact_id,
