@@ -59,18 +59,36 @@
 {/if}
 
 <div class="crm-block crm-form-block crm-event-manage-volunteer-form-block">
-  <div id="init">
-   <table class="form-layout">
-       <tr class="crm-event-manage-volunteer-form-block-is_active">
-          <td class="label">{$form.is_active.label}</td>
-          <td>{$form.is_active.html}
-            <span class="description">{ts}Enable or disable volunteer management for this event.{/ts}</span>
-          </td>
-       </tr>
-       {include file="CRM/Contact/Form/NewContact.tpl" blockNo=1 prefix="volunteer_target_"}
-   </table>
+  <table class="form-layout">
+    <tr class="crm-event-manage-volunteer-form-block-is_active">
+      <td class="label">{$form.is_active.label}</td>
+      <td>{$form.is_active.html}
+        <span class="description">{ts}Enable or disable volunteer management for this event.{/ts}</span>
+      </td>
+    </tr>
+  </table>
+  <div id="org_civicrm_volunteer-event_tab_config">
+    <table class="form-layout">
+      {include file="CRM/Contact/Form/NewContact.tpl" blockNo=1 prefix="volunteer_target_"}
+    </table>
   </div>
   <div class="crm-submit-buttons">
     {include file="CRM/common/formButtons.tpl" location="bottom"}
   </div>
 </div>
+
+<script type="text/javascript">
+  {literal}
+    cj(function($) {
+      $(document).on('change', '#is_active', function(){
+        if ($(this).is(':checked')) {
+          $('#org_civicrm_volunteer-event_tab_config').show();
+        } else {
+          $('#org_civicrm_volunteer-event_tab_config').hide();
+        }
+      });
+
+      $('#is_active').trigger('change');
+    });
+  {/literal}
+</script>
