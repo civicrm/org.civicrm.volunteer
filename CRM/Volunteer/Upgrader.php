@@ -35,12 +35,6 @@ class CRM_Volunteer_Upgrader extends CRM_Volunteer_Upgrader_Base {
   const customGroupName = 'CiviVolunteer';
   const customOptionGroupName = 'volunteer_role';
 
-  // By convention, functions that look like "function upgrade_NNNN()" are
-  // upgrade tasks. They are executed in order (like Drupal's hook_update_N).
-
-  /**
-   * Example: Run an external SQL script when the module is installed
-   */
   public function install() {
 
     $activityTypeId = $this->findCreateVolunteerActivityType();
@@ -58,6 +52,30 @@ class CRM_Volunteer_Upgrader extends CRM_Volunteer_Upgrader_Base {
 
     // uncomment the next line to insert sample data
     // $this->executeSqlFile('sql/volunteer_sample.mysql');
+  }
+
+  /**
+   * CiviVolunteer 1.3 introduces target contacts for volunteer projects. The
+   * requisite schema change is made here.
+   *
+   * @return boolean TRUE on success
+   * @throws Exception
+   */
+  public function upgrade_1300() {
+    $this->ctx->log->info('Applying update 1300');
+    CRM_Core_DAO::executeQuery('
+      ALTER TABLE `civicrm_volunteer_project`
+      ADD `target_contact_id` INT(10) UNSIGNED DEFAULT NULL
+      COMMENT "FK to contact id. Represents the target or beneficiary of the volunteer project."
+      AFTER  `entity_id`
+    ');
+    CRM_Core_DAO::executeQuery('
+      ALTER TABLE `civicrm_volunteer_project`
+      ADD FOREIGN KEY (`target_contact_id`)
+      REFERENCES `civicrm_contact` (`id`)
+      ON DELETE SET NULL
+    ');
+    return TRUE;
   }
 
   /**
