@@ -343,3 +343,14 @@ function _volunteer_civicrm_check_resource_url() {
       window.civiVolunteerResourceUrlIsOk || CRM.alert($message, $title, 'error');
     });");
 }
+
+/**
+ *  alterAPIPermissions() hook allows you to change the permissions checked when doing API 3 calls.
+ */
+function volunteer_civicrm_alterAPIPermissions($entity, $action, &$params, &$permissions)
+{
+    // skip permission checks for volunteer_need/get calls
+    // note: unsetting the below would require the default ‘administer CiviCRM’ permission
+  $permissions['volunteer_need']['default'] = array('access CiviEvent', 'edit all events');
+  $permissions['volunteer_assignment']['default'] = array('access CiviEvent', 'edit all events');
+}
