@@ -57,7 +57,7 @@ class CRM_Volunteer_Form_Log extends CRM_Core_Form {
    */
   function preProcess() {
     $this->_vid = CRM_Utils_Request::retrieve('vid', 'Positive', $this, TRUE);
-    $this->_batchInfo['item_count'] = 10;
+    $this->_batchInfo['item_count'] = 50;
 
     $resources = CRM_Core_Resources::singleton();
     $resources->addScriptFile('org.civicrm.volunteer', 'templates/CRM/Volunteer/Form/Log.js');
