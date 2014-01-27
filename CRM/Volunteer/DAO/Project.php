@@ -107,6 +107,12 @@ class CRM_Volunteer_DAO_Project extends CRM_Core_DAO
    */
   public $entity_id;
   /**
+   * FK to civicrm_contact. The target (or beneficiary) of the volunteer activity
+   *
+   * @var int unsigned
+   */
+  public $target_contact_id;
+  /**
    * Is this need enabled?
    *
    * @var boolean
@@ -122,6 +128,22 @@ class CRM_Volunteer_DAO_Project extends CRM_Core_DAO
   {
     $this->__table = 'civicrm_volunteer_project';
     parent::__construct();
+  }
+  /**
+   * return foreign keys and entity references
+   *
+   * @static
+   * @access public
+   * @return array of CRM_Core_EntityReference
+   */
+  static function getReferenceColumns()
+  {
+    if (!self::$_links) {
+      self::$_links = array(
+        new CRM_Core_EntityReference(self::getTableName() , 'target_contact_id', 'civicrm_contact', 'id') ,
+      );
+    }
+    return self::$_links;
   }
   /**
    * returns all the column names of this table
@@ -152,12 +174,18 @@ class CRM_Volunteer_DAO_Project extends CRM_Core_DAO
           'type' => CRM_Utils_Type::T_INT,
           'required' => true,
         ) ,
+        'target_contact_id' => array(
+          'name' => 'target_contact_id',
+          'type' => CRM_Utils_Type::T_INT,
+          'required' => false,
+          'FKClassName' => 'CRM_Contact_DAO_Contact',
+        ) ,
         'is_active' => array(
           'name' => 'is_active',
           'type' => CRM_Utils_Type::T_BOOLEAN,
           'title' => ts('Enabled') ,
           'required' => true,
-          'default' => '',
+          'default' => '1',
         ) ,
       );
     }
@@ -177,6 +205,7 @@ class CRM_Volunteer_DAO_Project extends CRM_Core_DAO
         'id' => 'volunteer_project_id',
         'entity_table' => 'entity_table',
         'entity_id' => 'entity_id',
+        'target_contact_id' => 'target_contact_id',
         'is_active' => 'is_active',
       );
     }

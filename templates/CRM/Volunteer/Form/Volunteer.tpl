@@ -26,17 +26,29 @@
 
 {capture assign=volunteerLogURL}{crmURL p="civicrm/volunteer/loghours" q="reset=1&action=add&vid=`$vid`"}{/capture}
 
-{if $active}
-  <div class="help">
+<div id="help">
+  {if $form.is_active.value}
     <p>
       Volunteer Management is enabled for this event. Note that only users with
       the "register to volunteer" permission will be able to access the
       volunteer sign-up form. Click one of the buttons below to get started.
     </p>
-  </div>
-{/if}
+    <p>
+      {ts}If you want to disable Volunteer Management for this event, uncheck
+      the box below and submit the form. Disabling Volunteer Management for this
+      event will not result in loss of volunteer data.{/ts}
+      {help id="id-volunteer-init"}
+    </p>
+  {else}
+    <p>
+      {ts}If you want to enable Volunteer Management for this event, check
+      the box below and submit the form.{/ts}
+      {help id="id-volunteer-init"}
+    </p>
+  {/if}
+</div>
 
-{if $active}
+{if $form.is_active.value}
 <table class="crm-block crm-form-block crm-event-manage-volunteer-form-block">
   <tr>
     <td><a href="#" class="button crm-volunteer-popup" data-vid="{$vid}" data-tab="Define"><span><div class="icon edit-icon"></div>{ts}Define Volunteer Needs{/ts}</span></a></td>
@@ -47,16 +59,36 @@
 {/if}
 
 <div class="crm-block crm-form-block crm-event-manage-volunteer-form-block">
-  <div class="crm-submit-buttons">
-    {include file="CRM/common/formButtons.tpl" location="bottom"}{help id="id-volunteer-init"}
+  <table class="form-layout">
+    <tr class="crm-event-manage-volunteer-form-block-is_active">
+      <td class="label">{$form.is_active.label}</td>
+      <td>{$form.is_active.html}
+        <span class="description">{ts}Enable or disable volunteer management for this event.{/ts}</span>
+      </td>
+    </tr>
+  </table>
+  <div id="org_civicrm_volunteer-event_tab_config">
+    <table class="form-layout">
+      {include file="CRM/Contact/Form/NewContact.tpl" blockNo=1 prefix="volunteer_target_"}
+    </table>
   </div>
-  <div class="description">
-    <p>
-    {if $active}
-      {ts}Disabling Volunteer Management for this event will not result in loss of volunteer data.{/ts}
-    {else}
-      {ts}Manage volunteers and/or offer a public volunteer sign-up form for this event.{/ts}
-    {/if}
-    </p>
+  <div class="crm-submit-buttons">
+    {include file="CRM/common/formButtons.tpl" location="bottom"}
   </div>
 </div>
+
+<script type="text/javascript">
+  {literal}
+    cj(function($) {
+      $(document).on('change', '#is_active', function(){
+        if ($(this).is(':checked')) {
+          $('#org_civicrm_volunteer-event_tab_config').show();
+        } else {
+          $('#org_civicrm_volunteer-event_tab_config').hide();
+        }
+      });
+
+      $('#is_active').trigger('change');
+    });
+  {/literal}
+</script>

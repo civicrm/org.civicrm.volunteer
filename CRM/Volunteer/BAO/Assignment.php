@@ -62,20 +62,19 @@ class CRM_Volunteer_BAO_Assignment extends CRM_Activity_DAO_Activity {
     $activity_fields = CRM_Activity_DAO_Activity::fields();
     $contact_fields = CRM_Contact_DAO_Contact::fields();
     $custom_fields = self::getCustomFields();
-    $foreign_fields = array('project_id');
+    $foreign_fields = array('project_id', 'target_contact_id');
 
     // This is the "real" id
     $activity_fields['id'] = $activity_fields['activity_id'];
     unset($activity_fields['activity_id']);
 
     // enforce restrictions on parameters
-    $allowed_params = array_merge(
+    $allowed_params = array_flip(array_merge(
       array_keys($activity_fields),
       array_keys($contact_fields),
       array_keys($custom_fields),
       $foreign_fields
-    );
-    $allowed_params = array_flip($allowed_params);
+    ));
     unset($allowed_params['activity_type_id']);
     unset($allowed_params['activity_duration']);
     $filtered_params = array_intersect_key($params, $allowed_params);
@@ -90,6 +89,7 @@ class CRM_Volunteer_BAO_Assignment extends CRM_Activity_DAO_Activity {
 
     $activityContactTypes = CRM_Core_OptionGroup::values('activity_contacts', FALSE, FALSE, FALSE, NULL, 'name');
     $assigneeID = CRM_Utils_Array::key('Activity Assignees', $activityContactTypes);
+    $targetID = CRM_Utils_Array::key('Activity Targets', $activityContactTypes);
 
     $volunteerStatus = CRM_Activity_BAO_Activity::buildOptions('status_id', 'validate');
     $available =  CRM_Utils_Array::key('Available', $volunteerStatus);
@@ -100,6 +100,7 @@ class CRM_Volunteer_BAO_Assignment extends CRM_Activity_DAO_Activity {
       2 => array(self::volunteerActivityTypeId(), 'Integer'),
       3 => array($scheduled, 'Integer'),
       4 => array($available, 'Integer'),
+      5 => array($targetID, 'Integer'),
     );
 
     $i = count($placeholders) + 1;
@@ -119,10 +120,14 @@ class CRM_Volunteer_BAO_Assignment extends CRM_Activity_DAO_Activity {
         $dataType = $custom_fields[$key]['data_type'];
         $fieldName = $custom_fields[$key]['column_name'];
         $tableName = $customTableName;
-      } else { // this would be project_id
+      } elseif($key == 'project_id') {
         $dataType = 'Int';
         $fieldName = 'id';
         $tableName = CRM_Volunteer_DAO_Project::$_tableName;
+      } elseif ($key == 'target_contact_id') {
+        $dataType = 'Int';
+        $fieldName = 'contact_id';
+        $tableName = 'tgt'; // this is an alias for civicrm_activity_contact
       }
       $where[] = "{$tableName}.{$fieldName} = %{$i}";
 
@@ -137,27 +142,49 @@ class CRM_Volunteer_BAO_Assignment extends CRM_Activity_DAO_Activity {
     $query = "
       SELECT
         civicrm_activity.*,
-        civicrm_activity_contact.contact_id,
+        assignee.contact_id AS assignee_contact_id,
         {$customSelect},
         civicrm_volunteer_need.start_time,
         civicrm_volunteer_need.is_flexible,
         civicrm_volunteer_need.role_id,
-        civicrm_contact.sort_name,
-        civicrm_contact.display_name,
-        civicrm_phone.phone, civicrm_phone.phone_ext,
-        civicrm_email.email
+        assignee_contact.sort_name AS assignee_sort_name,
+        assignee_contact.display_name AS assignee_display_name,
+        assignee_phone.phone AS assignee_phone,
+        assignee_phone.phone_ext AS assignee_phone_ext,
+        assignee_email.email AS assignee_email,
+        -- begin target contact fields
+        tgt.contact_id AS target_contact_id,
+        tgt_contact.sort_name AS target_sort_name,
+        tgt_contact.display_name AS target_display_name,
+        tgt_phone.phone AS target_phone,
+        tgt_phone.phone_ext AS target_phone_ext,
+        tgt_email.email AS target_email
+        -- end target contact fields
       FROM civicrm_activity
-      INNER JOIN civicrm_activity_contact
+      INNER JOIN civicrm_activity_contact assignee
         ON (
-          civicrm_activity_contact.activity_id = civicrm_activity.id
-          AND civicrm_activity_contact.record_type_id = %1
+          assignee.activity_id = civicrm_activity.id
+          AND assignee.record_type_id = %1
         )
-      INNER JOIN civicrm_contact
-        ON civicrm_activity_contact.contact_id = civicrm_contact.id
-      LEFT JOIN civicrm_email
-        ON civicrm_email.contact_id = civicrm_contact.id AND civicrm_email.is_primary = 1
-      LEFT JOIN civicrm_phone
-        ON civicrm_phone.contact_id = civicrm_contact.id AND civicrm_phone.is_primary = 1
+      INNER JOIN civicrm_contact assignee_contact
+        ON assignee.contact_id = assignee_contact.id
+      LEFT JOIN civicrm_email assignee_email
+        ON assignee_email.contact_id = assignee_contact.id AND assignee_email.is_primary = 1
+      LEFT JOIN civicrm_phone assignee_phone
+        ON assignee_phone.contact_id = assignee_contact.id AND assignee_phone.is_primary = 1
+      -- begin target contact joins
+      LEFT JOIN civicrm_activity_contact tgt
+        ON (
+          tgt.activity_id = civicrm_activity.id
+          AND tgt.record_type_id = %5
+        )
+      LEFT JOIN civicrm_contact tgt_contact
+        ON tgt.contact_id = tgt_contact.id
+      LEFT JOIN civicrm_email tgt_email
+        ON tgt_email.contact_id = tgt_contact.id AND tgt_email.is_primary = 1
+      LEFT JOIN civicrm_phone tgt_phone
+        ON tgt_phone.contact_id = tgt_contact.id AND tgt_phone.is_primary = 1
+      -- end target contact joins
       INNER JOIN {$customTableName}
         ON ({$customTableName}.entity_id = civicrm_activity.id)
       INNER JOIN civicrm_volunteer_need
@@ -174,6 +201,22 @@ class CRM_Volunteer_BAO_Assignment extends CRM_Activity_DAO_Activity {
     while ($dao->fetch()) {
       $rows[$dao->id] = $dao->toArray();
     }
+
+    /*
+     * For clarity we want the fields associated with each contact prefixed with
+     * the contact type (e.g., target_phone). For backwards compatibility,
+     * however, we want the fields associated with each assignee contact to be
+     * accessible sans prefix. Eventually we should deprecate the non-prefixed
+     * field names.
+     */
+    foreach ($rows as $id => $fields) {
+      foreach ($fields as $key => $value) {
+        if (substr($key, 0, 9) == 'assignee_') {
+          $rows[$id][substr($key, 9)] = $value;
+        }
+      }
+    }
+
     return $rows;
   }
 
@@ -267,9 +310,11 @@ class CRM_Volunteer_BAO_Assignment extends CRM_Activity_DAO_Activity {
       $params['volunteer_role_id'] = CRM_Utils_Array::value('volunteer_role_id', $params, CRM_Utils_Array::value('role_id', $need));
       $params['time_scheduled_minutes'] = CRM_Utils_Array::value('time_scheduled_minutes', $params, CRM_Utils_Array::value('duration', $need));
 
+      $project = civicrm_api3('volunteer_project', 'getsingle', array('id' => $need['project_id']));
+      $params['target_contact_id'] = $project['target_contact_id'];
+
       // Look up the base entity (e.g. event) as a fallback default
       if (empty($need['start_time']) || (empty($params['subject']) && empty($params['id']))) {
-        $project = civicrm_api3('volunteer_project', 'getsingle', array('id' => $need['project_id']));
         $event = civicrm_api3(str_replace('civicrm_', '', $project['entity_table']), 'getsingle', array('id' => $project['entity_id']));
 
         if (empty($params['activity_date_time'])) {

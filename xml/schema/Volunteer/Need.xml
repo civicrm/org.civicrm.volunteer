@@ -22,7 +22,7 @@
   <field>
     <name>project_id</name>
     <type>int unsigned</type>
-    <required>true</required>
+    <required>false</required>
     <uniqueName>volunteer_need_project_id</uniqueName>
     <comment>FK to civicrm_volunteer_project table which contains entity_table + entity for each volunteer project (initially civicrm_event + eventID).</comment>
     <add>4.4</add>

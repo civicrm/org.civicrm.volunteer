@@ -155,22 +155,6 @@ class CRM_Volunteer_BAO_Project extends CRM_Volunteer_DAO_Project {
   }
 
   /**
-   * Unsets the Project's is_active flag in the database
-   */
-  public function disable() {
-    $this->is_active = 0;
-    $this->save();
-  }
-
-  /**
-   * Sets the Project's is_active flag in the database
-   */
-  public function enable() {
-    $this->is_active = 1;
-    $this->save();
-  }
-
-  /**
    * Find out if a project is active
    *
    * @param $entityId

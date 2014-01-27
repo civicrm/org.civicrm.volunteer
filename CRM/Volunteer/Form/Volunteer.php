@@ -41,14 +41,54 @@
 class CRM_Volunteer_Form_Volunteer extends CRM_Event_Form_ManageEvent {
 
   /**
-   * Function to set variables up before form is built
+   * This function sets the default values for the form. For edit/view mode
+   * the default values are retrieved from the database
    *
-   * @return void
    * @access public
+   *
+   * @return array
    */
-  function preProcess() {
-    parent::preProcess();
-  }
+  function setDefaultValues() {
+    $project = current(CRM_Volunteer_BAO_Project::retrieve(array(
+      'entity_id' => $this->_id,
+      'entity_table' => CRM_Event_DAO_Event::$_tableName,
+    )));
+
+    if ($project->target_contact_id) {
+      // use the database value if available
+      $result = civicrm_api3('Contact', 'getsingle', array(
+        'id' => $project->target_contact_id,
+        'return' => array('display_name', 'email'),
+      ));
+      $target_contact_display_name = $result['display_name'];
+      $target_contact_email = $result['email'];
+      $target_contact_id = $project->target_contact_id;
+    } else {
+      // otherwise default to the domain information
+      $result = civicrm_api3('Domain', 'get', array(
+        'api.contact.getsingle' => array(
+          'return' => array('display_name'),
+        ),
+        'sequential' => 1,
+      ));
+      $domain = $result['values'][0]; // if more than one domain, just take the first for now
+
+      $target_contact_display_name = $domain['api.contact.getsingle']['display_name'];
+      $target_contact_email = $domain['domain_email'];
+      $target_contact_id = $domain['api.contact.getsingle']['contact_id'];
+    }
+
+    // prepopulate the NewContact widget
+    $this->assign('contactId', $target_contact_id);
+    $defaults = array(
+      'is_active' => $project->is_active,
+      'volunteer_target_contact[1]' => $target_contact_display_name .
+        ($target_contact_email ? ' :: ' . $target_contact_email : ''),
+      'volunteer_target_contact_select_id[1]' => $target_contact_id,
+    );
+
+    return $defaults;
+   }
 
   /**
    * Function to build the form
@@ -59,8 +99,13 @@ class CRM_Volunteer_Form_Volunteer extends CRM_Event_Form_ManageEvent {
   public function buildQuickForm() {
     $vid = NULL;
 
-    $active = CRM_Volunteer_BAO_Project::isActive($this->_id, CRM_Event_DAO_Event::$_tableName);
-    $this->assign('active', $active);
+    $this->add(
+      'checkbox',
+      'is_active',
+      ts('Enable Volunteer Management?')
+    );
+
+    CRM_Contact_Form_NewContact::buildQuickForm($this, 1, NULL, FALSE, 'volunteer_target_', ts('Select Beneficiary'));
 
     $params = array(
       'entity_id' => $this->_id,
@@ -75,14 +120,7 @@ class CRM_Volunteer_Form_Volunteer extends CRM_Event_Form_ManageEvent {
 
     $this->assign('vid', $vid);
 
-    $buttons = array(
-      array(
-        'type' => 'upload',
-        'name' => $active ? ts('Disable') : ts('Enable Volunteer Management'),
-        'isDefault' => TRUE,
-      ),
-    );
-    $this->addButtons($buttons);
+    parent::buildQuickForm();
   }
 
   /**
@@ -94,6 +132,12 @@ class CRM_Volunteer_Form_Volunteer extends CRM_Event_Form_ManageEvent {
    * @return None
    */
   public function postProcess() {
+    $form = $this->exportValues();
+    $form['is_active'] = CRM_Utils_Array::value('is_active', $form, 0);
+
+    // form does not allow more than one target, so just grab the first one
+    $target_contact_id = current($form['volunteer_target_contact_select_id']);
+
     $params = array(
       'entity_id' => $this->_id,
       'entity_table' => CRM_Event_DAO_Event::$_tableName,
@@ -102,17 +146,21 @@ class CRM_Volunteer_Form_Volunteer extends CRM_Event_Form_ManageEvent {
     // see if this project already exists
     $projects = CRM_Volunteer_BAO_Project::retrieve($params);
 
-    if (count($projects) === 1) {
-      $p = current($projects);
-      if ($p->is_active) {
-        $p->disable();
-      } else {
-        $p->enable();
-      }
-    // if the project doesn't already exist and the user enabled vol management
-    } else {
-      $project = CRM_Volunteer_BAO_Project::create($params);
+    if (count($projects)) {
+      // force an update rather than an insert
+      $params['id'] = current($projects)->id;
+    }
 
+    // save the project record
+    $params += array(
+      'is_active' => $form['is_active'],
+      'target_contact_id' => $target_contact_id,
+    );
+    $project = CRM_Volunteer_BAO_Project::create($params);
+
+    // if the project doesn't already exist and the user enabled vol management,
+    // create the flexible need
+    if (count($projects) !== 1 && $form['is_active'] === '1') {
       $need = array(
         'project_id' => $project->id,
         'is_flexible' => '1',
