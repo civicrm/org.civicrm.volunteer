@@ -61,7 +61,7 @@
 <div class="crm-block crm-form-block crm-event-manage-volunteer-form-block">
   <table class="form-layout">
     <tr class="crm-event-manage-volunteer-form-block-is_active">
-      <td class="label">{$form.is_active.label}</td>
+      <td class="label">{$form.is_active.label}<br />{help id="id-volunteer-beneficiary"}</td>
       <td>{$form.is_active.html}
         <span class="description">{ts}Enable or disable volunteer management for this event.{/ts}</span>
       </td>

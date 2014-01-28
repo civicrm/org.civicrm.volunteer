@@ -54,7 +54,7 @@ class CRM_Volunteer_Form_Volunteer extends CRM_Event_Form_ManageEvent {
       'entity_table' => CRM_Event_DAO_Event::$_tableName,
     )));
 
-    if ($project->target_contact_id) {
+    if ($project && $project->target_contact_id) {
       // use the database value if available
       $result = civicrm_api3('Contact', 'getsingle', array(
         'id' => $project->target_contact_id,
@@ -81,7 +81,7 @@ class CRM_Volunteer_Form_Volunteer extends CRM_Event_Form_ManageEvent {
     // prepopulate the NewContact widget
     $this->assign('contactId', $target_contact_id);
     $defaults = array(
-      'is_active' => $project->is_active,
+      'is_active' => ($project) ? $project->is_active: 0,
       'volunteer_target_contact[1]' => $target_contact_display_name .
         ($target_contact_email ? ' :: ' . $target_contact_email : ''),
       'volunteer_target_contact_select_id[1]' => $target_contact_id,
@@ -182,4 +182,3 @@ class CRM_Volunteer_Form_Volunteer extends CRM_Event_Form_ManageEvent {
     return ts('Volunteers');
   }
 }
-

@@ -33,7 +33,7 @@ cj(function($) {
   });
 
   // This is a server-side form, not rendered with backbone
-  $("#crm-container").on('click', '.crm-event-manage-volunteer-form-block a:not(.crm-volunteer-popup)', function() {
+  $("#crm-container").on('click', '.crm-event-manage-volunteer-form-block a:not(.crm-volunteer-popup, .helpicon)', function() {
     var url = $(this).attr('href') + '&snippet=6';
     $('#crm-volunteer-dialog').html('<div class="crm-loading-element">' + ts('Loading') + '...</div>').dialog(dialogSettings($(this)));
     $.getJSON(url, function(data) {
