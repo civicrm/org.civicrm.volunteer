@@ -39,3 +39,18 @@
     Page to users with the "register to volunteer" permission.{/ts}
   </p>
 {/htxt}
+{htxt id="id-volunteer-beneficiary-title"}
+  {ts}Beneficiary{/ts}
+{/htxt}
+{htxt id="id-volunteer-beneficiary"}
+  <p>
+    {ts}You can configure the organization (or other type of contact) which is benefiting from
+    volunteer activity at this event by selecting an existing contact or creating a new one.
+    This is particularly useful when an event is related to a chapter, regional entity, etc. Otherwise
+    you can leave default beneficiary - which will be set to your site's default organization contact record.{/ts}
+  </p>
+  <p>
+    {ts}The target contact for volunteer activities will be set to the beneficiary. You can filter activity searches,
+    and Volunteer and Activity reports by beneficiary using the target contact filters.{/ts}
+  </p>
+{/htxt}
