@@ -15,18 +15,22 @@ if [ ! -f "$CALLEDPATH/setup.conf" ]; then
   exit 1
 fi
 
-source "$CALLEDPATH/setup.conf" 
+source "$CALLEDPATH/setup.conf"
 
 cp $CIVIROOT/xml/schema/Schema.xml $CIVIROOT/xml/schema/Schema.xml.backup
 
-cp $VOLROOT/xml/schema/Schema.xml $CIVIROOT/xml/schema/Schema.xml
+# append Volunteer schema to core schema
+sed -i 's#</database>##' "$CIVIROOT/xml/schema/Schema.xml"
+grep "<xi:include" "$VOLROOT/xml/schema/Schema.xml" >> "$CIVIROOT/xml/schema/Schema.xml"
+echo "</database>" >> "$CIVIROOT/xml/schema/Schema.xml"
+
 if [ ! -e "$CIVIROOT/xml/schema/Volunteer" ] ; then
   ln -s $VOLROOT/xml/schema/Volunteer $CIVIROOT/xml/schema/Volunteer
 fi
 cd $CIVIROOT/xml
 php GenCode.php
 # (There may be extra arguments to pass into GenCode.php; not sure)
- 
+
 cp -f $CIVIROOT/CRM/Volunteer/DAO/* $VOLROOT/CRM/Volunteer/DAO/
 mv $CIVIROOT/xml/schema/Schema.xml.backup $CIVIROOT/xml/schema/Schema.xml
 
