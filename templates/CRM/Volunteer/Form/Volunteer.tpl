@@ -53,7 +53,7 @@
   <tr>
     <td><a href="#" class="button crm-volunteer-popup" data-vid="{$vid}" data-tab="Define"><span><div class="icon edit-icon"></div>{ts}Define Volunteer Needs{/ts}</span></a></td>
     <td><a href="#" class="button crm-volunteer-popup" data-vid="{$vid}" data-tab="Assign"><span><div class="icon edit-icon"></div>{ts}Assign Volunteers{/ts}</span></a></td>
-    <td><a href="{$volunteerLogURL}" class="button"><span><div class="icon edit-icon"></div>{ts}Log Volunteer Hours{/ts}</span></a></td>
+    <td><a href="{$volunteerLogURL}" class="button crm-volunteer-faux-popup"><span><div class="icon edit-icon"></div>{ts}Log Volunteer Hours{/ts}</span></a></td>
   </tr>
 </table>
 {/if}
@@ -61,7 +61,7 @@
 <div class="crm-block crm-form-block crm-event-manage-volunteer-form-block">
   <table class="form-layout">
     <tr class="crm-event-manage-volunteer-form-block-is_active">
-      <td class="label">{$form.is_active.label}<br />{help id="id-volunteer-beneficiary"}</td>
+      <td class="label">{$form.is_active.label}</td>
       <td>{$form.is_active.html}
         <span class="description">{ts}Enable or disable volunteer management for this event.{/ts}</span>
       </td>
@@ -71,6 +71,9 @@
     <table class="form-layout">
       {include file="CRM/Contact/Form/NewContact.tpl" blockNo=1 prefix="volunteer_target_"}
     </table>
+    <div class="org_civicrm_volunteer-beneficiary_help">
+      {help id="id-volunteer-beneficiary"}
+    </div>
   </div>
   <div class="crm-submit-buttons">
     {include file="CRM/common/formButtons.tpl" location="bottom"}
