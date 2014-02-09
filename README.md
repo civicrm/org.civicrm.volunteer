@@ -11,7 +11,7 @@ After installing the extension using the automated installer from Manage Extensi
 you'll see a new Volunteers tab for each event (Manage Events > Configure). Check the
 'Enable Volunteer Management' box to get started.
 
-You can then build a list of volunteer shifts by clicking 'Define Volunteer Needs'.
+You can then build a list of volunteer shifts by clicking 'Define Volunteer Needs.'
 Shifts consist of a volunteer role (e.g. Usher, Box Office, etc.) plus a date and time
 period. For each shift you can specify the number of volunteers required.
 
@@ -40,7 +40,7 @@ you want to keep track of your organization's cumulative volunteering totals.
 
 Known Issues
 ============
-For versions of CiviCRM prior to and including 4.4.3, the installer will not
+For versions of CiviCRM prior to and including 4.4.4, the installer will not
 create the "register to volunteer" permission automatically for
 Joomla installations.
 
@@ -52,7 +52,7 @@ fixed in CiviCRM 4.4.1.
 What's Next
 ===========
 Going forward there are some great ideas on the drawing board for phase 2, including specification
-of qualifications and skill-matching, public recognition / reward, and self-service logging of
+of qualifications and skill-matching, public recognition/reward, and self-service logging of
 volunteer hours.
 
 If your organization has invested in a CiviCRM installation, and you foresee a need for CiviVolunteer,
