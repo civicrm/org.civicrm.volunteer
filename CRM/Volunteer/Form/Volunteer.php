@@ -96,6 +96,7 @@ class CRM_Volunteer_Form_Volunteer extends CRM_Event_Form_ManageEvent {
   function preProcess() {
     CRM_Core_Resources::singleton()->addScriptFile('org.civicrm.volunteer',
       'templates/CRM/Volunteer/Form/Volunteer.js');
+    parent::preProcess();
   }
 
   /**
