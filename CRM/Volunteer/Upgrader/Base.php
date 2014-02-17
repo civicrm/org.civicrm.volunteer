@@ -102,11 +102,41 @@ class CRM_Volunteer_Upgrader_Base {
    * @param string $relativePath the SQL file path (relative to this extension's dir)
    * @return bool
    */
-  public function executeSqlFile($relativePath) {
-    CRM_Utils_File::sourceSQLFile(
-      CIVICRM_DSN,
-      $this->extensionDir . '/' . $relativePath
-    );
+  public function executeSqlFile($relativePath, $smarty = FALSE) {
+    if ($smarty) {
+      $smarty = CRM_Core_Smarty::singleton();
+      $smarty->assign('domainID', CRM_Core_Config::domainID());
+      $smarty->assign('extDir', $this->extensionDir);
+
+      // FIXME: need this for {localize} in sql files to work.
+      $domain = new CRM_Core_DAO_Domain();
+      $domain->find(TRUE);
+      $smarty->assign('multilingual', (bool) $domain->locales);
+      $smarty->assign('locales', explode(CRM_Core_DAO::VALUE_SEPARATOR, $domain->locales));
+
+      // FIXME: needs discussion with CiviCRM devs
+      // this sets the template dir to the extension main directory, so that
+      // we can do a smarty include for sql/ or message_template/ files.
+      $extRoot = dirname( __FILE__ ) . DIRECTORY_SEPARATOR;
+      if (is_array($smarty->template_dir)) {
+        array_unshift($smarty->template_dir, $extRoot . '../../../');
+      } else {
+        $smarty->template_dir = array($extRoot . '../../../', $smarty->template_dir);
+      }
+
+      CRM_Utils_File::sourceSQLFile(
+        CIVICRM_DSN,
+        $smarty->fetch($this->extensionDir . '/' . $relativePath),
+        NULL,
+        TRUE
+      );
+    }
+    else {
+      CRM_Utils_File::sourceSQLFile(
+        CIVICRM_DSN,
+        $this->extensionDir . '/' . $relativePath
+      );
+    }
     return TRUE;
   }
 
@@ -238,9 +268,9 @@ class CRM_Volunteer_Upgrader_Base {
   // ******** Hook delegates ********
 
   public function onInstall() {
-    foreach (glob($this->extensionDir . '/sql/*_install.sql') as $file) {
-      CRM_Utils_File::sourceSQLFile(CIVICRM_DSN, $file);
-    }
+    // foreach (glob($this->extensionDir . '/sql/*_install.sql') as $file) {
+    $this->executeSqlFile('sql/volunteer_install.sql', TRUE);
+
     foreach (glob($this->extensionDir . '/xml/*_install.xml') as $file) {
       $this->executeCustomDataFileByAbsPath($file);
     }
