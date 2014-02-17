@@ -268,7 +268,6 @@ class CRM_Volunteer_Upgrader_Base {
   // ******** Hook delegates ********
 
   public function onInstall() {
-    // foreach (glob($this->extensionDir . '/sql/*_install.sql') as $file) {
     $this->executeSqlFile('sql/volunteer_install.sql', TRUE);
 
     foreach (glob($this->extensionDir . '/xml/*_install.xml') as $file) {
