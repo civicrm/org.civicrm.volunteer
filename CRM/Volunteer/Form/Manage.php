@@ -41,7 +41,6 @@ class CRM_Volunteer_Form_Manage {
 
     // Vendor libraries
     $ccr->addScriptFile('civicrm', 'packages/backbone/json2.js', 100, 'html-header', FALSE);
-    $ccr->addScriptFile('civicrm', 'packages/backbone/underscore-min.js', 110, 'html-header', FALSE);
     $ccr->addScriptFile('civicrm', 'packages/backbone/backbone-min.js', 120, 'html-header');
     $ccr->addScriptFile('civicrm', 'packages/backbone/backbone.marionette.min.js', 125, 'html-header', FALSE);
 
