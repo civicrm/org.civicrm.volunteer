@@ -1,6 +1,6 @@
 // http://civicrm.org/licensing
 CRM.volunteerApp.module('Assign', function(Assign, volunteerApp, Backbone, Marionette, $, _) {
-  var newContactId, dragFrom, infoDialog;
+  var dragFrom, infoDialog;
 
   Assign.layout = Marionette.Layout.extend({
     template: "#crm-vol-assign-layout-tpl",
@@ -92,8 +92,7 @@ CRM.volunteerApp.module('Assign', function(Assign, volunteerApp, Backbone, Mario
     },
 
     events: {
-      'change .crm-vol-create-contact-select': 'createContactDialog',
-      'click .crm-add-vol-contact': 'addNewContact',
+      'change .crm-add-volunteer': 'addNewContact',
       'click .crm-vol-menu-item a': 'moveContact',
       'click .crm-vol-del': 'removeContact'
     },
@@ -195,78 +194,21 @@ CRM.volunteerApp.module('Assign', function(Assign, volunteerApp, Backbone, Mario
       return this.isFlexible || !(this.collection.where({contact_id: $item.attr('data-cid')}).length);
     },
 
-    createContactDialog: function(e) {
-      var thisView = this;
-      var profile = $(e.target).val();
-      if(profile.length) {
-        thisView.profileUrl = CRM.url('civicrm/profile/create', {
-          reset: 1,
-          snippet: 6,
-          gid: profile
-        });
-        $('<div id="crm-vol-profile-form" class="crm-container"><div class="crm-loading-element">' + ts('Loading') + '...</div></div>').dialog({
-          title: $(e.target).find(':selected').text(),
-          modal: true,
-          minWidth: 400,
-          open: function() {
-            $(e.target).val('');
-            $.getJSON(thisView.profileUrl, function(data) {
-              thisView.displayNewContactProfile(data);
-            });
-          },
-          close: function() {
-            $(this).dialog('destroy');
-            $(this).remove();
-          }
-        });
-      }
-    },
-
-    displayNewContactProfile: function(data) {
-      var thisView = this;
-      $("#crm-vol-profile-form").html(data.content);
-      $("#crm-vol-profile-form .cancel.form-submit").click(function() {
-        $("#crm-vol-profile-form").dialog('close');
-        return false;
-      });
-      $('#email-Primary').addClass('email');
-      $("#crm-vol-profile-form form").ajaxForm({
-        // context=dialog triggers civi's profile to respond with json instead of an html redirect
-        // but it also results in lots of unwanted scripts being added to the form snippet, so we
-        // add it here during submission and not during form retrieval.
-        url: thisView.profileUrl + '&context=dialog',
-        dataType: 'json',
-        success: function(response) {
-          if (response.newContactSuccess) {
-            $("#crm-vol-profile-form").dialog('close');
-            CRM.alert(ts('%1 has been created.', {1: response.displayName}), ts('Contact Saved'), 'success');
-            newContactId = response.contactID;
-            thisView.addNewContact();
-          }
-          else {
-            thisView.displayNewContactProfile(response);
-          }
-        }
-      }).validate(CRM.validate.params);
-    },
-
     initAutocomplete: function() {
-      var contactUrl = CRM.url('civicrm/ajax/rest', 'className=CRM_Contact_Page_AJAX&fnName=getContactList&json=1');
-      $('.crm-add-volunteer', this.$el).autocomplete(contactUrl, {
-        width: 200,
-        selectFirst: false,
-        minChars: 1,
-        matchContains: true,
-        delay: 400
-      }).result(function(event, data) {
-        newContactId = data[1];
-      });
+      // Spin up a select2 widget in the style of CRM_Core_Form contactRef
+      // OK this is cheating but we'll just grab the necessary data from a real contactRef on the page
+      var cheat = $('#target_contact_id', 'form#Volunteer');
+      $('input[name=add-volunteer]', this.$el)
+        .data('create-links', cheat.data('create-links'))
+        .data('select-params', cheat.data('select-params'));
+      CRM.utils.buildSelect2Element.call($('input[name=add-volunteer]', this.$el));
     },
 
     addNewContact: function() {
+      var newContactId =  $('input[name=add-volunteer]', this.$el).select2('val');
       if (newContactId) {
         var status = _.invert(CRM.pseudoConstant.volunteer_status);
-        $('.crm-add-volunteer', this.$el).val('');
+        $('input[name=add-volunteer]', this.$el).select2('val', '');
         var params = {
           contact_id: newContactId,
           volunteer_need_id: this.model.get('id'),
@@ -274,7 +216,6 @@ CRM.volunteerApp.module('Assign', function(Assign, volunteerApp, Backbone, Mario
           activity_date_time: this.model.get('start_time')
         };
         this.collection.createNewAssignment(params);
-        newContactId = null;
       }
       return false;
     },
