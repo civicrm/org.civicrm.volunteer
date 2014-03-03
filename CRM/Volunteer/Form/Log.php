@@ -117,20 +117,20 @@ class CRM_Volunteer_Form_Log extends CRM_Core_Form {
     $count = count($this->_volunteerData);
     for ($rowNumber = 1; $rowNumber <= $this->_batchInfo['item_count']; $rowNumber++) {
       $extra = array();
+      $contactField = $this->addEntityRef("field[$rowNumber][contact_id]", '', array('create' => TRUE, 'class' => 'big'));
       if ($rowNumber <= $count) {
         //readonly for some fields
+        $contactField->freeze();
         $extra = array(
           'READONLY' => TRUE,
           'style' => "background-color:#EBECE4",
           'disabled' => 'disabled'
         );
 
-        $this->add('text', "primary_contact[$rowNumber]", '', $extra);
         $this->add('text', "field[$rowNumber][start_date]", '', $extra);
         $this->add('text', "field[$rowNumber][volunteer_role]", '', array_merge($attributes, $extra));
       }
       else {
-        CRM_Contact_Form_NewContact::buildQuickForm($this, $rowNumber, NULL, FALSE, 'primary_');
         $this->addDateTime("field[$rowNumber][start_date]", '', FALSE, array('formatType' => 'activityDateTime'));
         $this->add('select', "field[$rowNumber][volunteer_role]", '', array('' => ts('-select-')) + $volunteerRole);
       }
@@ -174,7 +174,7 @@ class CRM_Volunteer_Form_Log extends CRM_Core_Form {
     $volunteerStatus = CRM_Activity_BAO_Activity::buildOptions('status_id', 'validate');
 
     foreach ($params['field'] as $key => $value) {
-      if ($key > count($self->_volunteerData) && !empty($params['primary_contact_select_id'][$key])) {
+      if ($key > count($self->_volunteerData) && !empty($value['contact_id'])) {
         if ((!$value['actual_duration']) && $value['volunteer_status'] == CRM_Utils_Array::key('Completed', $volunteerStatus) ) {
           $errors["field[$key][actual_duration]"] = ts('Please enter the actual duration for Completed volunteer activity');
         }
@@ -208,7 +208,7 @@ class CRM_Volunteer_Form_Log extends CRM_Core_Form {
       $defaults['field'][$i]['volunteer_status'] = $data['status_id'];
       $defaults['field'][$i]['activity_id'] = $data['id'];
       $defaults['field'][$i]['start_date'] = CRM_Utils_Date::customFormat($data['start_time'], "%m/%E/%Y %l:%M %P");
-      $defaults["primary_contact"][$i] = CRM_Core_DAO::getFieldValue('CRM_Contact_DAO_Contact', $data['contact_id'], 'sort_name');
+      $defaults['field'][$i]["contact_id"] = $data['contact_id'];
       $i++;
     }
 
@@ -235,7 +235,7 @@ class CRM_Volunteer_Form_Log extends CRM_Core_Form {
     $params = $this->controller->exportValues($this->_name);
     $count = 0;
     foreach ($params['field'] as $key => $value) {
-      if (!empty($params['primary_contact_select_id'][$key]) or !empty($params['primary_contact'][$key])) {
+      if (!empty($value['contact_id'])) {
         if (!empty($value['activity_id'])) {
           // update the activity record
 
@@ -252,7 +252,7 @@ class CRM_Volunteer_Form_Log extends CRM_Core_Form {
           $flexibleNeedId = CRM_Volunteer_BAO_Project::getFlexibleNeedID($this->_vid);
           //create new Volunteer activity records
           $volunteer = array(
-            'assignee_contact_id' => $params['primary_contact_select_id'][$key],
+            'assignee_contact_id' => $value['contact_id'],
             'status_id' => $value['volunteer_status'],
             'subject' => $this->_title . ' Volunteering',
             'volunteer_need_id' => $flexibleNeedId,
