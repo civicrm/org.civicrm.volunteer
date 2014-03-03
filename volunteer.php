@@ -61,6 +61,7 @@ function volunteer_civicrm_tabset($tabsetName, &$tabs, $context) {
         'link' => $url,
         'valid' => TRUE,
         'active' => TRUE,
+        'class' => 'livePage',
         'current' => false,
       );
       // If volunteer mngmt is enabled, add necessary UI elements

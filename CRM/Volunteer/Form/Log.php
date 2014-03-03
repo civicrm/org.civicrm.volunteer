@@ -59,9 +59,6 @@ class CRM_Volunteer_Form_Log extends CRM_Core_Form {
     $this->_vid = CRM_Utils_Request::retrieve('vid', 'Positive', $this, TRUE);
     $this->_batchInfo['item_count'] = 50;
 
-    $resources = CRM_Core_Resources::singleton();
-    $resources->addScriptFile('org.civicrm.volunteer', 'templates/CRM/Volunteer/Form/Log.js');
-
     $params = array('project_id' => $this->_vid);
     $this->_volunteerData = CRM_Volunteer_BAO_Assignment::retrieve($params);
 
@@ -271,15 +268,7 @@ class CRM_Volunteer_Form_Log extends CRM_Core_Form {
     }
 
     $statusMsg = ts('Volunteer hours have been logged.');
-
-    if (CRM_Utils_Array::value('snippet', $_REQUEST) == CRM_Core_Smarty::PRINT_JSON) {
-      CRM_Utils_System::civiExit(json_encode(array(
-        'message' => $statusMsg,
-      )));
-    }
-    else {
-      CRM_Core_Session::setStatus($statusMsg, ts('Saved'), 'success');
-    }
+    CRM_Core_Session::setStatus($statusMsg, ts('Saved'), 'success');
 
   }
 
