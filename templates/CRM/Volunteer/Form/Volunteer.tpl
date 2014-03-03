@@ -69,11 +69,10 @@
   </table>
   <div id="org_civicrm_volunteer-event_tab_config">
     <table class="form-layout">
-      {include file="CRM/Contact/Form/NewContact.tpl" blockNo=1 prefix="volunteer_target_"}
+      <td class="label">{$form.target_contact_id.label} {help id="id-volunteer-beneficiary"}</td>
+      <td>{$form.target_contact_id.html}
+      </td>
     </table>
-    <div class="org_civicrm_volunteer-beneficiary_help">
-      {help id="id-volunteer-beneficiary"}
-    </div>
   </div>
   <div class="crm-submit-buttons">
     {include file="CRM/common/formButtons.tpl" location="bottom"}

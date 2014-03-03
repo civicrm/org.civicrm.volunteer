@@ -54,37 +54,18 @@ class CRM_Volunteer_Form_Volunteer extends CRM_Event_Form_ManageEvent {
       'entity_table' => CRM_Event_DAO_Event::$_tableName,
     )));
 
-    if ($project && $project->target_contact_id) {
-      // use the database value if available
-      $result = civicrm_api3('Contact', 'getsingle', array(
-        'id' => $project->target_contact_id,
-        'return' => array('display_name', 'email'),
-      ));
-      $target_contact_display_name = $result['display_name'];
-      $target_contact_email = $result['email'];
-      $target_contact_id = $project->target_contact_id;
-    } else {
-      // otherwise default to the domain information
-      $result = civicrm_api3('Domain', 'get', array(
-        'api.contact.getsingle' => array(
-          'return' => array('display_name'),
-        ),
-        'sequential' => 1,
-      ));
-      $domain = $result['values'][0]; // if more than one domain, just take the first for now
+    $target_contact_id = $project ? $project->target_contact_id : NULL;
 
-      $target_contact_display_name = $domain['api.contact.getsingle']['display_name'];
-      $target_contact_email = $domain['domain_email'];
-      $target_contact_id = $domain['api.contact.getsingle']['contact_id'];
+    if (!$target_contact_id) {
+      // default to the domain information
+      $result = civicrm_api3('Domain', 'get', array('sequential' => 1, 'current_domain' => 1));
+      $domain = $result['values'][0]; // if more than one domain, just take the first for now
+      $target_contact_id = $domain['contact_id'];
     }
 
-    // prepopulate the NewContact widget
-    $this->assign('contactId', $target_contact_id);
     $defaults = array(
-      'is_active' => ($project) ? $project->is_active: 0,
-      'volunteer_target_contact[1]' => $target_contact_display_name .
-        ($target_contact_email ? ' :: ' . $target_contact_email : ''),
-      'volunteer_target_contact_select_id[1]' => $target_contact_id,
+      'is_active' => $project ? $project->is_active: 0,
+      'target_contact_id' => $target_contact_id,
     );
 
     return $defaults;
@@ -114,7 +95,7 @@ class CRM_Volunteer_Form_Volunteer extends CRM_Event_Form_ManageEvent {
       ts('Enable Volunteer Management?')
     );
 
-    CRM_Contact_Form_NewContact::buildQuickForm($this, 1, NULL, FALSE, 'volunteer_target_', ts('Select Beneficiary'));
+    $this->addEntityRef('target_contact_id', ts('Select Beneficiary'), array('create' => TRUE));
 
     $params = array(
       'entity_id' => $this->_id,
@@ -144,9 +125,6 @@ class CRM_Volunteer_Form_Volunteer extends CRM_Event_Form_ManageEvent {
     $form = $this->exportValues();
     $form['is_active'] = CRM_Utils_Array::value('is_active', $form, 0);
 
-    // form does not allow more than one target, so just grab the first one
-    $target_contact_id = current($form['volunteer_target_contact_select_id']);
-
     $params = array(
       'entity_id' => $this->_id,
       'entity_table' => CRM_Event_DAO_Event::$_tableName,
@@ -163,7 +141,7 @@ class CRM_Volunteer_Form_Volunteer extends CRM_Event_Form_ManageEvent {
     // save the project record
     $params += array(
       'is_active' => $form['is_active'],
-      'target_contact_id' => $target_contact_id,
+      'target_contact_id' => $form['target_contact_id'],
     );
     $project = CRM_Volunteer_BAO_Project::create($params);
 
