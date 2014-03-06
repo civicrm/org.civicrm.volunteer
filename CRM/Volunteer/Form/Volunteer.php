@@ -93,7 +93,7 @@ class CRM_Volunteer_Form_Volunteer extends CRM_Event_Form_ManageEvent {
       ts('Enable Volunteer Management?')
     );
 
-    $this->addEntityRef('target_contact_id', ts('Select Beneficiary'), array('create' => TRUE));
+    $this->addEntityRef('target_contact_id', ts('Select Beneficiary'), array('create' => TRUE, 'select' => array('allowClear' => FALSE)));
 
     $params = array(
       'entity_id' => $this->_id,
