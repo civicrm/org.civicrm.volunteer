@@ -92,7 +92,7 @@ CRM.volunteerApp.module('Assign', function(Assign, volunteerApp, Backbone, Mario
     },
 
     events: {
-      'change .crm-add-volunteer': 'addNewContact',
+      'change [name=add-volunteer]': 'addNewContact',
       'click .crm-vol-menu-item a': 'moveContact',
       'click .crm-vol-del': 'removeContact'
     },
@@ -154,7 +154,7 @@ CRM.volunteerApp.module('Assign', function(Assign, volunteerApp, Backbone, Mario
         return;
       }
       var thisView = this;
-      this.isFlexible && this.initAutocomplete();
+      this.isFlexible && $('input[name=add-volunteer]', this.$el).crmEntityRef({create: true});
       var quantity = this.model.get('quantity');
       $('.crm-vol-vacancy, .crm-vol-placeholder', this.$el).remove();
       if (quantity > this.collection.length) {
@@ -192,16 +192,6 @@ CRM.volunteerApp.module('Assign', function(Assign, volunteerApp, Backbone, Mario
       }
       // If any activity for the same contact is already in a non-flexible collection
       return this.isFlexible || !(this.collection.where({contact_id: $item.attr('data-cid')}).length);
-    },
-
-    initAutocomplete: function() {
-      // Spin up a select2 widget in the style of CRM_Core_Form contactRef
-      // OK this is cheating but we'll just grab the necessary data from a real contactRef on the page
-      var cheat = $('#target_contact_id', 'form#Volunteer');
-      $('input[name=add-volunteer]', this.$el)
-        .data('create-links', cheat.data('create-links'))
-        .data('select-params', cheat.data('select-params'));
-      CRM.utils.buildSelect2Element.call($('input[name=add-volunteer]', this.$el));
     },
 
     addNewContact: function() {

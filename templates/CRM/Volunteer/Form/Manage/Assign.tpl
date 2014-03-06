@@ -75,7 +75,7 @@
     <tbody class="crm-vol-assignment-list"></tbody>
   </table>
   <hr style="margin: 1em 1px;"/>
-  <input type="text" name="add-volunteer" class="crm-form-entityref crm-add-volunteer crm-action-menu" placeholder="{ts escape='js'}Add Volunteer{/ts}..." data-api-entity="contact" style="width: 100%; max-width: 30em;" />
+  <input name="add-volunteer" class="crm-action-menu" placeholder="{ts escape='js'}Add Volunteer{/ts}..." style="width: 100%; max-width: 30em;" />
 </script>
 
 <script type="text/template" id="crm-vol-menu-tpl">
