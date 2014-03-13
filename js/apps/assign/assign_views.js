@@ -121,7 +121,7 @@ CRM.volunteerApp.module('Assign', function(Assign, volunteerApp, Backbone, Mario
 
     // Adds a cloned or existing assignment to the view
     addAssignment: function(assignment) {
-      var thisView = this, callback;
+      var thisView = this, statusMsg = {};
       assignment.set('volunteer_need_id', this.model.get('id'));
       this.collection.add(assignment);
       var status = _.invert(CRM.pseudoConstant.volunteer_status),
@@ -130,23 +130,22 @@ CRM.volunteerApp.module('Assign', function(Assign, volunteerApp, Backbone, Mario
           volunteer_need_id: this.model.get('id'),
           status_id: status[this.isFlexible ? 'Available' : 'Scheduled']
         };
-      // A simple move
+      // Move record
       if (assignment.get('id')) {
         params.id = assignment.get('id');
-        // hack - fix order and even/odd problems
-        thisView.render();
+        statusMsg = {success: ts('Volunteer Moved')};
       }
-      // Cloning - copy params and set ID when returned by server
+      // Clone record
       else {
         _.extend(params, _.pick(assignment.attributes, 'contact_id', 'details'));
-        callback = {success: function(result) {
-          assignment.set('id', result.id);
-          CRM.alert('', ts('Copied'), 'success');
-          // refresh the data-id property (also needed for other reasons - see above hack)
-          thisView.render();
-        }};
+        statusMsg = {success: ts('Volunteer Copied')};
       }
-      CRM.api('volunteer_assignment', 'create', params, callback);
+      CRM.api3('volunteer_assignment', 'create', params, statusMsg)
+        .done(function(result) {
+          assignment.set('id', result.id);
+          // refresh the data-id property and even-odd rows
+          thisView.render();
+        });
     },
 
     doCount: function() {
@@ -217,7 +216,7 @@ CRM.volunteerApp.module('Assign', function(Assign, volunteerApp, Backbone, Mario
       CRM.confirm(function() {
         thisView.collection.remove(assignment);
         $('.crm-vol-menu-items').remove();
-        CRM.api('volunteer_assignment', 'delete', {id: id});
+        CRM.api3('volunteer_assignment', 'delete', {id: id}, true);
       }, {
         title: ts('Delete Volunteer'),
         message: ts('Remove %1 from %2?', {

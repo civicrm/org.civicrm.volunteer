@@ -114,7 +114,7 @@ class CRM_Volunteer_Form_Log extends CRM_Core_Form {
     $count = count($this->_volunteerData);
     for ($rowNumber = 1; $rowNumber <= $this->_batchInfo['item_count']; $rowNumber++) {
       $extra = array();
-      $contactField = $this->addEntityRef("field[$rowNumber][contact_id]", '', array('create' => TRUE, 'class' => 'big'));
+      $contactField = $this->addEntityRef("field[$rowNumber][contact_id]", '', array('create' => TRUE, 'class' => 'big', 'placeholder' => ts('- select -')));
       if ($rowNumber <= $count) {
         //readonly for some fields
         $contactField->freeze();

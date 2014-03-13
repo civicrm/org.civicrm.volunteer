@@ -14,12 +14,11 @@ CRM.volunteerApp.module('Entities', function(Entities, volunteerApp, Backbone, M
 
     createNewAssignment: function(params) {
       var thisCollection = this;
-      CRM.api('volunteer_assignment', 'create', params, {
-        success: function(result) {
+      CRM.api3('volunteer_assignment', 'create', params, true)
+        .done(function(result) {
           var id = result.id;
           var assignment = new Entities.Assignment(result.values[id]);
           thisCollection.add(assignment);
-        }
       });
     }
   });

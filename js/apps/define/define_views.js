@@ -94,7 +94,7 @@ CRM.volunteerApp.module('Define', function(Define, volunteerApp, Backbone, Mario
 
         var params = {'id': this.model.get('id')};
         params[field_name] = value;
-        CRM.api('VolunteerNeed', 'create', params);
+        CRM.api3('VolunteerNeed', 'create', params, true);
       }
     },
 
@@ -116,7 +116,7 @@ CRM.volunteerApp.module('Define', function(Define, volunteerApp, Backbone, Mario
       // END FIXME
       CRM.confirm(function() {
         Define.collectionView.collection.remove(id);
-        CRM.api('volunteer_need', 'delete', {id: id});
+        CRM.api3('volunteer_need', 'delete', {id: id}, true);
       }, {
         title: ts('Delete %1', {1: role}),
         message: msg
@@ -155,7 +155,6 @@ CRM.volunteerApp.module('Define', function(Define, volunteerApp, Backbone, Mario
       $('#crm-vol-define-needs-table').block();
       this.collection.createNewNeed(params).done(function() {
         $('#crm-vol-define-needs-table').unblock();
-        CRM.alert('', ts('Saved'), 'success');
       });
       return false;
     },
