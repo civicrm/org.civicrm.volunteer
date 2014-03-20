@@ -33,6 +33,3 @@ cj(function($) {
   });
 
 });
-
-// Workaround for plugin namespace collision
-cj.widget("civicrm.crmVolMenu", cj.ui.menu, {});

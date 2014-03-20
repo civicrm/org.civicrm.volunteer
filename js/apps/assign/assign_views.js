@@ -57,7 +57,7 @@ CRM.volunteerApp.module('Assign', function(Assign, volunteerApp, Backbone, Mario
           $('.crm-vol-menu-move-to, .crm-vol-menu-copy-to', $menu).append(menuItemTemplate(this));
         });
         $menu.appendTo($('.crm-vol-menu', this.$el));
-        this.$('.crm-vol-menu-list').crmVolMenu();
+        this.$('.crm-vol-menu-list').menu();
         return false;
       }
     }

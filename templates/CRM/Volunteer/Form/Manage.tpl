@@ -27,7 +27,7 @@
 {* Contains js templates for backbone-based volunteer management *}
 
 {* Main container for dialog *}
-<div id="crm-volunteer-dialog" class="crm-container"></div>
+<div id="crm-volunteer-dialog"></div>
 
 {include file="RenderUtils.tpl"}
 
