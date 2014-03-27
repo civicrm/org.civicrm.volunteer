@@ -81,8 +81,9 @@
 
 <script type="text/javascript">
   {literal}
-    cj(function($) {
-      $(document).on('change', '#is_active', function(){
+    CRM.$(function($) {
+      var $form = $("#{/literal}{$form.formName}{literal}");
+      $form.on('change', '#is_active', function() {
         if ($(this).is(':checked')) {
           $('#org_civicrm_volunteer-event_tab_config').show();
         } else {
@@ -90,7 +91,7 @@
         }
       });
 
-      $('#is_active').trigger('change');
+      $('#is_active', $form).trigger('change');
     });
   {/literal}
 </script>
