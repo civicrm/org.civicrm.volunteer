@@ -69,12 +69,12 @@
       }) %>
     {/literal}
   </td>
-  <td><input type="text" name="quantity" value="<%= quantity %>" size="4"></td>
+  <td><input type="text" class="crm-form-text" name="quantity" value="<%= quantity %>" size="4"></td>
   <td>
-    <input type="text" name="display_start_date"  value="<%= display_start_date %>" size="20">
-    <input type="text" name="display_start_time" size="10">
+    <input type="text" class="crm-form-text dateplugin" name="display_start_date"  value="<%= display_start_date %>" size="20">
+    <input type="text" class="crm-form-text" name="display_start_time" size="10">
   </td>
-  <td><input type="text" name="duration" value="<%= duration %>" size="6"></td>
+  <td><input type="text" class="crm-form-text" name="duration" value="<%= duration %>" size="6"></td>
   <td><input type="checkbox" name="visibility_id" value="<%= visibilityValue %>"></td>
   <td><input type="checkbox" name="is_active" value="1"></td>
   <td><a href="#" class="crm-vol-del" title="{ts}Delete{/ts}"><img src="{$config->resourceBase}i/close.png" alt="{ts}Delete{/ts}"/></a></td>
@@ -88,8 +88,8 @@
 <script type="text/template" id="crm-vol-define-add-row-tpl">
   <tr id="crm-vol-define-add-row">
     <td colspan="7">
-      <select id="crm-vol-define-add-need">
-        <option value="">- {ts}Create new{/ts} -</option>
+      <select class="crm-form-select crm-action-menu" id="crm-vol-define-add-need" style="width: 20em;">
+        <option value="">{ts}Create new{/ts}</option>
         {crmAPI var='result' entity='VolunteerNeed' action='getoptions' field='role_id' sequential=0}
         {foreach from=$result.values item=VolunteerNeed key=id}
           <option value="{$id}">{$VolunteerNeed}</option>

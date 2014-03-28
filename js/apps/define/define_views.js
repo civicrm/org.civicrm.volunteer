@@ -151,12 +151,11 @@ CRM.volunteerApp.module('Define', function(Define, volunteerApp, Backbone, Mario
         visibility_id: $('#crm-vol-visibility-id:checked').length ? visibility.public : visibility.admin
       };
       // Reset add another select
-      $('#crm-vol-define-add-need').val('');
+      $('#crm-vol-define-add-need').select2('val', '');
       $('#crm-vol-define-needs-table').block();
       this.collection.createNewNeed(params).done(function() {
         $('#crm-vol-define-needs-table').unblock();
       });
-      return false;
     },
 
     appendHtml: function(thisView, itemView) {
@@ -172,6 +171,7 @@ CRM.volunteerApp.module('Define', function(Define, volunteerApp, Backbone, Mario
 
     onRender: function() {
       this.$('tbody').append($('#crm-vol-define-add-row-tpl').html());
+      this.$('#crm-vol-define-add-need').crmSelect2();
     }
   });
 });

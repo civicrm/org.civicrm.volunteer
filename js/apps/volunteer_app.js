@@ -24,12 +24,12 @@ cj(function($) {
   }
 
   // FIXME: This could be rendered and managed by the volunteerApp for more internal consistency
-  $("#crm-container").on('click', 'a.crm-volunteer-popup', function() {
+  $("#crm-container").on('click', 'a.crm-volunteer-popup', function(e) {
     CRM.volunteerApp.tab = $(this).data('tab');
     CRM.volunteerApp.project_id = $(this).data('vid');
     $('#crm-volunteer-dialog').dialog(dialogSettings($(this)));
     CRM.volunteerApp.module(CRM.volunteerApp.tab).start();
-    return false;
+    e.preventDefault();
   });
 
 });
