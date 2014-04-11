@@ -88,7 +88,7 @@
 <script type="text/template" id="crm-vol-define-add-row-tpl">
   <tr id="crm-vol-define-add-row">
     <td colspan="7">
-      <select class="crm-form-select crm-action-menu" id="crm-vol-define-add-need" style="width: 20em;">
+      <select class="crm-form-select crm-action-menu action-icon-plus" id="crm-vol-define-add-need" style="width: 20em;">
         <option value="">{ts}Create new{/ts}</option>
         {crmAPI var='result' entity='VolunteerNeed' action='getoptions' field='role_id' sequential=0}
         {foreach from=$result.values item=VolunteerNeed key=id}
