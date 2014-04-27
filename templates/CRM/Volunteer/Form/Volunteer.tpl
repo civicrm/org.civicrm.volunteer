@@ -83,15 +83,11 @@
 <script type="text/javascript">
   {literal}
     cj(function($) {
-      $(document).on('change', '#is_active', function(){
-        if ($(this).is(':checked')) {
-          $('#org_civicrm_volunteer-event_tab_config').show();
-        } else {
-          $('#org_civicrm_volunteer-event_tab_config').hide();
-        }
+      var $form = $({/literal}'form#{$form.formName}'{literal});
+      $form.on('change', '#is_active', function(){
+        $('#org_civicrm_volunteer-event_tab_config').toggle($(this).prop('checked'));
       });
-
-      $('#is_active').trigger('change');
+      $('#is_active', $form).trigger('change');
     });
   {/literal}
 </script>
