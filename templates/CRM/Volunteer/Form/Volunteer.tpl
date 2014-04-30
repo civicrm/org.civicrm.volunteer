@@ -53,7 +53,7 @@
   <tr>
     <td><a href="#" class="button crm-volunteer-popup" data-vid="{$vid}" data-tab="Define"><span><div class="icon edit-icon"></div>{ts}Define Volunteer Needs{/ts}</span></a></td>
     <td><a href="#" class="button crm-volunteer-popup" data-vid="{$vid}" data-tab="Assign"><span><div class="icon edit-icon"></div>{ts}Assign Volunteers{/ts}</span></a></td>
-    <td><a href="{$volunteerLogURL}" class="button crm-volunteer-faux-popup"><span><div class="icon edit-icon"></div>{ts}Log Volunteer Hours{/ts}</span></a></td>
+    <td><a href="{$volunteerLogURL}" class="button" data-popup-settings='{literal}{"dialog":{"width":"85%", "height":"80%"}}{/literal}'><span><div class="icon edit-icon"></div>{ts}Log Volunteer Hours{/ts}</span></a></td>
   </tr>
 </table>
 {/if}
@@ -69,11 +69,10 @@
   </table>
   <div id="org_civicrm_volunteer-event_tab_config">
     <table class="form-layout">
-      {include file="CRM/Contact/Form/NewContact.tpl" blockNo=1 prefix="volunteer_target_"}
+      <td class="label">{$form.target_contact_id.label} {help id="id-volunteer-beneficiary"}</td>
+      <td>{$form.target_contact_id.html}
+      </td>
     </table>
-    <div class="org_civicrm_volunteer-beneficiary_help">
-      {help id="id-volunteer-beneficiary"}
-    </div>
   </div>
   <div class="crm-submit-buttons">
     {include file="CRM/common/formButtons.tpl" location="bottom"}
@@ -82,8 +81,9 @@
 
 <script type="text/javascript">
   {literal}
-    cj(function($) {
-      $(document).on('change', '#is_active', function(){
+    CRM.$(function($) {
+      var $form = $("#{/literal}{$form.formName}{literal}");
+      $form.on('change', '#is_active', function() {
         if ($(this).is(':checked')) {
           $('#org_civicrm_volunteer-event_tab_config').show();
         } else {
@@ -91,7 +91,7 @@
         }
       });
 
-      $('#is_active').trigger('change');
+      $('#is_active', $form).trigger('change');
     });
   {/literal}
 </script>

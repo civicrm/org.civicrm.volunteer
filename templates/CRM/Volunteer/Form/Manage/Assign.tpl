@@ -74,20 +74,8 @@
     </tr></thead>
     <tbody class="crm-vol-assignment-list"></tbody>
   </table>
-  <h4>Add Volunteer</h4>
-  <input type="text" name="add-volunteer" class="crm-add-volunteer" placeholder="{ts escape='js'}Select Contact{/ts}..."/>
-  <button class="crm-add-vol-contact">{ts}Add{/ts}</button>
-  <div>
-    {ts}OR{/ts} <select class="crm-vol-create-contact-select">
-      <option value="">{ts}- create new contact -{/ts}</option>
-      {crmAPI var='UFGroup' entity='UFGroup' action='get' is_active=1 is_reserved=1}
-      {foreach from=$UFGroup.values item=profile}
-        {if $profile.name eq 'new_individual' or $profile.name eq 'new_organization' or $profile.name eq 'new_household'}
-          <option value="{$profile.id}">{$profile.title}</option>
-        {/if}
-      {/foreach}
-    </select>
-  </div>
+  <hr style="margin: 1em 1px;"/>
+  <input name="add-volunteer" class="crm-action-menu action-icon-plus" placeholder="{ts escape='js'}Add Volunteer{/ts}..." style="width: 100%; max-width: 30em;" />
 </script>
 
 <script type="text/template" id="crm-vol-menu-tpl">

@@ -25,16 +25,12 @@ CRM.volunteerApp.module('Entities', function(Entities, volunteerApp, Backbone, M
         start_time: CRM.volunteer.default_date
       }, params);
       formatDate(params);
-      var defer = $.Deferred();
       var need = new this.model(params);
       this.add(need);
-      CRM.api('volunteer_need', 'create', params, {
-        success: function(result) {
+      return CRM.api3('volunteer_need', 'create', params, true)
+        .done(function(result) {
           need.set('id', result.id);
-          defer.resolve(result);
-        }
-      });
-      return defer.promise();
+        });
    }
  });
 

@@ -54,16 +54,9 @@
         class="{cycle values="odd-row,even-row"} selector-rows {if $rowNumber > $showVolunteerRow && $rowNumber != 1} hiddenElement {else} crm-grid-row {/if}"
         entity_id="{$rowNumber}">
         <div class="compressed crm-grid-cell"><span class="log-edit"></span></div>
-        {if $rowNumber > $showVolunteerRow}
-        {* contact select/create option*}
-          <div class="compressed crm-grid-cell">
-            {include file="CRM/Contact/Form/NewContact.tpl" blockNo = $rowNumber noLabel=true prefix="primary_" newContactCallback="updateContactInfo($rowNumber, 'primary_')"}
-          </div>
-        {else}
-          <div class="compressed crm-grid-cell">
-            {$form.primary_contact.$rowNumber.html}
-          </div>
-        {/if}
+        <div class="compressed crm-grid-cell">
+          {$form.field.$rowNumber.contact_id.html}
+        </div>
         <div class="compressed crm-grid-cell">
           {$form.field.$rowNumber.volunteer_role.html}
         </div>
@@ -101,3 +94,14 @@
 
 {*include batch copy js js file*}
 {include file="CRM/common/batchCopy.tpl"}
+
+{literal}
+<script type="text/javascript">
+  CRM.$(function($) {
+    $('#addMoreVolunteer').click(function(){
+      $('div.hiddenElement div:first:parent').parent().show().removeClass('hiddenElement').addClass('crm-grid-row').css('display', 'table-row');
+      return false;
+    });
+  });
+</script>
+{/literal}
