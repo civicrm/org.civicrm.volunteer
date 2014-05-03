@@ -140,7 +140,7 @@ class CRM_Volunteer_Form_VolunteerSignUp extends CRM_Core_Form {
       $this->add(
         'select',               // field type
         'volunteer_role_id',    // field name
-        ts('Volunteer Role'),   // field label
+        ts('Volunteer Role', array('domain' => 'org.civicrm.volunteer')),   // field label
         $this->_project->roles, // list of options
         true                    // is required
       );
@@ -151,7 +151,7 @@ class CRM_Volunteer_Form_VolunteerSignUp extends CRM_Core_Form {
       $select = $this->add(
         'select',               // field type
         'volunteer_need_id',    // field name
-        ts('Shift'),            // field label
+        ts('Shift', array('domain' => 'org.civicrm.volunteer')),            // field label
         array(),                // list of options
         false                    // is required
       );
@@ -164,13 +164,13 @@ class CRM_Volunteer_Form_VolunteerSignUp extends CRM_Core_Form {
     $this->add(
       'textarea',                   // field type
       'details',                    // field name
-      ts('Additional Information')  // field label
+      ts('Additional Information', array('domain' => 'org.civicrm.volunteer'))  // field label
     );
 
     $this->addButtons(array(
       array(
         'type' => 'submit',
-        'name' => ts('Submit'),
+        'name' => ts('Submit', array('domain' => 'org.civicrm.volunteer')),
         'isDefault' => TRUE,
       ),
     ));
@@ -245,7 +245,7 @@ class CRM_Volunteer_Form_VolunteerSignUp extends CRM_Core_Form {
     $builtin_values['time_scheduled_minutes'] = CRM_Utils_Array::value('duration', $need);
     CRM_Volunteer_BAO_Assignment::createVolunteerActivity($builtin_values);
 
-    $statusMsg = ts('You are scheduled to volunteer. Thank you!');
+    $statusMsg = ts('You are scheduled to volunteer. Thank you!', array('domain' => 'org.civicrm.volunteer'));
     CRM_Core_Session::setStatus($statusMsg, '', 'success');
     CRM_Utils_System::redirect($this->_destination);
   }

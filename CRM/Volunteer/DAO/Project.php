@@ -158,13 +158,13 @@ class CRM_Volunteer_DAO_Project extends CRM_Core_DAO
         'volunteer_project_id' => array(
           'name' => 'id',
           'type' => CRM_Utils_Type::T_INT,
-          'title' => ts('CiviVolunteer Project ID') ,
+          'title' => ts('CiviVolunteer Project ID', array('domain' => 'org.civicrm.volunteer')) ,
           'required' => true,
         ) ,
         'entity_table' => array(
           'name' => 'entity_table',
           'type' => CRM_Utils_Type::T_STRING,
-          'title' => ts('Entity Table') ,
+          'title' => ts('Entity Table', array('domain' => 'org.civicrm.volunteer')) ,
           'required' => true,
           'maxlength' => 64,
           'size' => CRM_Utils_Type::BIG,
@@ -183,7 +183,7 @@ class CRM_Volunteer_DAO_Project extends CRM_Core_DAO
         'is_active' => array(
           'name' => 'is_active',
           'type' => CRM_Utils_Type::T_BOOLEAN,
-          'title' => ts('Enabled') ,
+          'title' => ts('Enabled', array('domain' => 'org.civicrm.volunteer')) ,
           'required' => true,
           'default' => '1',
         ) ,
