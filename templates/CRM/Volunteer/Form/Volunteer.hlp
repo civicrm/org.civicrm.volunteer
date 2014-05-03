@@ -24,33 +24,33 @@
  +--------------------------------------------------------------------+
 *}
 {htxt id="id-volunteer-init-title"}
-  {ts}Volunteer Management{/ts}
+  {ts domain='org.civicrm.volunteer'}Volunteer Management{/ts}
 {/htxt}
 {htxt id="id-volunteer-init"}
   <p>
-    {ts}If you want to provide Volunteer Management for this event,
+    {ts domain='org.civicrm.volunteer'}If you want to provide Volunteer Management for this event,
     check the box below and submit the form. After the submission is
     processed, you will be provided links to define volunteer needs for the
     event, to assign volunteers to needs, and to log volunteer hours.{/ts}
   </p>
   <p>
-    {ts}Immediately upon enabling Volunteer Management for this event, a
+    {ts domain='org.civicrm.volunteer'}Immediately upon enabling Volunteer Management for this event, a
     volunteer sign-up form will become available from the Event Info
     Page to users with the "register to volunteer" permission.{/ts}
   </p>
 {/htxt}
 {htxt id="id-volunteer-beneficiary-title"}
-  {ts}Beneficiary{/ts}
+  {ts domain='org.civicrm.volunteer'}Beneficiary{/ts}
 {/htxt}
 {htxt id="id-volunteer-beneficiary"}
   <p>
-    {ts}You can configure the organization (or other type of contact) which is benefiting from
+    {ts domain='org.civicrm.volunteer'}You can configure the organization (or other type of contact) which is benefiting from
     volunteer activity at this event by selecting an existing contact or creating a new one.
     This is particularly useful when an event is related to a chapter, regional entity, etc. Otherwise
     you can leave default beneficiary - which will be set to your site's default organization contact record.{/ts}
   </p>
   <p>
-    {ts}The target contact for volunteer activities will be set to the beneficiary. You can filter activity searches,
+    {ts domain='org.civicrm.volunteer'}The target contact for volunteer activities will be set to the beneficiary. You can filter activity searches,
     and Volunteer and Activity reports by beneficiary using the target contact filters.{/ts}
   </p>
 {/htxt}

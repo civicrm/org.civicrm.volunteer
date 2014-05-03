@@ -34,14 +34,14 @@
       volunteer sign-up form. Click one of the buttons below to get started.
     </p>
     <p>
-      {ts}If you want to disable Volunteer Management for this event, uncheck
+      {ts domain='org.civicrm.volunteer'}If you want to disable Volunteer Management for this event, uncheck
       the box below and submit the form. Disabling Volunteer Management for this
       event will not result in loss of volunteer data.{/ts}
       {help id="id-volunteer-init"}
     </p>
   {else}
     <p>
-      {ts}If you want to enable Volunteer Management for this event, check
+      {ts domain='org.civicrm.volunteer'}If you want to enable Volunteer Management for this event, check
       the box below and submit the form.{/ts}
       {help id="id-volunteer-init"}
     </p>
@@ -51,9 +51,9 @@
 {if $form.is_active.value}
 <table class="crm-block crm-form-block crm-event-manage-volunteer-form-block">
   <tr>
-    <td><a href="#" class="button crm-volunteer-popup" data-vid="{$vid}" data-tab="Define"><span><div class="icon edit-icon"></div>{ts}Define Volunteer Needs{/ts}</span></a></td>
-    <td><a href="#" class="button crm-volunteer-popup" data-vid="{$vid}" data-tab="Assign"><span><div class="icon edit-icon"></div>{ts}Assign Volunteers{/ts}</span></a></td>
-    <td><a href="{$volunteerLogURL}" class="button" data-popup-settings='{literal}{"dialog":{"width":"85%", "height":"80%"}}{/literal}'><span><div class="icon edit-icon"></div>{ts}Log Volunteer Hours{/ts}</span></a></td>
+    <td><a href="#" class="button crm-volunteer-popup" data-vid="{$vid}" data-tab="Define"><span><div class="icon edit-icon"></div>{ts domain='org.civicrm.volunteer'}Define Volunteer Needs{/ts}</span></a></td>
+    <td><a href="#" class="button crm-volunteer-popup" data-vid="{$vid}" data-tab="Assign"><span><div class="icon edit-icon"></div>{ts domain='org.civicrm.volunteer'}Assign Volunteers{/ts}</span></a></td>
+    <td><a href="{$volunteerLogURL}" class="button" data-popup-settings='{literal}{"dialog":{"width":"85%", "height":"80%"}}{/literal}'><span><div class="icon edit-icon"></div>{ts domain='org.civicrm.volunteer'}Log Volunteer Hours{/ts}</span></a></td>
   </tr>
 </table>
 {/if}
@@ -63,7 +63,7 @@
     <tr class="crm-event-manage-volunteer-form-block-is_active">
       <td class="label">{$form.is_active.label}</td>
       <td>{$form.is_active.html}
-        <span class="description">{ts}Enable or disable volunteer management for this event.{/ts}</span>
+        <span class="description">{ts domain='org.civicrm.volunteer'}Enable or disable volunteer management for this event.{/ts}</span>
       </td>
     </tr>
   </table>
