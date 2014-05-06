@@ -28,18 +28,18 @@
 
 <script type="text/template" id="crm-vol-define-layout-tpl">
   <div id="help">
-    {ts}Use this form to specify the number of volunteers needed for each role
+    {ts domain='org.civicrm.volunteer'}Use this form to specify the number of volunteers needed for each role
     and time slot. If no needs are specified, volunteers will be considered to
     be generally available.{/ts}
     {help id="volunteer-define" file="CRM/Volunteer/Form/Manage/Define.hlp"}
   </div>
   <form class="crm-block crm-form-block crm-event-manage-volunteer-form-block">
     <div id="crm-vol-define-scheduled-needs-region">
-      <div class="crm-loading-element">{ts}Loading{/ts}...</div>
+      <div class="crm-loading-element">{ts domain='org.civicrm.volunteer'}Loading{/ts}...</div>
     </div>
     <div id="crm-vol-define-flexible-needs-region"></div>
     <div class="crm-submit-buttons">
-      <a class="button" id="crm-vol-define-done" href="#"><span>{ts}Done{/ts}</span></a>
+      <a class="button" id="crm-vol-define-done" href="#"><span>{ts domain='org.civicrm.volunteer'}Done{/ts}</span></a>
     </div>
   </form>
 </script>
@@ -47,11 +47,11 @@
 <script type="text/template" id="crm-vol-define-table-tpl">
   <table id="crm-vol-define-needs-table">
     <thead><tr>
-        <th id="role_id">{ts}Role{/ts}</th>
-        <th id="quantity">{ts}Volunteers Needed{/ts}</th>
-        <th id="start_date">{ts}Start Date/Time{/ts}</th>
-        <th id="duration">{ts}Minutes{/ts}</th>
-        <th id="visibility">{ts}Public?{/ts}</th>
+        <th id="role_id">{ts domain='org.civicrm.volunteer'}Role{/ts}</th>
+        <th id="quantity">{ts domain='org.civicrm.volunteer'}Volunteers Needed{/ts}</th>
+        <th id="start_date">{ts domain='org.civicrm.volunteer'}Start Date/Time{/ts}</th>
+        <th id="duration">{ts domain='org.civicrm.volunteer'}Minutes{/ts}</th>
+        <th id="visibility">{ts domain='org.civicrm.volunteer'}Public?{/ts}</th>
         <th>Enabled?</th>
         <th></th>
       </tr></thead>
@@ -77,7 +77,7 @@
   <td><input type="text" name="duration" value="<%= duration %>" size="6"></td>
   <td><input type="checkbox" name="visibility_id" value="<%= visibilityValue %>"></td>
   <td><input type="checkbox" name="is_active" value="1"></td>
-  <td><a href="#" class="crm-vol-del" title="{ts}Delete{/ts}"><img src="{$config->resourceBase}i/close.png" alt="{ts}Delete{/ts}"/></a></td>
+  <td><a href="#" class="crm-vol-del" title="{ts domain='org.civicrm.volunteer'}Delete{/ts}"><img src="{$config->resourceBase}i/close.png" alt="{ts}Delete{/ts}"/></a></td>
 </script>
 
 <script type="text/template" id="crm-vol-define-flexible-need-tpl">
@@ -89,7 +89,7 @@
   <tr id="crm-vol-define-add-row">
     <td colspan="7">
       <select id="crm-vol-define-add-need">
-        <option value="">- {ts}Create new{/ts} -</option>
+        <option value="">- {ts domain='org.civicrm.volunteer'}Create new{/ts} -</option>
         {crmAPI var='result' entity='VolunteerNeed' action='getoptions' field='role_id' sequential=0}
         {foreach from=$result.values item=VolunteerNeed key=id}
           <option value="{$id}">{$VolunteerNeed}</option>

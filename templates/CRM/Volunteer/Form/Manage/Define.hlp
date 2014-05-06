@@ -26,10 +26,10 @@
 {capture assign=volRoleURL}{crmURL p="civicrm/admin/options/volunteer_role" q="group=volunteer_role&reset=1"}{/capture}
 
 {htxt id="volunteer-define-title"}
-  {ts}Volunteer Needs{/ts}
+  {ts domain='org.civicrm.volunteer'}Volunteer Needs{/ts}
 {/htxt}
 {htxt id="volunteer-define"}
-    {ts 1=$volRoleURL}
+    {ts domain='org.civicrm.volunteer' 1=$volRoleURL}
     <p>Use this form to define the number of volunteers needed for each role and time slot.
     For each slot, you will select a role, set the number of volunteers needed,
     set a start date and time, and indicate the duration in minutes.</p>
