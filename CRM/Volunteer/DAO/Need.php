@@ -181,7 +181,7 @@ class CRM_Volunteer_DAO_Need extends CRM_Core_DAO
         'volunteer_need_id' => array(
           'name' => 'id',
           'type' => CRM_Utils_Type::T_INT,
-          'title' => ts('CiviVolunteer Need ID') ,
+          'title' => ts('CiviVolunteer Need ID', array('domain' => 'org.civicrm.volunteer')) ,
           'required' => true,
         ) ,
         'volunteer_need_project_id' => array(
@@ -193,29 +193,29 @@ class CRM_Volunteer_DAO_Need extends CRM_Core_DAO
         'start_time' => array(
           'name' => 'start_time',
           'type' => CRM_Utils_Type::T_DATE + CRM_Utils_Type::T_TIME,
-          'title' => ts('Start Date and Time') ,
+          'title' => ts('Start Date and Time', array('domain' => 'org.civicrm.volunteer')) ,
         ) ,
         'duration' => array(
           'name' => 'duration',
           'type' => CRM_Utils_Type::T_INT,
-          'title' => ts('Duration') ,
+          'title' => ts('Duration', array('domain' => 'org.civicrm.volunteer')) ,
         ) ,
         'is_flexible' => array(
           'name' => 'is_flexible',
           'type' => CRM_Utils_Type::T_BOOLEAN,
-          'title' => ts('Flexible') ,
+          'title' => ts('Flexible', array('domain' => 'org.civicrm.volunteer')) ,
           'required' => true,
         ) ,
         'quantity' => array(
           'name' => 'quantity',
           'type' => CRM_Utils_Type::T_INT,
-          'title' => ts('Quantity') ,
+          'title' => ts('Quantity', array('domain' => 'org.civicrm.volunteer')) ,
           'default' => 'NULL',
         ) ,
         'visibility_id' => array(
           'name' => 'visibility_id',
           'type' => CRM_Utils_Type::T_INT,
-          'title' => ts('Visibility') ,
+          'title' => ts('Visibility', array('domain' => 'org.civicrm.volunteer')) ,
           'default' => 'NULL',
           'pseudoconstant' => array(
             'optionGroupName' => 'visibility',
@@ -224,7 +224,7 @@ class CRM_Volunteer_DAO_Need extends CRM_Core_DAO
         'role_id' => array(
           'name' => 'role_id',
           'type' => CRM_Utils_Type::T_INT,
-          'title' => ts('Role') ,
+          'title' => ts('Role', array('domain' => 'org.civicrm.volunteer')) ,
           'default' => 'NULL',
           'pseudoconstant' => array(
             'optionGroupName' => 'volunteer_role',
@@ -233,7 +233,7 @@ class CRM_Volunteer_DAO_Need extends CRM_Core_DAO
         'is_active' => array(
           'name' => 'is_active',
           'type' => CRM_Utils_Type::T_BOOLEAN,
-          'title' => ts('Enabled') ,
+          'title' => ts('Enabled', array('domain' => 'org.civicrm.volunteer')) ,
           'required' => true,
           'default' => '1',
         ) ,
