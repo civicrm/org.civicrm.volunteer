@@ -97,12 +97,12 @@ class CRM_Volunteer_Form_Log extends CRM_Core_Form {
     $this->addButtons(array(
       array(
         'type' => 'upload',
-        'name' => ts('Save'),
+        'name' => ts('Save', array('domain' => 'org.civicrm.volunteer')),
         'isDefault' => TRUE
       ),
       array(
         'type' => 'cancel',
-        'name' => ts('Cancel'),
+        'name' => ts('Cancel', array('domain' => 'org.civicrm.volunteer')),
       )
     ));
 
@@ -132,7 +132,7 @@ class CRM_Volunteer_Form_Log extends CRM_Core_Form {
       else {
         CRM_Contact_Form_NewContact::buildQuickForm($this, $rowNumber, NULL, FALSE, 'primary_');
         $this->addDateTime("field[$rowNumber][start_date]", '', FALSE, array('formatType' => 'activityDateTime'));
-        $this->add('select', "field[$rowNumber][volunteer_role]", '', array('' => ts('-select-')) + $volunteerRole);
+        $this->add('select', "field[$rowNumber][volunteer_role]", '', array('' => ts('-select-', array('domain' => 'org.civicrm.volunteer'))) + $volunteerRole);
       }
 
       $this->add('select', "field[$rowNumber][volunteer_status]", '', $volunteerStatus);
@@ -176,7 +176,7 @@ class CRM_Volunteer_Form_Log extends CRM_Core_Form {
     foreach ($params['field'] as $key => $value) {
       if ($key > count($self->_volunteerData) && !empty($params['primary_contact_select_id'][$key])) {
         if ((!$value['actual_duration']) && $value['volunteer_status'] == CRM_Utils_Array::key('Completed', $volunteerStatus) ) {
-          $errors["field[$key][actual_duration]"] = ts('Please enter the actual duration for Completed volunteer activity');
+          $errors["field[$key][actual_duration]"] = ts('Please enter the actual duration for Completed volunteer activity', array('domain' => 'org.civicrm.volunteer'));
         }
       }
     }
@@ -270,7 +270,7 @@ class CRM_Volunteer_Form_Log extends CRM_Core_Form {
       }
     }
 
-    $statusMsg = ts('Volunteer hours have been logged.');
+    $statusMsg = ts('Volunteer hours have been logged.', array('domain' => 'org.civicrm.volunteer'));
 
     if (CRM_Utils_Array::value('snippet', $_REQUEST) == CRM_Core_Smarty::PRINT_JSON) {
       CRM_Utils_System::civiExit(json_encode(array(
@@ -278,7 +278,7 @@ class CRM_Volunteer_Form_Log extends CRM_Core_Form {
       )));
     }
     else {
-      CRM_Core_Session::setStatus($statusMsg, ts('Saved'), 'success');
+      CRM_Core_Session::setStatus($statusMsg, ts('Saved', array('domain' => 'org.civicrm.volunteer')), 'success');
     }
 
   }

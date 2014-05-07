@@ -57,7 +57,7 @@ function volunteer_civicrm_tabset($tabsetName, &$tabs, $context) {
         "reset=1&snippet=5&force=1&id=$eventID&action=update&component=event" );
 
       $tab['volunteer'] = array(
-        'title' => ts('Volunteers'),
+        'title' => ts('Volunteers', array('domain' => 'org.civicrm.volunteer')),
         'link' => $url,
         'valid' => TRUE,
         'active' => TRUE,
@@ -72,7 +72,7 @@ function volunteer_civicrm_tabset($tabsetName, &$tabs, $context) {
     }
     else {
       $tab['volunteer'] = array(
-        'title' => ts('Volunteers'),
+        'title' => ts('Volunteers', array('domain' => 'org.civicrm.volunteer')),
         'url'   => 'civicrm/event/manage/volunteer',
         'field' => 'is_volunteer',
       );
@@ -115,12 +115,12 @@ function volunteer_civicrm_enable() {
   $role_url = CRM_Utils_System::url('civicrm/admin/options/volunteer_role', 'group=volunteer_role&reset=1');
   $events_url = CRM_Utils_System::url('civicrm/event/manage', 'reset=1');
   $message = "<p>" . ts("Getting Started:") . "<p><ul>
-    <li>" . ts('Read <a href="%1" target="_blank">documentation</a>', array(1 => $doc_url)) . "</li>
-    <li>" . ts('Ask questions on the <a href="%1" target="_blank">forum</a>', array(1 => $forum_url)) . "</li>
-    <li>" . ts('Configure <a href="%1" target="_blank">volunteer roles</a>', array(1 => $role_url)) . "</li>
-    <li>" . ts('Enable volunteer management for one or more <a href="%1" target="_blank">events</a>', array(1 => $events_url)) . "</li></ul>";
+    <li>" . ts('Read <a href="%1" target="_blank">documentation</a>', array(1 => $doc_url, 'domain' => 'org.civicrm.volunteer')) . "</li>
+    <li>" . ts('Ask questions on the <a href="%1" target="_blank">forum</a>', array(1 => $forum_url, 'domain' => 'org.civicrm.volunteer')) . "</li>
+    <li>" . ts('Configure <a href="%1" target="_blank">volunteer roles</a>', array(1 => $role_url, 'domain' => 'org.civicrm.volunteer')) . "</li>
+    <li>" . ts('Enable volunteer management for one or more <a href="%1" target="_blank">events</a>', array(1 => $events_url, 'domain' => 'org.civicrm.volunteer')) . "</li></ul>";
   // As long as the message contains a link, the pop-up will not automatically close
-  CRM_Core_Session::setStatus($message, ts('CiviVolunteer Installed'), 'success');
+  CRM_Core_Session::setStatus($message, ts('CiviVolunteer Installed', array('domain' => 'org.civicrm.volunteer')), 'success');
   _volunteer_civicrm_check_resource_url();
   return _volunteer_civix_civicrm_enable();
 }
@@ -207,7 +207,7 @@ function _volunteer_civicrm_pageRun_CRM_Event_Page_EventInfo(&$page) {
       TRUE, // htmlize?
       TRUE // is frontend?
     );
-    $button_text = ts('Volunteer Now');
+    $button_text = ts('Volunteer Now', array('domain' => 'org.civicrm.volunteer'));
 
     $snippet = array(
       'template' => 'CRM/Event/Page/volunteer-button.tpl',
@@ -323,7 +323,7 @@ function _volunteer_civicrm_buildForm_CRM_Activity_Form_Activity($formName, &$fo
  * @param type $permissions Does not contain core perms -- only extension-defined perms.
  */
 function volunteer_civicrm_permission(array &$permissions) {
-  $prefix = ts('CiviVolunteer') . ': ';
+  $prefix = ts('CiviVolunteer', array('domain' => 'org.civicrm.volunteer')) . ': ';
   $permissions['register to volunteer'] = $prefix . 'register to volunteer';
 }
 
@@ -333,8 +333,8 @@ function volunteer_civicrm_permission(array &$permissions) {
  */
 function _volunteer_civicrm_check_resource_url() {
   $message = json_encode(
-    '<p>' . ts('Your extension resource url is not configured correctly. CiviVolunteer cannot work without this setting.') .
-    '</p><p>' . ts('Correct the problem at <a href="%1">Settings - Resource URLs</a>.', array(1 => CRM_Utils_System::url('civicrm/admin/setting/url', 'reset=1'))) . '</p>'
+    '<p>' . ts('Your extension resource url is not configured correctly. CiviVolunteer cannot work without this setting.', array('domain' => 'org.civicrm.volunteer')) .
+    '</p><p>' . ts('Correct the problem at <a href="%1">Settings - Resource URLs</a>.', array(1 => CRM_Utils_System::url('civicrm/admin/setting/url', 'reset=1'), 'domain' => 'org.civicrm.volunteer')) . '</p>'
   );
   $title = json_encode(ts('Error'));
   CRM_Core_Resources::singleton()
@@ -345,9 +345,9 @@ function _volunteer_civicrm_check_resource_url() {
 }
 
 /**
- * Implements hook_civicrm_alterAPIPermissions 
+ * Implements hook_civicrm_alterAPIPermissions
  */
-function volunteer_civicrm_alterAPIPermissions($entity, $action, &$params, &$permissions) {    
+function volunteer_civicrm_alterAPIPermissions($entity, $action, &$params, &$permissions) {
 // note: unsetting the below would require the default ‘administer CiviCRM’ permission
   $permissions['volunteer_need']['default'] = array('access CiviEvent', 'edit all events');
   $permissions['volunteer_assignment']['default'] = array('access CiviEvent', 'edit all events');

@@ -27,10 +27,10 @@
 {* Contains js templates for backbone-based volunteer assignment sub-application *}
 
 <script type="text/template" id="crm-vol-assign-layout-tpl">
-  <div id="crm-vol-assign-flexible-region"><div class="crm-loading-element">{ts}Loading{/ts}...</div></div>
+  <div id="crm-vol-assign-flexible-region"><div class="crm-loading-element">{ts domain='org.civicrm.volunteer'}Loading{/ts}...</div></div>
   <div id="crm-vol-assign-scheduled-region"></div>
   <div class="crm-submit-buttons">
-    <a class="button" id="crm-vol-define-done" href="#"><span>{ts}Done{/ts}</span></a>
+    <a class="button" id="crm-vol-define-done" href="#"><span>{ts domain='org.civicrm.volunteer'}Done{/ts}</span></a>
   </div>
 </script>
 
@@ -39,7 +39,7 @@
     <span class="icon crm-vol-drag"></span>
     <a target="_blank" href="<%= contactUrl(contact_id) %>"><%= display_name %></a>
     {literal}<%if (details){%><a href="#" class="icon crm-vol-info"> </a><%}%>{/literal}
-    <div class="crm-vol-menu"><a class="crm-vol-menu-button" href="#" title="{ts}Actions{/ts}"><span></span></a></div>
+    <div class="crm-vol-menu"><a class="crm-vol-menu-button" href="#" title="{ts domain='org.civicrm.volunteer'}Actions{/ts}"><span></span></a></div>
   </td>
   <td><%= email %></td>
   <td><%= phone %></td>
@@ -50,36 +50,36 @@
     <span class="icon crm-vol-drag"></span>
     <a target="_blank" href="<%= contactUrl(contact_id) %>"><%= display_name %></a>
     {literal}<%if (details){%><a href="#" class="icon crm-vol-info"> </a><%}%>{/literal}
-    <div class="crm-vol-menu"><a class="crm-vol-menu-button" href="#" title="{ts}Actions{/ts}"><span></span></a></div>
+    <div class="crm-vol-menu"><a class="crm-vol-menu-button" href="#" title="{ts domain='org.civicrm.volunteer'}Actions{/ts}"><span></span></a></div>
   </td>
 </script>
 
 <script type="text/template" id="crm-vol-scheduled-tpl">
-  <h3><%= pseudoConstant.volunteer_role[role_id] %> (<%= quantity || '{ts escape='js'}Any{/ts}' %>): <%= display_time %></h3>
+  <h3><%= pseudoConstant.volunteer_role[role_id] %> (<%= quantity || '{ts domain='org.civicrm.volunteer' escape='js'}Any{/ts}' %>): <%= display_time %></h3>
   <table class="row-highlight">
     <thead><tr>
-      <th>{ts}Name{/ts}</th>
-      <th>{ts}Email{/ts}</th>
-      <th>{ts}Phone{/ts}</th>
+      <th>{ts domain='org.civicrm.volunteer'}Name{/ts}</th>
+      <th>{ts domain='org.civicrm.volunteer'}Email{/ts}</th>
+      <th>{ts domain='org.civicrm.volunteer'}Phone{/ts}</th>
     </tr></thead>
     <tbody class="crm-vol-assignment-list"></tbody>
   </table>
 </script>
 
 <script type="text/template" id="crm-vol-flexible-tpl">
-  <h3>{ts}Available Volunteers{/ts}</h3>
+  <h3>{ts domain='org.civicrm.volunteer'}Available Volunteers{/ts}</h3>
   <table class="row-highlight">
     <thead><tr>
-      <th>{ts}Name{/ts}</th>
+      <th>{ts domain='org.civicrm.volunteer'}Name{/ts}</th>
     </tr></thead>
     <tbody class="crm-vol-assignment-list"></tbody>
   </table>
   <h4>Add Volunteer</h4>
-  <input type="text" name="add-volunteer" class="crm-add-volunteer" placeholder="{ts escape='js'}Select Contact{/ts}..."/>
-  <button class="crm-add-vol-contact">{ts}Add{/ts}</button>
+  <input type="text" name="add-volunteer" class="crm-add-volunteer" placeholder="{ts domain='org.civicrm.volunteer' escape='js'}Select Contact{/ts}..."/>
+  <button class="crm-add-vol-contact">{ts domain='org.civicrm.volunteer'}Add{/ts}</button>
   <div>
-    {ts}OR{/ts} <select class="crm-vol-create-contact-select">
-      <option value="">{ts}- create new contact -{/ts}</option>
+    {ts domain='org.civicrm.volunteer'}OR{/ts} <select class="crm-vol-create-contact-select">
+      <option value="">{ts domain='org.civicrm.volunteer'}- create new contact -{/ts}</option>
       {crmAPI var='UFGroup' entity='UFGroup' action='get' is_active=1 is_reserved=1}
       {foreach from=$UFGroup.values item=profile}
         {if $profile.name eq 'new_individual' or $profile.name eq 'new_organization' or $profile.name eq 'new_household'}
@@ -94,14 +94,14 @@
   <div class="crm-vol-menu-items">
     <ul class="crm-vol-menu-list">
       <li>
-        <a href="#" class="crm-vol-menu-parent">{ts}Move To:{/ts}</a>
+        <a href="#" class="crm-vol-menu-parent">{ts domain='org.civicrm.volunteer'}Move To:{/ts}</a>
         <ul class="crm-vol-menu-move-to"></ul>
       </li>
       <li>
-        <a href="#" class="crm-vol-menu-parent">{ts}Copy To:{/ts}</a>
+        <a href="#" class="crm-vol-menu-parent">{ts domain='org.civicrm.volunteer'}Copy To:{/ts}</a>
         <ul class="crm-vol-menu-copy-to"></ul>
       </li>
-      <li><a class="crm-vol-del" href="#">{ts}Delete{/ts}</a></li>
+      <li><a class="crm-vol-del" href="#">{ts domain='org.civicrm.volunteer'}Delete{/ts}</a></li>
     </ul>
   </div>
 </script>
