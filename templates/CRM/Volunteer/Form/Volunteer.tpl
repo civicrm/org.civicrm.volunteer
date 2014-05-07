@@ -88,6 +88,11 @@
         $('#org_civicrm_volunteer-event_tab_config').toggle($(this).prop('checked'));
       });
       $('#is_active', $form).trigger('change');
+
+      // move the help icon into the label for the beneficiary (4.4.x-only hack)
+      $("label[for=volunteer_target_contact_1]", $form).append("&nbsp;")
+      $('#org_civicrm_volunteer-event_tab_config .org_civicrm_volunteer-beneficiary_help .helpicon', $form)
+        .appendTo("label[for=volunteer_target_contact_1]", $form);
     });
   {/literal}
 </script>
