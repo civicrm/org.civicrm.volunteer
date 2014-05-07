@@ -90,10 +90,10 @@ class CRM_Volunteer_Form_Volunteer extends CRM_Event_Form_ManageEvent {
     $this->add(
       'checkbox',
       'is_active',
-      ts('Enable Volunteer Management?')
+      ts('Enable Volunteer Management?', array('domain' => 'org.civicrm.volunteer'))
     );
 
-    $this->addEntityRef('target_contact_id', ts('Select Beneficiary'), array('create' => TRUE, 'select' => array('allowClear' => FALSE)));
+    $this->addEntityRef('target_contact_id', ts('Select Beneficiary', array('domain' => 'org.civicrm.volunteer')), array('create' => TRUE, 'select' => array('allowClear' => FALSE)));
 
     $params = array(
       'entity_id' => $this->_id,
@@ -164,6 +164,6 @@ class CRM_Volunteer_Form_Volunteer extends CRM_Event_Form_ManageEvent {
    * @access public
    */
   public function getTitle() {
-    return ts('Volunteers');
+    return ts('Volunteers', array('domain' => 'org.civicrm.volunteer'));
   }
 }

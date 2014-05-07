@@ -213,7 +213,7 @@ class CRM_Volunteer_Upgrader extends CRM_Volunteer_Upgrader_Base {
       $result = civicrm_api('ActivityType', 'create', array(
         'version' => 3,
         'name' => self::customActivityTypeName,
-        'label' => ts('Volunteer'),
+        'label' => ts('Volunteer', array('domain' => 'org.civicrm.volunteer')),
         'weight' => 58,
         'is_active' => '1',
       ));
@@ -236,8 +236,8 @@ class CRM_Volunteer_Upgrader extends CRM_Volunteer_Upgrader_Base {
     $activityStatusID = $activityStatus['id'];
 
     $activityStatuses = array(
-      'Available' => ts('Available'),
-      'No_show' => ts('No-show'),
+      'Available' => ts('Available', array('domain' => 'org.civicrm.volunteer')),
+      'No_show' => ts('No-show', array('domain' => 'org.civicrm.volunteer')),
     );
 
     foreach($activityStatuses as $name => $label) {
