@@ -32,6 +32,8 @@
 class CRM_Volunteer_Upgrader extends CRM_Volunteer_Upgrader_Base {
 
   const customActivityTypeName = 'Volunteer';
+  const customContactGroupName = 'Volunteer_Information';
+  const customContactTypeName = 'Volunteer';
   const customGroupName = 'CiviVolunteer';
   const customOptionGroupName = 'volunteer_role';
 
@@ -49,6 +51,10 @@ class CRM_Volunteer_Upgrader extends CRM_Volunteer_Upgrader_Base {
     $this->executeCustomDataTemplateFile('volunteer-customdata.xml.tpl');
 
     $this->createVolunteerActivityStatus();
+
+    $this->findCreateVolunteerContactType();
+    $volContactTypeCustomGroupID = $this->findCreateVolunteerContactCustomGroup();
+    $this->createVolunteerContactCustomFields($volContactTypeCustomGroupID);
 
     $unmet = CRM_Volunteer_Upgrader::checkExtensionDependencies();
     self::displayDependencyErrors($unmet);
@@ -78,6 +84,18 @@ class CRM_Volunteer_Upgrader extends CRM_Volunteer_Upgrader_Base {
       REFERENCES `civicrm_contact` (`id`)
       ON DELETE SET NULL
     ');
+    return TRUE;
+  }
+
+  /**
+   * @return boolean TRUE on success
+   * @throws Exception
+   */
+  public function upgrade_1400() {
+    $this->ctx->log->info('Applying update 1400 - creating volunteer contact subtype and related custom fields');
+    $this->findCreateVolunteerContactType();
+    $volContactTypeCustomGroupID = $this->findCreateVolunteerContactCustomGroup();
+    $this->createVolunteerContactCustomFields($volContactTypeCustomGroupID);
     return TRUE;
   }
 
@@ -288,6 +306,148 @@ class CRM_Volunteer_Upgrader extends CRM_Volunteer_Upgrader_Base {
       }
 
       return $result['values'][$result['id']]['value'];
+    }
+  }
+
+  /**
+   * @return int
+   * @throws CRM_Core_Exception
+   */
+  private function findCreateVolunteerContactType() {
+    $id = NULL;
+    $get = civicrm_api3('ContactType', 'get', array(
+      'name' => self::customContactTypeName,
+      'return' => 'id',
+      'sequential' => 1,
+    ));
+
+    if ($get['count']) {
+      $id = $get['values'][0]['id'];
+    } else {
+      $create = civicrm_api3('ContactType', 'create', array(
+        'label' => ts('Volunteer', array('domain' => 'org.civicrm.volunteer')),
+        'name' => self::customContactTypeName,
+        'parent_id' => civicrm_api3('ContactType', 'getvalue', array(
+          'name' => 'Individual',
+          'return' => 'id',
+         )),
+      ));
+      if (CRM_Utils_Array::value('is_error', $create)) {
+        CRM_Core_Error::debug_var('contactTypeResult', $create);
+        throw new CRM_Core_Exception('Failed to register contact type');
+      }
+
+      $id = $create['id'];
+    }
+
+    return (int) $id;
+  }
+
+  /**
+   * @return int
+   * @throws CRM_Core_Exception
+   */
+  private function findCreateVolunteerContactCustomGroup() {
+    $id = NULL;
+    $get = civicrm_api3('CustomGroup', 'get', array(
+      'name' => self::customContactGroupName,
+      'return' => 'id',
+      'sequential' => 1,
+    ));
+
+    if ($get['count']) {
+      $id = $get['values'][0]['id'];
+    } else {
+      $create = civicrm_api3('CustomGroup', 'create', array(
+        'extends' => 'Individual',
+        'extends_entity_column_value' => 'Volunteer Information',
+        'name' => self::customContactGroupName,
+        'title' => ts('Volunteer', array('domain' => 'org.civicrm.volunteer')),
+      ));
+      if (CRM_Utils_Array::value('is_error', $create)) {
+        CRM_Core_Error::debug_var('customGroupResult', $create);
+        throw new CRM_Core_Exception('Failed to register custom group for volunteer subtype');
+      }
+
+      $id = $create['id'];
+    }
+
+    return (int) $id;
+  }
+
+  /**
+   * @param int $customGroupID The group to which the field should be added
+   * @throws CRM_Core_Exception
+   */
+  private function createVolunteerContactCustomFields($customGroupID) {
+    if (!is_int($customGroupID)) {
+      throw new CRM_Core_Exception('Invalid custom group ID provided.');
+    }
+
+    $create = civicrm_api3('customField', 'create', array(
+      'custom_group_id' => $customGroupID,
+      'data_type' => 'String',
+      'html_type' => 'Multi-select',
+      'is_searchable' => 1,
+      'label' => ts('Camera Skill Level', array('domain' => 'org.civicrm.volunteer')),
+      'name' => 'camera_skill_level',
+      'option_values' => array(
+        5 => array(
+          'is_active' => 1,
+          'label' => ts('Master', array('domain' => 'org.civicrm.volunteer')),
+          'value' => 5,
+          'weight' => 1,
+        ),
+        4 => array(
+          'is_active' => 1,
+          'label' => ts('Journeyman', array('domain' => 'org.civicrm.volunteer')),
+          'value' => 4,
+          'weight' => 2,
+        ),
+        3 => array(
+          'is_active' => 1,
+          'label' => ts('Apprentice', array('domain' => 'org.civicrm.volunteer')),
+          'value' => 3,
+          'weight' => 3,
+        ),
+        2 => array(
+          'is_active' => 1,
+          'label' => ts('Teach me', array('domain' => 'org.civicrm.volunteer')),
+          'value' => 2,
+          'weight' => 4,
+        ),
+        1 => array(
+          'is_active' => 1,
+          'label' => ts('Not interested', array('domain' => 'org.civicrm.volunteer')),
+          'value' => 1,
+          'weight' => 5,
+        ),
+      ),
+    ));
+
+    $this->handleCustomFieldCreateResult($create);
+  }
+
+  /**
+   * Helper function
+   *
+   * Sets status mesasge if field already exists, throws exception in case of
+   * other error, does nothing on success
+   *
+   * @param array $apiResult
+   * @throws CRM_Core_Exception
+   */
+  private function handleCustomFieldCreateResult(array $apiResult) {
+    if (CRM_Utils_Array::value('is_error', $apiResult)) {
+      if ($apiResult['error_code'] == 'already exists') {
+        CRM_Core_Session::setStatus(
+          ts('CiviVolunteer tried to create a custom field named %1, but it already exists. This may lead to unexpected behavior.', array('domain' => 'org.civicrm.volunteer', 1 => 'camera_skill_level')),
+          ts('Field already exists', array('domain' => 'org.civicrm.volunteer'))
+        );
+      } else {
+        CRM_Core_Error::debug_var('customFieldResult', $apiResult);
+        throw new CRM_Core_Exception('Failed to create custom field for volunteer subtype');
+      }
     }
   }
 
