@@ -87,6 +87,19 @@ class CRM_Volunteer_Form_Volunteer extends CRM_Event_Form_ManageEvent {
   public function buildQuickForm() {
     $vid = NULL;
 
+    parent::buildQuickForm();
+
+    $bln_pre_req = CRM_Volunteer_Form_Volunteer::volunteer_pre_req_check();
+    $this->assign('volunteer_pre_req', $bln_pre_req);
+
+    if (!$bln_pre_req) {
+      //Display error to user
+      $message = ts('You must install and enable the Multiform extension to use CiviVolunteer.', array('domain' => 'org.civicrm.volunteer'));
+      CRM_Core_Session::setStatus($message, ts('Pre-requisite check failed.', array('domain' => 'org.civicrm.volunteer')), 'no-popup');
+
+      return false;
+    }
+
     $this->add(
       'checkbox',
       'is_active',
@@ -107,8 +120,19 @@ class CRM_Volunteer_Form_Volunteer extends CRM_Event_Form_ManageEvent {
     }
 
     $this->assign('vid', $vid);
+  }
 
-    parent::buildQuickForm();
+  public static function volunteer_pre_req_check() {
+    $check_passed = FALSE;
+
+    //get an extension manager
+    $ext_system = CRM_Extension_System::singleton();
+    $ext_manager = $ext_system->getManager();
+    //var_dump($ext_manager->getStatus('com.ginkgostreet.multiform')
+    //return is_active status
+    $check_passed = ($ext_manager->getStatus('com.ginkgostreet.multiform') == 1);
+
+    return $check_passed;
   }
 
   /**
