@@ -68,7 +68,6 @@ class CRM_Volunteer_Upgrader extends CRM_Volunteer_Upgrader_Base {
    * requisite schema change is made here.
    *
    * @return boolean TRUE on success
-   * @throws Exception
    */
   public function upgrade_1300() {
     $this->ctx->log->info('Applying update 1300');
@@ -89,7 +88,6 @@ class CRM_Volunteer_Upgrader extends CRM_Volunteer_Upgrader_Base {
 
   /**
    * @return boolean TRUE on success
-   * @throws Exception
    */
   public function upgrade_1400() {
     $this->ctx->log->info('Applying update 1400 - creating volunteer contact subtype and related custom fields');
@@ -159,6 +157,15 @@ class CRM_Volunteer_Upgrader extends CRM_Volunteer_Upgrader_Base {
       }
     }
     return $unmet;
+  }
+
+  /**
+   * @return boolean TRUE on success
+   */
+  public function upgrade_1401() {
+    $this->ctx->log->info('Applying update 1401 - creating volunteer_interest profile');
+    $this->executeCustomDataFileByAbsPath($this->extensionDir . '/xml/volunteer_interest_install.xml');
+    return TRUE;
   }
 
   /**

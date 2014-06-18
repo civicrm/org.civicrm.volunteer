@@ -1,0 +1,96 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<CustomData>
+  <ProfileGroups>
+    <ProfileGroup>
+      <add_captcha>0</add_captcha>
+      <description>
+        A public-facing form for collecting information about the skills and
+        interests of potential volunteers.
+      </description>
+      <group_type>Volunteer,Contact</group_type>
+      <is_active>1</is_active>
+      <is_edit_link>0</is_edit_link>
+      <is_map>0</is_map>
+      <is_proximity_search>0</is_proximity_search>
+      <is_reserved>1</is_reserved>
+      <is_uf_link>0</is_uf_link>
+      <is_update_dupe>1</is_update_dupe>
+      <name>volunteer_interest</name>
+      <title>Notify Me of Volunteer Opportunities</title>
+    </ProfileGroup>
+  </ProfileGroups>
+  <ProfileFields>
+    <ProfileField>
+      <field_name>first_name</field_name>
+      <is_active>1</is_active>
+      <is_view>0</is_view>
+      <is_required>1</is_required>
+      <weight>1</weight>
+      <help_post></help_post>
+      <help_pre></help_pre>
+      <visibility>User and User Admin Only</visibility>
+      <in_selector>0</in_selector>
+      <is_searchable>0</is_searchable>
+      <label>First Name</label>
+      <field_type>Individual</field_type>
+      <is_multi_summary>0</is_multi_summary>
+      <profile_group_name>volunteer_interest</profile_group_name>
+    </ProfileField>
+    <ProfileField>
+      <field_name>last_name</field_name>
+      <is_active>1</is_active>
+      <is_view>0</is_view>
+      <is_required>1</is_required>
+      <weight>2</weight>
+      <help_post></help_post>
+      <help_pre></help_pre>
+      <visibility>User and User Admin Only</visibility>
+      <in_selector>0</in_selector>
+      <is_searchable>0</is_searchable>
+      <label>Last Name</label>
+      <field_type>Individual</field_type>
+      <is_multi_summary>0</is_multi_summary>
+      <profile_group_name>volunteer_interest</profile_group_name>
+    </ProfileField>
+    <ProfileField>
+      <field_name>email</field_name>
+      <is_active>1</is_active>
+      <is_view>0</is_view>
+      <is_required>1</is_required>
+      <weight>3</weight>
+      <help_post></help_post>
+      <help_pre></help_pre>
+      <visibility>User and User Admin Only</visibility>
+      <in_selector>0</in_selector>
+      <is_searchable>0</is_searchable>
+      <label>Email</label>
+      <field_type>Contact</field_type>
+      <is_multi_summary>0</is_multi_summary>
+      <profile_group_name>volunteer_interest</profile_group_name>
+    </ProfileField>
+    <ProfileField>
+      <field_name>phone</field_name>
+      <is_active>1</is_active>
+      <is_view>0</is_view>
+      <is_required>0</is_required>
+      <weight>4</weight>
+      <help_post></help_post>
+      <help_pre></help_pre>
+      <visibility>User and User Admin Only</visibility>
+      <in_selector>0</in_selector>
+      <is_searchable>0</is_searchable>
+      <label>Phone</label>
+      <field_type>Contact</field_type>
+      <is_multi_summary>0</is_multi_summary>
+      <profile_group_name>volunteer_interest</profile_group_name>
+    </ProfileField>
+  </ProfileFields>
+  <ProfileJoins>
+    <ProfileJoin>
+      <is_active>1</is_active>
+      <module>Profile</module>
+      <profile_group_name>volunteer_interest</profile_group_name>
+    </ProfileJoin>
+  </ProfileJoins>
+</CustomData>
