@@ -65,8 +65,7 @@ function volunteer_civicrm_tabset($tabsetName, &$tabs, $context) {
         'current' => false,
       );
       // If volunteer mngmt is enabled, add necessary UI elements
-      if (CRM_Volunteer_Form_Volunteer::volunteer_pre_req_check()
-        && CRM_Volunteer_BAO_Project::isActive($eventID, CRM_Event_DAO_Event::$_tableName)) {
+      if (CRM_Volunteer_BAO_Project::isActive($eventID, CRM_Event_DAO_Event::$_tableName)) {
         CRM_Volunteer_Form_Manage::addResources($eventID, CRM_Event_DAO_Event::$_tableName);
       } else {
         $tab['volunteer']['valid'] = FALSE;
@@ -353,4 +352,37 @@ function volunteer_civicrm_alterAPIPermissions($entity, $action, &$params, &$per
 // note: unsetting the below would require the default ‘administer CiviCRM’ permission
   $permissions['volunteer_need']['default'] = array('access CiviEvent', 'edit all events');
   $permissions['volunteer_assignment']['default'] = array('access CiviEvent', 'edit all events');
+}
+
+/**
+ * Implementation of hook_civicrm_alterTemplateFile
+ *
+ * @param type $formName
+ * @param type $form
+ * @param type $context
+ * @param type $tplName
+ */
+function volunteer_civicrm_alterTemplateFile ($formName, &$form, $context, &$tplName) {
+  $f = '_' . __FUNCTION__ . '_' . $formName;
+  if (function_exists($f)) {
+    $f($formName, $form, $context, $tplName);
+  }
+}
+
+/**
+ * Delegated implementation of hook_civicrm_alterTemplateFile
+ *
+ * Don't load the volunteer tab if Multiform prereq is missing.
+ *
+ * @param type $formName
+ * @param type $form
+ * @param type $context
+ * @param string $tplName
+ */
+function _volunteer_civicrm_alterTemplateFile_CRM_Volunteer_Form_Volunteer ($formName, &$form, $context, &$tplName) {
+  $unmet = CRM_Volunteer_Upgrader::checkExtensionDependencies();
+
+  if (in_array('com.ginkgostreet.multiform', $unmet)) {
+    $tplName = 'CRM/Volunteer/MissingDependency.tpl';
+  }
 }

@@ -122,7 +122,8 @@ class CRM_Volunteer_Upgrader extends CRM_Volunteer_Upgrader_Base {
   /**
    * Extension Dependency Check
    *
-   * @return Array of names of unmet extension dependencies
+   * @return Array of names of unmet extension dependencies; NOTE: returns an
+   *         empty array when all dependencies are met.
    */
   public static function checkExtensionDependencies() {
     $ext_manager = CRM_Extension_System::singleton()->getManager();
