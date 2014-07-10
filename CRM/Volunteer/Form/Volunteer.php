@@ -94,8 +94,8 @@ class CRM_Volunteer_Form_Volunteer extends CRM_Event_Form_ManageEvent {
 
     if (!$bln_pre_req) {
       //Display error to user
-      $message = ts('You must install and enable the Multiform extension to use CiviVolunteer.', array('domain' => 'org.civicrm.volunteer'));
-      CRM_Core_Session::setStatus($message, ts('Pre-requisite check failed.', array('domain' => 'org.civicrm.volunteer')), 'no-popup');
+      $message = ts('You must install and enable the Multiform extension (https://github.com/ginkgostreet/civicrm_multiform) to use CiviVolunteer.', array('domain' => 'org.civicrm.volunteer'));
+      CRM_Core_Session::setStatus($message, ts('Prerequisite check failed.', array('domain' => 'org.civicrm.volunteer')), 'no-popup');
 
       return false;
     }
