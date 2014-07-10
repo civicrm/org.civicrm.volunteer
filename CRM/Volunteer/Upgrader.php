@@ -50,6 +50,9 @@ class CRM_Volunteer_Upgrader extends CRM_Volunteer_Upgrader_Base {
 
     $this->createVolunteerActivityStatus();
 
+    $unmet = CRM_Volunteer_Upgrader::checkExtensionDependencies();
+    self::displayDependencyErrors($unmet);
+
     // uncomment the next line to insert sample data
     // $this->executeSqlFile('sql/volunteer_sample.mysql');
   }
@@ -76,6 +79,68 @@ class CRM_Volunteer_Upgrader extends CRM_Volunteer_Upgrader_Base {
       ON DELETE SET NULL
     ');
     return TRUE;
+  }
+
+  /**
+   * Display dependency error messages.
+   * This upgrade-step counter should be incremented for each upgrade, not duplicated.
+   *
+   * @return boolean TRUE on success
+   */
+  public function upgrade_1402() {
+    $unmet = CRM_Volunteer_Upgrader::checkExtensionDependencies();
+    self::displayDependencyErrors($unmet);
+    return TRUE;
+  }
+
+  /**
+   * Look up extension dependency error messages and display as Core Session Status
+   *
+   * @param array $unmet
+   */
+  public static function displayDependencyErrors(array $unmet){
+    foreach ($unmet as $ext) {
+      $message = self::getUnmetDependencyErrorMessage($ext);
+      CRM_Core_Session::setStatus($message, ts('Prerequisite check failed.', array('domain' => 'org.civicrm.volunteer')), 'no-popup');
+    }
+  }
+
+  /**
+   * Mapping of extensions names to localized dependency error messages
+   *
+   * @param string $unmet an extension name
+   */
+  public static function getUnmetDependencyErrorMessage($unmet) {
+    switch ($unmet) {
+      case 'com.ginkgosreet.multiform':
+        return ts('You must install and enable the Multiform extension (https://github.com/ginkgostreet/civicrm_multiform) to use CiviVolunteer.'
+          , array('domain' => 'org.civicrm.volunteer'));
+        break;
+      default:
+        break;
+    }
+  }
+
+  /**
+   * Extension Dependency Check
+   *
+   * @return Array of names of unmet extension dependencies
+   */
+  public static function checkExtensionDependencies() {
+    $ext_manager = CRM_Extension_System::singleton()->getManager();
+
+    $arr_extension_dependencies = array(
+      //@TODO move this config out of code
+      'com.ginkgostreet.multiform',
+    );
+
+    $unmet = array();
+    foreach($arr_extension_dependencies as $ext) {
+      if($ext_manager->getStatus($ext) != 1) {
+          $unmet[] = $ext;
+      }
+    }
+    return $unmet;
   }
 
   /**
