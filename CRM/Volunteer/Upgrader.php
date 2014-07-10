@@ -136,7 +136,7 @@ class CRM_Volunteer_Upgrader extends CRM_Volunteer_Upgrader_Base {
 
     $unmet = array();
     foreach($arr_extension_dependencies as $ext) {
-      if($ext_manager->getStatus($ext) != 1) {
+      if($ext_manager->getStatus($ext) != CRM_Extension_Manager::STATUS_INSTALLED) {
           $unmet[] = $ext;
       }
     }
