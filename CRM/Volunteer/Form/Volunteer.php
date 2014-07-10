@@ -91,7 +91,7 @@ class CRM_Volunteer_Form_Volunteer extends CRM_Event_Form_ManageEvent {
 
     $unmet = CRM_Volunteer_Upgrader::checkExtensionDependencies();
 
-    if (in_array('com.ginkgosreet.multiform', $unmet)) {
+    if (in_array('com.ginkgostreet.multiform', $unmet)) {
       CRM_Volunteer_Upgrader::displayDependencyErrors($unmet);
       return false; // short-circuit form building
     }

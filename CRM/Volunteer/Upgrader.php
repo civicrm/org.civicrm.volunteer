@@ -112,13 +112,11 @@ class CRM_Volunteer_Upgrader extends CRM_Volunteer_Upgrader_Base {
    */
   public static function getUnmetDependencyErrorMessage($unmet) {
     switch ($unmet) {
-      case 'com.ginkgosreet.multiform':
-        return ts('You must install and enable the Multiform extension (https://github.com/ginkgostreet/civicrm_multiform) to use CiviVolunteer.'
-          , array('domain' => 'org.civicrm.volunteer'));
-        break;
-      default:
-        break;
+      case 'com.ginkgostreet.multiform':
+        return ts('You must install and enable the <a href="%1">Multiform extension</a> to use CiviVolunteer.', array(1 => 'https://github.com/ginkgostreet/civicrm_multiform', 'domain' => 'org.civicrm.volunteer'));
     }
+
+    CRM_Core_Error::fatal(ts('Unknown error key: %1', array(1 => $unmet, 'domain' => 'org.civicrm.volunteer')));
   }
 
   /**
