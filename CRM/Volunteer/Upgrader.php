@@ -88,6 +88,7 @@ class CRM_Volunteer_Upgrader extends CRM_Volunteer_Upgrader_Base {
    * @return boolean TRUE on success
    */
   public function upgrade_1402() {
+    $this->ctx->log->info('Checking extension dependencies');
     $unmet = CRM_Volunteer_Upgrader::checkExtensionDependencies();
     self::displayDependencyErrors($unmet);
     return TRUE;
