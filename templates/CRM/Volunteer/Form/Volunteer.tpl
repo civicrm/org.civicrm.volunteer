@@ -26,7 +26,7 @@
 
 {capture assign=volunteerLogURL}{crmURL p="civicrm/volunteer/loghours" q="reset=1&action=add&vid=`$vid`"}{/capture}
 
-{if $bln_pre_req }<div id="help">
+<div id="help">
   {if $form.is_active.value}
     <p>
       Volunteer Management is enabled for this event. Note that only users with
@@ -46,7 +46,7 @@
       {help id="id-volunteer-init"}
     </p>
   {/if}
-</div>{/if}
+</div>
 
 {if $form.is_active.value}
 <table class="crm-block crm-form-block crm-event-manage-volunteer-form-block">
