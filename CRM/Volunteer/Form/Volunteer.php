@@ -93,6 +93,8 @@ class CRM_Volunteer_Form_Volunteer extends CRM_Event_Form_ManageEvent {
   public function buildQuickForm() {
     $vid = NULL;
 
+    parent::buildQuickForm();
+
     $this->add(
       'checkbox',
       'is_active',
