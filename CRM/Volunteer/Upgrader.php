@@ -52,8 +52,8 @@ class CRM_Volunteer_Upgrader extends CRM_Volunteer_Upgrader_Base {
 
     $this->createVolunteerActivityStatus();
 
-    $this->findCreateVolunteerContactType();
-    $volContactTypeCustomGroupID = $this->findCreateVolunteerContactCustomGroup();
+    $this->createVolunteerContactType();
+    $volContactTypeCustomGroupID = $this->createVolunteerContactCustomGroup();
     $this->createVolunteerContactCustomFields($volContactTypeCustomGroupID);
 
     $unmet = CRM_Volunteer_Upgrader::checkExtensionDependencies();
@@ -91,8 +91,8 @@ class CRM_Volunteer_Upgrader extends CRM_Volunteer_Upgrader_Base {
    */
   public function upgrade_1400() {
     $this->ctx->log->info('Applying update 1400 - creating volunteer contact subtype and related custom fields');
-    $this->findCreateVolunteerContactType();
-    $volContactTypeCustomGroupID = $this->findCreateVolunteerContactCustomGroup();
+    $this->createVolunteerContactType();
+    $volContactTypeCustomGroupID = $this->createVolunteerContactCustomGroup();
     $this->createVolunteerContactCustomFields($volContactTypeCustomGroupID);
     return TRUE;
   }
@@ -317,10 +317,13 @@ class CRM_Volunteer_Upgrader extends CRM_Volunteer_Upgrader_Base {
   }
 
   /**
+   * Creates the Volunteer contact type, unless it already exists, in which case
+   * the ID is returned.
+   *
    * @return int
    * @throws CRM_Core_Exception
    */
-  private function findCreateVolunteerContactType() {
+  private function createVolunteerContactType() {
     $id = NULL;
     $get = civicrm_api3('ContactType', 'get', array(
       'name' => self::customContactTypeName,
@@ -351,10 +354,13 @@ class CRM_Volunteer_Upgrader extends CRM_Volunteer_Upgrader_Base {
   }
 
   /**
+   * Creates the custom field group for the Volunteer contact type, unless it
+   * already exists, in which case the ID is returned.
+   *
    * @return int
    * @throws CRM_Core_Exception
    */
-  private function findCreateVolunteerContactCustomGroup() {
+  private function createVolunteerContactCustomGroup() {
     $id = NULL;
     $get = civicrm_api3('CustomGroup', 'get', array(
       'name' => self::customContactGroupName,
@@ -388,7 +394,7 @@ class CRM_Volunteer_Upgrader extends CRM_Volunteer_Upgrader_Base {
    */
   private function createVolunteerContactCustomFields($customGroupID) {
     if (!is_int($customGroupID)) {
-      throw new CRM_Core_Exception('Invalid custom group ID provided.');
+      throw new CRM_Core_Exception('Non-numeric custom group ID provided.');
     }
 
     $create = civicrm_api3('customField', 'create', array(
@@ -432,19 +438,19 @@ class CRM_Volunteer_Upgrader extends CRM_Volunteer_Upgrader_Base {
       ),
     ));
 
-    $this->handleCustomFieldCreateResult($create);
+    $this->fieldCreateCheckForError($create);
   }
 
   /**
    * Helper function
    *
-   * Sets status mesasge if field already exists, throws exception in case of
+   * Sets status message if field already exists, throws exception in case of
    * other error, does nothing on success
    *
    * @param array $apiResult
    * @throws CRM_Core_Exception
    */
-  private function handleCustomFieldCreateResult(array $apiResult) {
+  private function fieldCreateCheckForError(array $apiResult) {
     if (CRM_Utils_Array::value('is_error', $apiResult)) {
       if ($apiResult['error_code'] == 'already exists') {
         CRM_Core_Session::setStatus(
