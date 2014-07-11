@@ -353,3 +353,36 @@ function volunteer_civicrm_alterAPIPermissions($entity, $action, &$params, &$per
   $permissions['volunteer_need']['default'] = array('access CiviEvent', 'edit all events');
   $permissions['volunteer_assignment']['default'] = array('access CiviEvent', 'edit all events');
 }
+
+/**
+ * Implementation of hook_civicrm_alterTemplateFile
+ *
+ * @param type $formName
+ * @param type $form
+ * @param type $context
+ * @param type $tplName
+ */
+function volunteer_civicrm_alterTemplateFile ($formName, &$form, $context, &$tplName) {
+  $f = '_' . __FUNCTION__ . '_' . $formName;
+  if (function_exists($f)) {
+    $f($formName, $form, $context, $tplName);
+  }
+}
+
+/**
+ * Delegated implementation of hook_civicrm_alterTemplateFile
+ *
+ * Don't load the volunteer tab if Multiform prereq is missing.
+ *
+ * @param type $formName
+ * @param type $form
+ * @param type $context
+ * @param string $tplName
+ */
+function _volunteer_civicrm_alterTemplateFile_CRM_Volunteer_Form_Volunteer ($formName, &$form, $context, &$tplName) {
+  $unmet = CRM_Volunteer_Upgrader::checkExtensionDependencies();
+
+  if (in_array('com.ginkgostreet.multiform', $unmet)) {
+    $tplName = 'CRM/Volunteer/MissingDependency.tpl';
+  }
+}
