@@ -88,6 +88,7 @@ class CRM_Volunteer_Upgrader extends CRM_Volunteer_Upgrader_Base {
    * @return boolean TRUE on success
    */
   public function upgrade_1402() {
+    $this->ctx->log->info('Checking extension dependencies');
     $unmet = CRM_Volunteer_Upgrader::checkExtensionDependencies();
     self::displayDependencyErrors($unmet);
     return TRUE;
@@ -101,7 +102,7 @@ class CRM_Volunteer_Upgrader extends CRM_Volunteer_Upgrader_Base {
   public static function displayDependencyErrors(array $unmet){
     foreach ($unmet as $ext) {
       $message = self::getUnmetDependencyErrorMessage($ext);
-      CRM_Core_Session::setStatus($message, ts('Prerequisite check failed.', array('domain' => 'org.civicrm.volunteer')), 'no-popup');
+      CRM_Core_Session::setStatus($message, ts('Prerequisite check failed.', array('domain' => 'org.civicrm.volunteer')));
     }
   }
 
@@ -112,19 +113,18 @@ class CRM_Volunteer_Upgrader extends CRM_Volunteer_Upgrader_Base {
    */
   public static function getUnmetDependencyErrorMessage($unmet) {
     switch ($unmet) {
-      case 'com.ginkgosreet.multiform':
-        return ts('You must install and enable the Multiform extension (https://github.com/ginkgostreet/civicrm_multiform) to use CiviVolunteer.'
-          , array('domain' => 'org.civicrm.volunteer'));
-        break;
-      default:
-        break;
+      case 'com.ginkgostreet.multiform':
+        return ts('CiviVolunteer was installed successfully, but you must also install and enable the <a href="%1">Multiform extension</a>.', array(1 => 'https://github.com/ginkgostreet/civicrm_multiform', 'domain' => 'org.civicrm.volunteer'));
     }
+
+    CRM_Core_Error::fatal(ts('Unknown error key: %1', array(1 => $unmet, 'domain' => 'org.civicrm.volunteer')));
   }
 
   /**
    * Extension Dependency Check
    *
-   * @return Array of names of unmet extension dependencies
+   * @return Array of names of unmet extension dependencies; NOTE: returns an
+   *         empty array when all dependencies are met.
    */
   public static function checkExtensionDependencies() {
     $ext_manager = CRM_Extension_System::singleton()->getManager();
@@ -136,7 +136,7 @@ class CRM_Volunteer_Upgrader extends CRM_Volunteer_Upgrader_Base {
 
     $unmet = array();
     foreach($arr_extension_dependencies as $ext) {
-      if($ext_manager->getStatus($ext) != 1) {
+      if($ext_manager->getStatus($ext) != CRM_Extension_Manager::STATUS_INSTALLED) {
           $unmet[] = $ext;
       }
     }

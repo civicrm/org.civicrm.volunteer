@@ -76,6 +76,12 @@ class CRM_Volunteer_Form_Volunteer extends CRM_Event_Form_ManageEvent {
    */
   function preProcess() {
     parent::preProcess();
+
+    $unmet = CRM_Volunteer_Upgrader::checkExtensionDependencies();
+    if (in_array('com.ginkgostreet.multiform', $unmet)) {
+      $msg = CRM_Volunteer_Upgrader::getUnmetDependencyErrorMessage('com.ginkgostreet.multiform');
+      $this->assign('msg', $msg);
+    }
   }
 
   /**
@@ -88,13 +94,6 @@ class CRM_Volunteer_Form_Volunteer extends CRM_Event_Form_ManageEvent {
     $vid = NULL;
 
     parent::buildQuickForm();
-
-    $unmet = CRM_Volunteer_Upgrader::checkExtensionDependencies();
-
-    if (in_array('com.ginkgosreet.multiform', $unmet)) {
-      CRM_Volunteer_Upgrader::displayDependencyErrors($unmet);
-      return false; // short-circuit form building
-    }
 
     $this->add(
       'checkbox',
