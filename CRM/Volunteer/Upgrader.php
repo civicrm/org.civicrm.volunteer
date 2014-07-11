@@ -309,8 +309,10 @@ class CRM_Volunteer_Upgrader extends CRM_Volunteer_Upgrader_Base {
 
       $result = civicrm_api('ActivityType', 'create', array(
         'name' => $machineName,
-        'label' => ts($label, array('domain' => 'org.civicrm.volunteer')),
+        'label' => $label,
         'is_active' => '1',
+        'version' => 3,
+        'weight' => 0,
       ));
       if (CRM_Utils_Array::value('is_error', $result, FALSE)) {
         CRM_Core_Error::debug_var('activityTypeResult', $result);
