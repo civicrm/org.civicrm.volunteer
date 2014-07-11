@@ -31,6 +31,9 @@
  */
 class CRM_Volunteer_Upgrader extends CRM_Volunteer_Upgrader_Base {
 
+  const commendationActivityTypeName = 'volunteer_commendation';
+  const commendationCustomGroupName = 'volunteer_commendation';
+  const commendationProjectRefFieldName = 'project_id';
   const customActivityTypeName = 'Volunteer';
   const customContactGroupName = 'Volunteer_Information';
   const customContactTypeName = 'Volunteer';
@@ -55,11 +58,55 @@ class CRM_Volunteer_Upgrader extends CRM_Volunteer_Upgrader_Base {
     $volContactTypeCustomGroupID = $this->createVolunteerContactCustomGroup();
     $this->createVolunteerContactCustomFields($volContactTypeCustomGroupID);
 
+    $this->installCommendationActivityType();
+
     $unmet = CRM_Volunteer_Upgrader::checkExtensionDependencies();
     self::displayDependencyErrors($unmet);
 
     // uncomment the next line to insert sample data
     // $this->executeSqlFile('sql/volunteer_sample.mysql');
+  }
+
+  private function installCommendationActivityType() {
+    $activityTypeID = $this->createActivityType(self::commendationActivityTypeName,
+      ts('Volunteer Commendation', array('domain' => 'org.civicrm.volunteer'))
+    );
+
+    $customGroupID = NULL;
+    try {
+      $get = civicrm_api3('CustomGroup', 'getsingle', array(
+        'extends' => 'Activity',
+        'name' => self::commendationCustomGroupName,
+        'return' => 'id',
+      ));
+      $customGroupID = $get['id'];
+    } catch (Exception $e) {
+      $create = civicrm_api('CustomGroup', 'create', array(
+        'extends' => 'Activity',
+        'extends_entity_column_value' => $activityTypeID,
+        'is_reserved' => 1,
+        'name' => self::commendationCustomGroupName,
+        'title' => ts('Volunteer Commendation', array('domain' => 'org.civicrm.volunteer')),
+        'version' => 3,
+      ));
+      if (CRM_Utils_Array::value('is_error', $create)) {
+        CRM_Core_Error::debug_var('customGroupResult', $create);
+        throw new CRM_Core_Exception('Failed to register custom group for commendation active type');
+      }
+
+      $customGroupID = $create['id'];
+    }
+
+    $create = civicrm_api3('customField', 'create', array(
+      'custom_group_id' => $customGroupID,
+      'data_type' => 'Int',
+      'html_type' => 'Text',
+      'is_searchable' => 0,
+      'label' => ts('Volunteer Project ID', array('domain' => 'org.civicrm.volunteer')),
+      'name' => self::commendationProjectRefFieldName,
+    ));
+
+    $this->fieldCreateCheckForError($create);
   }
 
   /**
@@ -106,6 +153,15 @@ class CRM_Volunteer_Upgrader extends CRM_Volunteer_Upgrader_Base {
     $this->ctx->log->info('Checking extension dependencies');
     $unmet = CRM_Volunteer_Upgrader::checkExtensionDependencies();
     self::displayDependencyErrors($unmet);
+    return TRUE;
+  }
+
+  /**
+   * @return boolean TRUE on success
+   */
+  public function upgrade_1403() {
+    $this->ctx->log->info('Applying update 1403 - creating commendation activity type and related custom fields');
+    $this->installCommendationActivityType();
     return TRUE;
   }
 
