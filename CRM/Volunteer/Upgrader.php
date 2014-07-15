@@ -340,7 +340,7 @@ class CRM_Volunteer_Upgrader extends CRM_Volunteer_Upgrader_Base {
    *
    * @param string $machineName Machine name for the new activity type
    * @param string $label Human-readable name (optional, defaults to machine name)
-   * @return int ID of Activity type
+   * @return int ID of Activity type (i.e., the value of the OptionValue)
    * @throws CRM_Core_Exception
    */
   public function createActivityType($machineName, $label = NULL) {
@@ -350,15 +350,14 @@ class CRM_Volunteer_Upgrader extends CRM_Volunteer_Upgrader_Base {
       'return' => 'id'
     ));
 
-    $optionValue = civicrm_api3('OptionValue', 'Get', array(
-      'name' => $machineName,
-      'option_group_id' => $optionGroup['id'],
-      'return' => 'value'
-    ));
-
-    if ($optionValue['count']) {
-      $id = key($optionValue['values']);
-    } else {
+    try {
+      $optionValue = civicrm_api3('OptionValue', 'getsingle', array(
+        'name' => $machineName,
+        'option_group_id' => $optionGroup['id'],
+        'return' => 'value'
+      ));
+      $id = $optionValue['value'];
+    } catch(Exception $e) {
       if (is_null($label)) {
         $label = $machineName;
       }
@@ -374,8 +373,7 @@ class CRM_Volunteer_Upgrader extends CRM_Volunteer_Upgrader_Base {
         CRM_Core_Error::debug_var('activityTypeResult', $result);
         throw new CRM_Core_Exception('Failed to register activity type ' . $machineName);
       }
-
-      $id = $result['id'];
+      $id = $result['values'][$result['id']]['value'];
     }
 
     return (int) $id;
