@@ -24,7 +24,7 @@ abstract class VolunteerTestAbstract extends CiviUnitTestCase {
     // code adapted from CRM_Volunteer_Upgrader::install().
     $upgrader = new CRM_Volunteer_Upgrader('org.civicrm.volunteer', dirname(__FILE__) . '/../../');
 
-    $activityTypeId = $upgrader->findCreateVolunteerActivityType();
+    $activityTypeId = $upgrader->createActivityType(CRM_Volunteer_Upgrader::customActivityTypeName);
     $smarty = CRM_Core_Smarty::singleton();
     $smarty->assign('volunteer_custom_activity_type_name', CRM_Volunteer_Upgrader::customActivityTypeName);
     $smarty->assign('volunteer_custom_group_name', CRM_Volunteer_Upgrader::customGroupName);

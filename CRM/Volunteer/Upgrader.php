@@ -31,6 +31,9 @@
  */
 class CRM_Volunteer_Upgrader extends CRM_Volunteer_Upgrader_Base {
 
+  const commendationActivityTypeName = 'volunteer_commendation';
+  const commendationCustomGroupName = 'volunteer_commendation';
+  const commendationProjectRefFieldName = 'project_id';
   const customActivityTypeName = 'Volunteer';
   const customContactGroupName = 'Volunteer_Information';
   const customContactTypeName = 'Volunteer';
@@ -38,13 +41,12 @@ class CRM_Volunteer_Upgrader extends CRM_Volunteer_Upgrader_Base {
   const customOptionGroupName = 'volunteer_role';
 
   public function install() {
-
-    $activityTypeId = $this->findCreateVolunteerActivityType();
+    $volActivityTypeId = $this->createActivityType(self::customActivityTypeName);
     $smarty = CRM_Core_Smarty::singleton();
     $smarty->assign('volunteer_custom_activity_type_name', self::customActivityTypeName);
     $smarty->assign('volunteer_custom_group_name', self::customGroupName);
     $smarty->assign('volunteer_custom_option_group_name', self::customOptionGroupName);
-    $smarty->assign('volunteer_activity_type_id', $activityTypeId);
+    $smarty->assign('volunteer_activity_type_id', $volActivityTypeId);
 
     $customIDs = $this->findCustomGroupValueIDs();
     $smarty->assign('customIDs', $customIDs);
@@ -56,11 +58,55 @@ class CRM_Volunteer_Upgrader extends CRM_Volunteer_Upgrader_Base {
     $volContactTypeCustomGroupID = $this->createVolunteerContactCustomGroup();
     $this->createVolunteerContactCustomFields($volContactTypeCustomGroupID);
 
+    $this->installCommendationActivityType();
+
     $unmet = CRM_Volunteer_Upgrader::checkExtensionDependencies();
     self::displayDependencyErrors($unmet);
 
     // uncomment the next line to insert sample data
     // $this->executeSqlFile('sql/volunteer_sample.mysql');
+  }
+
+  private function installCommendationActivityType() {
+    $activityTypeID = $this->createActivityType(self::commendationActivityTypeName,
+      ts('Volunteer Commendation', array('domain' => 'org.civicrm.volunteer'))
+    );
+
+    $customGroupID = NULL;
+    try {
+      $get = civicrm_api3('CustomGroup', 'getsingle', array(
+        'extends' => 'Activity',
+        'name' => self::commendationCustomGroupName,
+        'return' => 'id',
+      ));
+      $customGroupID = $get['id'];
+    } catch (Exception $e) {
+      $create = civicrm_api('CustomGroup', 'create', array(
+        'extends' => 'Activity',
+        'extends_entity_column_value' => $activityTypeID,
+        'is_reserved' => 1,
+        'name' => self::commendationCustomGroupName,
+        'title' => ts('Volunteer Commendation', array('domain' => 'org.civicrm.volunteer')),
+        'version' => 3,
+      ));
+      if (CRM_Utils_Array::value('is_error', $create)) {
+        CRM_Core_Error::debug_var('customGroupResult', $create);
+        throw new CRM_Core_Exception('Failed to register custom group for commendation active type');
+      }
+
+      $customGroupID = $create['id'];
+    }
+
+    $create = civicrm_api3('customField', 'create', array(
+      'custom_group_id' => $customGroupID,
+      'data_type' => 'Int',
+      'html_type' => 'Text',
+      'is_searchable' => 0,
+      'label' => ts('Volunteer Project ID', array('domain' => 'org.civicrm.volunteer')),
+      'name' => self::commendationProjectRefFieldName,
+    ));
+
+    $this->fieldCreateCheckForError($create);
   }
 
   /**
@@ -107,6 +153,15 @@ class CRM_Volunteer_Upgrader extends CRM_Volunteer_Upgrader_Base {
     $this->ctx->log->info('Checking extension dependencies');
     $unmet = CRM_Volunteer_Upgrader::checkExtensionDependencies();
     self::displayDependencyErrors($unmet);
+    return TRUE;
+  }
+
+  /**
+   * @return boolean TRUE on success
+   */
+  public function upgrade_1403() {
+    $this->ctx->log->info('Applying update 1403 - creating commendation activity type and related custom fields');
+    $this->installCommendationActivityType();
     return TRUE;
   }
 
@@ -278,42 +333,50 @@ class CRM_Volunteer_Upgrader extends CRM_Volunteer_Upgrader_Base {
 
     return $result;
   }
+
   /**
-   * @return int
+   * Creates an activity type, unless one with the provided machine name already
+   * exists, in which case no changes are made to the database.
+   *
+   * @param string $machineName Machine name for the new activity type
+   * @param string $label Human-readable name (optional, defaults to machine name)
+   * @return int ID of Activity type (i.e., the value of the OptionValue)
    * @throws CRM_Core_Exception
    */
-  public function findCreateVolunteerActivityType() {
-    $optionGroup = civicrm_api('OptionGroup', 'Get', array(
-      'version' => 3,
+  public function createActivityType($machineName, $label = NULL) {
+    $id = NULL;
+    $optionGroup = civicrm_api3('OptionGroup', 'getsingle', array(
       'name' => 'activity_type',
       'return' => 'id'
     ));
 
-    $optionValue = civicrm_api('OptionValue', 'Get', array(
-      'version' => 3,
-      'name' => self::customActivityTypeName,
-      'option_group_id' => $optionGroup['id'],
-      'return' => 'value'
-    ));
+    try {
+      $optionValue = civicrm_api3('OptionValue', 'getsingle', array(
+        'name' => $machineName,
+        'option_group_id' => $optionGroup['id'],
+        'return' => 'value'
+      ));
+      $id = $optionValue['value'];
+    } catch(Exception $e) {
+      if (is_null($label)) {
+        $label = $machineName;
+      }
 
-    if ($optionValue['count']) {
-      $opt = current($optionValue['values']);
-      return $opt['value'];
-    } else {
       $result = civicrm_api('ActivityType', 'create', array(
-        'version' => 3,
-        'name' => self::customActivityTypeName,
-        'label' => ts('Volunteer', array('domain' => 'org.civicrm.volunteer')),
-        'weight' => 58,
+        'name' => $machineName,
+        'label' => $label,
         'is_active' => '1',
+        'version' => 3,
+        'weight' => 0,
       ));
       if (CRM_Utils_Array::value('is_error', $result, FALSE)) {
         CRM_Core_Error::debug_var('activityTypeResult', $result);
-        throw new CRM_Core_Exception('Failed to register activity type');
+        throw new CRM_Core_Exception('Failed to register activity type ' . $machineName);
       }
-
-      return $result['values'][$result['id']]['value'];
+      $id = $result['values'][$result['id']]['value'];
     }
+
+    return (int) $id;
   }
 
   /**
