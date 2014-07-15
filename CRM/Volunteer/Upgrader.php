@@ -436,9 +436,9 @@ class CRM_Volunteer_Upgrader extends CRM_Volunteer_Upgrader_Base {
     } else {
       $create = civicrm_api3('CustomGroup', 'create', array(
         'extends' => 'Individual',
-        'extends_entity_column_value' => 'Volunteer Information',
+        'extends_entity_column_value' => 'Volunteer',
         'name' => self::customContactGroupName,
-        'title' => ts('Volunteer', array('domain' => 'org.civicrm.volunteer')),
+        'title' => ts('Volunteer Information', array('domain' => 'org.civicrm.volunteer')),
       ));
       if (CRM_Utils_Array::value('is_error', $create)) {
         CRM_Core_Error::debug_var('customGroupResult', $create);
