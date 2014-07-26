@@ -136,7 +136,10 @@ class CRM_Volunteer_Form_VolunteerSignUp extends CRM_Core_Form {
     $this->buildCustom('volunteerProfile');
 
     // better UX not to display a select box with only one possible selection
-    if (count($this->_project->roles) > 1) {
+    // But worse to not indicate to the end-user what role they are registering for.
+    // TODO: Do NOT list any role that does not have any OPEN shifts. Open means the shift is not full
+    // and the shift does not occur in the past.
+    if (count($this->_project->roles) > 0) {
       $this->add(
         'select',               // field type
         'volunteer_role_id',    // field name
@@ -147,7 +150,10 @@ class CRM_Volunteer_Form_VolunteerSignUp extends CRM_Core_Form {
     }
 
     // better UX not to display a select box with only one possible selection
-    if (count($this->_project->shifts) > 1) {
+    // But worse to not tell the end-user what shift they are registering for.
+    $tmp_open_shifts = $this->_project->getOpenShifts(); 
+    if (count($tmp_open_shifts) > 0) {
+    
       $select = $this->add(
         'select',               // field type
         'volunteer_need_id',    // field name
@@ -155,7 +161,7 @@ class CRM_Volunteer_Form_VolunteerSignUp extends CRM_Core_Form {
         array(),                // list of options
         false                    // is required
       );
-      foreach ($this->_project->shifts as $id => $data) {
+      foreach ($tmp_open_shifts as $id => $data) {
         $select->addOption($data['label'], $id, array('data-role' => $data['role_id']));
       }
 
