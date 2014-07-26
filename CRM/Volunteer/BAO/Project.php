@@ -445,4 +445,85 @@ class CRM_Volunteer_BAO_Project extends CRM_Volunteer_DAO_Project {
 
     return $this->shifts;
   }
+  
+  
+  public function getOpenShifts(){
+  
+   if (empty($this->shifts)) {
+      $shifts = array();
+
+      if (empty($this->needs)) {
+        $this->_get_needs();
+      }
+
+      foreach ($this->needs as $id => $need) {
+        if (!empty($need['start_time'])) {
+          $shifts[$id] = array(
+            'label' => CRM_Volunteer_BAO_Need::getTimes($need['start_time'], CRM_Utils_Array::value('duration', $need)),
+            'role_id' => $need['role_id'],
+          );
+        }
+      }
+
+      $this->shifts = $shifts;
+      
+      $open_need_ids = array(); 
+      
+      $params = array(
+	  'version' => 3,
+	  'sequential' => 1,
+	  'name' => 'CiviVolunteer',
+	);
+	$result = civicrm_api('CustomGroup', 'getsingle', $params);
+	
+	
+	$tmp_vol_custom_table = $result['table_name']; 
+	$tmp_vol_set_id = $result['id']; 
+	
+      $params = array(
+	  'version' => 3,
+	  'sequential' => 1,
+	  'name' => 'Volunteer_Need_Id',
+	);
+	$result = civicrm_api('CustomField', 'getsingle', $params);
+	
+	$tmp_vol_custom_field = $result['column_name'];
+	
+      $sql = "SELECT  n.id as need_id , n.quantity, f1.filled_count
+              FROM civicrm_volunteer_need n LEFT JOIN ( select  $tmp_vol_custom_field as n_id,
+               count(*) as filled_count FROM $tmp_vol_custom_table 
+              group by $tmp_vol_custom_field )
+               f1 ON n.id = f1.n_id
+              where  n.quantity is NOT null
+              AND quantity - ifnull(f1.filled_count,0) > 0
+              AND n.start_time >= now() "; 
+              
+       $dao =  & CRM_Core_DAO::executeQuery( $sql,    CRM_Core_DAO::$_nullArray ) ;
+       while($dao->fetch()){
+       		$open_need_ids[] = $dao->need_id; 
+       
+       }
+       
+ 	$dao->free();
+ 	
+ 	foreach($shifts as $id => $shift){
+ 	 if( in_array( $id,  $open_need_ids) == false){
+ 	  unset( $shifts[$id]);
+ 	 
+ 	 }
+ 	
+ 	
+ 	}
+          
+          return $shifts;    
+              
+    }
+
+
+  
+  
+  
+  }
+  
+  
 }
