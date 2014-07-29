@@ -80,6 +80,25 @@
       <td>{$form.target_contact_id.html}
       </td>
     </table>
+    <div id="org_civicrm_volunteer-sign-up-profiles">
+      {foreach name=profileSignUpName from=$profileSignUpMultiple key=profileSignUpKey item=profileSignUpItem}
+        <tr id="multiple_signup_profiles_{$profileSignUpKey}_wrapper"
+            class='crm-event-manage-registration-form-block-custom_post_multiple'>
+          <td scope="row" class="label" width="20%">{$form.custom_signup_profiles.$profileSignUpItem.label}</td>
+          <td>{$form.custom_signup_profiles.$profileSignUpItem.html}
+            &nbsp;<span class='profile_bottom_link_remove'>
+              <a href="#" class="crm-hover-button crm-button-rem-profile">
+              <span class="icon ui-icon-trash"></span>{ts}remove profile{/ts}</a></span>
+            {if $smarty.foreach.profileSignUpName.last}
+              &nbsp;&nbsp;
+              <span class='profile_bottom_link'><a href="#" class="crm-hover-button crm-button-add-profile"><span
+                    class="icon ui-icon-plus"></span>{ts}add another profile (bottom of page){/ts}</a></span>
+            {/if}
+            <br/><span class="profile-links"></span>
+          </td>
+        </tr>
+      {/foreach}
+  </div>
   </div>
   <div class="crm-submit-buttons">
     {include file="CRM/common/formButtons.tpl" location="bottom"}

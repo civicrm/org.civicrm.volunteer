@@ -49,6 +49,7 @@ class CRM_Volunteer_Form_Volunteer extends CRM_Event_Form_ManageEvent {
    * @return array
    */
   function setDefaultValues() {
+
     $project = current(CRM_Volunteer_BAO_Project::retrieve(array(
       'entity_id' => $this->_id,
       'entity_table' => CRM_Event_DAO_Event::$_tableName,
@@ -67,6 +68,66 @@ class CRM_Volunteer_Form_Volunteer extends CRM_Event_Form_ManageEvent {
       'is_active' => $project ? $project->is_active: 0,
       'target_contact_id' => $target_contact_id,
     );
+
+    $params = array('entity_id' => $project->entity_id);
+
+    /*$forms = array();
+    $daoForm = new CRM_Multiform_DAO_EntityForm();
+    $daoForm->copyValues($params); $daoForm->find();
+    while ($daoForm->fetch()) {
+      $forms[(int) $daoForm->id] = clone $daoForm;
+    }
+    $daoForm->free();*/
+    //$forms = CRM_Multiform_BAO_EntityForm::getEntityForms($params);
+    $forms = civicrm_api3('EntityForm', 'get', $params);
+
+    if ($forms['count'] > 1) {
+      #TODO: translate
+      CRM_Core_Session::setStatus('Found multiple custom forms for this project. This feature is not implemented yet');
+    }
+
+    if ($forms['count'] === 0) {
+      #TODO: translate
+      CRM_Core_Session::setStatus('No custom forms found, assigning the reserved profile, "Volunteer Sign Up" to a new MultiForm entity.');
+
+      ## create form;
+      $params = array(
+        'entity_table' => 'civicrm_event',
+        'entity_id' => $project->entity_id,
+        'title' => 'Volunteer Sign Up'
+      );
+      $api_result = civicrm_api3('EntityForm', 'create', $params);
+      $form_id = $api_result['id'];
+
+      ## assign profile to form (UFJoin)
+      $api_result = civicrm_api3('UFGroup', 'get', array('name' => 'volunteer_sign_up'));
+      $params = array(
+        'entity_table' => 'entity_form',
+        'module' => 'MultiForm',
+        'entity_id' => $form_id,
+        'uf_group_id' => $api_result['id'],
+      );
+      $create_result = CRM_Core_BAO_UFJoin::create($params);
+
+      $groupids = array($api_result['id']);
+    }
+    else {
+      $groupids = array();
+      foreach (array_keys($forms['values']) as $id){
+        $ufJoinParams = array(
+          'entity_table' => 'entity_form',
+          'module' => 'MultiForm',
+          'entity_id' => $id,
+        );
+        $groupids[] = CRM_Core_BAO_UFJoin::findUFGroupId($ufJoinParams);
+      }
+    }
+
+    foreach ($groupids as $key => $value) {
+      self::buildProfileWidget($this, $key);
+      $defaults["custom_signup_profiles[$key]"] = $value;
+    }
+    $this->assign('profileSignUpMultiple', array_keys($groupids));
 
     return $defaults;
    }
@@ -164,9 +225,88 @@ class CRM_Volunteer_Form_Volunteer extends CRM_Event_Form_ManageEvent {
       CRM_Volunteer_BAO_Need::create($need);
     }
 
+    /***
+     * process profiles
+     */
+
+    $params = array(
+      'entity_table' => 'civicrm_event',
+      'entity_id' => $this->id,
+      'return' => 'id'
+      );
+    $api_result = civicrm_api3('EntityForm', 'getsingle', $params);
+    $form_id = $api_result['id'];
+
+    foreach($form['custom_signup_profiles'] as $idx => $profile_id) {
+      $params = array(
+        'entity_table' => 'entity_form',
+        'module' => 'MultiForm',
+        'entity_id' => $form_id,
+        'uf_group_id' => $profile_id,
+      );
+      $api_result = CRM_Core_BAO_UFJoin::create($params);
+      CRM_Core_Session::setStatus(var_export($api_result, true), 'api_result', 'error');
+    }
+
     parent::endPostProcess();
   }
 
+  private function buildMultiProfileSelects() {
+//    $addSignUpProfile = CRM_Utils_Array::value('addSignUpProfile', $_GET, FALSE);
+//    $signUpProfileNum = CRM_Utils_Array::value('signUpProfileNum', $_GET, 0);
+//    $requestAddProfile = CRM_Utils_Array::value('addProfile', $_GET, FALSE);
+    //$this->signUpProfileNumAdd = CRM_Utils_Array::value('addProfileNumAdd', $_GET, 0);
+
+//    $this->assign('addSignUpProfile', $addSignUpProfile);
+//    $this->assign('signUpProfileNum', $signUpProfileNum);
+//
+//    $paramsAddProfile = "id={$this->_id}&addProfile=1&qfKey={$this->controller->_key}";
+//    $this->assign('paramsAddProfile', $paramsAddProfile);
+//
+    $arrProfiles = array(0 => 1, 1 => 2);
+    foreach ($arrProfiles as $key => $value) {
+      self::buildProfileWidget($this, $key, '', '&nbsp;');
+      $arrWidgets["custom_signup_profiles[$key]"] = $value;
+    }
+
+    return $arrWidgets;
+  }
+  /**
+   * Subroutine to insert a Profile Editor widget
+   * depends on getProfileSelectorTypes
+   *
+   * @param array &$form
+   * @param int $count unique index
+   * @param string $prefix dom element ID prefix
+   * @param string $label Label
+   * @param array $configs Optional, for addProfileSelector(), defaults to using getProfileSelectorTypes()
+   **/
+  function buildProfileWidget(&$form, $count, $prefix = '', $label = 'Include Profile', $configs = null) {
+    extract( ( is_null($configs) ) ? self::getProfileSelectorTypes() : $configs );
+    $element = $prefix . "custom_signup_profiles[$count]";
+    $form->addProfileSelector( $element,  $label, $allowCoreTypes, $allowSubTypes, $profileEntities);
+  }
+  /**
+   * Create initializers for addprofileSelector
+   *
+   * @return array( 'allowCoreTypes' => array(), 'allowSubTypes' => array(), 'profileEntities' => array() )
+   **/
+  static function getProfileSelectorTypes() {
+    $configs = array(
+      'allowCoreTypes' => array(),
+      'allowSubTypes' => array(),
+      'profileEntities' => array(),
+    );
+
+    $configs['allowCoreTypes'][] = 'Contact';
+    $configs['allowCoreTypes'][] = 'Individual';
+    $configs['allowCoreTypes'][] = 'Participant';
+
+    $configs['profileEntities'][] = array('entity_name' => 'contact_1', 'entity_type' => 'IndividualModel');
+    $configs['profileEntities'][] = array('entity_name' => 'participant_1', 'entity_type' => 'ParticipantModel');
+
+   return $configs;
+  }
   /**
    * Return a descriptive name for the page, used in wizard header
    *
