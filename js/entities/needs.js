@@ -35,7 +35,12 @@ CRM.volunteerApp.module('Entities', function(Entities, volunteerApp, Backbone, M
  });
 
   Entities.getNeeds = function(params) {
+    defaults = {
+      'options': {'limit': 0}
+    };
     params = params || {};
+    params = _.extend(defaults, params);
+
     var defer = $.Deferred();
     params.project_id = volunteerApp.project_id;
     CRM.api('volunteer_need', 'get', params, {
@@ -49,7 +54,7 @@ CRM.volunteerApp.module('Entities', function(Entities, volunteerApp, Backbone, M
     });
     return defer.promise();
   };
-  
+
   function formatDate (arrayData) {
     if (arrayData.start_time) {
       var timeDate = arrayData.start_time.split(" ");
