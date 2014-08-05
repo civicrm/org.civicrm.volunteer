@@ -8,8 +8,8 @@
     <author>Yashodha Chaku, Michael Daryabeygi, Frank J. Gómez, Dave Greenberg, and Coleman Watts</author>
     <email>info@civicrm.org</email>
   </maintainer>
-  <releaseDate>2014-02-08</releaseDate>
-  <version>1.3</version>
+  <releaseDate>2014-08-05</releaseDate>
+  <version>1.3.1</version>
   <develStage>stable</develStage>
   <compatibility>
     <ver>4.4</ver>
@@ -19,6 +19,6 @@
     <namespace>CRM/Volunteer</namespace>
   </civix>
   <urls>
-    <url desc="Documentation">https://github.com/civicrm/civivolunteer/blob/1.3/README.md</url>
+    <url desc="Documentation">https://github.com/civicrm/civivolunteer/blob/1.3.1/README.md</url>
   </urls>
 </extension>
