@@ -1,0 +1,12 @@
+/* TODO: create images for backgrounds */
+.volunteer-commendation {
+  background: #FF0000;
+  cursor: pointer;
+  display: block;
+  height: 25px;
+  width: 25px;
+}
+
+.volunteer-commendation.commended {
+  background: #FFFF00;
+}

@@ -389,3 +389,32 @@ function _volunteer_civicrm_alterTemplateFile_CRM_Volunteer_Form_Volunteer ($for
     $tplName = 'CRM/Volunteer/MissingDependency.tpl';
   }
 }
+
+/**
+ * @return string Server path to the extension root
+ */
+function _volunteerGetExtRoot() {
+  return dirname(__FILE__);
+}
+
+/**
+ * Utility function to get the URL to the extension.
+ *
+ * Because CiviCRM's asset management framework isn't mature yet (e.g., adding
+ * assets to forms rendered in pop-ups using CRM_Core_Resources doesn't work),
+ * we use this function to get a URL we can use in templates.
+ *
+ * @return string URL to extension root
+ */
+function _volunteerGetExtURL() {
+  $baseExtURL = civicrm_api3('setting', 'getvalue', array(
+    'name' => 'extensionsURL',
+  ));
+
+  // strip off protocol so we make URLs like ://mydomain.org/some/stuff
+  $baseExtURL = substr($baseExtURL, strpos($baseExtURL, ':') + 1);
+
+  $pathParts = explode('/', _volunteerGetExtRoot());
+
+  return $baseExtURL . '/' . array_pop($pathParts);
+}

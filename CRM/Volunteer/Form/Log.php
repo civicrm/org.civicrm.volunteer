@@ -78,6 +78,15 @@ class CRM_Volunteer_Form_Log extends CRM_Core_Form {
     else {
       $this->_title .= ' )';
     }
+
+    $coreResourceURL = civicrm_api3('Setting', 'getvalue', array(
+      'name' => "userFrameworkResourceURL",
+      'group' => "URL Preferences",
+    ));
+
+    $this->assign('coreResourceURL', $coreResourceURL);
+    $this->assign('extResourceURL', _volunteerGetExtURL());
+    $this->assign('vid', $this->_vid);
   }
 
   /**

@@ -33,7 +33,7 @@ class CRM_Volunteer_Upgrader extends CRM_Volunteer_Upgrader_Base {
 
   const commendationActivityTypeName = 'volunteer_commendation';
   const commendationCustomGroupName = 'volunteer_commendation';
-  const commendationProjectRefFieldName = 'project_id';
+  const commendationProjectRefFieldName = 'volunteer_project_id';
   const customActivityTypeName = 'Volunteer';
   const customContactGroupName = 'Volunteer_Information';
   const customContactTypeName = 'Volunteer';
