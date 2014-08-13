@@ -9,13 +9,45 @@ CRM.$(function($) {
       fetchCommendations(volunteerProjectID);
   });
 
-  // TODO: finish this function
-  $('.volunteer-commendation').click(function(){
-    var contactID = getContactIDOnThisRow($(this));
-    CRM.loadForm('/civicrm/todo/unbuilt/form', {
-      target: '#org_civicrm_volunteer-commendation_popup'
+  // TODO: clean up and/or document this function
+  $('.volunteer-commendation').click(function(e){
+    var url_args = {
+      cid: getContactIDOnThisRow($(this)),
+      vid: volunteerProjectID
+    };
+
+    var activityID = $(this).data('commendation_id');
+    if (activityID) {
+      url_args.aid = activityID;
+    }
+    var url = CRM.url('civicrm/volunteer/commendation', url_args);
+
+    if ($('#org_civicrm_volunteer-commendation_popup').length === 0) {
+      $('body').append('<div id="org_civicrm_volunteer-commendation_popup"></div>');
+      CRM.loadForm(url, {
+        onCancel: closePopup,
+        target: '#org_civicrm_volunteer-commendation_popup'
+      }).on('crmFormSuccess', function(){
+        closePopup();
+      });
+    } else {
+      $('#org_civicrm_volunteer-commendation_popup').removeClass('hiddenElement')
+        .crmSnippet('option', 'url', url).crmSnippet('refresh');
+    }
+
+    var clickedElement = $(this);
+    $('#org_civicrm_volunteer-commendation_popup').offset(function(){
+      return {
+        left: clickedElement.offset().left,
+        top: clickedElement.offset().top + clickedElement.height()
+      }
     });
   });
+
+  function closePopup() {
+    $('#org_civicrm_volunteer-commendation_popup').addClass('hiddenElement');
+    return true;
+  }
 
   /**
    * @param {Element} el A row in the log hours table
