@@ -29,6 +29,7 @@ CRM.$(function($) {
         target: '#org_civicrm_volunteer-commendation_popup'
       }).on('crmFormSuccess', function(){
         closePopup();
+        fetchCommendations(volunteerProjectID);
       });
     } else {
       $('#org_civicrm_volunteer-commendation_popup').removeClass('hiddenElement')
