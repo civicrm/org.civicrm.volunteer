@@ -17,7 +17,7 @@
   box-shadow: 0px 0px 20px 5px #000000;
   position: absolute;
   width: 250px;
-  z-index: 99;
+  z-index: 102;
 }
 
 #org_civicrm_volunteer-commendation_popup.hiddenElement {
