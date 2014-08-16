@@ -121,19 +121,14 @@ class CRM_Volunteer_Form_VolunteerSignUp extends CRM_Core_Form {
     $this->_mode = ($this->_action == CRM_Core_Action::PREVIEW) ? 'test' : 'live';
 
     // get profile id
-    $params = array(
-      'version' => 3,
-      'name' => 'volunteer_sign_up',
-      'return' => 'id',
-    );
-    $result = civicrm_api('UFGroup', 'get', $params);
-
-    if (CRM_Utils_Array::value('is_error', $result)) {
+    try {
+      $this->_ufgroup_id = civicrm_api3('UFGroup', 'getvalue', array(
+        'name' => 'volunteer_sign_up',
+        'return' => 'id',
+      ));
+    } catch (Exception $e) {
       CRM_Core_Error::fatal('CiviVolunteer custom profile could not be found');
     }
-    $values = $result['values'];
-    $ufgroup = current($values);
-    $this->_ufgroup_id = $ufgroup['id'];
   }
 
   function buildQuickForm() {

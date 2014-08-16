@@ -80,7 +80,7 @@ class CRM_Volunteer_BAO_Need extends CRM_Volunteer_DAO_Need {
    * @return string
    */
   static function getFlexibleRoleLabel() {
-    return ts("I'm Flexible");
+    return ts("I'm Flexible", array('domain' => 'org.civicrm.volunteer'));
   }
 
   /**
