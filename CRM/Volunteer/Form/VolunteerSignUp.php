@@ -169,7 +169,7 @@ class CRM_Volunteer_Form_VolunteerSignUp extends CRM_Core_Form {
       $select = $this->add(
         'select',               // field type
         'volunteer_need_id',    // field name
-        ts('Shift', array('domain' => 'org.civicrm.volunteer')),            // field label
+        ts('Time', array('domain' => 'org.civicrm.volunteer')),            // field label
         array(),                // list of options
         false                    // is required
       );
