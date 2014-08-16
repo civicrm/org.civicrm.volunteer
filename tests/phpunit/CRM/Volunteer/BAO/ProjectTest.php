@@ -191,9 +191,9 @@ class CRM_Volunteer_BAO_ProjectTest extends VolunteerTestAbstract {
   }
 
   /**
-   * Tests magic __get for needs
+   * Tests magic __get for open needs
    */
-  function testProjectGetShifts() {
+  function testProjectGetOpenNeeds() {
     $role_id = 2;
     $project = CRM_Core_DAO::createTestObject('CRM_Volunteer_BAO_Project');
     $this->assertObjectHasAttribute('id', $project, 'Failed to prepopulate Volunteer Project');
@@ -208,7 +208,7 @@ class CRM_Volunteer_BAO_ProjectTest extends VolunteerTestAbstract {
     ));
     $this->assertObjectHasAttribute('id', $need, 'Failed to prepopulate Volunteer Need');
 
-    $test = $project->shifts;
+    $test = $project->open_needs;
     $this->assertArrayKeyExists($need->id, $test);
     $this->assertArrayKeyExists('role_id', $test[$need->id]);
     $this->assertEquals($role_id, $test[$need->id]['role_id']);
@@ -216,9 +216,9 @@ class CRM_Volunteer_BAO_ProjectTest extends VolunteerTestAbstract {
   }
 
   /**
-   * Tests magic __isset for needs
+   * Tests magic __isset for open needs
    */
-  function testProjectIssetShifts() {
+  function testProjectIssetOpenNeeds() {
     $project = CRM_Core_DAO::createTestObject('CRM_Volunteer_BAO_Project');
     $this->assertObjectHasAttribute('id', $project, 'Failed to prepopulate Volunteer Project');
 
@@ -230,13 +230,13 @@ class CRM_Volunteer_BAO_ProjectTest extends VolunteerTestAbstract {
     ));
     $this->assertObjectHasAttribute('id', $need, 'Failed to prepopulate Volunteer Need');
 
-    $this->assertTrue(isset($project->shifts));
+    $this->assertTrue(isset($project->open_needs));
   }
 
   /**
-   * Tests magic __isset for needs
+   * Tests magic __isset for open needs
    */
-  function testProjectEmptyShifts() {
+  function testProjectEmptyOpenNeeds() {
     $project = CRM_Core_DAO::createTestObject('CRM_Volunteer_BAO_Project');
     $this->assertObjectHasAttribute('id', $project, 'Failed to prepopulate Volunteer Project');
 
@@ -248,6 +248,6 @@ class CRM_Volunteer_BAO_ProjectTest extends VolunteerTestAbstract {
     ));
     $this->assertObjectHasAttribute('id', $need, 'Failed to prepopulate Volunteer Need');
 
-    $this->assertFalse(empty($project->shifts));
+    $this->assertFalse(empty($project->open_needs));
   }
 }
