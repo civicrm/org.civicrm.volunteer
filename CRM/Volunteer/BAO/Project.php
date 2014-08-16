@@ -375,6 +375,9 @@ class CRM_Volunteer_BAO_Project extends CRM_Volunteer_DAO_Project {
         'options' => array('sort' => 'start_time'),
       ));
       $this->needs = $result['values'];
+      foreach (array_keys($this->needs) as $need_id) {
+        $this->needs[$need_id]['quantity_assigned'] = CRM_Volunteer_BAO_Need::getAssignmentCount($need_id);
+      }
     }
 
     return $this->needs;

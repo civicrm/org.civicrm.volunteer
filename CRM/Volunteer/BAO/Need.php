@@ -158,4 +158,15 @@ class CRM_Volunteer_BAO_Need extends CRM_Volunteer_DAO_Need {
     }
     return TRUE;
   }
+
+  /**
+   * @param int $need_id
+   * @return int The number of assignments on the given need
+   */
+  public static function getAssignmentCount($need_id) {
+    CRM_Utils_Type::validate($need_id, 'Integer');
+    return civicrm_api3('VolunteerAssignment', 'getcount', array(
+      'volunteer_need_id' => $need_id,
+    ));
+  }
 }
