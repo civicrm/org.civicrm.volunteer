@@ -203,10 +203,7 @@ class CRM_Volunteer_BAO_Project extends CRM_Volunteer_DAO_Project {
    * @return CRM_Volunteer_BAO_Project
    */
   static function retrieveByID($id) {
-    if (!is_int($id) && !ctype_digit($id)) {
-      CRM_Core_Error::fatal(__CLASS__ . '::' . __FUNCTION__ . ' expects an integer.');
-    }
-    $id = (int) $id;
+    $id = (int) CRM_Utils_Type::validate($id, 'Integer');
 
     $projects = self::retrieve(array('id' => $id));
 
@@ -371,14 +368,12 @@ class CRM_Volunteer_BAO_Project extends CRM_Volunteer_DAO_Project {
    */
   private function _get_needs() {
     if (empty($this->needs)) {
-      $params = array(
+      $result = civicrm_api3('VolunteerNeed', 'get', array(
         'is_active' => '1',
         'project_id' => $this->id,
-        'version' => 3,
         'visibility_id' => CRM_Core_OptionGroup::getValue('visibility', 'public', 'name'),
-      );
-      $params['options'] = array('sort' => 'start_time');
-      $result = civicrm_api3('VolunteerNeed', 'get', $params);
+        'options' => array('sort' => 'start_time'),
+      ));
       $this->needs = $result['values'];
     }
 
