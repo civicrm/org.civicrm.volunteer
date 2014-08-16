@@ -138,19 +138,34 @@ class CRM_Volunteer_Form_VolunteerSignUp extends CRM_Core_Form {
 
     $this->buildCustom('volunteerProfile');
 
-    // better UX not to display a select box with only one possible selection
-    if (count($this->_project->roles) > 1) {
+    // don't show the roles dropdown if the flexible need is the only open need
+    if (count($this->_project->open_needs)) {
+
+      $role_options = array();
+      // special treatment for the flexible need
+      if (array_key_exists(CRM_Volunteer_BAO_Need::FLEXIBLE_ROLE_ID, $this->_project->roles)) {
+        $role_options[CRM_Volunteer_BAO_Need::FLEXIBLE_ROLE_ID] =
+          $this->_project->roles[CRM_Volunteer_BAO_Need::FLEXIBLE_ROLE_ID];
+      }
+      // add open needs to the option list
+      foreach ($this->_project->open_needs as $open) {
+        $role_id = $open['role_id'];
+        $role_options[$role_id] = $this->_project->roles[$role_id];
+      }
+
       $this->add(
         'select',               // field type
         'volunteer_role_id',    // field name
         ts('Volunteer Role', array('domain' => 'org.civicrm.volunteer')),   // field label
-        $this->_project->roles, // list of options
+        $role_options, // list of options
         true                    // is required
       );
     }
 
-    // better UX not to display a select box with only one possible selection
-    if (count($this->_project->shifts) > 1) {
+    // don't show the dropdown if the flexible need is the only need
+    if (count($this->_project->open_needs) > 1
+      || key($this->_project->roles) !== CRM_Volunteer_BAO_Need::FLEXIBLE_ROLE_ID
+    ) {
       $select = $this->add(
         'select',               // field type
         'volunteer_need_id',    // field name
@@ -158,7 +173,8 @@ class CRM_Volunteer_Form_VolunteerSignUp extends CRM_Core_Form {
         array(),                // list of options
         false                    // is required
       );
-      foreach ($this->_project->shifts as $id => $data) {
+
+      foreach ($this->_project->open_needs as $id => $data) {
         $select->addOption($data['label'], $id, array('data-role' => $data['role_id']));
       }
 
