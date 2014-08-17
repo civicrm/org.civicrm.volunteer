@@ -194,18 +194,7 @@ class CRM_Volunteer_BAO_ProjectTest extends VolunteerTestAbstract {
    * Tests magic __get for open needs
    */
   function testProjectGetOpenNeeds() {
-    $role_id = 2;
-    $project = CRM_Core_DAO::createTestObject('CRM_Volunteer_BAO_Project');
-    $this->assertObjectHasAttribute('id', $project, 'Failed to prepopulate Volunteer Project');
-
-    // attach need to project
-    $need = CRM_Core_DAO::createTestObject('CRM_Volunteer_BAO_Need', array(
-      'is_active' => 1,
-      'is_flexible' => 0,
-      'project_id' => $project->id,
-      'role_id' => $role_id,
-      'visibility_id' => CRM_Core_OptionGroup::getValue('visibility', 'public', 'name'),
-    ));
+    list($project, $need, $role_id) = $this->createProjectWithNeed();
     $this->assertObjectHasAttribute('id', $need, 'Failed to prepopulate Volunteer Need');
 
     $test = $project->open_needs;
@@ -219,15 +208,7 @@ class CRM_Volunteer_BAO_ProjectTest extends VolunteerTestAbstract {
    * Tests magic __isset for open needs
    */
   function testProjectIssetOpenNeeds() {
-    $project = CRM_Core_DAO::createTestObject('CRM_Volunteer_BAO_Project');
-    $this->assertObjectHasAttribute('id', $project, 'Failed to prepopulate Volunteer Project');
-
-    // attach need to project
-    $need = CRM_Core_DAO::createTestObject('CRM_Volunteer_BAO_Need', array(
-      'is_active' => 1,
-      'project_id' => $project->id,
-      'visibility_id' => CRM_Core_OptionGroup::getValue('visibility', 'public', 'name'),
-    ));
+    list($project, $need, $role_id) = $this->createProjectWithNeed();
     $this->assertObjectHasAttribute('id', $need, 'Failed to prepopulate Volunteer Need');
 
     $this->assertTrue(isset($project->open_needs));
@@ -237,17 +218,38 @@ class CRM_Volunteer_BAO_ProjectTest extends VolunteerTestAbstract {
    * Tests magic __isset for open needs
    */
   function testProjectEmptyOpenNeeds() {
+    list($project, $need, $role_id) = $this->createProjectWithNeed();
+    $this->assertObjectHasAttribute('id', $need, 'Failed to prepopulate Volunteer Need');
+
+    $this->assertFalse(empty($project->open_needs));
+  }
+
+  /**
+   * Helper function to create an associated project and need
+   *
+   * @return array Contains three elements:
+   * <ul>
+   *   <li>CRM_Volunteer_BAO_Project</li>
+   *   <li>CRM_Volunteer_BAO_Need</li>
+   *   <li>int Role ID for the created need</li>
+   * </ul>
+   */
+  private function createProjectWithNeed() {
+    $role_id = 2;
     $project = CRM_Core_DAO::createTestObject('CRM_Volunteer_BAO_Project');
     $this->assertObjectHasAttribute('id', $project, 'Failed to prepopulate Volunteer Project');
 
     // attach need to project
     $need = CRM_Core_DAO::createTestObject('CRM_Volunteer_BAO_Need', array(
       'is_active' => 1,
+      'is_flexible' => 0,
       'project_id' => $project->id,
+      'quantity' => 5,
+      'role_id' => $role_id,
+      'start_time' => date('YmdHis', strtotime('tomorrow')),
       'visibility_id' => CRM_Core_OptionGroup::getValue('visibility', 'public', 'name'),
     ));
-    $this->assertObjectHasAttribute('id', $need, 'Failed to prepopulate Volunteer Need');
 
-    $this->assertFalse(empty($project->open_needs));
+    return array($project, $need, $role_id);
   }
 }
