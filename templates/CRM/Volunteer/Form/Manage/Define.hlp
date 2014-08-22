@@ -29,17 +29,25 @@
   {ts domain='org.civicrm.volunteer'}Volunteer Needs{/ts}
 {/htxt}
 {htxt id="volunteer-define"}
-    {ts domain='org.civicrm.volunteer' 1=$volRoleURL}
-    <p>Use this form to define the number of volunteers needed for each role and time slot.
-    For each slot, you will select a role, set the number of volunteers needed,
-    set a start date and time, and indicate the duration in minutes.</p>
-    <p>If you want to include a Sign Up button on the event information page, check
-    the 'Public' column for at least one of the slots, or check the box to allow users to
-    sign up without specifying a shift. 'Public' slots will be visible on the
-    public signup form. You will also need to ensure that the 'CiviVolunteer: register to volunteer'
-    permission has been enabled.
+    <p>
+      {ts domain='org.civicrm.volunteer'}Use this form to define the number of
+      volunteers needed for each role and time slot. For each slot, you will
+      select a role, set the number of volunteers needed, set a start date and
+      time, and indicate the duration in minutes.{/ts}
     </p>
-    <p>If this is a new type of volunteer project, you may need to create additional volunteer roles
-    first from <a href=%1>Administer > Administration Console > Volunteer Roles</a>.</p>
-    {/ts}
+    <p>
+      {ts domain='org.civicrm.volunteer'}If you want to include a Sign Up button
+      on the event information page, check the 'Public' column for at least one
+      of the slots, or check the box to allow users to sign up without specifying
+      a shift. 'Public' slots will be visible on the public signup form.{/ts}
+      {if !$params.isJoomlaPermsHackNeeded}
+        {ts domain='org.civicrm.volunteer'}You will also need to ensure that the
+        'CiviVolunteer: register to volunteer' permission has been enabled.{/ts}
+      {/if}
+    </p>
+    <p>
+      {ts domain='org.civicrm.volunteer' 1=$volRoleURL}If this is a new type of
+      volunteer project, you may need to create additional volunteer roles first
+      from <a href=%1>Administer > Administration Console > Volunteer Roles</a>.{/ts}
+    </p>
 {/htxt}
