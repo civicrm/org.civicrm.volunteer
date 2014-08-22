@@ -91,6 +91,17 @@ class CRM_Volunteer_Form_Volunteer extends CRM_Event_Form_ManageEvent {
    }
 
   /**
+   * Function to set variables up before form is built
+   *
+   * @access public
+   */
+  public function preProcess() {
+    parent::preProcess();
+
+    $this->assign('isJoomlaPermsHackNeeded', CRM_Volunteer_Upgrader::isJoomlaPermsHackNeeded());
+  }
+
+   /**
    * Function to build the form
    *
    * @return None

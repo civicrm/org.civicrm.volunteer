@@ -34,9 +34,16 @@
     event, to assign volunteers to needs, and to log volunteer hours.{/ts}
   </p>
   <p>
-    {ts domain='org.civicrm.volunteer'}Immediately upon enabling Volunteer Management for this event, a
-    volunteer sign-up form will become available from the Event Info
-    Page to users with the "register to volunteer" permission.{/ts}
+    {if $params.isJoomlaPermsHackNeeded}
+      {ts domain='org.civicrm.volunteer'}Immediately upon enabling Volunteer
+      Management for this event, a volunteer sign-up form will become available
+      from the Event Info Page.{/ts}
+    {else}
+      {ts domain='org.civicrm.volunteer'}Immediately upon enabling Volunteer
+      Management for this event, a volunteer sign-up form will become available
+      from the Event Info Page to users with the "register to volunteer"
+      permission.{/ts}
+    {/if}
   </p>
 {/htxt}
 {htxt id="id-volunteer-beneficiary-title"}
