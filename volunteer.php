@@ -199,7 +199,7 @@ function _volunteer_civicrm_pageRun_CRM_Event_Page_EventInfo(&$page) {
   $projects = CRM_Volunteer_BAO_Project::retrieve($params);
 
   // show volunteer button only if user has CiviVolunteer: register to volunteer AND this event has an active project
-  if (CRM_Core_Permission::check('register to volunteer') && count($projects)) {
+  if (CRM_Volunteer_Permission::check('register to volunteer') && count($projects)) {
     $project = current($projects);
     $url = CRM_Utils_System::url('civicrm/volunteer/signup',
       array('reset' => 1, 'vid' => $project->id),
@@ -321,14 +321,13 @@ function _volunteer_civicrm_buildForm_CRM_Activity_Form_Activity($formName, &$fo
 /**
  * Implementation of hook_civicrm_permission.
  *
- * @param type $permissions Does not contain core perms -- only extension-defined perms.
+ * @param array $permissions Does not contain core perms -- only extension-defined perms.
  */
 function volunteer_civicrm_permission(array &$permissions) {
   // VOL-71: Until the Joomla/Civi integration is fixed, don't declare new perms
   // for Joomla installs
   if (!CRM_Volunteer_Upgrader::isJoomlaPermsHackNeeded()) {
-    $prefix = ts('CiviVolunteer', array('domain' => 'org.civicrm.volunteer')) . ': ';
-    $permissions['register to volunteer'] = $prefix . 'register to volunteer';
+    $permissions = array_merge($permissions, CRM_Volunteer_Permission::getVolunteerPermissions());
   }
 }
 
