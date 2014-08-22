@@ -326,7 +326,7 @@ function _volunteer_civicrm_buildForm_CRM_Activity_Form_Activity($formName, &$fo
 function volunteer_civicrm_permission(array &$permissions) {
   // VOL-71: Until the Joomla/Civi integration is fixed, don't declare new perms
   // for Joomla installs
-  if (!CRM_Volunteer_Upgrader::isJoomlaPermsHackNeeded()) {
+  if (CRM_Core_Config::singleton()->userPermissionClass->isModulePermissionSupported()) {
     $permissions = array_merge($permissions, CRM_Volunteer_Permission::getVolunteerPermissions());
   }
 }

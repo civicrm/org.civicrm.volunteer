@@ -40,7 +40,7 @@
       on the event information page, check the 'Public' column for at least one
       of the slots, or check the box to allow users to sign up without specifying
       a shift. 'Public' slots will be visible on the public signup form.{/ts}
-      {if !$params.isJoomlaPermsHackNeeded}
+      {if $params.isModulePermissionSupported}
         {ts domain='org.civicrm.volunteer'}You will also need to ensure that the
         'CiviVolunteer: register to volunteer' permission has been enabled.{/ts}
       {/if}

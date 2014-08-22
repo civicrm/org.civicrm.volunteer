@@ -85,7 +85,7 @@ class CRM_Volunteer_Form_Volunteer extends CRM_Event_Form_ManageEvent {
       $this->assign('msg', $msg);
     }
 
-    $this->assign('isJoomlaPermsHackNeeded', CRM_Volunteer_Upgrader::isJoomlaPermsHackNeeded());
+    $this->assign('isModulePermissionSupported', CRM_Core_Config::singleton()->userPermissionClass->isModulePermissionSupported());
   }
 
    /**

@@ -31,26 +31,6 @@
  */
 class CRM_Volunteer_Upgrader extends CRM_Volunteer_Upgrader_Base {
 
-  /**
-   * VOL-71: Until the Joomla/Civi integration is fixed, Joomla sites won't enjoy
-   * the same level of permissions granularity as sites on other frameworks.
-   * Since the integration isn't fixed yet, we use an impossibly high Joomla
-   * version number.
-   *
-   * @var string Dot-delimited version number
-   */
-  const PERMS_FIX_JOOMLA_VER = '99999.99999';
-
-  /**
-   * VOL-71: Until the Joomla/Civi integration is fixed, Joomla sites won't enjoy
-   * the same level of permissions granularity as sites on other frameworks.
-   * Since the integration isn't fixed yet, we use an impossibly high CiviCRM
-   * version number.
-   *
-   * @var string Dot-delimited version number
-   */
-  const PERMS_FIX_CIVICRM_VER = '99999.99999.99999';
-
   const commendationActivityTypeName = 'volunteer_commendation';
   const commendationCustomGroupName = 'volunteer_commendation';
   const commendationProjectRefFieldName = 'project_id';
@@ -596,27 +576,5 @@ class CRM_Volunteer_Upgrader extends CRM_Volunteer_Upgrader_Base {
       $import = new CRM_Utils_Migrate_Import();
       $import->runXmlElement($xml);
       return TRUE;
-  }
-
-  /**
-   * VOL-71: Until the Joomla/Civi integration is fixed, we don't want to
-   * declare/enforce CiviVolunteer-specific permissions for Joomla installs. This
-   * function determines whether or not the instance requires special treatment.
-   *
-   * @return boolean
-   */
-  public static function isJoomlaPermsHackNeeded() {
-    $config = CRM_Core_Config::singleton();
-
-    if ($config->userFramework !== 'Joomla'
-      || (
-        version_compare($config->userFrameworkVersion, self::PERMS_FIX_JOOMLA_VER, '>=')
-        && version_compare($config->civiVersion, self::PERMS_FIX_CIVICRM_VER, '>=')
-      )
-    ) {
-      return FALSE;
-    } else {
-      return TRUE;
-    }
   }
 }

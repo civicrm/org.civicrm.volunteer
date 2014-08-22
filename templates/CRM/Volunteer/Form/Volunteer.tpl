@@ -37,7 +37,7 @@
       the box below and submit the form. Disabling Volunteer Management for this
       event will not result in loss of volunteer data.{/ts}
 
-      {if !$isJoomlaPermsHackNeeded}
+      {if $isModulePermissionSupported}
         </p>
         <p>
           {ts domain='org.civicrm.volunteer'}<strong>Note:</strong> Only users
@@ -51,7 +51,7 @@
       the box below and submit the form.{/ts}
     {* paragraph closed after the if-statement *}
   {/if}
-      {help id="id-volunteer-init" isJoomlaPermsHackNeeded="`$isJoomlaPermsHackNeeded`"}
+      {help id="id-volunteer-init" isModulePermissionSupported="`$isModulePermissionSupported`"}
     </p>
 </div>
 
