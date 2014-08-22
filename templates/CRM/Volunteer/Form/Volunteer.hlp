@@ -34,7 +34,7 @@
     event, to assign volunteers to needs, and to log volunteer hours.{/ts}
   </p>
   <p>
-    {if $params.isJoomlaPermsHackNeeded}
+    {if !$params.isModulePermissionSupported}
       {ts domain='org.civicrm.volunteer'}Immediately upon enabling Volunteer
       Management for this event, a volunteer sign-up form will become available
       from the Event Info Page.{/ts}
