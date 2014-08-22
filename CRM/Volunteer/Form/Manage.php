@@ -57,6 +57,7 @@ class CRM_Volunteer_Form_Manage {
     }
 
     // Add our template
+    CRM_Core_Smarty::singleton()->assign('isJoomlaPermsHackNeeded', CRM_Volunteer_Upgrader::isJoomlaPermsHackNeeded());
     CRM_Core_Region::instance('page-header')->add(array(
       'template' => 'CRM/Volunteer/Form/Manage.tpl',
     ));

@@ -29,23 +29,30 @@
 <div id="help">
   {if $form.is_active.value}
     <p>
-      Volunteer Management is enabled for this event. Note that only users with
-      the "register to volunteer" permission will be able to access the
-      volunteer sign-up form. Click one of the buttons below to get started.
+      {ts domain='org.civicrm.volunteer'}Volunteer Management is enabled for this
+      event. Click one of the buttons below to get started.{/ts}
     </p>
     <p>
       {ts domain='org.civicrm.volunteer'}If you want to disable Volunteer Management for this event, uncheck
       the box below and submit the form. Disabling Volunteer Management for this
       event will not result in loss of volunteer data.{/ts}
-      {help id="id-volunteer-init"}
-    </p>
+
+      {if !$isJoomlaPermsHackNeeded}
+        </p>
+        <p>
+          {ts domain='org.civicrm.volunteer'}<strong>Note:</strong> Only users
+          with the "register to volunteer" permission will be able to access the
+          volunteer sign-up form.{/ts}
+      {/if}
+    {* paragraph closed after the if-statement *}
   {else}
     <p>
       {ts domain='org.civicrm.volunteer'}If you want to enable Volunteer Management for this event, check
       the box below and submit the form.{/ts}
-      {help id="id-volunteer-init"}
-    </p>
+    {* paragraph closed after the if-statement *}
   {/if}
+      {help id="id-volunteer-init" isJoomlaPermsHackNeeded="`$isJoomlaPermsHackNeeded`"}
+    </p>
 </div>
 
 {if $form.is_active.value}
