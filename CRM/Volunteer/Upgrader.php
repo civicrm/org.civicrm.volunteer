@@ -606,51 +606,17 @@ class CRM_Volunteer_Upgrader extends CRM_Volunteer_Upgrader_Base {
    * @return boolean
    */
   public static function isJoomlaPermsHackNeeded() {
-    global $civicrm_root;
-    require_once $civicrm_root . 'civicrm-version.php';
-    $civicrm_version = civicrmVersion();
     $config = CRM_Core_Config::singleton();
 
     if ($config->userFramework !== 'Joomla'
       || (
-        self::isVersionReqMet($config->userFrameworkVersion, self::PERMS_FIX_JOOMLA_VER)
-        && self::isVersionReqMet($civicrm_version['revision'], self::PERMS_FIX_CIVICRM_VER)
+        version_compare($config->userFrameworkVersion, self::PERMS_FIX_JOOMLA_VER, '>=')
+        && version_compare($config->civiVersion, self::PERMS_FIX_CIVICRM_VER, '>=')
       )
     ) {
       return FALSE;
     } else {
       return TRUE;
     }
-  }
-
-  /**
-   * Helper function to compare versions
-   *
-   * @param string $currentVersion Dot-delimited version string (e.g., 4.4.6)
-   * @param string $requiredVersion Dot-delimited version string (e.g., 4.4.6)
-   * @return boolean
-   */
-  private static function isVersionReqMet($currentVersion, $requiredVersion) {
-    $current = $required = array();
-    list($current['major'], $current['minor'], $current['revision']) = explode('.', $currentVersion);
-    list($required['major'], $required['minor'], $required['revision']) = explode('.', $requiredVersion);
-
-    if ($current['major'] < $required['major']) {
-      return FALSE;
-    }
-
-    if ($current['major'] === $required['major']
-      && $current['minor'] < $required['minor']
-    ) {
-      return FALSE;
-    }
-
-    if ($current['major'] === $required['major']
-      && $current['minor'] === $required['minor']
-      && $current['revision'] < $required['revision']) {
-      return FALSE;
-    }
-
-    return TRUE;
   }
 }
