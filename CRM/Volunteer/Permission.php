@@ -27,7 +27,7 @@ class CRM_Volunteer_Permission extends CRM_Core_Permission {
   public static function check($permissions) {
     $permissions = (array) $permissions;
 
-    if (CRM_Volunteer_Upgrader::isJoomlaPermsHackNeeded()) {
+    if (!CRM_Core_Config::singleton()->userPermissionClass->isModulePermissionSupported()) {
       array_walk_recursive($permissions, function(&$v, $k) {
         if (array_key_exists($v, self::getVolunteerPermissions())) {
           $v = CRM_Core_Permission::ALWAYS_ALLOW_PERMISSION;
