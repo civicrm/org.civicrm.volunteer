@@ -324,8 +324,12 @@ function _volunteer_civicrm_buildForm_CRM_Activity_Form_Activity($formName, &$fo
  * @param type $permissions Does not contain core perms -- only extension-defined perms.
  */
 function volunteer_civicrm_permission(array &$permissions) {
-  $prefix = ts('CiviVolunteer', array('domain' => 'org.civicrm.volunteer')) . ': ';
-  $permissions['register to volunteer'] = $prefix . 'register to volunteer';
+  // VOL-71: Until the Joomla/Civi integration is fixed, don't declare new perms
+  // for Joomla installs
+  if (!CRM_Volunteer_Upgrader::isJoomlaPermsHackNeeded()) {
+    $prefix = ts('CiviVolunteer', array('domain' => 'org.civicrm.volunteer')) . ': ';
+    $permissions['register to volunteer'] = $prefix . 'register to volunteer';
+  }
 }
 
 /**

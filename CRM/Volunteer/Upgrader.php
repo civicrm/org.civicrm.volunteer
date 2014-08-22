@@ -31,6 +31,26 @@
  */
 class CRM_Volunteer_Upgrader extends CRM_Volunteer_Upgrader_Base {
 
+  /**
+   * VOL-71: Until the Joomla/Civi integration is fixed, Joomla sites won't enjoy
+   * the same level of permissions granularity as sites on other frameworks.
+   * Since the integration isn't fixed yet, we use an impossibly high Joomla
+   * version number.
+   *
+   * @var string Dot-delimited version number
+   */
+  const PERMS_FIX_JOOMLA_VER = '99999.99999';
+
+  /**
+   * VOL-71: Until the Joomla/Civi integration is fixed, Joomla sites won't enjoy
+   * the same level of permissions granularity as sites on other frameworks.
+   * Since the integration isn't fixed yet, we use an impossibly high CiviCRM
+   * version number.
+   *
+   * @var string Dot-delimited version number
+   */
+  const PERMS_FIX_CIVICRM_VER = '99999.99999.99999';
+
   const commendationActivityTypeName = 'volunteer_commendation';
   const commendationCustomGroupName = 'volunteer_commendation';
   const commendationProjectRefFieldName = 'project_id';
@@ -576,5 +596,61 @@ class CRM_Volunteer_Upgrader extends CRM_Volunteer_Upgrader_Base {
       $import = new CRM_Utils_Migrate_Import();
       $import->runXmlElement($xml);
       return TRUE;
+  }
+
+  /**
+   * VOL-71: Until the Joomla/Civi integration is fixed, we don't want to
+   * declare/enforce CiviVolunteer-specific permissions for Joomla installs. This
+   * function determines whether or not the instance requires special treatment.
+   *
+   * @return boolean
+   */
+  public static function isJoomlaPermsHackNeeded() {
+    global $civicrm_root;
+    require_once $civicrm_root . 'civicrm-version.php';
+    $civicrm_version = civicrmVersion();
+    $config = CRM_Core_Config::singleton();
+
+    if ($config->userFramework !== 'Joomla'
+      || (
+        self::isVersionReqMet($config->userFrameworkVersion, self::PERMS_FIX_JOOMLA_VER)
+        && self::isVersionReqMet($civicrm_version['revision'], self::PERMS_FIX_CIVICRM_VER)
+      )
+    ) {
+      return FALSE;
+    } else {
+      return TRUE;
+    }
+  }
+
+  /**
+   * Helper function to compare versions
+   *
+   * @param string $currentVersion Dot-delimited version string (e.g., 4.4.6)
+   * @param string $requiredVersion Dot-delimited version string (e.g., 4.4.6)
+   * @return boolean
+   */
+  private static function isVersionReqMet($currentVersion, $requiredVersion) {
+    $current = $required = array();
+    list($current['major'], $current['minor'], $current['revision']) = explode('.', $currentVersion);
+    list($required['major'], $required['minor'], $required['revision']) = explode('.', $requiredVersion);
+
+    if ($current['major'] < $required['major']) {
+      return FALSE;
+    }
+
+    if ($current['major'] === $required['major']
+      && $current['minor'] < $required['minor']
+    ) {
+      return FALSE;
+    }
+
+    if ($current['major'] === $required['major']
+      && $current['minor'] === $required['minor']
+      && $current['revision'] < $required['revision']) {
+      return FALSE;
+    }
+
+    return TRUE;
   }
 }
