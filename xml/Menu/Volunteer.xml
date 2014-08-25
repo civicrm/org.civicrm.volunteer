@@ -37,7 +37,9 @@
     <path>civicrm/volunteer/signup</path>
     <page_callback>CRM_Volunteer_Form_VolunteerSignUp</page_callback>
     <title>Volunteer Signup</title>
-    <access_arguments>register to volunteer</access_arguments>
+    <!-- For VOL-71, we move access control into the preprocessor -->
+    <access_callback>1</access_callback>
+    <!-- <access_arguments>register to volunteer</access_arguments> -->
     <is_public>true</is_public>
   </item>
   <item>

@@ -72,13 +72,17 @@ class CRM_Volunteer_Form_Volunteer extends CRM_Event_Form_ManageEvent {
    }
 
   /**
+   * Function to set variables up before form is built
+   *
    * @access public
    */
-  function preProcess() {
+  public function preProcess() {
     parent::preProcess();
+
+    $this->assign('isModulePermissionSupported', CRM_Core_Config::singleton()->userPermissionClass->isModulePermissionSupported());
   }
 
-  /**
+   /**
    * Function to build the form
    *
    * @return None
