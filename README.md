@@ -19,11 +19,13 @@ Self-service Volunteer Signup
 =============================
 Once you've defined your volunteer needs, you can decide to include a volunteer signup
 form as part of your public event. A "Volunteer Now" button will appear on your event
-info page (next to the "Register" button). Volunteers can select a shift, or let you
+info page (next to the "Register" button). Volunteers can select a shift or let you
 know that they are available for any shift.
 
 You will need to enable the "CiviVolunteer: register to volunteer permission" if you
-want to provide self-service signup for anonymous and / or authenticated users.
+want to provide self-service signup for anonymous and/or authenticated users.
+(Joomla users should see [Known Issues](#known-issues) for more information about
+permissions.)
 
 Manage Volunteer Assignments
 =============================
@@ -40,9 +42,15 @@ you want to keep track of your organization's cumulative volunteering totals.
 
 Known Issues
 ============
-For versions of CiviCRM prior to and including 4.4.4, the installer will not
-create the "register to volunteer" permission automatically for
-Joomla installations.
+For versions of CiviCRM prior to and including 4.5, the installer will not
+create extension-defined permissions for Joomla installations (see
+[CRM-12059](https://issues.civicrm.org/jira/browse/CRM-12059)). As a result,
+the "register to volunteer" permission does not appear in Joomla's access control
+interface. As a workaround (see [VOL-71](https://issues.civicrm.org/jira/browse/VOL-71)),
+CiviVolunteer will not create or enforce the "register to volunteer" permission
+in Joomla installations; Joomla admins won't enjoy the same level of permissions
+granularity as installations on other frameworks, and the public sign-up form will
+be accessible to everyone.
 
 For versions of CiviCRM prior to and including 4.4.0, when viewing an existing
 volunteer activity record, the Need field in the CiviVolunteer
