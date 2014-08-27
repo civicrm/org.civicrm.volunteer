@@ -121,19 +121,14 @@ class CRM_Volunteer_Form_VolunteerSignUp extends CRM_Core_Form {
     $this->_mode = ($this->_action == CRM_Core_Action::PREVIEW) ? 'test' : 'live';
 
     // get profile id
-    $params = array(
-      'version' => 3,
-      'name' => 'volunteer_sign_up',
-      'return' => 'id',
-    );
-    $result = civicrm_api('UFGroup', 'get', $params);
-
-    if (CRM_Utils_Array::value('is_error', $result)) {
+    try {
+      $this->_ufgroup_id = civicrm_api3('UFGroup', 'getvalue', array(
+        'name' => 'volunteer_sign_up',
+        'return' => 'id',
+      ));
+    } catch (Exception $e) {
       CRM_Core_Error::fatal('CiviVolunteer custom profile could not be found');
     }
-    $values = $result['values'];
-    $ufgroup = current($values);
-    $this->_ufgroup_id = $ufgroup['id'];
   }
 
   function buildQuickForm() {
@@ -143,27 +138,43 @@ class CRM_Volunteer_Form_VolunteerSignUp extends CRM_Core_Form {
 
     $this->buildCustom('volunteerProfile');
 
-    // better UX not to display a select box with only one possible selection
-    if (count($this->_project->roles) > 1) {
+    // don't show the roles dropdown if the flexible need is the only open need
+    if (count($this->_project->open_needs)) {
+
+      $role_options = array();
+      // special treatment for the flexible need
+      if (array_key_exists(CRM_Volunteer_BAO_Need::FLEXIBLE_ROLE_ID, $this->_project->roles)) {
+        $role_options[CRM_Volunteer_BAO_Need::FLEXIBLE_ROLE_ID] =
+          $this->_project->roles[CRM_Volunteer_BAO_Need::FLEXIBLE_ROLE_ID];
+      }
+      // add open needs to the option list
+      foreach ($this->_project->open_needs as $open) {
+        $role_id = $open['role_id'];
+        $role_options[$role_id] = $this->_project->roles[$role_id];
+      }
+
       $this->add(
         'select',               // field type
         'volunteer_role_id',    // field name
         ts('Volunteer Role', array('domain' => 'org.civicrm.volunteer')),   // field label
-        $this->_project->roles, // list of options
+        $role_options, // list of options
         true                    // is required
       );
     }
 
-    // better UX not to display a select box with only one possible selection
-    if (count($this->_project->shifts) > 1) {
+    // don't show the dropdown if the flexible need is the only need
+    if (count($this->_project->open_needs) > 1
+      || key($this->_project->roles) !== CRM_Volunteer_BAO_Need::FLEXIBLE_ROLE_ID
+    ) {
       $select = $this->add(
         'select',               // field type
         'volunteer_need_id',    // field name
-        ts('Shift', array('domain' => 'org.civicrm.volunteer')),            // field label
+        ts('Time', array('domain' => 'org.civicrm.volunteer')),            // field label
         array(),                // list of options
         false                    // is required
       );
-      foreach ($this->_project->shifts as $id => $data) {
+
+      foreach ($this->_project->open_needs as $id => $data) {
         $select->addOption($data['label'], $id, array('data-role' => $data['role_id']));
       }
 
