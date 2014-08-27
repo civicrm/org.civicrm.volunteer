@@ -66,11 +66,20 @@ class CRM_Volunteer_BAO_Project extends CRM_Volunteer_DAO_Project {
   private $roles = array();
 
   /**
-   * Array of associated Shifts. Accessible via __get method.
+   * Array of open needs. Open means:
+   * <ol>
+   *   <li>that the number of volunteer assignments associated with the need is
+   *    fewer than quantity specified for the need</li>
+   *   <li>that the need does not start in the past</li>
+   *   <li>that the need is active</li>
+   *   <li>that the need is visible</li>
+   *   <li>that the need has a start_time (i.e., is not flexible)</li>
+   * </ol>
+   * Accessible via __get method.
    *
    * @var array Keyed by Need ID, with a subarray keyed by 'label' and 'role_id'
    */
-  private $shifts = array();
+  private $open_needs = array();
 
   /**
    * The start_date of the Project, inherited from its associated entity
@@ -203,10 +212,7 @@ class CRM_Volunteer_BAO_Project extends CRM_Volunteer_DAO_Project {
    * @return CRM_Volunteer_BAO_Project
    */
   static function retrieveByID($id) {
-    if (!is_int($id) && !ctype_digit($id)) {
-      CRM_Core_Error::fatal(__CLASS__ . '::' . __FUNCTION__ . ' expects an integer.');
-    }
-    $id = (int) $id;
+    $id = (int) CRM_Utils_Type::validate($id, 'Integer');
 
     $projects = self::retrieve(array('id' => $id));
 
@@ -371,15 +377,16 @@ class CRM_Volunteer_BAO_Project extends CRM_Volunteer_DAO_Project {
    */
   private function _get_needs() {
     if (empty($this->needs)) {
-      $params = array(
+      $result = civicrm_api3('VolunteerNeed', 'get', array(
         'is_active' => '1',
         'project_id' => $this->id,
-        'version' => 3,
         'visibility_id' => CRM_Core_OptionGroup::getValue('visibility', 'public', 'name'),
-      );
-      $params['options'] = array('sort' => 'start_time');
-      $result = civicrm_api3('VolunteerNeed', 'get', $params);
+        'options' => array('sort' => 'start_time'),
+      ));
       $this->needs = $result['values'];
+      foreach (array_keys($this->needs) as $need_id) {
+        $this->needs[$need_id]['quantity_assigned'] = CRM_Volunteer_BAO_Need::getAssignmentCount($need_id);
+      }
     }
 
     return $this->needs;
@@ -418,31 +425,31 @@ class CRM_Volunteer_BAO_Project extends CRM_Volunteer_DAO_Project {
   }
 
   /**
-   * Sets $this->shifts and returns the shifts associated with this Project. Delegate of __get().
-   * Note: only shifts for active, visible needs are returned.
+   * Sets and returns $this->open_needs. Delegate of __get().
    *
-   * @return array Shifts array is keyed by Need ID, with a subarray keyed by 'label' and 'role_id'
+   * @return array Keyed by Need ID, with a subarray keyed by 'label' and 'role_id'
    */
-  private function _get_shifts() {
-    if (empty($this->shifts)) {
-      $shifts = array();
+  private function _get_open_needs() {
+    if (empty($this->open_needs)) {
 
       if (empty($this->needs)) {
         $this->_get_needs();
       }
 
       foreach ($this->needs as $id => $need) {
-        if (!empty($need['start_time'])) {
-          $shifts[$id] = array(
+        if (
+          !empty($need['start_time'])
+          && ($need['quantity'] > $need['quantity_assigned'])
+          && (strtotime($need['start_time']) > time())
+        ) {
+          $this->open_needs[$id] = array(
             'label' => CRM_Volunteer_BAO_Need::getTimes($need['start_time'], CRM_Utils_Array::value('duration', $need)),
             'role_id' => $need['role_id'],
           );
         }
       }
-
-      $this->shifts = $shifts;
     }
 
-    return $this->shifts;
+    return $this->open_needs;
   }
 }
