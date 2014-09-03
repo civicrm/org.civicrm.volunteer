@@ -40,7 +40,9 @@ CRM.volunteerApp.module('Entities', function(Entities, volunteerApp, Backbone, M
 
   Entities.getNeeds = function(params) {
     defaults = {
-      'options': {'limit': 0}
+      // not all revisions in the CiviCRM 4.4.x series support limit: 0, so we
+      // won't use it until 4.5
+      'options': {'limit': 999}
     };
     params = params || {};
     params = _.extend(defaults, params);
