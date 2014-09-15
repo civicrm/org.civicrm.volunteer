@@ -201,10 +201,10 @@ class CRM_Volunteer_Form_Log extends CRM_Core_Form {
     foreach ($this->_volunteerData as $data) {
       $defaults['field'][$i]['scheduled_duration'] = $data['time_scheduled_minutes'];
       $defaults['field'][$i]['actual_duration'] = $data['time_completed_minutes'];
-      $defaults['field'][$i]['volunteer_role'] = CRM_Utils_Array::value($data['role_id'], $volunteerRole);
+      $defaults['field'][$i]['volunteer_role'] = CRM_Utils_Array::value($data['volunteer_role_id'], $volunteerRole);
       $defaults['field'][$i]['volunteer_status'] = $data['status_id'];
       $defaults['field'][$i]['activity_id'] = $data['id'];
-      $defaults['field'][$i]['start_date'] = CRM_Utils_Date::customFormat($data['start_time'], "%m/%E/%Y %l:%M %P");
+      $defaults['field'][$i]['start_date'] = CRM_Utils_Date::customFormat($data['activity_date_time'], "%m/%E/%Y %l:%M %P");
       $defaults['field'][$i]["contact_id"] = $data['contact_id'];
       $i++;
     }
@@ -245,7 +245,7 @@ class CRM_Volunteer_Form_Log extends CRM_Core_Form {
           CRM_Volunteer_BAO_Assignment::createVolunteerActivity($volunteer);
         }
         else {
-          
+
           $flexibleNeedId = CRM_Volunteer_BAO_Project::getFlexibleNeedID($this->_vid);
           //create new Volunteer activity records
           $volunteer = array(
