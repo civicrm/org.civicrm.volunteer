@@ -84,10 +84,9 @@
       </div>
     {/section}
   </div>
-  <div class="crm-submit-buttons">
-    <a href="#" id="addMoreVolunteer" class="button"><span><div
-          class="icon add-icon"></div>{ts domain='org.civicrm.volunteer'}Add Volunteer{/ts}</span></a>
-  </div>
+  <a href="#" id="addMoreVolunteer" class="button">
+    <span><div class="icon add-icon"></div>{ts domain='org.civicrm.volunteer'}Add Volunteer{/ts}</span>
+  </a>
 
   <div class="crm-submit-buttons">{if $fields}{$form._qf_Batch_refresh.html}{/if} &nbsp; {$form.buttons.html}</div>
 </div>
@@ -98,9 +97,9 @@
 {literal}
 <script type="text/javascript">
   CRM.$(function($) {
-    $('#addMoreVolunteer').click(function(){
-      $('div.hiddenElement div:first:parent').parent().show().removeClass('hiddenElement').addClass('crm-grid-row').css('display', 'table-row');
-      return false;
+    $('#addMoreVolunteer').click(function(e){
+      $('div.hiddenElement:first').show().removeClass('hiddenElement').addClass('crm-grid-row').css('display', 'table-row');
+      e.preventDefault();
     });
   });
 </script>

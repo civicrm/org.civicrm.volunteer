@@ -38,9 +38,6 @@
       <div class="crm-loading-element">{ts domain='org.civicrm.volunteer'}Loading{/ts}...</div>
     </div>
     <div id="crm-vol-define-flexible-needs-region"></div>
-    <div class="crm-submit-buttons">
-      <a class="button" id="crm-vol-define-done" href="#"><span>{ts domain='org.civicrm.volunteer'}Done{/ts}</span></a>
-    </div>
   </form>
 </script>
 
