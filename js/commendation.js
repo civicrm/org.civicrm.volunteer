@@ -9,7 +9,6 @@ CRM.$(function($) {
       fetchCommendations(volunteerProjectID);
   });
 
-  // TODO: clean up and/or document this function
   $('.volunteer-commendation').click(function(e){
     var url_args = {
       cid: getContactIDOnThisRow($(this)),
@@ -21,7 +20,22 @@ CRM.$(function($) {
       url_args.aid = activityID;
     }
     var url = CRM.url('civicrm/volunteer/commendation', url_args);
+    var position = $(this).offset();
+    var coords = {
+      left: position.left,
+      top: position.top + $(this).height()
+    };
 
+    showPopup(url, coords);
+  });
+
+/**
+ * @param {string} url The URL to load in the popup
+ * @param {object} coords An object containing the properties top and left,
+ *  which are numbers indicating the new top and left coordinates for the elements.
+ * @returns {undefined}
+ */
+  function showPopup(url, coords) {
     if ($('#org_civicrm_volunteer-commendation_popup').length === 0) {
       $('body').append('<div id="org_civicrm_volunteer-commendation_popup"></div>');
       CRM.loadForm(url, {
@@ -36,14 +50,8 @@ CRM.$(function($) {
         .crmSnippet('option', 'url', url).crmSnippet('refresh');
     }
 
-    var clickedElement = $(this);
-    $('#org_civicrm_volunteer-commendation_popup').offset(function(){
-      return {
-        left: clickedElement.offset().left,
-        top: clickedElement.offset().top + clickedElement.height()
-      }
-    });
-  });
+    $('#org_civicrm_volunteer-commendation_popup').offset(coords);
+  }
 
   function closePopup() {
     $('#org_civicrm_volunteer-commendation_popup').addClass('hiddenElement');
