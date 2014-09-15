@@ -9,15 +9,6 @@
       regions: {
         scheduledNeeds: "#crm-vol-define-scheduled-needs-region",
         flexibleNeeds: "#crm-vol-define-flexible-needs-region"
-      },
-
-      events: {
-        'click #crm-vol-define-done': 'closeModal'
-      },
-
-      closeModal: function() {
-        $('#crm-volunteer-dialog').dialog('close');
-        return false;
       }
     });
 

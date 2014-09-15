@@ -13,13 +13,12 @@ cj(function($) {
       modal: true,
       title: $el.text(),
       width: '85%',
-      height: parseInt($(window).height() * .80)
-    };
-    if ($el.is('a.crm-volunteer-popup')) {
-      settings['close'] = function() {
+      height: parseInt($(window).height() * .80),
+      buttons: [{text: ts('Done'), click: function() {$(this).dialog('close')}, icons: {primary: 'ui-icon-close'}}],
+      close: function() {
         CRM.volunteerApp.module(CRM.volunteerApp.tab).stop();
       }
-    }
+    };
     return settings;
   }
 
