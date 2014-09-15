@@ -29,9 +29,6 @@
 <script type="text/template" id="crm-vol-assign-layout-tpl">
   <div id="crm-vol-assign-flexible-region"><div class="crm-loading-element">{ts domain='org.civicrm.volunteer'}Loading{/ts}...</div></div>
   <div id="crm-vol-assign-scheduled-region"></div>
-  <div class="crm-submit-buttons">
-    <a class="button" id="crm-vol-define-done" href="#"><span>{ts domain='org.civicrm.volunteer'}Done{/ts}</span></a>
-  </div>
 </script>
 
 <script type="text/template" id="crm-vol-scheduled-assignment-tpl">
