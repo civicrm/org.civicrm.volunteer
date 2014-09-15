@@ -89,7 +89,7 @@
 <script type="text/javascript">
   {literal}
     CRM.$(function($) {
-      var $form = $("#{/literal}{$form.formName}{literal}");
+      var $form = $("form.{/literal}{$form.formClass}{literal}");
       $form.on('change', '#is_active', function() {
         if ($(this).is(':checked')) {
           $('#org_civicrm_volunteer-event_tab_config').show();
