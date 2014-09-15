@@ -27,19 +27,55 @@ class CRM_Volunteer_Form_Commendation extends CRM_Core_Form {
    */
   private $_vid;
 
+  /**
+   * TODO: How many checks do we need to do? Should we check to make sure the
+   * activity is the right type? That the cid and aid are associated? Seems like
+   * if you are messing with URL params you are kind of asking for trouble...
+   */
   function preProcess() {
-    $this->_action = CRM_Utils_Request::retrieve('action', 'String', $this, FALSE);
     $this->_aid = CRM_Utils_Request::retrieve('aid', 'Positive', $this, FALSE);
     $this->_cid = CRM_Utils_Request::retrieve('cid', 'Positive', $this, TRUE);
     $this->_vid = CRM_Utils_Request::retrieve('vid', 'Positive', $this, TRUE);
 
-    if (in_array($this->_action, array(CRM_Core_Action::DELETE, CRM_Core_Action::UPDATE))
-      && !CRM_Utils_Type::validate($this->_aid, 'Positive', FALSE)
-    ) {
-      CRM_Core_Error::fatal("Parameter 'aid' is required for delete and update operations");
+    if (!$this->_aid || !($this->_cid && $this->_vid)) {
+      CRM_Core_Error::fatal("Form expects an activity ID or both a contact and a volunteer project ID.");
     }
 
+    $check = array(
+      'Activity' => $this->_aid,
+      'Contact' => $this->_cid,
+      'VolunteerProject' => $this->_vid,
+    );
+    $errors = array();
+    foreach ($check as $entityType => $entityID) {
+      if (!$this->entityExists($entityType, $entityID)) {
+        $errors[] = "No $entityType with ID $entityID exists.";
+      }
+    }
+    if (count($errors)) {
+      CRM_Core_Error::fatal("Invalid parameter(s) passed to commendation form: " . implode(' ', $errors));
+    }
     parent::preProcess();
+  }
+
+  /**
+   * Checks if an entity exists
+   *
+   * Used to make sure params passed via the URL are valid
+   *
+   * @param string $entityType e.g., Contact, Activity, etc.
+   * @param int $entityID Or int-like string
+   * @return boolean
+   */
+  private function entityExists($entityType, $entityID) {
+    $cnt = civicrm_api3($entityType, 'getcount', array(
+      'id' => $entityID,
+    ));
+    if ($cnt === 0) {
+      return FALSE;
+    } else {
+      return TRUE;
+    }
   }
 
   /**
@@ -77,22 +113,25 @@ class CRM_Volunteer_Form_Commendation extends CRM_Core_Form {
         'type' => 'submit',
         'isDefault' => TRUE,
       ),
-      array(
-        'type' => 'cancel',
-        'name' => ts('Cancel', array('domain' => 'org.civicrm.volunteer')),
-      )
     );
-    switch ($this->_action) {
-      case CRM_Core_Action::DELETE :
-        $buttons[0]['name'] = ts('Delete', array('domain' => 'org.civicrm.volunteer'));
-        break;
-      case CRM_Core_Action::UPDATE :
-        $buttons[0]['name'] = ts('Update', array('domain' => 'org.civicrm.volunteer'));
-        break;
-      default :
-        $buttons[0]['name'] = ts('Save', array('domain' => 'org.civicrm.volunteer'));
-        break;
+    if (isset($this->_aid)) {
+      $buttons[0]['name'] = ts('Update', array('domain' => 'org.civicrm.volunteer'));
+      $buttons[] = array(
+        'name' => ts('Delete', array('domain' => 'org.civicrm.volunteer')),
+        // Button type 'upload' is a bit of a hack. There is no 'delete' type.
+        // Two buttons of the same type cannot coexist in one form, so using two
+        // 'submit' buttons is not an option. Not all of the available types
+        // (e.g., 'process') trigger postProcess, so we're settling on the
+        // not-exactly-intuitive 'upload,' which does.
+        'type' => 'upload',
+      );
+    } else {
+      $buttons[0]['name'] = ts('Save', array('domain' => 'org.civicrm.volunteer'));
     }
+    $buttons[] = array(
+      'type' => 'cancel',
+      'name' => ts('Cancel', array('domain' => 'org.civicrm.volunteer')),
+    );
     $this->addButtons($buttons);
 
     // export form elements
@@ -103,37 +142,21 @@ class CRM_Volunteer_Form_Commendation extends CRM_Core_Form {
   function postProcess() {
     $values = $this->exportValues();
 
-    switch ($this->_action) {
-      case CRM_Core_Action::DELETE :
-        civicrm_api3('Activity', 'delete', array(
-          'id' => $this->_aid,
-        ));
-        $statusMsg = ts('Commendation record deleted.', array('domain' => 'org.civicrm.volunteer'));
-        CRM_Core_Session::setStatus($statusMsg, '', 'success');
-        break;
-      default :
-        // @TODO: this is probably going to turn into too much business logic for
-        // the form layer.... might move much of this to the BAO
-        $project = CRM_Volunteer_BAO_Project::retrieveByID($this->_vid);
-        $activity_statuses = CRM_Activity_BAO_Activity::buildOptions('status_id', 'create');
-
-        $customFieldSpec = CRM_Volunteer_BAO_Commendation::getCustomFields();
-        $volunteer_project_id_field_name = 'custom_' . $customFieldSpec['volunteer_project_id']['id'];
-
-        $params = array(
-          'activity_type_id' => CRM_Volunteer_BAO_Commendation::getActivityTypeId(),
-          'id' => $this->_aid,
-          'details' => $values['details'],
-          'subject' => ts('Volunteer Commendation for %1', array('1' => $project->title, 'domain' => 'org.civicrm.volunteer')),
-          'status_id' => CRM_Utils_Array::key('Completed', $activity_statuses),
-          'target_contact_id' => $this->_cid,
-          $volunteer_project_id_field_name => $this->_vid,
-        );
-
-        civicrm_api3('Activity', 'create', $params);
-        $statusMsg = ts('Commendation record saved.', array('domain' => 'org.civicrm.volunteer'));
-        CRM_Core_Session::setStatus($statusMsg, '', 'success');
-        break;
+    if (array_key_exists('_qf_Commendation_upload', $values)) {
+      // this is our delete condition
+      civicrm_api3('Activity', 'delete', array(
+        'id' => $this->_aid,
+      ));
+      $statusMsg = ts('Commendation record deleted.', array('domain' => 'org.civicrm.volunteer'));
+      CRM_Core_Session::setStatus($statusMsg, '', 'success');
+    } else {
+      // this is our create/update condition
+      CRM_Volunteer_BAO_Commendation::create(array(
+        'aid' => $this->_aid,
+        'cid' => $this->_cid,
+        'details' => $values['details'],
+        'vid' => $this->_vid,
+      ));
     }
 
     parent::postProcess();

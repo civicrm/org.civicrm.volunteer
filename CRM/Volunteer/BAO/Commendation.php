@@ -8,6 +8,81 @@
  * corresponding Activity classes.
  */
 class CRM_Volunteer_BAO_Commendation extends CRM_Activity_DAO_Activity {
+
+  /**
+   * Function to create a Volunteer Commendation
+   *
+   * This function is invoked from within the web form layer
+   *
+   * @param array $params An assoc array of name/value pairs
+   *  - aid: activity id of an existing commendation to update
+   *  - cid: id of contact to be commended
+   *  - vid: id of project for which contact is to be commended
+   *  - details: text about the contact's exceptional volunteerism
+   * @see self::dataExists for rules re required params
+   * @return array Result of api.activity.create
+   * @access public
+   * @static
+   */
+  static function create(array $params) {
+    // check required params
+    if (!self::dataExists($params)) {
+      CRM_Core_Error::fatal('Not enough data to create commendation object.');
+    }
+
+    $activity_statuses = CRM_Activity_BAO_Activity::buildOptions('status_id', 'create');
+    $api_params = array(
+      'activity_type_id' => self::getActivityTypeId(),
+      'status_id' => CRM_Utils_Array::key('Completed', $activity_statuses),
+    );
+
+    $aid = CRM_Utils_Array::value('aid', $params);
+    if ($aid) {
+      $api_params['id'] = $aid;
+    }
+
+    $cid = CRM_Utils_Array::value('cid', $params);
+    if ($cid) {
+      $api_params['target_contact_id'] = $cid;
+    }
+
+    $vid = CRM_Utils_Array::value('vid', $params);
+    if ($vid) {
+      $project = CRM_Volunteer_BAO_Project::retrieveByID($vid);
+      $api_params['subject'] = ts('Volunteer Commendation for %1', array('1' => $project->title, 'domain' => 'org.civicrm.volunteer'));
+
+      $customFieldSpec = self::getCustomFields();
+      $volunteer_project_id_field_name = 'custom_' . $customFieldSpec['volunteer_project_id']['id'];
+      $api_params[$volunteer_project_id_field_name] = $vid;
+    }
+
+    if (array_key_exists('details', $params)) {
+      $api_params['details'] = CRM_Utils_Array::value('details', $params);
+    }
+
+    return civicrm_api3('Activity', 'create', $api_params);
+  }
+
+  /**
+   * Check if there is absolute minimum of data to add the object
+   *
+   * @param array  $params         (reference ) an assoc array of name/value pairs
+   *
+   * @return boolean
+   * @access public
+   */
+  public static function dataExists($params) {
+    if (
+      CRM_Utils_Array::value('aid', $params) || ( // activity id
+        CRM_Utils_Array::value('cid', $params) && // contact id
+        CRM_Utils_Array::value('vid', $params) // volunteer project id
+      )
+    ) {
+      return TRUE;
+    }
+    return FALSE;
+  }
+
   /**
    * Get a list of Commendations matching the params, where each param key is:
    *  1. the key of a field in civicrm_activity, except for activity_type_id
