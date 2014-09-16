@@ -412,7 +412,7 @@ class CRM_Volunteer_BAO_Project extends CRM_Volunteer_DAO_Project {
         } else {
           $role_id = CRM_Utils_Array::value('role_id', $need);
           $roles[$role_id] = CRM_Core_OptionGroup::getLabel(
-            CRM_Volunteer_Upgrader::customOptionGroupName,
+            CRM_Volunteer_BAO_Assignment::ROLE_OPTION_GROUP,
             $role_id
           );
         }

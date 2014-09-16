@@ -1,13 +1,10 @@
 <?php
 
-/**
- * TODO: This is a quick and dirty solution adapted from
- * CRM/Volunteer/BAO/Assignment.php. There's a lot of overlap in these classes.
- * We should probably create a parent class for both to extend, and we should
- * probably move some of the constants in the Upgrader class to the
- * corresponding Activity classes.
- */
-class CRM_Volunteer_BAO_Commendation extends CRM_Activity_DAO_Activity {
+class CRM_Volunteer_BAO_Commendation extends CRM_Volunteer_BAO_Activity {
+
+  const CUSTOM_ACTIVITY_TYPE = 'volunteer_commendation';
+  const CUSTOM_GROUP_NAME = 'volunteer_commendation';
+  const PROJECT_REF_FIELD_NAME = 'volunteer_project_id';
 
   /**
    * Function to create a Volunteer Commendation
@@ -24,7 +21,7 @@ class CRM_Volunteer_BAO_Commendation extends CRM_Activity_DAO_Activity {
    * @access public
    * @static
    */
-  static function create(array $params) {
+  public static function create(array $params) {
     // check required params
     if (!self::dataExists($params)) {
       CRM_Core_Error::fatal('Not enough data to create commendation object.');
@@ -92,7 +89,7 @@ class CRM_Volunteer_BAO_Commendation extends CRM_Activity_DAO_Activity {
    * @param array $params
    * @return array of CRM_Volunteer_BAO_Project objects
    */
-  static function retrieve(array $params) {
+  public static function retrieve(array $params) {
     $activity_fields = CRM_Activity_DAO_Activity::fields();
     $contact_fields = CRM_Contact_DAO_Contact::fields();
     $custom_fields = self::getCustomFields();
@@ -182,81 +179,5 @@ class CRM_Volunteer_BAO_Commendation extends CRM_Activity_DAO_Activity {
     }
 
     return $rows;
-  }
-
-  /**
-   * Get information about CiviVolunteer's custom Activity table for Commendations
-   *
-   * Using the API is preferable to CRM_Core_DAO::getFieldValue as the latter
-   * allows specification of only one criteria by which to filter, and the unique
-   * index for the table in question is on the "extends" and "name" fields; i.e.,
-   * it is possible to have two custom groups with the same name so long as they
-   * extend different entities.
-   *
-   * @return array Keyed with id (custom group/table id) and table_name
-   */
-  public static function getCustomGroup() {
-    $params = array(
-      'extends' => 'Activity',
-      'is_active' => 1,
-      'name' => CRM_Volunteer_Upgrader::commendationCustomGroupName,
-      'return' => array('id', 'table_name'),
-    );
-
-    $custom_group = civicrm_api3('CustomGroup', 'getsingle', $params);
-
-    if (CRM_Utils_Array::value('is_error', $custom_group) == 1) {
-      CRM_Core_Error::fatal("CiviVolunteer's Commendation custom group appears to be missing.");
-    }
-
-    unset($custom_group['extends']);
-    unset($custom_group['is_active']);
-    unset($custom_group['name']);
-    return $custom_group;
-  }
-
-  /**
-   * Get information about CiviVolunteer's custom Commendation fields
-   *
-   * @return array Multi-dimensional, keyed by lowercased custom field
-   * name (i.e., civicrm_custom_group.name). Subarray keyed with id (i.e.,
-   * civicrm_custom_group.id), column_name, and data_type.
-   */
-  public static function getCustomFields () {
-    $result = array();
-
-    $custom_group = self::getCustomGroup();
-
-    $params = array(
-      'custom_group_id' => $custom_group['id'],
-      'is_active' => 1,
-      'return' => array('id', 'column_name', 'name', 'data_type'),
-    );
-
-    $fields = civicrm_api3('CustomField', 'get', $params);
-
-    if (
-      CRM_Utils_Array::value('count', $fields) < 1
-    ) {
-      CRM_Core_Error::fatal("CiviVolunteer's Commendation custom fields appear to be missing.");
-    }
-
-    foreach ($fields['values'] as $field) {
-      $result[strtolower($field['name'])] = array(
-        'id' => $field['id'],
-        'column_name' => $field['column_name'],
-        'data_type' => $field['data_type'],
-      );
-    }
-
-    return $result;
-  }
-
-  /**
-   * Fetch activity type id of 'commendation' type activity
-   * @return integer
-   */
-  public static function getActivityTypeId() {
-    return CRM_Core_PseudoConstant::getKey('CRM_Activity_BAO_Activity', 'activity_type_id', CRM_Volunteer_Upgrader::commendationActivityTypeName);
   }
 }
