@@ -163,8 +163,10 @@ class CRM_Volunteer_Form_VolunteerSignUp extends CRM_Core_Form {
     }
 
     // don't show the dropdown if the flexible need is the only need
+    $role_ids = array_keys($this->_project->roles);
+    $first_role_id = $role_ids[0];
     if (count($this->_project->open_needs) > 1
-      || key($this->_project->roles) !== CRM_Volunteer_BAO_Need::FLEXIBLE_ROLE_ID
+      || $first_role_id !== CRM_Volunteer_BAO_Need::FLEXIBLE_ROLE_ID
     ) {
       $select = $this->add(
         'select',               // field type
