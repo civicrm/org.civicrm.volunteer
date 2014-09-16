@@ -381,7 +381,10 @@ class CRM_Volunteer_BAO_Project extends CRM_Volunteer_DAO_Project {
         'is_active' => '1',
         'project_id' => $this->id,
         'visibility_id' => CRM_Core_OptionGroup::getValue('visibility', 'public', 'name'),
-        'options' => array('sort' => 'start_time'),
+        'options' => array(
+          'sort' => 'start_time',
+          'limit' => 0,
+        ),
       ));
       $this->needs = $result['values'];
       foreach (array_keys($this->needs) as $need_id) {
