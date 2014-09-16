@@ -34,10 +34,10 @@ class CRM_Volunteer_Form_Commendation extends CRM_Core_Form {
    */
   function preProcess() {
     $this->_aid = CRM_Utils_Request::retrieve('aid', 'Positive', $this, FALSE);
-    $this->_cid = CRM_Utils_Request::retrieve('cid', 'Positive', $this, TRUE);
-    $this->_vid = CRM_Utils_Request::retrieve('vid', 'Positive', $this, TRUE);
+    $this->_cid = CRM_Utils_Request::retrieve('cid', 'Positive', $this, FALSE);
+    $this->_vid = CRM_Utils_Request::retrieve('vid', 'Positive', $this, FALSE);
 
-    if (!$this->_aid || !($this->_cid && $this->_vid)) {
+    if (!$this->_aid && !($this->_cid && $this->_vid)) {
       CRM_Core_Error::fatal("Form expects an activity ID or both a contact and a volunteer project ID.");
     }
 
