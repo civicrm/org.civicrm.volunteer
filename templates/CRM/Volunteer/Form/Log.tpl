@@ -53,7 +53,7 @@
       <div
         class="{cycle values="odd-row,even-row"} selector-rows {if $rowNumber > $showVolunteerRow && $rowNumber != 1} hiddenElement {else} crm-grid-row {/if}"
         entity_id="{$rowNumber}">
-        <div class="compressed crm-grid-cell volunteer-commendation"></div>
+        <div class="compressed crm-grid-cell volunteer-commendation"><span></span></div>
         <div class="compressed crm-grid-cell">
           {$form.field.$rowNumber.contact_id.html}
         </div>

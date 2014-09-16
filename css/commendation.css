@@ -1,14 +1,26 @@
-/* TODO: create images for backgrounds */
 .volunteer-commendation {
-  background: #FF0000;
   cursor: pointer;
   min-height: 25px;
   min-width: 25px;
-
 }
 
-.volunteer-commendation.commended {
-  background: #FFFF00;
+.volunteer-commendation span {
+  background: url('../img/stars.png') no-repeat -26px 0px;
+  display: block;
+  height: 25px;
+  width: 26px;
+}
+
+.volunteer-commendation:hover span {
+  background-position: -26px -25px;
+}
+
+.volunteer-commendation.commended span {
+  background-position: 0 0;
+}
+
+.volunteer-commendation.commended:hover span {
+  background-position: 0 -25px;
 }
 
 #org_civicrm_volunteer-commendation_popup {
