@@ -23,7 +23,7 @@
  | see the CiviCRM license FAQ at http://civicrm.org/licensing        |
  +--------------------------------------------------------------------+
 *}
-{capture assign=volRoleURL}{crmURL p="civicrm/admin/options/volunteer_role" q="group=volunteer_role&reset=1"}{/capture}
+{capture assign=volRoleURL}{crmURL p="civicrm/admin/options/volunteer_role" q="reset=1"}{/capture}
 
 {htxt id="volunteer-define-title"}
   {ts domain='org.civicrm.volunteer'}Volunteer Needs{/ts}
@@ -46,7 +46,7 @@
       {/if}
     </p>
     <p>
-      {ts domain='org.civicrm.volunteer' 1=$volRoleURL}If this is a new type of
+      {ts 1=$volRoleURL domain='org.civicrm.volunteer'}If this is a new type of
       volunteer project, you may need to create additional volunteer roles first
       from <a href=%1>Administer > Administration Console > Volunteer Roles</a>.{/ts}
     </p>
