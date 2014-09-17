@@ -221,7 +221,7 @@ class CRM_Volunteer_Form_Volunteer extends CRM_Event_Form_ManageEvent {
     // create the flexible need
     if (count($projects) !== 1 && $form['is_active'] === '1') {
       $need = array(
-        'project_id' => $project->id,
+        'project_id' => $project->_id,
         'is_flexible' => '1',
         'visibility_id' => CRM_Core_OptionGroup::getValue('visibility', 'public', 'name'),
       );
@@ -243,7 +243,7 @@ class CRM_Volunteer_Form_Volunteer extends CRM_Event_Form_ManageEvent {
 
     // store the new selections;
     foreach($form['custom_signup_profiles'] as $idx => $profile_id) {
-      self:addProfileToFormEntity($entity_form['id'], $profile_id, $idx);
+      self::addProfileToFormEntity($entity_form['id'], $profile_id, $idx);
     }
 
     self::validateProfileForDedupe($form['custom_signup_profiles']);
@@ -270,11 +270,9 @@ class CRM_Volunteer_Form_Volunteer extends CRM_Event_Form_ManageEvent {
     );
   }
 
-  static function validateProfileForDedupe($params) {
+  static function validateProfileForDedupe($profileIds) {
     $cantDedupe = false;
-    $rgId = CRM_Utils_Array::value('dedupe_rule_group_id', $params, 0);
-
-    switch (CRM_Event_Form_ManageEvent_Registration::canProfilesDedupe($profileIds, $rgId)) {
+    switch (CRM_Event_Form_ManageEvent_Registration::canProfilesDedupe($profileIds, 0)) {
       case 0:
         $dedupeTitle = ts('Duplicate Matching Impossible', array('domain' => 'org.civicrm.volunteer'));
         $cantDedupe = ts('The selected profiles do not contain the fields necessary to match volunteer sign ups with existing contacts.  This means all anonymous sign ups will result in a new contact.', array('domain' => 'org.civicrm.volunteer'));
