@@ -49,7 +49,7 @@ class CRM_Volunteer_BAO_Commendation extends CRM_Volunteer_BAO_Activity {
       $api_params['subject'] = ts('Volunteer Commendation for %1', array('1' => $project->title, 'domain' => 'org.civicrm.volunteer'));
 
       $customFieldSpec = self::getCustomFields();
-      $volunteer_project_id_field_name = 'custom_' . $customFieldSpec['volunteer_project_id']['id'];
+      $volunteer_project_id_field_name = 'custom_' . $customFieldSpec['project_id']['id'];
       $api_params[$volunteer_project_id_field_name] = $vid;
     }
 
