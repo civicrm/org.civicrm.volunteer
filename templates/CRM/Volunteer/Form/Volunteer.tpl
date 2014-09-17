@@ -81,22 +81,13 @@
       </td>
     </table>
     <div id="org_civicrm_volunteer-sign-up-profiles">
-      {foreach name=profileSignUpName from=$profileSignUpMultiple key=profileSignUpKey item=profileSignUpItem}
-        <tr id="multiple_signup_profiles_{$profileSignUpKey}_wrapper"
-            class='crm-event-manage-registration-form-block-custom_post_multiple'>
-          <td scope="row" class="label" width="20%">{$form.custom_signup_profiles.$profileSignUpItem.label}</td>
-          <td>{$form.custom_signup_profiles.$profileSignUpItem.html}
-            &nbsp;<span class='profile_bottom_link_remove'>
-              <a href="#" class="crm-hover-button crm-button-rem-profile">
-              <span class="icon ui-icon-trash"></span>{ts}remove profile{/ts}</a></span>
-            {if $smarty.foreach.profileSignUpName.last}
-              &nbsp;&nbsp;
-              <span class='profile_bottom_link'><a href="#" class="crm-hover-button crm-button-add-profile"><span
-                    class="icon ui-icon-plus"></span>{ts}add another profile (bottom of page){/ts}</a></span>
-            {/if}
-            <br/><span class="profile-links"></span>
-          </td>
-        </tr>
+      {foreach name=forSignUpName from=$profileSignUpMultiple key=forSignUpKey item=forSignUpItem}
+        {include file="CRM/Volunteer/Form/IncludeProfile.tpl"
+            profileCount=$forSignUpKey
+            profileName=$forSignUpName
+            profileItem=$forSignUpItem
+            profileLast=$smarty.foreach.forSignUpName.last
+        }
       {/foreach}
   </div>
   </div>
@@ -120,4 +111,71 @@
       $('#is_active', $form).trigger('change');
     });
   {/literal}
+</script>
+<script type="text/javascript">
+{literal}
+(function($, _) { // Generic Closure
+
+  $(".crm-submit-buttons input").click( function() {
+    $(".dedupenotify .ui-notify-close").click();
+  }); // cleanup notification pop-ups
+
+  var profileCounter = Number({/literal}{$profileSignUpCounter|@count}{literal});
+
+  function addBottomProfile( e ) {
+    e.preventDefault();
+
+    urlPath = CRM.url('civicrm/volunteer/manage/includeprofile', { profileCount : profileCounter, snippet: 4 } ) ;
+    profileCounter++;
+
+    $('#org_civicrm_volunteer-sign-up-profiles').append('<div class="additional_profile"></div>');
+    var $el = $('#org_civicrm_volunteer-sign-up-profiles').find('.additional_profile:last');
+    $el.load(urlPath, function() { $(this).trigger('crmLoad') });
+    $(this).closest(".profile_bottom_link_main, .profile_bottom_link, .profile_bottom_add_link_main").hide();
+    $el.find(".profile_bottom_link_main, .profile_bottom_link, .profile_bottom_add_link_main").show();
+  }
+
+  function removeBottomProfile( e ) {
+    e.preventDefault();
+
+    $(e.target).parents('.crm-profile-selector-container').find('.crm-profile-selector').val('');
+    $(e.target).parents('.crm-profile-selector-container').hide();
+    $(e.target).parents('#org_civicrm_volunteer-sign-up-profiles')
+      .find('.crm-profile-selector-container:visible:last .profile_bottom_link').show();
+  }
+
+  var strSameAs = ' - '+ts('same as for main contact')+' - ';
+  var strSelect = ' - '+ts('select')+' - ';
+
+/*  $('#crm-container').on('crmLoad', function() {
+    var $container = $("[id^='additional_profile_'],.additional_profile").not('.processed').addClass('processed');
+    $container.find(".crm-profile-selector-select select").each( function() {
+      var $select = $(this);
+      var selected = $select.find(':selected').val(); //cache the default
+      $select.find('option[value=""]').remove();
+      $select.prepend('<option value="">'+strSameAs+'</option>');
+      if ($select.closest('tr').is(':not([id*="_pre"])')) {
+         $select.prepend('<option value="">'+strSelect+'</option>');
+      }
+      $select.find('option[value="'+selected+'"]').attr('selected', 'selected'); //restore default
+    });
+  });
+*/
+  $(function($) {
+    $('#org_civicrm_volunteer-sign-up-profiles').on('click', '.crm-button-add-profile', addBottomProfile);
+    $('#org_civicrm_volunteer-sign-up-profiles').on('click', '.crm-button-rem-profile', removeBottomProfile);
+
+/*    $('#crm-container').on('crmLoad', function(e) {
+        $('tr[id^="additional_profile"] input[id^="additional_custom_"]').change(function(e) {
+            $input = $(e.target);
+            if ( $input.val() == '') {
+                $selected = $input.closest('tr').find('.crm-profile-selector-select :selected');
+                if ($selected.text() == strSelect) { $input.val('none'); }
+            }
+        });
+    });
+*/
+  }); // END onReady
+}(CRM.$, CRM._)); //Generic Closure
+{/literal}
 </script>
