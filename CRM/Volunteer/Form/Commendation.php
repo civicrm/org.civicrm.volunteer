@@ -55,6 +55,14 @@ class CRM_Volunteer_Form_Commendation extends CRM_Core_Form {
     if (count($errors)) {
       CRM_Core_Error::fatal("Invalid parameter(s) passed to commendation form: " . implode(' ', $errors));
     }
+
+    $contact_display_name = civicrm_api3('Contact', 'getvalue', array(
+      'id' => $this->_cid,
+      'return' => 'display_name',
+    ));
+    CRM_Utils_System::setTitle(
+      ts('Commend %1', array(1 => $contact_display_name, 'domain' => 'org.civicrm.volunteer'))
+    );
     parent::preProcess();
   }
 
