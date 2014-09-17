@@ -14,7 +14,13 @@
   <compatibility>
     <ver>4.5</ver>
   </compatibility>
-  <comments>Developed by CiviCRM LLC, Ginkgo Street Labs, and Confluence Corp with contributions from the community.</comments>
+  <comments>
+    Developed by CiviCRM LLC, Ginkgo Street Labs, and Confluence Corp with
+    contributions from the community.
+
+    CiviVolunteer requires the Multiform extension, which can be downloaded from
+    https://github.com/ginkgostreet/civicrm_multiform.
+  </comments>
   <civix>
     <namespace>CRM/Volunteer</namespace>
   </civix>
