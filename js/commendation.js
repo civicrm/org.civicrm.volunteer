@@ -40,7 +40,11 @@
           width: 'auto'
         },
         onCancel: unlockContacts,
-      }).on('crmLoad', function(){
+      }).on('crmFormLoad', function(){
+        // override jQuery-UI button theming
+        $('[data-identifier="_qf_Commendation_submit_delete"] .ui-icon' )
+          .removeClass('ui-icon-check').addClass('delete-icon');
+
         lockContacts();
       }).on('crmFormSuccess', function(event, ajaxResponse){
         switch(ajaxResponse.action) {
