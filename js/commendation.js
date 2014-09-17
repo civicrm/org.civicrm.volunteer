@@ -5,8 +5,8 @@ CRM.$(function($) {
   fetchCommendations(volunteerProjectID);
 
   // when a new row gets added to the log table, update the display
-  $('#crm-log-entry-table input.crm-contact-ref').on("change", function() {
-      fetchCommendations(volunteerProjectID);
+  $('#crm-log-entry-table [id^=field_][id$=_contact_id]').on("change", function() {
+    fetchCommendations(volunteerProjectID);
   });
 
   $('.volunteer-commendation').click(function(e){
@@ -41,8 +41,18 @@ CRM.$(function($) {
       onCancel: unlockContacts,
     }).on('crmLoad', function(){
       lockContacts();
-    }).on('crmFormSuccess', function(){
-      unlockContacts();
+    }).on('crmFormSuccess', function(event, ajaxResponse){
+      switch(ajaxResponse.action) {
+        case CRM.constants.CRM_Core_Action.DELETE:
+          CRM.status({success: ts('Commendation deleted')}).resolve();
+          break;
+        case CRM.constants.CRM_Core_Action.ADD:
+          CRM.status({success: ts('Commendation created')}).resolve();
+          break;
+        case CRM.constants.CRM_Core_Action.UPDATE:
+          CRM.status({success: ts('Commendation updated')}).resolve();
+          break;
+      }
       fetchCommendations(volunteerProjectID);
     });
   }
@@ -82,9 +92,19 @@ CRM.$(function($) {
   function fetchCommendations(vid) {
     lockContacts();
     CRM.api3('VolunteerCommendation', 'get', {
-      "volunteer_project_id": vid
+      volunteer_project_id: vid
     }).done(function(result) {
+      // wipe the slate clean
+      $('#crm-log-entry-table').find('.volunteer-commendation').data('commendation_id', null)
+        .removeClass('commended');
+      // populate the table with the fetched data
+      var addedRows = getAddedVolunteerRows();
       $.each(result.values, function(commendation_id, data){
+        if (addedRows.hasOwnProperty(data.volunteer_contact_id)) {
+          $.each(addedRows[data.volunteer_contact_id], function(){
+            $(this).find('.volunteer-commendation').data('commendation_id', commendation_id).addClass('commended');
+          });
+        }
         var contactRows = getRowsByContactID(data.volunteer_contact_id);
         contactRows.each(function(){
           $(this).find('.volunteer-commendation').data('commendation_id', commendation_id)
@@ -93,5 +113,23 @@ CRM.$(function($) {
       });
       unlockContacts();
     });
+  }
+
+  /**
+   * Returns rows that were added to the form using the "Add Volunteer" button.
+   *
+   * @returns {object} Properties are contact IDs. Values are arrays of jQuery objects.
+   */
+  function getAddedVolunteerRows() {
+    var result = {};
+    $('#crm-log-entry-table .selector-rows:not(".hiddenElement") input.crm-contact-ref').each(function() {
+      var cid = $(this).select2('val');
+      if (result[cid]) {
+        result[cid].push($(this).closest('.crm-grid-row'));
+      } else {
+        result[cid] = [$(this).closest('.crm-grid-row')];
+      }
+    });
+    return result;
   }
 });

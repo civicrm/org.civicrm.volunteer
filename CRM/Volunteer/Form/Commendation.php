@@ -118,12 +118,8 @@ class CRM_Volunteer_Form_Commendation extends CRM_Core_Form {
       $buttons[0]['name'] = ts('Update', array('domain' => 'org.civicrm.volunteer'));
       $buttons[] = array(
         'name' => ts('Delete', array('domain' => 'org.civicrm.volunteer')),
-        // Button type 'upload' is a bit of a hack. There is no 'delete' type.
-        // Two buttons of the same type cannot coexist in one form, so using two
-        // 'submit' buttons is not an option. Not all of the available types
-        // (e.g., 'process') trigger postProcess, so we're settling on the
-        // not-exactly-intuitive 'upload,' which does.
-        'type' => 'upload',
+        'type' => 'submit',
+        'subName' => 'delete'
       );
     } else {
       $buttons[0]['name'] = ts('Save', array('domain' => 'org.civicrm.volunteer'));
@@ -142,13 +138,12 @@ class CRM_Volunteer_Form_Commendation extends CRM_Core_Form {
   function postProcess() {
     $values = $this->exportValues();
 
-    if (array_key_exists('_qf_Commendation_upload', $values)) {
+    if (array_key_exists('_qf_Commendation_submit_delete', $values)) {
       // this is our delete condition
       civicrm_api3('Activity', 'delete', array(
         'id' => $this->_aid,
       ));
-      $statusMsg = ts('Commendation record deleted.', array('domain' => 'org.civicrm.volunteer'));
-      CRM_Core_Session::setStatus($statusMsg, '', 'success');
+      $this->_action = CRM_Core_Action::DELETE;
     } else {
       // this is our create/update condition
       CRM_Volunteer_BAO_Commendation::create(array(
@@ -157,6 +152,8 @@ class CRM_Volunteer_Form_Commendation extends CRM_Core_Form {
         'details' => $values['details'],
         'vid' => $this->_vid,
       ));
+
+      $this->_action = $this->_aid ? CRM_Core_Action::UPDATE : CRM_Core_Action::ADD;
     }
 
     parent::postProcess();
