@@ -47,6 +47,12 @@
           .removeClass('ui-icon-check').addClass('delete-icon');
 
         lockContacts();
+
+        // prevent commendation layer from disappearing behind volunteer layer
+        var commendation_layer = $(this);
+        $('[aria-describedby="crm-ajax-dialog-1"] .blockUI').click(function(){
+          commendation_layer.dialog('moveToTop');
+        });
       }).on('crmFormSuccess', function(event, ajaxResponse){
         switch(ajaxResponse.action) {
           case CRM.constants.CRM_Core_Action.DELETE:
