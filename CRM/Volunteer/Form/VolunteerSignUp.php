@@ -239,6 +239,22 @@ class CRM_Volunteer_Form_VolunteerSignUp extends CRM_Core_Form {
       CRM_Volunteer_BAO_Assignment::createVolunteerActivity($activityValues);
     }
 
+    // Send confirmation email to volunteer 
+    list($displayName, $email) = CRM_Contact_BAO_Contact_Location::getEmailDetails($cid);
+    list($domainEmailName, $domainEmailAddress) = CRM_Core_BAO_Domain::getNameAndEmail();
+    if($email){
+      $date = CRM_Utils_Date::customFormat($builtin_values['activity_date_time'], "%m/%E/%Y at %l:%M %P");
+		    $html = "You are scheduled to volunteer at the ".$builtin_values["subject"]." on ".$date.". Thank You!";
+		    $mailParams["from"] = "$domainEmailName <".$domainEmailAddress.">";
+		    $mailParams["toName"] = $displayName ;
+		    $mailParams["toEmail"] = $email;
+		    $mailParams["subject"] = "Volunteer Confirmation for {$builtin_values['subject']}";
+		    $mailParams["text"] =  $html; 
+		    $mailParams["html"] = $html;
+		    $mailParams["replyTo"]= $domainEmailAddress; 
+		    CRM_Utils_Mail::send($mailParams);
+		  }
+    
     $statusMsg = ts('You are scheduled to volunteer. Thank you!', array('domain' => 'org.civicrm.volunteer'));
     CRM_Core_Session::setStatus($statusMsg, '', 'success');
     CRM_Utils_System::redirect($this->_destination);
