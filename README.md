@@ -40,6 +40,11 @@ access the new Volunteer Activity Report (Contacts > Contact Reports) to get
 statistics on volunteering. You can even add that report as a dashlet on your dashboard if
 you want to keep track of your organization's cumulative volunteering totals.
 
+Dependencies
+============
+- CiviCRM version 4.5.x
+- [Multiform extension](https://github.com/ginkgostreet/civicrm_multiform)
+
 Known Issues
 ============
 For versions of CiviCRM prior to and including 4.5, the installer will not
