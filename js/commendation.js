@@ -35,6 +35,7 @@
           close: unlockContacts,
           draggable: false,
           height: 'auto',
+          minHeight: 215,
           modal: false,
           resizable: false,
           width: 'auto'
