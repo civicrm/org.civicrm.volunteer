@@ -10,65 +10,50 @@ CRM.$(function($) {
   });
 
   $('.volunteer-commendation').click(function(e){
-    // prevent unnecessary AJAX calls by disabling additional clicks for the same contact
-    if ($(this).not('.active').length) {
-      closePopup();
+    var url_args = {
+      cid: getContactIDOnThisRow($(this)),
+      vid: volunteerProjectID
+    };
 
-      // lock commendation icons for this contact
-      var cid = getContactIDOnThisRow($(this));
-      getRowsByContactID(cid).each(function() {
-        $(this).find('.volunteer-commendation').addClass('active');
-      });
-
-      var url_args = {
-        cid: cid,
-        vid: volunteerProjectID
-      };
-
-      var activityID = $(this).data('commendation_id');
-      if (activityID) {
-        url_args.aid = activityID;
-      }
-      var url = CRM.url('civicrm/volunteer/commendation', url_args);
-      var position = $(this).offset();
-      var coords = {
-        left: position.left,
-        top: position.top + $(this).height()
-      };
-
-      showPopup(url, coords);
+    var activityID = $(this).data('commendation_id');
+    if (activityID) {
+      url_args.aid = activityID;
     }
+    var url = CRM.url('civicrm/volunteer/commendation', url_args);
+
+    showPopup(url);
   });
 
 /**
  * @param {string} url The URL to load in the popup
- * @param {object} coords An object containing the properties top and left,
- *  which are numbers indicating the new top and left coordinates for the elements.
  * @returns {undefined}
  */
-  function showPopup(url, coords) {
-    if ($('#org_civicrm_volunteer-commendation_popup').length === 0) {
-      $('body').append('<div id="org_civicrm_volunteer-commendation_popup"></div>');
-      CRM.loadForm(url, {
-        onCancel: closePopup,
-        target: '#org_civicrm_volunteer-commendation_popup'
-      }).on('crmFormSuccess', function(){
-        closePopup();
-        fetchCommendations(volunteerProjectID);
-      });
-    } else {
-      $('#org_civicrm_volunteer-commendation_popup').removeClass('hiddenElement')
-        .crmSnippet('option', 'url', url).crmSnippet('refresh');
-    }
-
-    $('#org_civicrm_volunteer-commendation_popup').offset(coords);
+  function showPopup(url) {
+    CRM.loadForm(url, {
+      dialog: {
+        close: unlockContacts,
+        draggable: false,
+        height: 'auto',
+        modal: false,
+        resizable: false,
+        width: 'auto'
+      },
+      onCancel: unlockContacts,
+    }).on('crmLoad', function(){
+      lockContacts();
+    }).on('crmFormSuccess', function(){
+      unlockContacts();
+      fetchCommendations(volunteerProjectID);
+    });
   }
 
-  function closePopup() {
-    // remove "active" lock for all commendations
-    $('.volunteer-commendation').removeClass('active');
+  function lockContacts() {
+    $('.CRM_Volunteer_Form_Log').closest('.ui-dialog').block();
+    return true;
+  }
 
-    $('#org_civicrm_volunteer-commendation_popup').addClass('hiddenElement');
+  function unlockContacts() {
+    $('.CRM_Volunteer_Form_Log').closest('.ui-dialog').unblock();
     return true;
   }
 
@@ -95,7 +80,7 @@ CRM.$(function($) {
    * @param {Integer} vid Volunteer project ID
    */
   function fetchCommendations(vid) {
-    $('#crm-log-entry-table').block();
+    lockContacts();
     CRM.api3('VolunteerCommendation', 'get', {
       "volunteer_project_id": vid
     }).done(function(result) {
@@ -106,7 +91,7 @@ CRM.$(function($) {
             .addClass('commended');
         });
       });
-      $('#crm-log-entry-table').unblock();
+      unlockContacts();
     });
   }
 });

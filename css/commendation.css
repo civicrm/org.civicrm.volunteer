@@ -41,7 +41,11 @@
   margin: 10px;
 }
 
-#org_civicrm_volunteer-commendation_popup .crm-section .label {
+.ui-dialog .CRM_Volunteer_Form_Commendation .crm-section {
+  margin: 0;
+}
+
+.ui-dialog .CRM_Volunteer_Form_Commendation .label {
   clear: both;
   float: none;
   text-align: left;
@@ -52,6 +56,10 @@
   margin: 10px 0 0 0;
 }
 
-#org_civicrm_volunteer-commendation_popup .crm-section .content textarea {
-  width: 225px;
+.ui-dialog .CRM_Volunteer_Form_Commendation .content {
+  margin-left: 0;
+}
+
+.ui-dialog .CRM_Volunteer_Form_Commendation textarea {
+  width: 100%;
 }
