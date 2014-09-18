@@ -79,11 +79,7 @@ class CRM_Volunteer_Form_Commendation extends CRM_Core_Form {
     $cnt = civicrm_api3($entityType, 'getcount', array(
       'id' => $entityID,
     ));
-    if ($cnt === 0) {
-      return FALSE;
-    } else {
-      return TRUE;
-    }
+    return ($cnt > 0);
   }
 
   /**

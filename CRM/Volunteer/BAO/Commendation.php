@@ -10,7 +10,7 @@ class CRM_Volunteer_BAO_Commendation extends CRM_Volunteer_BAO_Activity {
   protected static $customFields = array();
 
   /**
-   * Function to create a Volunteer Commendation
+   * Function to create or update a Volunteer Commendation
    *
    * This function is invoked from within the web form layer
    *
@@ -19,14 +19,14 @@ class CRM_Volunteer_BAO_Commendation extends CRM_Volunteer_BAO_Activity {
    *  - cid: id of contact to be commended
    *  - vid: id of project for which contact is to be commended
    *  - details: text about the contact's exceptional volunteerism
-   * @see self::dataExists for rules re required params
+   * @see self::requiredParamsArePresent for rules re required params
    * @return array Result of api.activity.create
    * @access public
    * @static
    */
   public static function create(array $params) {
     // check required params
-    if (!self::dataExists($params)) {
+    if (!self::requiredParamsArePresent($params)) {
       CRM_Core_Error::fatal('Not enough data to create commendation object.');
     }
 
@@ -52,7 +52,7 @@ class CRM_Volunteer_BAO_Commendation extends CRM_Volunteer_BAO_Activity {
       $api_params['subject'] = ts('Volunteer Commendation for %1', array('1' => $project->title, 'domain' => 'org.civicrm.volunteer'));
 
       $customFieldSpec = self::getCustomFields();
-      $volunteer_project_id_field_name = 'custom_' . $customFieldSpec['project_id']['id'];
+      $volunteer_project_id_field_name = $customFieldSpec['project_id']['custom_n'];
       $api_params[$volunteer_project_id_field_name] = $vid;
     }
 
@@ -71,7 +71,7 @@ class CRM_Volunteer_BAO_Commendation extends CRM_Volunteer_BAO_Activity {
    * @return boolean
    * @access public
    */
-  public static function dataExists($params) {
+  private static function requiredParamsArePresent($params) {
     if (
       CRM_Utils_Array::value('aid', $params) || ( // activity id
         CRM_Utils_Array::value('cid', $params) && // contact id
