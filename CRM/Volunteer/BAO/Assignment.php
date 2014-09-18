@@ -37,7 +37,10 @@ class CRM_Volunteer_BAO_Assignment extends CRM_Volunteer_BAO_Activity {
 
   const CUSTOM_ACTIVITY_TYPE = 'Volunteer';
   const CUSTOM_GROUP_NAME = 'CiviVolunteer';
-  const ROLE_OPTION_GROUP/*customOptionGroupName*/ = 'volunteer_role';
+  const ROLE_OPTION_GROUP = 'volunteer_role';
+
+  protected static $customGroup = array();
+  protected static $customFields = array();
 
   public $volunteer_need_id;
   public $time_scheduled;

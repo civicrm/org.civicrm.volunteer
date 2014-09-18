@@ -14,19 +14,21 @@ abstract class CRM_Volunteer_BAO_Activity extends CRM_Activity_DAO_Activity {
    * @return array Keyed with id (custom group/table id) and table_name
    */
   public static function getCustomGroup() {
-    $params = array(
-      'extends' => 'Activity',
-      'is_active' => 1,
-      'name' => static::CUSTOM_GROUP_NAME,
-      'return' => array('id', 'table_name'),
-    );
+    if (empty(static::$customGroup)) {
+      $params = array(
+        'extends' => 'Activity',
+        'is_active' => 1,
+        'name' => static::CUSTOM_GROUP_NAME,
+        'return' => array('id', 'table_name'),
+      );
 
-    $custom_group = civicrm_api3('CustomGroup', 'getsingle', $params);
+      static::$customGroup = civicrm_api3('CustomGroup', 'getsingle', $params);
 
-    unset($custom_group['extends']);
-    unset($custom_group['is_active']);
-    unset($custom_group['name']);
-    return $custom_group;
+      unset(static::$customGroup['extends']);
+      unset(static::$customGroup['is_active']);
+      unset(static::$customGroup['name']);
+    }
+    return static::$customGroup;
   }
 
   /**
@@ -37,31 +39,31 @@ abstract class CRM_Volunteer_BAO_Activity extends CRM_Activity_DAO_Activity {
    * civicrm_custom_group.id), column_name, and data_type.
    */
   public static function getCustomFields () {
-    $result = array();
+    if (empty(static::$customFields)) {
+      $custom_group = static::getCustomGroup();
 
-    $custom_group = static::getCustomGroup();
-
-    $params = array(
-      'custom_group_id' => $custom_group['id'],
-      'is_active' => 1,
-      'return' => array('id', 'column_name', 'name', 'data_type'),
-    );
-
-    $fields = civicrm_api3('CustomField', 'get', $params);
-
-    if (CRM_Utils_Array::value('count', $fields) < 1) {
-      CRM_Core_Error::fatal('CiviVolunteer-defined custom fields appear to be missing (custom field group' . static::CUSTOM_GROUP_NAME . ').');
-    }
-
-    foreach ($fields['values'] as $field) {
-      $result[strtolower($field['name'])] = array(
-        'id' => $field['id'],
-        'column_name' => $field['column_name'],
-        'data_type' => $field['data_type'],
+      $params = array(
+        'custom_group_id' => $custom_group['id'],
+        'is_active' => 1,
+        'return' => array('id', 'column_name', 'name', 'data_type'),
       );
+
+      $fields = civicrm_api3('CustomField', 'get', $params);
+
+      if (CRM_Utils_Array::value('count', $fields) < 1) {
+        CRM_Core_Error::fatal('CiviVolunteer-defined custom fields appear to be missing (custom field group' . static::CUSTOM_GROUP_NAME . ').');
+      }
+
+      foreach ($fields['values'] as $field) {
+        static::$customFields[strtolower($field['name'])] = array(
+          'id' => $field['id'],
+          'column_name' => $field['column_name'],
+          'data_type' => $field['data_type'],
+        );
+      }
     }
 
-    return $result;
+    return static::$customFields;
   }
 
   /**

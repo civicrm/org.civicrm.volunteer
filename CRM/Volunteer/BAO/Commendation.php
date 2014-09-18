@@ -6,6 +6,9 @@ class CRM_Volunteer_BAO_Commendation extends CRM_Volunteer_BAO_Activity {
   const CUSTOM_GROUP_NAME = 'volunteer_commendation';
   const PROJECT_REF_FIELD_NAME = 'volunteer_project_id';
 
+  protected static $customGroup = array();
+  protected static $customFields = array();
+
   /**
    * Function to create a Volunteer Commendation
    *
