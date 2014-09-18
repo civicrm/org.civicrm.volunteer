@@ -35,8 +35,8 @@ abstract class CRM_Volunteer_BAO_Activity extends CRM_Activity_DAO_Activity {
    * Get information about the custom Activity fields
    *
    * @return array Multi-dimensional, keyed by lowercased custom field
-   * name (i.e., civicrm_custom_group.name). Subarray keyed with id (i.e.,
-   * civicrm_custom_group.id), column_name, and data_type.
+   *         name (i.e., civicrm_custom_group.name). Subarray keyed with id (i.e.,
+   *         civicrm_custom_group.id), column_name, custom_n, and data_type.
    */
   public static function getCustomFields () {
     if (empty(static::$customFields)) {
@@ -58,6 +58,7 @@ abstract class CRM_Volunteer_BAO_Activity extends CRM_Activity_DAO_Activity {
         static::$customFields[strtolower($field['name'])] = array(
           'id' => $field['id'],
           'column_name' => $field['column_name'],
+          'custom_n' => 'custom_' . $field['id'],
           'data_type' => $field['data_type'],
         );
       }
