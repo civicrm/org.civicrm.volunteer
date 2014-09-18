@@ -42,7 +42,7 @@ you want to keep track of your organization's cumulative volunteering totals.
 
 Known Issues
 ============
-For versions of CiviCRM prior to and including 4.4.6, the installer will not
+For versions of CiviCRM prior to and including 4.4.7, the installer will not
 create extension-defined permissions for Joomla installations (see
 [CRM-12059](https://issues.civicrm.org/jira/browse/CRM-12059)). As a result,
 the "register to volunteer" permission does not appear in Joomla's access control
