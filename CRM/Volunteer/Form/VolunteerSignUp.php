@@ -68,14 +68,6 @@ class CRM_Volunteer_Form_VolunteerSignUp extends CRM_Core_Form {
   protected $_project;
 
   /**
-   * ID of profile used in this form
-   *
-   * @var int
-   * @protected
-   */
-  protected $_ufgroup_id;
-
-  /**
    * This function sets the default values for the form.
    *
    * @access public
@@ -83,11 +75,15 @@ class CRM_Volunteer_Form_VolunteerSignUp extends CRM_Core_Form {
   function setDefaultValues() {
     $defaults = array();
     $defaults['volunteer_role_id'] = CRM_Volunteer_BAO_Need::FLEXIBLE_ROLE_ID;
+    
+    $vid = CRM_Utils_Request::retrieve('vid', 'Positive', $this, TRUE);
+    $this->_project = CRM_Volunteer_BAO_Project::retrieveByID($vid);
 
-    $cid = CRM_Utils_Array::value('userID', $_SESSION['CiviCRM'], NULL);
-    if ($cid) {
-      $fields = array_flip(array_keys(CRM_Core_BAO_UFGroup::getFields($this->_ufgroup_id)));
-      CRM_Core_BAO_UFGroup::setProfileDefaults($cid, $fields, $defaults);
+    if (key_exists('userID', $_SESSION['CiviCRM'])) {
+      foreach($this->getProfileIds($this->_project->id) as $gid) {
+        $fields = array_flip(array_keys(CRM_Core_BAO_UFGroup::getFields($gid)));
+        CRM_Core_BAO_UFGroup::setProfileDefaults($_SESSION['CiviCRM']['userID'], $fields, $defaults);
+      }
     }
 
     return $defaults;
@@ -120,23 +116,39 @@ class CRM_Volunteer_Form_VolunteerSignUp extends CRM_Core_Form {
     // current mode
     $this->_mode = ($this->_action == CRM_Core_Action::PREVIEW) ? 'test' : 'live';
 
-    // get profile id
+    $this->buildCustom($this->getProfileIds($this->_project->id));
+  }
+
+  /**
+   * Search for profiles by Volunteer Project ID
+   * @param type $projectId
+   * @return array of UFGroup (Profile) Ids
+   */
+  function getProfileIds($projectId) {
+    $groupIds = array();
     try {
-      $this->_ufgroup_id = civicrm_api3('UFGroup', 'getvalue', array(
-        'name' => 'volunteer_sign_up',
-        'return' => 'id',
-      ));
+      $forms = civicrm_api3('EntityForm', 'get',
+      array('entity_id' => $projectId));
+      
+      if ($forms['count'] > 1) {
+        CRM_Core_Session::setStatus(ts('Found multiple custom forms for this project. This feature is not implemented yet', array('domain' => 'org.civicrm.volunteer')));
+      }
+
+      foreach (array_keys($forms['values']) as $fid){
+        // TODO: support for multiple forms.
+        $groupIds = array_merge($groupIds, CRM_Volunteer_Form_Volunteer::getProfilesForEntityForm($fid));
+      }
     } catch (Exception $e) {
       CRM_Core_Error::fatal('CiviVolunteer custom profile could not be found');
     }
+
+    return $groupIds;
   }
 
   function buildQuickForm() {
     CRM_Utils_System::setTitle(ts('Sign Up to Volunteer for %1', array(1 => $this->_project->title)));
     CRM_Core_Resources::singleton()->addScriptFile('org.civicrm.volunteer',
       'templates/CRM/Volunteer/Form/VolunteerSignUp.js');
-
-    $this->buildCustom('volunteerProfile');
 
     // don't show the roles dropdown if the flexible need is the only open need
     if (count($this->_project->open_needs)) {
@@ -277,14 +289,14 @@ class CRM_Volunteer_Form_VolunteerSignUp extends CRM_Core_Form {
    * @param string $name The name to give the Smarty variable
    * @access public
    */
-  function buildCustom($name) {
+  function buildCustom($ufGroupIds) {
     $fields = array();
     $session   = CRM_Core_Session::singleton();
     $contactID = $session->get('userID');
-
-    $id = $this->_ufgroup_id;
-
-    if ($id) {
+    $ufFields = array();
+    $ufGroups = array();
+    
+    foreach($ufGroupIds as $id) {
       $fields = CRM_Core_BAO_UFGroup::getFields($id, FALSE, CRM_Core_Action::ADD,
         NULL, NULL, FALSE, NULL,
         FALSE, NULL, CRM_Core_Permission::CREATE,
@@ -299,11 +311,11 @@ class CRM_Volunteer_Form_VolunteerSignUp extends CRM_Core_Form {
           $contactID,
           TRUE
         );
-        $this->_fields[$key] = $field;
+        $ufFields[$key] = $this->_fields[$key] = $field;
       }
-
-      $this->assign($name, $fields);
+      $ufGroups[$id] = $ufFields;
     }
+    $this->assign('customProfiles', $ufGroups);
   }
 
   /**

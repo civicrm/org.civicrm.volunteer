@@ -70,7 +70,7 @@ class CRM_Volunteer_Form_Volunteer extends CRM_Event_Form_ManageEvent {
     );
 
     $forms = civicrm_api3('EntityForm', 'get', 
-      array('entity_id' => $project->entity_id));
+      array('entity_id' => $project->id));
 
     if ($forms['count'] > 1) {
       CRM_Core_Session::setStatus(ts('Found multiple custom forms for this project. This feature is not implemented yet', array('domain' => 'org.civicrm.volunteer')));
@@ -81,8 +81,8 @@ class CRM_Volunteer_Form_Volunteer extends CRM_Event_Form_ManageEvent {
 
       /** create form **/
       $api_result = civicrm_api3('EntityForm', 'create', array(
-        'entity_table' => 'civicrm_event',
-        'entity_id' => $project->entity_id,
+        'entity_table' => 'civicrm_volunteer_project',
+        'entity_id' => $project->id,
         'title' => 'Volunteer Sign Up'
       ));
       $forms['id'] = $form_id = $api_result['id'];
@@ -110,6 +110,7 @@ class CRM_Volunteer_Form_Volunteer extends CRM_Event_Form_ManageEvent {
       $defaults["custom_signup_profiles[$key]"] = $value;
     }
     $this->assign('profileSignUpMultiple', array_keys($groupids));
+//    var_dump($groupids); die;
     $this->assign('profileSignUpCounter', count($groupids));
 
     return $defaults;
@@ -215,13 +216,14 @@ class CRM_Volunteer_Form_Volunteer extends CRM_Event_Form_ManageEvent {
       'is_active' => $form['is_active'],
       'target_contact_id' => $form['target_contact_id'],
     );
+    /* @var $project CRM_Volunteer_BAO_Project */
     $project = CRM_Volunteer_BAO_Project::create($params);
 
     // if the project doesn't already exist and the user enabled vol management,
     // create the flexible need
     if (count($projects) !== 1 && $form['is_active'] === '1') {
       $need = array(
-        'project_id' => $project->_id,
+        'project_id' => $project->id,
         'is_flexible' => '1',
         'visibility_id' => CRM_Core_OptionGroup::getValue('visibility', 'public', 'name'),
       );
@@ -231,8 +233,8 @@ class CRM_Volunteer_Form_Volunteer extends CRM_Event_Form_ManageEvent {
     /** process profiles **/
 
     $entity_form = civicrm_api3('EntityForm', 'getsingle', array(
-      'entity_table' => 'civicrm_event',
-      'entity_id' => $this->id,
+      'entity_table' => 'civicrm_volunteer_project',
+      'entity_id' => $project->id,
       'return' => 'id'
     ));
 
@@ -264,7 +266,7 @@ class CRM_Volunteer_Form_Volunteer extends CRM_Event_Form_ManageEvent {
   static function createUFJoinParams($formId) {
     return array(
       'is_active' => 1,
-      'module' => 'MultiForm',
+      'module' => 'EntityForm',
       'entity_table' => 'entity_form',
       'entity_id' => $formId,
     );

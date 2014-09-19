@@ -120,7 +120,7 @@
     $(".dedupenotify .ui-notify-close").click();
   }); // cleanup notification pop-ups
 
-  var profileCounter = Number({/literal}{$profileSignUpCounter|@count}{literal});
+  var profileCounter = Number({/literal}{$profileSignUpCounter}{literal});
 
   function addBottomProfile( e ) {
     e.preventDefault();
