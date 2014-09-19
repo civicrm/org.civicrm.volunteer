@@ -1,0 +1,9 @@
+<?xml version="1.0"?>
+<menu>
+  <item>
+    <path>civicrm/volunteer/manage/includeprofile</path>
+    <page_callback>CRM_Volunteer_Form_IncludeProfile</page_callback>
+    <title>IncludeProfile</title>
+    <access_arguments>access CiviCRM</access_arguments>
+  </item>
+</menu>
