@@ -75,9 +75,6 @@ class CRM_Volunteer_Form_VolunteerSignUp extends CRM_Core_Form {
   function setDefaultValues() {
     $defaults = array();
     $defaults['volunteer_role_id'] = CRM_Volunteer_BAO_Need::FLEXIBLE_ROLE_ID;
-    
-    $vid = CRM_Utils_Request::retrieve('vid', 'Positive', $this, TRUE);
-    $this->_project = CRM_Volunteer_BAO_Project::retrieveByID($vid);
 
     if (key_exists('userID', $_SESSION['CiviCRM'])) {
       foreach($this->getProfileIds($this->_project->id) as $gid) {
@@ -129,7 +126,7 @@ class CRM_Volunteer_Form_VolunteerSignUp extends CRM_Core_Form {
     try {
       $forms = civicrm_api3('EntityForm', 'get',
       array('entity_id' => $projectId));
-      
+
       if ($forms['count'] > 1) {
         CRM_Core_Session::setStatus(ts('Found multiple custom forms for this project. This feature is not implemented yet', array('domain' => 'org.civicrm.volunteer')));
       }
@@ -295,7 +292,7 @@ class CRM_Volunteer_Form_VolunteerSignUp extends CRM_Core_Form {
     $contactID = $session->get('userID');
     $ufFields = array();
     $ufGroups = array();
-    
+
     foreach($ufGroupIds as $id) {
       $fields = CRM_Core_BAO_UFGroup::getFields($id, FALSE, CRM_Core_Action::ADD,
         NULL, NULL, FALSE, NULL,

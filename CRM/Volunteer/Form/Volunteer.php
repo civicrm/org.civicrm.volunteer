@@ -49,7 +49,6 @@ class CRM_Volunteer_Form_Volunteer extends CRM_Event_Form_ManageEvent {
    * @return array
    */
   function setDefaultValues() {
-
     $project = current(CRM_Volunteer_BAO_Project::retrieve(array(
       'entity_id' => $this->_id,
       'entity_table' => CRM_Event_DAO_Event::$_tableName,
@@ -289,7 +288,7 @@ class CRM_Volunteer_Form_Volunteer extends CRM_Event_Form_ManageEvent {
   }
 
   /**
-   * Return a descriptive name fwor the page, used in wizard header
+   * Return a descriptive name for the page, used in wizard header
    *
    * @return string
    * @access public
