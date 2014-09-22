@@ -221,7 +221,10 @@ class CRM_Volunteer_Form_VolunteerSignUp extends CRM_Core_Form {
     );
     $need = civicrm_api('VolunteerNeed', 'getsingle', $params);
 
-    $profile_fields = CRM_Core_BAO_UFGroup::getFields($this->_ufgroup_id);
+    $profile_fields = array();
+    foreach ($this->getProfileIDs() as $profileID) {
+      $profile_fields += CRM_Core_BAO_UFGroup::getFields($profileID);
+    }
     $profile_values = array_intersect_key($values, $profile_fields);
     $builtin_values = array_diff_key($values, $profile_values);
 
@@ -238,9 +241,7 @@ class CRM_Volunteer_Form_VolunteerSignUp extends CRM_Core_Form {
     $cid = CRM_Contact_BAO_Contact::createProfileContact(
       $profile_values,
       $profile_fields,
-      $cid,
-      NULL,
-      $this->_ufgroup_id
+      $cid
     );
 
     $activity_statuses = CRM_Activity_BAO_Activity::buildOptions('status_id', 'create');
