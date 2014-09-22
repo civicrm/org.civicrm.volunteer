@@ -167,13 +167,14 @@ class CRM_Volunteer_Form_Volunteer extends CRM_Event_Form_ManageEvent {
    * @return None
    */
   public function postProcess() {
-    /* @var $this CRM_Volunteer_Form_Volunteer */
     $form = $this->getSubmitValues();
     $form['is_active'] = CRM_Utils_Array::value('is_active', $form, 0);
 
     $params = array(
       'entity_id' => $this->_id,
       'entity_table' => CRM_Event_DAO_Event::$_tableName,
+      'is_active' => $form['is_active'],
+      'target_contact_id' => $form['target_contact_id'],
     );
 
     if ($this->_project) {
@@ -181,64 +182,50 @@ class CRM_Volunteer_Form_Volunteer extends CRM_Event_Form_ManageEvent {
     }
 
     // save the project record
-    $params += array(
-      'is_active' => $form['is_active'],
-      'target_contact_id' => $form['target_contact_id'],
-    );
-    /* @var $project CRM_Volunteer_BAO_Project */
-    $project = CRM_Volunteer_BAO_Project::create($params);
+    $this->_project = CRM_Volunteer_BAO_Project::create($params);
 
     // if the project doesn't already exist and the user enabled vol management,
     // create the flexible need
-    if (count($projects) !== 1 && $form['is_active'] === '1') {
+    if (!$this->_project && $form['is_active'] === '1') {
       $need = array(
-        'project_id' => $project->id,
+        'project_id' => $this->_project->id,
         'is_flexible' => '1',
         'visibility_id' => CRM_Core_OptionGroup::getValue('visibility', 'public', 'name'),
       );
       CRM_Volunteer_BAO_Need::create($need);
     }
 
-    /** process profiles **/
-
-    $entity_form = civicrm_api3('EntityForm', 'getsingle', array(
-      'entity_table' => 'civicrm_volunteer_project',
-      'entity_id' => $project->id,
-      'return' => 'id'
-    ));
-
-    // first delete all past entries
-    CRM_Core_BAO_UFJoin::deleteAll(
-      self::createUFJoinParams($entity_form['id'])
-    );
-
-    // store the new selections;
-    foreach($form['custom_signup_profiles'] as $idx => $profile_id) {
-      self::addProfileToFormEntity($entity_form['id'], $profile_id, $idx);
-    }
+    $this->saveProfileSelections($form['custom_signup_profiles']);
 
     self::validateProfileForDedupe($form['custom_signup_profiles']);
 
     parent::endPostProcess();
   }
-  static function addProfileToFormEntity($fid, $pid, $weight) {
-    $ufJoinParams = self::createUFJoinParams($fid);
-    $ufJoinParams['uf_group_id'] = $pid;
-    $ufJoinParams['weight'] = $weight; // really a unique ID
-    return CRM_Core_BAO_UFJoin::create($ufJoinParams);
-  }
+
   /**
-   * Provided an Entity Form ID, create params for retrieving the profiles
-   * @param type $formId
-   * @return type
+   * Associates user-selected profiles with the volunteer project
+   *
+   * @param array $profiles
    */
-  static function createUFJoinParams($formId) {
-    return array(
-      'is_active' => 1,
-      'module' => 'EntityForm',
-      'entity_table' => 'entity_form',
-      'entity_id' => $formId,
+  function saveProfileSelections($profiles) {
+    // first delete all past entries
+    $params = array(
+      'entity_table' => CRM_Volunteer_BAO_Project::$_tableName,
+      'entity_id' => $this->_project->id,
     );
+    CRM_Core_BAO_UFJoin::deleteAll($params);
+
+    // store the new selections
+    foreach($profiles as $key => $profile_id) {
+      CRM_Core_BAO_UFJoin::create(array(
+        'entity_id' => $this->_project->id,
+        'entity_table' => CRM_Volunteer_BAO_Project::$_tableName,
+        'is_active' => 1,
+        'module' => 'CiviVolunteer',
+        'uf_group_id' => $profile_id,
+        'weight' => $key,
+      ));
+    }
   }
 
   static function validateProfileForDedupe($profileIds) {
