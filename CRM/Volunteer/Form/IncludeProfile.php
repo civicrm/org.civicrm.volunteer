@@ -47,10 +47,8 @@ class CRM_Volunteer_Form_IncludeProfile extends CRM_Core_Form {
 
     $configs['allowCoreTypes'][] = 'Contact';
     $configs['allowCoreTypes'][] = 'Individual';
-    $configs['allowCoreTypes'][] = 'Participant';
 
     $configs['profileEntities'][] = array('entity_name' => 'contact_1', 'entity_type' => 'IndividualModel');
-    $configs['profileEntities'][] = array('entity_name' => 'participant_1', 'entity_type' => 'ParticipantModel');
 
    return $configs;
   }
