@@ -76,49 +76,10 @@ class CRM_Volunteer_Form_Volunteer extends CRM_Event_Form_ManageEvent {
       'target_contact_id' => $target_contact_id,
     );
 
-    $forms = civicrm_api3('EntityForm', 'get', 
-      array('entity_id' => $project->id));
-
-    if ($forms['count'] > 1) {
-      CRM_Core_Session::setStatus(ts('Found multiple custom forms for this project. This feature is not implemented yet', array('domain' => 'org.civicrm.volunteer')));
-    }
-
-    if ($forms['count'] === 0) {
-      CRM_Core_Session::setStatus(ts('No custom forms found, assigning the reserved profile, "Volunteer Sign Up" to a new MultiForm entity.', array('domain' => 'org.civicrm.volunteer')));
-
-      /** create form **/
-      $api_result = civicrm_api3('EntityForm', 'create', array(
-        'entity_table' => 'civicrm_volunteer_project',
-        'entity_id' => $project->id,
-        'title' => 'Volunteer Sign Up'
-      ));
-      $forms['id'] = $form_id = $api_result['id'];
-
-      /** assign profile to form (UFJoin) **/
-      $api_result = civicrm_api3('UFGroup', 'get', array('name' => 'volunteer_sign_up'));
-      self::addProfileToFormEntity($form_id, $api_result['id'], 1 );
-
-      $groupids = array($api_result['id']);
-    }
-    else {
-      $groupids = array();
-      foreach (array_keys($forms['values']) as $fid){
-        // TODO: support for multiple forms.
-        $groupids = array_merge($groupids, self::getProfilesForEntityForm($fid));
-        if (count($groupids) === 0 ) {
-          $api_result = civicrm_api3('UFGroup', 'get', array('name' => 'volunteer_sign_up'));
-          self::addProfileToFormEntity($fid, $api_result['id'], 1 );
-        }
-      }
-    }
-
-    foreach ($groupids as $key => $value) {
+    foreach ($this->getProfileIDs() as $key => $value) {
       CRM_Volunteer_Form_IncludeProfile::buildProfileWidget($this, $key);
       $defaults["custom_signup_profiles[$key]"] = $value;
     }
-    $this->assign('profileSignUpMultiple', array_keys($groupids));
-//    var_dump($groupids); die;
-    $this->assign('profileSignUpCounter', count($groupids));
 
     return $defaults;
    }
@@ -154,6 +115,19 @@ class CRM_Volunteer_Form_Volunteer extends CRM_Event_Form_ManageEvent {
       'entity_id' => $this->_id,
       'entity_table' => CRM_Event_DAO_Event::$_tableName,
     )));
+
+    // Retrieve the profile IDs associated with the project; if none exist,
+    // create a dummy using CiviVolunteer's built-in profile. Note: this is
+    // necessary to ensure backwards compatibility with versions pre-dating the
+    // profile selection widget.
+    if (empty($this->getProfileIDs())) {
+      $this->_profile_ids[] = civicrm_api3('UFGroup', 'getvalue', array(
+        'name' => 'volunteer_sign_up',
+        'return' => 'id',
+      ));
+    }
+    $this->assign('profileSignUpMultiple', array_keys($this->_profile_ids));
+    $this->assign('profileSignUpCounter', count($this->_profile_ids));
 
     $unmet = CRM_Volunteer_Upgrader::checkExtensionDependencies();
     if (in_array('com.ginkgostreet.multiform', $unmet)) {
