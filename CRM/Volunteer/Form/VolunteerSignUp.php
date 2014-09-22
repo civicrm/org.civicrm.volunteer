@@ -52,12 +52,12 @@ class CRM_Volunteer_Form_VolunteerSignUp extends CRM_Core_Form {
   public $_fields = array();
 
   /**
-   * the mode that we are in
+   * The profile IDs associated with this form.
    *
-   * @var string
+   * @var array
    * @protected
    */
-  protected $_mode;
+  protected $_profile_ids = array();
 
   /**
    * the project we are processing
@@ -77,8 +77,8 @@ class CRM_Volunteer_Form_VolunteerSignUp extends CRM_Core_Form {
     $defaults['volunteer_role_id'] = CRM_Volunteer_BAO_Need::FLEXIBLE_ROLE_ID;
 
     if (key_exists('userID', $_SESSION['CiviCRM'])) {
-      foreach($this->getProfileIds($this->_project->id) as $gid) {
-        $fields = array_flip(array_keys(CRM_Core_BAO_UFGroup::getFields($gid)));
+      foreach($this->getProfileIDs() as $profileID) {
+        $fields = array_flip(array_keys(CRM_Core_BAO_UFGroup::getFields($profileID)));
         CRM_Core_BAO_UFGroup::setProfileDefaults($_SESSION['CiviCRM']['userID'], $fields, $defaults);
       }
     }
@@ -112,8 +112,6 @@ class CRM_Volunteer_Form_VolunteerSignUp extends CRM_Core_Form {
 
     // current mode
     $this->_mode = ($this->_action == CRM_Core_Action::PREVIEW) ? 'test' : 'live';
-
-    $this->buildCustom($this->getProfileIds($this->_project->id));
   }
 
   /**
@@ -121,25 +119,18 @@ class CRM_Volunteer_Form_VolunteerSignUp extends CRM_Core_Form {
    * @param type $projectId
    * @return array of UFGroup (Profile) Ids
    */
-  function getProfileIds($projectId) {
-    $groupIds = array();
-    try {
-      $forms = civicrm_api3('EntityForm', 'get',
-      array('entity_id' => $projectId));
-
-      if ($forms['count'] > 1) {
-        CRM_Core_Session::setStatus(ts('Found multiple custom forms for this project. This feature is not implemented yet', array('domain' => 'org.civicrm.volunteer')));
+  function getProfileIDs() {
+    if (empty($this->_profile_ids)) {
+      $dao = new CRM_Core_DAO_UFJoin();
+      $dao->entity_table = CRM_Volunteer_BAO_Project::$_tableName;
+      $dao->entity_id = $this->_project->id;
+      $dao->orderBy('weight asc');
+      $dao->find();
+      while ($dao->fetch()) {
+        $this->_profile_ids[] = $dao->uf_group_id;
       }
-
-      foreach (array_keys($forms['values']) as $fid){
-        // TODO: support for multiple forms.
-        $groupIds = array_merge($groupIds, CRM_Volunteer_Form_Volunteer::getProfilesForEntityForm($fid));
-      }
-    } catch (Exception $e) {
-      CRM_Core_Error::fatal('CiviVolunteer custom profile could not be found');
     }
-
-    return $groupIds;
+    return $this->_profile_ids;
   }
 
   function buildQuickForm() {
