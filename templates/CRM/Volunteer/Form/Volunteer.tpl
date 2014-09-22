@@ -86,7 +86,6 @@
             profileCount=$forSignUpKey
             profileName=$forSignUpName
             profileItem=$forSignUpItem
-            profileLast=$smarty.foreach.forSignUpName.last
         }
       {/foreach}
   </div>
@@ -108,74 +107,60 @@
         }
       });
 
+      // show/hide the volunteer config on load
       $('#is_active', $form).trigger('change');
-    });
-  {/literal}
-</script>
-<script type="text/javascript">
-{literal}
-(function($, _) { // Generic Closure
 
-  $(".crm-submit-buttons input").click( function() {
-    $(".dedupenotify .ui-notify-close").click();
-  }); // cleanup notification pop-ups
+      $('#org_civicrm_volunteer-sign-up-profiles').on('click', '.crm-button-add-profile', addBottomProfile);
+      $('#org_civicrm_volunteer-sign-up-profiles').on('click', '.crm-button-rem-profile', removeBottomProfile);
+      showLastAddProfileButtonOnly();
+      preventRemoveAllBottomProfiles();
 
-  var profileCounter = Number({/literal}{$profileSignUpCounter}{literal});
+      $(".crm-submit-buttons input").click( function() {
+        $(".dedupenotify .ui-notify-close").click();
+      }); // cleanup notification pop-ups
 
-  function addBottomProfile( e ) {
-    e.preventDefault();
+      var profileCounter = Number({/literal}{$profileSignUpCounter}{literal});
 
-    urlPath = CRM.url('civicrm/volunteer/manage/includeprofile', { profileCount : profileCounter, snippet: 4 } ) ;
-    profileCounter++;
+      function addBottomProfile( e ) {
+        e.preventDefault();
 
-    $('#org_civicrm_volunteer-sign-up-profiles').append('<div class="additional_profile"></div>');
-    var $el = $('#org_civicrm_volunteer-sign-up-profiles').find('.additional_profile:last');
-    $el.load(urlPath, function() { $(this).trigger('crmLoad') });
-    $(this).closest(".profile_bottom_link_main, .profile_bottom_link, .profile_bottom_add_link_main").hide();
-    $el.find(".profile_bottom_link_main, .profile_bottom_link, .profile_bottom_add_link_main").show();
-  }
+        // hide all the "add" buttons (when the new form renders, it will be the
+        // only row with an "add" button)
+        $('#org_civicrm_volunteer-sign-up-profiles .crm-button-add-profile').hide();
 
-  function removeBottomProfile( e ) {
-    e.preventDefault();
+        urlPath = CRM.url('civicrm/volunteer/manage/includeprofile', { profileCount : profileCounter, snippet: 4 } ) ;
+        profileCounter++;
 
-    $(e.target).parents('.crm-profile-selector-container').find('.crm-profile-selector').val('');
-    $(e.target).parents('.crm-profile-selector-container').hide();
-    $(e.target).parents('#org_civicrm_volunteer-sign-up-profiles')
-      .find('.crm-profile-selector-container:visible:last .profile_bottom_link').show();
-  }
+        $('#org_civicrm_volunteer-sign-up-profiles').append('<div class="additional_profile"></div>');
+        var $el = $('#org_civicrm_volunteer-sign-up-profiles .additional_profile:last');
+        $el.load(urlPath, function() { $(this).trigger('crmLoad') });
 
-  var strSameAs = ' - '+ts('same as for main contact')+' - ';
-  var strSelect = ' - '+ts('select')+' - ';
-
-/*  $('#crm-container').on('crmLoad', function() {
-    var $container = $("[id^='additional_profile_'],.additional_profile").not('.processed').addClass('processed');
-    $container.find(".crm-profile-selector-select select").each( function() {
-      var $select = $(this);
-      var selected = $select.find(':selected').val(); //cache the default
-      $select.find('option[value=""]').remove();
-      $select.prepend('<option value="">'+strSameAs+'</option>');
-      if ($select.closest('tr').is(':not([id*="_pre"])')) {
-         $select.prepend('<option value="">'+strSelect+'</option>');
+        // if profiles are being added that means more than one is displayed, in
+        // which case all "remove" links should be displayed
+        $('#org_civicrm_volunteer-sign-up-profiles .crm-button-rem-profile').show();
       }
-      $select.find('option[value="'+selected+'"]').attr('selected', 'selected'); //restore default
-    });
-  });
-*/
-  $(function($) {
-    $('#org_civicrm_volunteer-sign-up-profiles').on('click', '.crm-button-add-profile', addBottomProfile);
-    $('#org_civicrm_volunteer-sign-up-profiles').on('click', '.crm-button-rem-profile', removeBottomProfile);
 
-/*    $('#crm-container').on('crmLoad', function(e) {
-        $('tr[id^="additional_profile"] input[id^="additional_custom_"]').change(function(e) {
-            $input = $(e.target);
-            if ( $input.val() == '') {
-                $selected = $input.closest('tr').find('.crm-profile-selector-select :selected');
-                if ($selected.text() == strSelect) { $input.val('none'); }
-            }
-        });
-    });
-*/
-  }); // END onReady
-}(CRM.$, CRM._)); //Generic Closure
-{/literal}
+      function removeBottomProfile( e ) {
+        e.preventDefault();
+
+        $(e.target).parents('.crm-profile-selector-container').find('.crm-profile-selector').val('');
+        $(e.target).parents('.crm-profile-selector-container').hide();
+        showLastAddProfileButtonOnly();
+        preventRemoveAllBottomProfiles();
+      }
+
+      function showLastAddProfileButtonOnly () {
+        $('#org_civicrm_volunteer-sign-up-profiles .crm-button-add-profile').hide();
+        $('#org_civicrm_volunteer-sign-up-profiles .crm-profile-selector-container:visible:last .crm-button-add-profile').show();
+      }
+
+      function preventRemoveAllBottomProfiles () {
+        // hide the "remove profile" button if there's only one profile left
+        var visibleRemoveBtns = $('#org_civicrm_volunteer-sign-up-profiles .crm-button-rem-profile:visible');
+        if (visibleRemoveBtns.length === 1) {
+          visibleRemoveBtns.hide();
+        }
+      }
+    }(CRM.$, CRM._));
+  {/literal}
 </script>
