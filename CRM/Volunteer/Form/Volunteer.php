@@ -41,6 +41,13 @@
 class CRM_Volunteer_Form_Volunteer extends CRM_Event_Form_ManageEvent {
 
   /**
+   * The profile IDs associated with this form
+   *
+   * @var array
+   */
+  private $_profile_ids = array();
+
+  /**
    * The project the form is acting on
    *
    * @var CRM_Volunteer_BAO_Project
@@ -116,24 +123,24 @@ class CRM_Volunteer_Form_Volunteer extends CRM_Event_Form_ManageEvent {
     return $defaults;
    }
 
-   /**
-    * Does a UFJoin lookup of an entity_form ID
-    * 
-    * @param type $fid form ID
-    * @return array of UFGroup (profile) IDs
-    */
-   public static function getProfilesForEntityForm($fid) {
+/**
+  * Does a UFJoin lookup and caches it for future use.
+  *
+  * @return array of UFGroup (profile) IDs
+  */
+  private function getProfileIDs() {
+    if (empty($this->_profile_ids)) {
       $dao = new CRM_Core_DAO_UFJoin();
-      $groupids = array();
-      $dao->entity_table = 'entity_form';
-      $dao->entity_id = $fid;
+      $dao->entity_table = CRM_Volunteer_BAO_Project::$_tableName;
+      $dao->entity_id = $this->_project->id;
       $dao->orderBy('weight asc');
       $dao->find();
       while ($dao->fetch()) {
-        $groupids[] = $dao->uf_group_id;
+        $this->_profile_ids[] = $dao->uf_group_id;
       }
-      return $groupids;
-   }
+    }
+    return $this->_profile_ids;
+  }
 
   /**
    * Function to set variables up before form is built
