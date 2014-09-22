@@ -41,6 +41,13 @@
 class CRM_Volunteer_Form_Volunteer extends CRM_Event_Form_ManageEvent {
 
   /**
+   * The project the form is acting on
+   *
+   * @var CRM_Volunteer_BAO_Project
+   */
+  private $_project;
+
+  /**
    * This function sets the default values for the form. For edit/view mode
    * the default values are retrieved from the database
    *
@@ -49,12 +56,7 @@ class CRM_Volunteer_Form_Volunteer extends CRM_Event_Form_ManageEvent {
    * @return array
    */
   function setDefaultValues() {
-    $project = current(CRM_Volunteer_BAO_Project::retrieve(array(
-      'entity_id' => $this->_id,
-      'entity_table' => CRM_Event_DAO_Event::$_tableName,
-    )));
-
-    $target_contact_id = $project ? $project->target_contact_id : NULL;
+    $target_contact_id = $this->_project ? $this->_project->target_contact_id : NULL;
 
     if (!$target_contact_id) {
       // default to the domain information
@@ -64,7 +66,7 @@ class CRM_Volunteer_Form_Volunteer extends CRM_Event_Form_ManageEvent {
     }
 
     $defaults = array(
-      'is_active' => $project ? $project->is_active: 0,
+      'is_active' => $this->_project ? $this->_project->is_active : 0,
       'target_contact_id' => $target_contact_id,
     );
 
@@ -142,6 +144,11 @@ class CRM_Volunteer_Form_Volunteer extends CRM_Event_Form_ManageEvent {
   public function preProcess() {
     parent::preProcess();
 
+    $this->_project = current(CRM_Volunteer_BAO_Project::retrieve(array(
+      'entity_id' => $this->_id,
+      'entity_table' => CRM_Event_DAO_Event::$_tableName,
+    )));
+
     $unmet = CRM_Volunteer_Upgrader::checkExtensionDependencies();
     if (in_array('com.ginkgostreet.multiform', $unmet)) {
       $msg = CRM_Volunteer_Upgrader::getUnmetDependencyErrorMessage('com.ginkgostreet.multiform');
@@ -158,8 +165,6 @@ class CRM_Volunteer_Form_Volunteer extends CRM_Event_Form_ManageEvent {
    * @access public
    */
   public function buildQuickForm() {
-    $vid = NULL;
-
     parent::buildQuickForm();
 
     $this->add(
@@ -170,18 +175,7 @@ class CRM_Volunteer_Form_Volunteer extends CRM_Event_Form_ManageEvent {
 
     $this->addEntityRef('target_contact_id', ts('Select Beneficiary', array('domain' => 'org.civicrm.volunteer')), array('create' => TRUE, 'select' => array('allowClear' => FALSE)));
 
-    $params = array(
-      'entity_id' => $this->_id,
-      'entity_table' => CRM_Event_DAO_Event::$_tableName,
-    );
-    $projects = CRM_Volunteer_BAO_Project::retrieve($params);
-
-    if (count($projects) === 1) {
-      $p = current($projects);
-      $vid = $p->id;
-    }
-
-    $this->assign('vid', $vid);
+    $this->assign('vid', $this->_project->id);
   }
 
   /**
@@ -202,12 +196,8 @@ class CRM_Volunteer_Form_Volunteer extends CRM_Event_Form_ManageEvent {
       'entity_table' => CRM_Event_DAO_Event::$_tableName,
     );
 
-    // see if this project already exists
-    $projects = CRM_Volunteer_BAO_Project::retrieve($params);
-
-    if (count($projects)) {
-      // force an update rather than an insert
-      $params['id'] = current($projects)->id;
+    if ($this->_project) {
+      $params['id'] = $this->_project->id;
     }
 
     // save the project record
