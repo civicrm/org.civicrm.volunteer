@@ -191,12 +191,6 @@ class CRM_Volunteer_Form_VolunteerSignUp extends CRM_Core_Form {
 
     }
 
-    $this->add(
-      'textarea',                   // field type
-      'details',                    // field name
-      ts('Additional Information', array('domain' => 'org.civicrm.volunteer'))  // field label
-    );
-
     $this->addButtons(array(
       array(
         'type' => 'submit',
