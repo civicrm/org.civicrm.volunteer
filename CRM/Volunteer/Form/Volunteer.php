@@ -60,8 +60,7 @@ class CRM_Volunteer_Form_Volunteer extends CRM_Event_Form_ManageEvent {
 
     if (!$target_contact_id) {
       // default to the domain information
-      $result = civicrm_api3('Domain', 'get', array('sequential' => 1, 'current_domain' => 1));
-      $domain = $result['values'][0]; // if more than one domain, just take the first for now
+      $domain = civicrm_api3('Domain', 'getsingle', array('current_domain' => 1));
       $target_contact_id = $domain['contact_id'];
     }
 
