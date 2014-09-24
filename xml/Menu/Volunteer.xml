@@ -52,4 +52,10 @@
     <icon>admin/small/08.png</icon>
     <weight>80</weight>
   </item>
+  <item>
+    <path>civicrm/volunteer/commendation</path>
+    <title>Volunteer Commendation</title>
+    <page_callback>CRM_Volunteer_Form_Commendation</page_callback>
+    <access_arguments>access CiviCRM</access_arguments>
+  </item>
 </menu>

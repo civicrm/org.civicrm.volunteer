@@ -31,21 +31,15 @@
  */
 class CRM_Volunteer_Upgrader extends CRM_Volunteer_Upgrader_Base {
 
-  const commendationActivityTypeName = 'volunteer_commendation';
-  const commendationCustomGroupName = 'volunteer_commendation';
-  const commendationProjectRefFieldName = 'project_id';
-  const customActivityTypeName = 'Volunteer';
   const customContactGroupName = 'Volunteer_Information';
   const customContactTypeName = 'Volunteer';
-  const customGroupName = 'CiviVolunteer';
-  const customOptionGroupName = 'volunteer_role';
 
   public function install() {
-    $volActivityTypeId = $this->createActivityType(self::customActivityTypeName);
+    $volActivityTypeId = $this->createActivityType(CRM_Volunteer_BAO_Assignment::CUSTOM_ACTIVITY_TYPE);
     $smarty = CRM_Core_Smarty::singleton();
-    $smarty->assign('volunteer_custom_activity_type_name', self::customActivityTypeName);
-    $smarty->assign('volunteer_custom_group_name', self::customGroupName);
-    $smarty->assign('volunteer_custom_option_group_name', self::customOptionGroupName);
+    $smarty->assign('volunteer_custom_activity_type_name', CRM_Volunteer_BAO_Assignment::CUSTOM_ACTIVITY_TYPE);
+    $smarty->assign('volunteer_custom_group_name', CRM_Volunteer_BAO_Assignment::CUSTOM_GROUP_NAME);
+    $smarty->assign('volunteer_custom_option_group_name', CRM_Volunteer_BAO_Assignment::ROLE_OPTION_GROUP);
     $smarty->assign('volunteer_activity_type_id', $volActivityTypeId);
 
     $customIDs = $this->findCustomGroupValueIDs();
@@ -68,7 +62,7 @@ class CRM_Volunteer_Upgrader extends CRM_Volunteer_Upgrader_Base {
   }
 
   private function installCommendationActivityType() {
-    $activityTypeID = $this->createActivityType(self::commendationActivityTypeName,
+    $activityTypeID = $this->createActivityType(CRM_Volunteer_BAO_Commendation::CUSTOM_ACTIVITY_TYPE,
       ts('Volunteer Commendation', array('domain' => 'org.civicrm.volunteer'))
     );
 
@@ -76,7 +70,7 @@ class CRM_Volunteer_Upgrader extends CRM_Volunteer_Upgrader_Base {
     try {
       $get = civicrm_api3('CustomGroup', 'getsingle', array(
         'extends' => 'Activity',
-        'name' => self::commendationCustomGroupName,
+        'name' => CRM_Volunteer_BAO_Commendation::CUSTOM_GROUP_NAME,
         'return' => 'id',
       ));
       $customGroupID = $get['id'];
@@ -85,7 +79,7 @@ class CRM_Volunteer_Upgrader extends CRM_Volunteer_Upgrader_Base {
         'extends' => 'Activity',
         'extends_entity_column_value' => $activityTypeID,
         'is_reserved' => 1,
-        'name' => self::commendationCustomGroupName,
+        'name' => CRM_Volunteer_BAO_Commendation::CUSTOM_GROUP_NAME,
         'title' => ts('Volunteer Commendation', array('domain' => 'org.civicrm.volunteer')),
         'version' => 3,
       ));
@@ -103,7 +97,7 @@ class CRM_Volunteer_Upgrader extends CRM_Volunteer_Upgrader_Base {
       'html_type' => 'Text',
       'is_searchable' => 0,
       'label' => ts('Volunteer Project ID', array('domain' => 'org.civicrm.volunteer')),
-      'name' => self::commendationProjectRefFieldName,
+      'name' => CRM_Volunteer_BAO_Commendation::PROJECT_REF_FIELD_NAME,
     ));
 
     $this->fieldCreateCheckForError($create);

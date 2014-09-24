@@ -1,0 +1,47 @@
+.volunteer-commendation {
+  cursor: pointer;
+  min-height: 25px;
+  min-width: 25px;
+}
+
+.volunteer-commendation span {
+  background: url('../img/stars.png') no-repeat -26px 0px;
+  display: block;
+  height: 25px;
+  width: 26px;
+}
+
+.volunteer-commendation:hover span {
+  background-position: -26px -25px;
+}
+
+.volunteer-commendation.commended span {
+  background-position: 0 0;
+}
+
+.volunteer-commendation.commended:hover span {
+  background-position: 0 -25px;
+}
+
+.ui-dialog .CRM_Volunteer_Form_Commendation .crm-section {
+  margin: 0;
+}
+
+.ui-dialog .CRM_Volunteer_Form_Commendation .label {
+  clear: both;
+  float: none;
+  text-align: left;
+  width: 100%;
+}
+
+#org_civicrm_volunteer-commendation_popup .crm-section .content {
+  margin: 10px 0 0 0;
+}
+
+.ui-dialog .CRM_Volunteer_Form_Commendation .content {
+  margin-left: 0;
+}
+
+.ui-dialog .CRM_Volunteer_Form_Commendation textarea {
+  width: 100%;
+}

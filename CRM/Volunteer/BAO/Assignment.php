@@ -33,18 +33,18 @@
  *
  */
 
-class CRM_Volunteer_BAO_Assignment extends CRM_Activity_DAO_Activity {
+class CRM_Volunteer_BAO_Assignment extends CRM_Volunteer_BAO_Activity {
+
+  const CUSTOM_ACTIVITY_TYPE = 'Volunteer';
+  const CUSTOM_GROUP_NAME = 'CiviVolunteer';
+  const ROLE_OPTION_GROUP = 'volunteer_role';
+
+  protected static $customGroup = array();
+  protected static $customFields = array();
 
   public $volunteer_need_id;
   public $time_scheduled;
   public $time_completed;
-
-  /**
-   * class constructor
-   */
-  function __construct() {
-    parent::__construct();
-  }
 
   /**
    * Get a list of Assignments matching the params, where each param key is:
@@ -58,7 +58,7 @@ class CRM_Volunteer_BAO_Assignment extends CRM_Activity_DAO_Activity {
    * @param array $params
    * @return array of CRM_Volunteer_BAO_Project objects
    */
-  static function retrieve(array $params) {
+  public static function retrieve(array $params) {
     $activity_fields = CRM_Activity_DAO_Activity::fields();
     $contact_fields = CRM_Contact_DAO_Contact::fields();
     $custom_fields = self::getCustomFields();
@@ -97,7 +97,7 @@ class CRM_Volunteer_BAO_Assignment extends CRM_Activity_DAO_Activity {
 
     $placeholders = array(
       1 => array($assigneeID, 'Integer'),
-      2 => array(self::volunteerActivityTypeId(), 'Integer'),
+      2 => array(self::getActivityTypeId(), 'Integer'),
       3 => array($scheduled, 'Integer'),
       4 => array($available, 'Integer'),
       5 => array($targetID, 'Integer'),
@@ -221,75 +221,6 @@ class CRM_Volunteer_BAO_Assignment extends CRM_Activity_DAO_Activity {
   }
 
   /**
-   * Get information about CiviVolunteer's custom Activity table
-   *
-   * Using the API is preferable to CRM_Core_DAO::getFieldValue as the latter
-   * allows specification of only one criteria by which to filter, and the unique
-   * index for the table in question is on the "extends" and "name" fields; i.e.,
-   * it is possible to have two custom groups with the same name so long as they
-   * extend different entities.
-   *
-   * @return array Keyed with id (custom group/table id) and table_name
-   */
-  public static function getCustomGroup() {
-    $params = array(
-      'extends' => 'Activity',
-      'is_active' => 1,
-      'name' => CRM_Volunteer_Upgrader::customGroupName,
-      'return' => array('id', 'table_name'),
-    );
-
-    $custom_group = civicrm_api3('CustomGroup', 'getsingle', $params);
-
-    if (CRM_Utils_Array::value('is_error', $custom_group) == 1) {
-      CRM_Core_Error::fatal('CiviVolunteer custom group appears to be missing.');
-    }
-
-    unset($custom_group['extends']);
-    unset($custom_group['is_active']);
-    unset($custom_group['name']);
-    return $custom_group;
-  }
-
-  /**
-   * Get information about CiviVolunteer's custom Activity fields
-   *
-   * @return array Multi-dimensional, keyed by lowercased custom field
-   * name (i.e., civicrm_custom_group.name). Subarray keyed with id (i.e.,
-   * civicrm_custom_group.id), column_name, and data_type.
-   */
-  public static function getCustomFields () {
-    $result = array();
-
-    $custom_group = self::getCustomGroup();
-
-    $params = array(
-      'custom_group_id' => $custom_group['id'],
-      'is_active' => 1,
-      'return' => array('id', 'column_name', 'name', 'data_type'),
-    );
-
-    $fields = civicrm_api3('CustomField', 'get', $params);
-
-    if (
-      CRM_Utils_Array::value('is_error', $fields) == 1 ||
-      CRM_Utils_Array::value('count', $fields) < 1
-    ) {
-      CRM_Core_Error::fatal('CiviVolunteer custom fields appear to be missing.');
-    }
-
-    foreach ($fields['values'] as $field) {
-      $result[strtolower($field['name'])] = array(
-        'id' => $field['id'],
-        'column_name' => $field['column_name'],
-        'data_type' => $field['data_type'],
-      );
-    }
-
-    return $result;
-  }
-
-  /**
    * Creates a volunteer activity
    *
    * Wrapper around activity create API. Volunteer field names are translated
@@ -332,7 +263,7 @@ class CRM_Volunteer_BAO_Assignment extends CRM_Activity_DAO_Activity {
       $params['duration'] = $params['time_completed_minutes'];
     }
 
-    $params['activity_type_id'] = self::volunteerActivityTypeId();
+    $params['activity_type_id'] = self::getActivityTypeId();
 
     foreach(self::getCustomFields() as $fieldName => $field) {
       if (isset($params[$fieldName])) {
@@ -347,13 +278,5 @@ class CRM_Volunteer_BAO_Assignment extends CRM_Activity_DAO_Activity {
       return $activity['id'];
     }
     return FALSE;
-  }
-
-  /**
-   * Fetch activity type id of 'volunteer' type activity
-   * @return integer
-   */
-  public static function volunteerActivityTypeId() {
-    return CRM_Core_PseudoConstant::getKey('CRM_Activity_BAO_Activity', 'activity_type_id', CRM_Volunteer_Upgrader::customActivityTypeName);
   }
 }

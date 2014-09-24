@@ -28,9 +28,9 @@
     {ts domain='org.civicrm.volunteer'}Available and scheduled volunteers are listed below. Enter the time spent by each volunteer in minutes under Actual Duration and change status to Completed. Click 'Add Volunteer to record hours for volunteers not already listed below. Click Save to save your entries.{/ts}
   </div>
 
-  <div class="crm-copy-fields crm-grid-table" id="crm-log-entry-table">
+  <div class="crm-copy-fields crm-grid-table" id="crm-log-entry-table" data-vid="{$vid}">
     <div class="crm-grid-header">
-      <div class="crm-grid-cell">&nbsp;</div>
+      <div class="crm-grid-cell"></div>
       <div class="crm-grid-cell">{ts domain='org.civicrm.volunteer'}Contact{/ts}</div>
       <div class="crm-grid-cell">{ts domain='org.civicrm.volunteer'}Role{/ts}</div>
       <div class="crm-grid-cell">{ts domain='org.civicrm.volunteer'}Start Date{/ts}</div>
@@ -53,7 +53,7 @@
       <div
         class="{cycle values="odd-row,even-row"} selector-rows {if $rowNumber > $showVolunteerRow && $rowNumber != 1} hiddenElement {else} crm-grid-row {/if}"
         entity_id="{$rowNumber}">
-        <div class="compressed crm-grid-cell"><span class="log-edit"></span></div>
+        <div class="compressed crm-grid-cell volunteer-commendation"><span></span></div>
         <div class="compressed crm-grid-cell">
           {$form.field.$rowNumber.contact_id.html}
         </div>
@@ -104,3 +104,7 @@
   });
 </script>
 {/literal}
+
+<!-- Commendation libraries -->
+<link rel="stylesheet" type="text/css" href="{$extResourceURL}/css/commendation.css" />
+<script type="text/javascript" src="{$extResourceURL}/js/commendation.js"></script>

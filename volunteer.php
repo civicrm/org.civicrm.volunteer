@@ -249,17 +249,10 @@ function volunteer_civicrm_buildForm($formName, &$form) {
  */
 function _volunteer_civicrm_buildForm_CRM_Activity_Form_Activity($formName, &$form) {
   // determine name that the Volunteer Need ID field would be given in this form
-  $params = array(
-    'name' => CRM_Volunteer_Upgrader::customGroupName,
-    'return' => 'id',
-    'api.CustomField.getsingle' => array(
-      'name' => 'Volunteer_Need_Id',
-      'return' => 'id',
-    ),
-  );
-  $result = civicrm_api3('CustomGroup', 'getsingle', $params);
-  $group_id = $result['id'];
-  $field_id = $result['api.CustomField.getsingle']['id'];
+  $custom_group = CRM_Volunteer_BAO_Assignment::getCustomGroup();
+  $custom_fields = CRM_Volunteer_BAO_Assignment::getCustomFields();
+  $group_id = $custom_group['id'];
+  $field_id = $custom_fields['volunteer_need_id']['id'];
 
   // element name varies depending on context
   $possible_element_names = array(

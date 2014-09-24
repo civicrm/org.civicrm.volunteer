@@ -39,11 +39,10 @@ class CRM_Volunteer_Form_VolunteerReport extends CRM_Report_Form {
   );
 
   function __construct() {
-    $config = CRM_Core_Config::singleton();
     $this->customGroup = CRM_Volunteer_BAO_Assignment::getCustomGroup();
     $this->customFields = CRM_Volunteer_BAO_Assignment::getCustomFields();
-    $this->activityTypeID = CRM_Volunteer_BAO_Assignment::volunteerActivityTypeId();
-    $titleQuery = "SELECT e.id, e.title FROM civicrm_event e 
+    $this->activityTypeID = CRM_Volunteer_BAO_Assignment::getActivityTypeId();
+    $titleQuery = "SELECT e.id, e.title FROM civicrm_event e
       INNER JOIN civicrm_volunteer_project p ON e.id = p.entity_id
       WHERE p.is_active = 1";
     $titles = CRM_Core_DAO::executeQuery($titleQuery);
@@ -495,7 +494,7 @@ class CRM_Volunteer_Form_VolunteerReport extends CRM_Report_Form {
     $totalAmount =  array();
     $count = 0;
     $select = "
-      SELECT 
+      SELECT
       SUM( cg.{$this->customFields['time_scheduled_minutes']['column_name']} ) AS scheduled,
       SUM( cg.{$this->customFields['time_completed_minutes']['column_name']} ) AS completed";
     $sql = "{$select} {$this->_from} {$this->_where}";
