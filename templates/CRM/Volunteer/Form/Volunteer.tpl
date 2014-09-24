@@ -80,6 +80,15 @@
       <td>{$form.target_contact_id.html}
       </td>
     </table>
+    <div id="org_civicrm_volunteer-sign-up-profiles">
+      {foreach name=forSignUpName from=$profileSignUpMultiple key=forSignUpKey item=forSignUpItem}
+        {include file="CRM/Volunteer/Form/IncludeProfile.tpl"
+            profileCount=$forSignUpKey
+            profileName=$forSignUpName
+            profileItem=$forSignUpItem
+        }
+      {/foreach}
+  </div>
   </div>
   <div class="crm-submit-buttons">
     {include file="CRM/common/formButtons.tpl" location="bottom"}
@@ -98,7 +107,60 @@
         }
       });
 
+      // show/hide the volunteer config on load
       $('#is_active', $form).trigger('change');
-    });
+
+      $('#org_civicrm_volunteer-sign-up-profiles').on('click', '.crm-button-add-profile', addBottomProfile);
+      $('#org_civicrm_volunteer-sign-up-profiles').on('click', '.crm-button-rem-profile', removeBottomProfile);
+      showLastAddProfileButtonOnly();
+      preventRemoveAllBottomProfiles();
+
+      $(".crm-submit-buttons input").click( function() {
+        $(".dedupenotify .ui-notify-close").click();
+      }); // cleanup notification pop-ups
+
+      var profileCounter = Number({/literal}{$profileSignUpCounter}{literal});
+
+      function addBottomProfile( e ) {
+        e.preventDefault();
+
+        // hide all the "add" buttons (when the new form renders, it will be the
+        // only row with an "add" button)
+        $('#org_civicrm_volunteer-sign-up-profiles .crm-button-add-profile').hide();
+
+        urlPath = CRM.url('civicrm/volunteer/manage/includeprofile', { profileCount : profileCounter, snippet: 4 } ) ;
+        profileCounter++;
+
+        $('#org_civicrm_volunteer-sign-up-profiles').append('<div class="additional_profile"></div>');
+        var $el = $('#org_civicrm_volunteer-sign-up-profiles .additional_profile:last');
+        $el.load(urlPath, function() { $(this).trigger('crmLoad') });
+
+        // if profiles are being added that means more than one is displayed, in
+        // which case all "remove" links should be displayed
+        $('#org_civicrm_volunteer-sign-up-profiles .crm-button-rem-profile').show();
+      }
+
+      function removeBottomProfile( e ) {
+        e.preventDefault();
+
+        $(e.target).parents('.crm-profile-selector-container').find('.crm-profile-selector').val('');
+        $(e.target).parents('.crm-profile-selector-container').hide();
+        showLastAddProfileButtonOnly();
+        preventRemoveAllBottomProfiles();
+      }
+
+      function showLastAddProfileButtonOnly () {
+        $('#org_civicrm_volunteer-sign-up-profiles .crm-button-add-profile').hide();
+        $('#org_civicrm_volunteer-sign-up-profiles .crm-profile-selector-container:visible:last .crm-button-add-profile').show();
+      }
+
+      function preventRemoveAllBottomProfiles () {
+        // hide the "remove profile" button if there's only one profile left
+        var visibleRemoveBtns = $('#org_civicrm_volunteer-sign-up-profiles .crm-button-rem-profile:visible');
+        if (visibleRemoveBtns.length === 1) {
+          visibleRemoveBtns.hide();
+        }
+      }
+    }(CRM.$, CRM._));
   {/literal}
 </script>

@@ -44,20 +44,20 @@ class CRM_Volunteer_Form_VolunteerSignUp extends CRM_Core_Form {
   protected $_destination;
 
   /**
-   * The fields involved in this volunteer project sign-up page
-   *
-   * @var array
-   * @public
-   */
-  public $_fields = array();
-
-  /**
    * the mode that we are in
    *
    * @var string
    * @protected
    */
   protected $_mode;
+
+  /**
+   * The profile IDs associated with this form.
+   *
+   * @var array
+   * @protected
+   */
+  protected $_profile_ids = array();
 
   /**
    * the project we are processing
@@ -68,14 +68,6 @@ class CRM_Volunteer_Form_VolunteerSignUp extends CRM_Core_Form {
   protected $_project;
 
   /**
-   * ID of profile used in this form
-   *
-   * @var int
-   * @protected
-   */
-  protected $_ufgroup_id;
-
-  /**
    * This function sets the default values for the form.
    *
    * @access public
@@ -84,10 +76,11 @@ class CRM_Volunteer_Form_VolunteerSignUp extends CRM_Core_Form {
     $defaults = array();
     $defaults['volunteer_role_id'] = CRM_Volunteer_BAO_Need::FLEXIBLE_ROLE_ID;
 
-    $cid = CRM_Utils_Array::value('userID', $_SESSION['CiviCRM'], NULL);
-    if ($cid) {
-      $fields = array_flip(array_keys(CRM_Core_BAO_UFGroup::getFields($this->_ufgroup_id)));
-      CRM_Core_BAO_UFGroup::setProfileDefaults($cid, $fields, $defaults);
+    if (key_exists('userID', $_SESSION['CiviCRM'])) {
+      foreach($this->getProfileIDs() as $profileID) {
+        $fields = array_flip(array_keys(CRM_Core_BAO_UFGroup::getFields($profileID)));
+        CRM_Core_BAO_UFGroup::setProfileDefaults($_SESSION['CiviCRM']['userID'], $fields, $defaults);
+      }
     }
 
     return $defaults;
@@ -119,16 +112,25 @@ class CRM_Volunteer_Form_VolunteerSignUp extends CRM_Core_Form {
 
     // current mode
     $this->_mode = ($this->_action == CRM_Core_Action::PREVIEW) ? 'test' : 'live';
+  }
 
-    // get profile id
-    try {
-      $this->_ufgroup_id = civicrm_api3('UFGroup', 'getvalue', array(
-        'name' => 'volunteer_sign_up',
-        'return' => 'id',
-      ));
-    } catch (Exception $e) {
-      CRM_Core_Error::fatal('CiviVolunteer custom profile could not be found');
+  /**
+   * Search for profiles by Volunteer Project ID
+   * @param type $projectId
+   * @return array of UFGroup (Profile) Ids
+   */
+  function getProfileIDs() {
+    if (empty($this->_profile_ids)) {
+      $dao = new CRM_Core_DAO_UFJoin();
+      $dao->entity_table = CRM_Volunteer_BAO_Project::$_tableName;
+      $dao->entity_id = $this->_project->id;
+      $dao->orderBy('weight asc');
+      $dao->find();
+      while ($dao->fetch()) {
+        $this->_profile_ids[] = $dao->uf_group_id;
+      }
     }
+    return $this->_profile_ids;
   }
 
   function buildQuickForm() {
@@ -136,7 +138,7 @@ class CRM_Volunteer_Form_VolunteerSignUp extends CRM_Core_Form {
     CRM_Core_Resources::singleton()->addScriptFile('org.civicrm.volunteer',
       'templates/CRM/Volunteer/Form/VolunteerSignUp.js');
 
-    $this->buildCustom('volunteerProfile');
+    $this->buildCustom();
 
     // don't show the roles dropdown if the flexible need is the only open need
     if (count($this->_project->open_needs)) {
@@ -182,12 +184,6 @@ class CRM_Volunteer_Form_VolunteerSignUp extends CRM_Core_Form {
 
     }
 
-    $this->add(
-      'textarea',                   // field type
-      'details',                    // field name
-      ts('Additional Information', array('domain' => 'org.civicrm.volunteer'))  // field label
-    );
-
     $this->addButtons(array(
       array(
         'type' => 'submit',
@@ -225,7 +221,10 @@ class CRM_Volunteer_Form_VolunteerSignUp extends CRM_Core_Form {
     );
     $need = civicrm_api('VolunteerNeed', 'getsingle', $params);
 
-    $profile_fields = CRM_Core_BAO_UFGroup::getFields($this->_ufgroup_id);
+    $profile_fields = array();
+    foreach ($this->getProfileIDs() as $profileID) {
+      $profile_fields += CRM_Core_BAO_UFGroup::getFields($profileID);
+    }
     $profile_values = array_intersect_key($values, $profile_fields);
     $builtin_values = array_diff_key($values, $profile_values);
 
@@ -242,9 +241,7 @@ class CRM_Volunteer_Form_VolunteerSignUp extends CRM_Core_Form {
     $cid = CRM_Contact_BAO_Contact::createProfileContact(
       $profile_values,
       $profile_fields,
-      $cid,
-      NULL,
-      $this->_ufgroup_id
+      $cid
     );
 
     $activity_statuses = CRM_Activity_BAO_Activity::buildOptions('status_id', 'create');
@@ -277,15 +274,12 @@ class CRM_Volunteer_Form_VolunteerSignUp extends CRM_Core_Form {
    * @param string $name The name to give the Smarty variable
    * @access public
    */
-  function buildCustom($name) {
-    $fields = array();
-    $session   = CRM_Core_Session::singleton();
-    $contactID = $session->get('userID');
+  function buildCustom() {
+    $contactID = $_SESSION['CiviCRM']['userID'];
+    $profiles = array();
 
-    $id = $this->_ufgroup_id;
-
-    if ($id) {
-      $fields = CRM_Core_BAO_UFGroup::getFields($id, FALSE, CRM_Core_Action::ADD,
+    foreach($this->getProfileIDs() as $profileID) {
+      $fields = CRM_Core_BAO_UFGroup::getFields($profileID, FALSE, CRM_Core_Action::ADD,
         NULL, NULL, FALSE, NULL,
         FALSE, NULL, CRM_Core_Permission::CREATE,
         'field_name', TRUE
@@ -299,11 +293,10 @@ class CRM_Volunteer_Form_VolunteerSignUp extends CRM_Core_Form {
           $contactID,
           TRUE
         );
-        $this->_fields[$key] = $field;
+        $profiles[$profileID][$key] = $field;
       }
-
-      $this->assign($name, $fields);
     }
+    $this->assign('customProfiles', $profiles);
   }
 
   /**

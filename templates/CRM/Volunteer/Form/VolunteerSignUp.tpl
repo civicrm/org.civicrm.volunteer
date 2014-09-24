@@ -1,5 +1,8 @@
 <div class="crm-project-id-{$vid} crm-block crm-volunteer-signup-form-block">
-  {include file="CRM/UF/Form/Block.tpl" fields=$volunteerProfile}
+
+  {foreach from=$customProfiles key=ufID item=ufFields }
+    {include file="CRM/UF/Form/Block.tpl" fields=$ufFields}
+  {/foreach}
 
   <div class="crm-section volunteer_role-section">
     <div class="label">{$form.volunteer_role_id.label}</div>
