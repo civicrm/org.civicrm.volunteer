@@ -275,7 +275,7 @@ class CRM_Volunteer_Form_VolunteerSignUp extends CRM_Core_Form {
    * @access public
    */
   function buildCustom() {
-    $contactID = $_SESSION['CiviCRM']['userID'];
+    $contactID = CRM_Utils_Array::value('userID', $_SESSION['CiviCRM']);
     $profiles = array();
 
     foreach($this->getProfileIDs() as $profileID) {
