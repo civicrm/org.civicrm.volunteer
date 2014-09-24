@@ -50,7 +50,7 @@ class CRM_Volunteer_Form_Volunteer extends CRM_Event_Form_ManageEvent {
   /**
    * The project the form is acting on
    *
-   * @var CRM_Volunteer_BAO_Project
+   * @var mixed CRM_Volunteer_BAO_Project if a project has been set, else boolean FALSE
    */
   private $_project;
 
@@ -90,7 +90,7 @@ class CRM_Volunteer_Form_Volunteer extends CRM_Event_Form_ManageEvent {
   * @return array of UFGroup (profile) IDs
   */
   private function getProfileIDs() {
-    if (empty($this->_profile_ids)) {
+    if (empty($this->_profile_ids) && $this->_project !== FALSE) {
       $dao = new CRM_Core_DAO_UFJoin();
       $dao->entity_table = CRM_Volunteer_BAO_Project::$_tableName;
       $dao->entity_id = $this->_project->id;
@@ -155,7 +155,7 @@ class CRM_Volunteer_Form_Volunteer extends CRM_Event_Form_ManageEvent {
 
     $this->addEntityRef('target_contact_id', ts('Select Beneficiary', array('domain' => 'org.civicrm.volunteer')), array('create' => TRUE, 'select' => array('allowClear' => FALSE)));
 
-    $this->assign('vid', $this->_project->id);
+    $this->assign('vid', ($this->_project !== FALSE ? $this->_project->id : NULL));
   }
 
   /**
