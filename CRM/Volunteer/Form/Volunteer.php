@@ -177,16 +177,18 @@ class CRM_Volunteer_Form_Volunteer extends CRM_Event_Form_ManageEvent {
       'target_contact_id' => $form['target_contact_id'],
     );
 
+    // if the project already exists...
     if ($this->_project) {
+      // make sure we update it rather than create a new one
       $params['id'] = $this->_project->id;
     }
 
     // save the project record
     $this->_project = CRM_Volunteer_BAO_Project::create($params);
 
-    // if the project doesn't already exist and the user enabled vol management,
+    // if the project doesn't already have one and the user enabled vol management,
     // create the flexible need
-    if (!$this->_project && $form['is_active'] === '1') {
+    if (is_null($this->_project->flexible_need_id) && $form['is_active'] === '1') {
       $need = array(
         'project_id' => $this->_project->id,
         'is_flexible' => '1',
