@@ -54,8 +54,14 @@
   </item>
   <item>
     <path>civicrm/volunteer/commendation</path>
-    <title>Volunteer Commendation</title>
     <page_callback>CRM_Volunteer_Form_Commendation</page_callback>
+    <title>Volunteer Commendation</title>
+    <access_arguments>access CiviCRM</access_arguments>
+  </item>
+  <item>
+    <path>civicrm/volunteer/manage/includeprofile</path>
+    <page_callback>CRM_Volunteer_Form_IncludeProfile</page_callback>
+    <title>Profile Widget</title>
     <access_arguments>access CiviCRM</access_arguments>
   </item>
 </menu>

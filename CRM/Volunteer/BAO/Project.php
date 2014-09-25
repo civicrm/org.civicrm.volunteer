@@ -44,11 +44,10 @@ class CRM_Volunteer_BAO_Project extends CRM_Volunteer_DAO_Project {
   private $title;
 
   /**
-   * The ID of the flexible Need for this Project
+   * The ID of the flexible Need for this Project. Accessible via __get method.
    *
    * @var int
    */
-  // TODO: populate this based on result from getFlexibleNeedID()
   private $flexible_need_id;
 
   /**
@@ -312,12 +311,16 @@ class CRM_Volunteer_BAO_Project extends CRM_Volunteer_DAO_Project {
     $result = NULL;
 
     if (is_int($project_id) || ctype_digit($project_id)) {
-      $flexibleNeed = civicrm_api3('volunteer_need', 'getsingle', array(
+      $flexibleNeed = civicrm_api('volunteer_need', 'getvalue', array(
         'is_active' => 1,
         'is_flexible' => 1,
         'project_id' => $project_id,
+        'return' => 'id',
+        'version' => 3,
       ));
-      $result = (int) $flexibleNeed['id'];
+      if (CRM_Utils_Array::value('is_error', $flexibleNeed) !== 1) {
+        $result = (int) $flexibleNeed;
+      }
     }
 
     return $result;
@@ -454,5 +457,14 @@ class CRM_Volunteer_BAO_Project extends CRM_Volunteer_DAO_Project {
     }
 
     return $this->open_needs;
+  }
+
+  /**
+   * Sets and returns $this->flexible_need_id. Delegate of __get().
+   *
+   * @return mixed Integer if project has a flexible need, else NULL
+   */
+  private function _get_flexible_need_id() {
+    return self::getFlexibleNeedID($this->id);
   }
 }
