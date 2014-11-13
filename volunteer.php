@@ -335,10 +335,10 @@ function _volunteer_civicrm_check_resource_url() {
   );
   $title = json_encode(ts('Error'));
   CRM_Core_Resources::singleton()
-    ->addScriptFile('org.civicrm.volunteer', 'js/checkResourceUrl.js')
-    ->addScript("cj(function() {
+    ->addScriptFile('org.civicrm.volunteer', 'js/checkResourceUrl.js', 0, 'html-header')
+    ->addScript("CRM.$(function() {
       window.civiVolunteerResourceUrlIsOk || CRM.alert($message, $title, 'error');
-    });");
+    });", 1, 'html-header');
 }
 
 /**

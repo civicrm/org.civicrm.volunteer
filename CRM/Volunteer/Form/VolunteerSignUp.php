@@ -136,7 +136,7 @@ class CRM_Volunteer_Form_VolunteerSignUp extends CRM_Core_Form {
   function buildQuickForm() {
     CRM_Utils_System::setTitle(ts('Sign Up to Volunteer for %1', array(1 => $this->_project->title)));
     CRM_Core_Resources::singleton()->addScriptFile('org.civicrm.volunteer',
-      'templates/CRM/Volunteer/Form/VolunteerSignUp.js');
+      'templates/CRM/Volunteer/Form/VolunteerSignUp.js', 500, 'html-header');
 
     $this->buildCustom();
 

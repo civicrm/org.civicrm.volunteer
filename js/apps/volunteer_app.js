@@ -4,7 +4,7 @@ CRM.volunteerApp.addRegions({
   dialogRegion: '#crm-volunteer-dialog'
 });
 
-cj(function($) {
+CRM.$(function($) {
   // Wait for all scripts to load before starting app
   CRM.volunteerApp.start();
 
