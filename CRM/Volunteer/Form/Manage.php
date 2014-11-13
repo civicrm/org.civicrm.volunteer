@@ -32,16 +32,16 @@ class CRM_Volunteer_Form_Manage {
    */
   public static function addResources($entity_id, $entity_table) {
     static $loaded = FALSE;
-    if ($loaded) {
+    $ccr = CRM_Core_Resources::singleton();
+    if ($loaded || $ccr->isAjaxMode()) {
       return;
     }
     $loaded = TRUE;
     $config = CRM_Core_Config::singleton();
-    $ccr = CRM_Core_Resources::singleton();
 
     // Vendor libraries
     $ccr->addScriptFile('civicrm', 'packages/backbone/json2.js', 100, 'html-header', FALSE);
-    $ccr->addScriptFile('civicrm', 'packages/backbone/backbone-min.js', 120, 'html-header');
+    $ccr->addScriptFile('civicrm', 'packages/backbone/backbone-min.js', 120, 'html-header', FALSE);
     $ccr->addScriptFile('civicrm', 'packages/backbone/backbone.marionette.min.js', 125, 'html-header', FALSE);
 
     // Our stylesheet
