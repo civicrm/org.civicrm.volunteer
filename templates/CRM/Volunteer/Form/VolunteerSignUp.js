@@ -1,5 +1,5 @@
 // http://civicrm.org/licensing
-cj(function($) {
+CRM.$(function($) {
 
   /**
    * Used to show/hide the Shift dropbox
