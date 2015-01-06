@@ -195,7 +195,7 @@ class CRM_Volunteer_Upgrader extends CRM_Volunteer_Upgrader_Base {
     $ext_manager = CRM_Extension_System::singleton()->getManager();
 
     $arr_extension_dependencies = array(
-      //@TODO move this config out of code
+      // @TODO move this config out of code
       'com.ginkgostreet.multiform',
     );
 

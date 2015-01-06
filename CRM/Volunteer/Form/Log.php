@@ -89,7 +89,7 @@ class CRM_Volunteer_Form_Log extends CRM_Core_Form {
   }
 
   /**
-   * Build the form
+   * Build the form object
    *
    * @access public
    *
@@ -124,7 +124,7 @@ class CRM_Volunteer_Form_Log extends CRM_Core_Form {
       $extra = array();
       $contactField = $this->addEntityRef("field[$rowNumber][contact_id]", '', array('create' => TRUE, 'class' => 'big', 'placeholder' => ts('- select -', array('domain' => 'org.civicrm.volunteer'))));
       if ($rowNumber <= $count) {
-        //readonly for some fields
+        // readonly for some fields
         $contactField->freeze();
         $extra = array(
           'READONLY' => TRUE,
@@ -194,7 +194,7 @@ class CRM_Volunteer_Form_Log extends CRM_Core_Form {
   }
 
   /**
-   * This function sets the default values for the form.
+   * Set default values for the form.
    *
    * @access public
    *
@@ -255,7 +255,7 @@ class CRM_Volunteer_Form_Log extends CRM_Core_Form {
         else {
 
           $flexibleNeedId = CRM_Volunteer_BAO_Project::getFlexibleNeedID($this->_vid);
-          //create new Volunteer activity records
+          // create new Volunteer activity records
           $volunteer = array(
             'assignee_contact_id' => $value['contact_id'],
             'status_id' => $value['volunteer_status'],

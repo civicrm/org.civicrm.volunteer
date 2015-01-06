@@ -55,7 +55,7 @@ class CRM_Volunteer_Form_Volunteer extends CRM_Event_Form_ManageEvent {
   private $_project;
 
   /**
-   * This function sets the default values for the form. For edit/view mode
+   * Set default values for the form. For edit/view mode
    * the default values are retrieved from the database
    *
    * @access public
@@ -104,7 +104,7 @@ class CRM_Volunteer_Form_Volunteer extends CRM_Event_Form_ManageEvent {
   }
 
   /**
-   * Function to set variables up before form is built
+   * set variables up before form is built
    *
    * @access public
    */
@@ -139,7 +139,7 @@ class CRM_Volunteer_Form_Volunteer extends CRM_Event_Form_ManageEvent {
   }
 
    /**
-   * Function to build the form
+   * Build the form object
    *
    * @return None
    * @access public
@@ -159,7 +159,7 @@ class CRM_Volunteer_Form_Volunteer extends CRM_Event_Form_ManageEvent {
   }
 
   /**
-   * Function to process the form. Enables/disables Volunteer Project. If the
+   * Process the form submission. Enables/disables Volunteer Project. If the
    * Project does not already exist, it is created, along with a "flexible" Need.
    *
    * @access public

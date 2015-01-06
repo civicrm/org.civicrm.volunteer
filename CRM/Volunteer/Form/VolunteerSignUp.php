@@ -68,7 +68,7 @@ class CRM_Volunteer_Form_VolunteerSignUp extends CRM_Core_Form {
   protected $_project;
 
   /**
-   * This function sets the default values for the form.
+   * Set default values for the form.
    *
    * @access public
    */
@@ -87,7 +87,7 @@ class CRM_Volunteer_Form_VolunteerSignUp extends CRM_Core_Form {
   }
 
   /**
-   * Function to set variables up before form is built
+   * set variables up before form is built
    *
    * @access public
    */
@@ -269,7 +269,7 @@ class CRM_Volunteer_Form_VolunteerSignUp extends CRM_Core_Form {
   }
 
   /**
-   * Function to assign profiles to a Smarty template
+   * assign profiles to a Smarty template
    *
    * @param string $name The name to give the Smarty variable
    * @access public

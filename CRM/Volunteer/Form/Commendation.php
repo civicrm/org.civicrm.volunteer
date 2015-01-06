@@ -83,7 +83,7 @@ class CRM_Volunteer_Form_Commendation extends CRM_Core_Form {
   }
 
   /**
-   * This function sets the default values for the form. For edit/view mode
+   * Set default values for the form. For edit/view mode
    * the default values are retrieved from the database. It's called after
    * $this->preProcess().
    *

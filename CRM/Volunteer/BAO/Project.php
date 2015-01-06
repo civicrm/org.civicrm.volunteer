@@ -133,14 +133,14 @@ class CRM_Volunteer_BAO_Project extends CRM_Volunteer_DAO_Project {
   }
 
   /**
-   * Function to create a Volunteer Project
+   * create a Volunteer Project
    * takes an associative array and creates a Project object
    *
    * This function is invoked from within the web form layer and also from the api layer
    *
    * @param array   $params      (reference ) an assoc array of name/value pairs
    *
-   * @return object CRM_Volunteer_BAO_Project object
+   * @return CRM_Volunteer_BAO_Project object
    * @access public
    * @static
    */

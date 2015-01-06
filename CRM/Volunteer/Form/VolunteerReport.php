@@ -523,8 +523,8 @@ class CRM_Volunteer_Form_VolunteerReport extends CRM_Report_Form {
   }
 
   function buildACLClause($tableAlias = 'contact_a') {
-    //override for ACL( Since Contact may be source
-    //contact/assignee or target also it may be null )
+    // override for ACL( Since Contact may be source
+    // contact/assignee or target also it may be null )
 
     if (CRM_Core_Permission::check('view all contacts')) {
       $this->_aclFrom = $this->_aclWhere = NULL;
