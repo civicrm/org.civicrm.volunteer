@@ -101,7 +101,6 @@ class CRM_Volunteer_DAO_Need extends CRM_Core_DAO
    */
   public $project_id;
   /**
-   *
    * @var datetime
    */
   public $start_time;

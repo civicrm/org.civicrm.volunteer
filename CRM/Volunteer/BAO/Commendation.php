@@ -10,7 +10,7 @@ class CRM_Volunteer_BAO_Commendation extends CRM_Volunteer_BAO_Activity {
   protected static $customFields = array();
 
   /**
-   * Function to create or update a Volunteer Commendation
+   * create or update a Volunteer Commendation
    *
    * This function is invoked from within the web form layer
    *

@@ -46,14 +46,14 @@ class CRM_Volunteer_BAO_Need extends CRM_Volunteer_DAO_Need {
   }
 
   /**
-   * Function to create a Volunteer Need
+   * create a Volunteer Need
    * takes an associative array and creates a Need object
    *
    * This function is invoked from within the web form layer and also from the api layer
    *
    * @param array   $params      (reference ) an assoc array of name/value pairs
    *
-   * @return object CRM_Volunteer_BAO_Need object
+   * @return CRM_Volunteer_BAO_Need object
    * @access public
    * @static
    */
