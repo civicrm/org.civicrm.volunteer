@@ -28,9 +28,8 @@
 
 <script type="text/template" id="crm-vol-define-layout-tpl">
   <div id="help">
-    {ts domain='org.civicrm.volunteer'}Use this form to specify the number of volunteers needed for each role
-    and time slot. If no needs are specified, volunteers will be considered to
-    be generally available.{/ts}
+    {* VOL-47: The following is on one line intentionally. *}
+    {ts domain='org.civicrm.volunteer'}Use this form to specify the number of volunteers needed for each role and time slot. If no needs are specified, volunteers will be considered to be generally available.{/ts}
     {help id="volunteer-define" file="CRM/Volunteer/Form/Manage/Define.hlp" isModulePermissionSupported=`$isModulePermissionSupported`}
   </div>
   <form class="crm-block crm-form-block crm-event-manage-volunteer-form-block">
