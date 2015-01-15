@@ -5,7 +5,7 @@
   <description>The CiviVolunteer extension provides tools for signing up, managing and tracking volunteers. The features for this release focus on volunteering at events, but the design creates a foundation for adding support for volunteering in a wide variety of situations.</description>
   <license>AGPL-3.0</license>
   <maintainer>
-    <author>Yashodha Chaku, Michael Daryabeygi, Frank J. Gómez, Dave Greenberg, and Coleman Watts</author>
+    <author>Yashodha Chaku, Michael Daryabeygi, Frank J. G&#xF3;mez, Dave Greenberg, and Coleman Watts</author>
     <email>info@civicrm.org</email>
   </maintainer>
   <releaseDate>2014-02-08</releaseDate>
