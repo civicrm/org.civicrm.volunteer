@@ -27,6 +27,7 @@
 
 
 require_once 'volunteer.civix.php';
+require_once 'volunteer.slider.php';
 
 /**
  * Implementation of hook_civicrm_config
@@ -181,6 +182,18 @@ function volunteer_civicrm_pageRun(&$page) {
   $f = '_' . __FUNCTION__ . '_' . get_class($page);
   if (function_exists($f)) {
     $f($page);
+  }
+}
+
+/**
+ * Implementation of hook_civicrm_postProcess
+ *
+ * Handler for postProcess hook.
+ */
+function volunteer_civicrm_postProcess($formName, &$form) {
+  $f = '_' . __FUNCTION__ . '_' . $formName;
+  if (function_exists($f)) {
+    $f($formName, $form);
   }
 }
 
