@@ -285,6 +285,7 @@ class CRM_Volunteer_Form_VolunteerSignUp extends CRM_Core_Form {
   function buildCustom() {
     $contactID = CRM_Utils_Array::value('userID', $_SESSION['CiviCRM']);
     $profiles = array();
+    $fieldList = array(); // master field list
 
     foreach($this->getProfileIDs() as $profileID) {
       $fields = CRM_Core_BAO_UFGroup::getFields($profileID, FALSE, CRM_Core_Action::ADD,
@@ -294,6 +295,8 @@ class CRM_Volunteer_Form_VolunteerSignUp extends CRM_Core_Form {
       );
 
       foreach ($fields as $key => $field) {
+        if (array_key_exists($key, $fieldList)) continue;
+
         CRM_Core_BAO_UFGroup::buildProfile(
           $this,
           $field,
@@ -301,7 +304,7 @@ class CRM_Volunteer_Form_VolunteerSignUp extends CRM_Core_Form {
           $contactID,
           TRUE
         );
-        $profiles[$profileID][$key] = $field;
+        $profiles[$profileID][$key] = $fieldList[$key] = $field;
       }
     }
     $this->assign('customProfiles', $profiles);
