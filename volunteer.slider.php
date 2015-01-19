@@ -48,6 +48,26 @@ function _volunteer_civicrm_postProcess_CRM_Custom_Form_Field($formName, &$form)
   CRM_Core_BAO_Setting::setItem($widgetized_fields, 'CiviVolunteer Configurations', 'slider_widget_fields');
 }
 
+function _volunteer_civicrm_buildForm_CRM_Profile_Form_Edit($formName, CRM_Core_Form $form) {
+  $db_widgetized_fields = _volunteer_get_slider_fields();
+  foreach ($db_widgetized_fields as &$value) {
+    $value = 'custom_' . $value;
+  }
+  $form_field_names = array_keys($form->_fields);
+  $widgetized_fields = array_intersect($form_field_names, $db_widgetized_fields);
+
+  foreach ($widgetized_fields as $field_name) {
+    $class = CRM_Utils_Array::value('class', $form->getElement($field_name)->_attributes);
+    $form->getElement($field_name)->_attributes['class'] = $class . ' volunteer_slider';
+  }
+
+  if (count($widgetized_fields)) {
+    $ccr = CRM_Core_Resources::singleton();
+    $ccr->addScriptFile('org.civicrm.volunteer', 'js/slider.js');
+    $ccr->addStyleFile('org.civicrm.volunteer', 'css/slider.css');
+  }
+}
+
 /**
  * Helper function to get the list of fields IDs which have had the slider widget
  * applied to them.
