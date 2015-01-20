@@ -33,6 +33,7 @@ class CRM_Volunteer_Upgrader extends CRM_Volunteer_Upgrader_Base {
 
   const customContactGroupName = 'Volunteer_Information';
   const customContactTypeName = 'Volunteer';
+  const skillLevelOptionGroupName = 'skill_level';
 
   public function install() {
     $volActivityTypeId = $this->createActivityType(CRM_Volunteer_BAO_Assignment::CUSTOM_ACTIVITY_TYPE);
@@ -454,6 +455,40 @@ class CRM_Volunteer_Upgrader extends CRM_Volunteer_Upgrader_Base {
       throw new CRM_Core_Exception('Non-numeric custom group ID provided.');
     }
 
+// The code below is preferable, but it's blocked by CRM-15542.
+
+//    $check = civicrm_api3('OptionGroup', 'get', array(
+//      'name' => self::skillLevelOptionGroupName,
+//    ));
+//
+//    // don't create the optionGroup (or the options) if an optionGroup with the same name already exists
+//    if ($check['count'] === 0) {
+//      $values = array(
+//        1 => ts('Not interested', array('domain' => 'org.civicrm.volunteer')),
+//        2 => ts('Teach me', array('domain' => 'org.civicrm.volunteer')),
+//        3 => ts('Apprentice', array('domain' => 'org.civicrm.volunteer')),
+//        4 => ts('Journeyman', array('domain' => 'org.civicrm.volunteer')),
+//        5 => ts('Master', array('domain' => 'org.civicrm.volunteer')),
+//      );
+//
+//      $og = civicrm_api3('OptionGroup', 'create', array(
+//        'is_active' => 1,
+//        'name' => self::skillLevelOptionGroupName,
+//        'title' => ts('Skill Level', array('domain' => 'org.civicrm.volunteer')),
+//      ));
+//
+//      $weight = 1;
+//      foreach ($values as $k => $v) {
+//        civicrm_api3('OptionValue', 'create', array(
+//          'is_active' => 1,
+//          'label' => $v,
+//          'option_group_id' => $og['id'],
+//          'value' => $k,
+//          'weight' => $weight++,
+//        ));
+//      }
+//    }
+
     $create = civicrm_api3('customField', 'create', array(
       'custom_group_id' => $customGroupID,
       'data_type' => 'String',
@@ -461,6 +496,7 @@ class CRM_Volunteer_Upgrader extends CRM_Volunteer_Upgrader_Base {
       'is_searchable' => 1,
       'label' => ts('Camera Skill Level', array('domain' => 'org.civicrm.volunteer')),
       'name' => 'camera_skill_level',
+//      'option_group_id' => $og['id'], // blocked by CRM-15542, so instead use option_values
       'option_values' => array(
         5 => array(
           'is_active' => 1,
@@ -494,6 +530,15 @@ class CRM_Volunteer_Upgrader extends CRM_Volunteer_Upgrader_Base {
         ),
       ),
     ));
+
+    // hack for CRM-15542
+    civicrm_api3('OptionGroup', 'create', array(
+      'id' => $create['values'][$create['id']]['option_group_id'],
+      'is_active' => 1,
+      'name' => self::skillLevelOptionGroupName,
+      'title' => ts('Skill Level', array('domain' => 'org.civicrm.volunteer')),
+    ));
+    // end hack for CRM-15542
 
     $this->fieldCreateCheckForError($create);
   }
