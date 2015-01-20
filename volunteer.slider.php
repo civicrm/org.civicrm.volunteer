@@ -75,8 +75,9 @@ function _volunteer_civicrm_buildForm_CRM_Profile_Form_Edit($formName, CRM_Core_
  * @return array
  */
 function _volunteer_get_slider_fields() {
-  return civicrm_api3('setting', 'getvalue', array(
+  $result = civicrm_api3('setting', 'getvalue', array(
     'name' => 'slider_widget_fields',
     'group' => 'CiviVolunteer Configurations',
   ));
+  return is_array($result) ? $result : array();
 }
