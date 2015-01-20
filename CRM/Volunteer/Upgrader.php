@@ -466,13 +466,13 @@ class CRM_Volunteer_Upgrader extends CRM_Volunteer_Upgrader_Base {
           'is_active' => 1,
           'label' => ts('Master', array('domain' => 'org.civicrm.volunteer')),
           'value' => 5,
-          'weight' => 1,
+          'weight' => 5,
         ),
         4 => array(
           'is_active' => 1,
           'label' => ts('Journeyman', array('domain' => 'org.civicrm.volunteer')),
           'value' => 4,
-          'weight' => 2,
+          'weight' => 4,
         ),
         3 => array(
           'is_active' => 1,
@@ -484,13 +484,13 @@ class CRM_Volunteer_Upgrader extends CRM_Volunteer_Upgrader_Base {
           'is_active' => 1,
           'label' => ts('Teach me', array('domain' => 'org.civicrm.volunteer')),
           'value' => 2,
-          'weight' => 4,
+          'weight' => 2,
         ),
         1 => array(
           'is_active' => 1,
           'label' => ts('Not interested', array('domain' => 'org.civicrm.volunteer')),
           'value' => 1,
-          'weight' => 5,
+          'weight' => 1,
         ),
       ),
     ));
