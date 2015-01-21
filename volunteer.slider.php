@@ -33,19 +33,8 @@ function _volunteer_civicrm_postProcess_CRM_Custom_Form_Field($formName, &$form)
   $is_slider_widget = CRM_Utils_Array::value('is_slider_widget', $form->_submitValues);
   $custom_field_id = $form->getVar('_id');
 
-  $widgetized_fields = _volunteer_get_slider_fields();
-
-  if ($is_slider_widget) {
-    $widgetized_fields[] = $custom_field_id;
-  } else {
-    $key = array_search($custom_field_id, $widgetized_fields);
-    unset($widgetized_fields[$key]);
-  }
-
-  $widgetized_fields = array_unique($widgetized_fields);
-  sort($widgetized_fields);
-
-  CRM_Core_BAO_Setting::setItem($widgetized_fields, 'CiviVolunteer Configurations', 'slider_widget_fields');
+  $verb = $is_slider_widget ? CRM_Core_Action::ADD : CRM_Core_Action::DELETE;
+  _volunteer_update_slider_fields(array($verb => $custom_field_id));
 }
 
 function _volunteer_civicrm_buildForm_CRM_Profile_Form_Edit($formName, CRM_Core_Form $form) {
@@ -80,4 +69,40 @@ function _volunteer_get_slider_fields() {
     'group' => 'CiviVolunteer Configurations',
   ));
   return is_array($result) ? $result : array();
+}
+
+/**
+ * Add or remove fields from the slider widget datastore.
+ *
+ * @param array $params Arrays of custom field IDs which ought to be added or
+ *              removed from the slider widget datastore, keyed by CRM_Core_Action::ADD for
+ *              fields which should use the widget, and CRM_Core_Action::DELETE for fields which
+ *              should not. If the same custom field ID appears in both the CRM_Core_Action::ADD
+ *              and CRM_Core_Action::DELETE arrays, it will be removed.
+ */
+function _volunteer_update_slider_fields(array $params) {
+  $add = CRM_Utils_Array::value(CRM_Core_Action::ADD, $params, array());
+  if (!is_array($add)) {
+    $add = array($add);
+  }
+
+  $remove = CRM_Utils_Array::value(CRM_Core_Action::DELETE, $params, array());
+  if (!is_array($remove)) {
+    $remove = array($remove);
+  }
+
+  $widgetized_fields = _volunteer_get_slider_fields();
+
+  foreach ($add as $custom_field_id) {
+    $widgetized_fields[] = $custom_field_id;
+  }
+  $widgetized_fields = array_unique($widgetized_fields);
+
+  foreach ($remove as $custom_field_id) {
+    $key = array_search($custom_field_id, $widgetized_fields);
+    unset($widgetized_fields[$key]);
+  }
+
+  sort($widgetized_fields);
+  CRM_Core_BAO_Setting::setItem($widgetized_fields, 'CiviVolunteer Configurations', 'slider_widget_fields');
 }
