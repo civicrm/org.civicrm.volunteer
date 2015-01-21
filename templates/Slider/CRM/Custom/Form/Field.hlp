@@ -1,0 +1,22 @@
+{htxt id="volunteer-slider-title"}
+  {ts domain='org.civicrm.volunteer'}CiviVolunteer Slider Widget{/ts}
+{/htxt}
+{htxt id="volunteer-slider"}
+  <p>
+    {ts domain='org.civicrm.volunteer'}CiviVolunteer introduces a slider widget for
+    multi-select fields where the option list represents a continuum. The options
+    in the multi-select list are converted to stops on a slider. Items with a
+    lower weight in the option group will appear on the left side of the slider,
+    while heavily weighted items will appear on the right.{/ts}
+  </p>
+  <p>
+    {ts domain='org.civicrm.volunteer'}The Skill Level option group that ships with
+    CiviVolunteer demonstrates the benefit of this feature. When a user drags the
+    slider, the current option (e.g., "Master") as well as all options with a lower
+    weight are selected. As a result, a search for volunteers qualified to do
+    "Apprentice"-level work will include volunteers with "Master"-level skills.{/ts}
+  {*
+    TODO: Add screenshots of the option list config, a slider in action, and the
+    multiselect equivalent of the selection in the slider screenshot.
+  *}
+{/htxt}
