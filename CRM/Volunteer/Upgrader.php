@@ -540,6 +540,8 @@ class CRM_Volunteer_Upgrader extends CRM_Volunteer_Upgrader_Base {
     ));
     // end hack for CRM-15542
 
+    _volunteer_update_slider_fields(array(CRM_Core_Action::ADD => $create['id']));
+
     $this->fieldCreateCheckForError($create);
   }
 
