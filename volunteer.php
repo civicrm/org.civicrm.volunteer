@@ -274,6 +274,7 @@ function volunteer_civicrm_buildForm($formName, &$form) {
   if (function_exists($f)) {
     $f($formName, $form);
   }
+  _volunteer_addSliderWidget($form);
 }
 
 /**
