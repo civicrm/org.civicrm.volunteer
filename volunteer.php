@@ -27,12 +27,35 @@
 
 
 require_once 'volunteer.civix.php';
+require_once 'volunteer.slider.php';
 
 /**
  * Implementation of hook_civicrm_config
  */
 function volunteer_civicrm_config(&$config) {
   _volunteer_civix_civicrm_config($config);
+}
+
+/**
+ * Implementation of hook_civicrm_caseTypes
+ *
+ * Generate a list of case-types
+ *
+ * Note: This hook only runs in CiviCRM 4.4+.
+ *
+ * @link http://wiki.civicrm.org/confluence/display/CRMDOC/hook_civicrm_caseTypes
+ */
+function volunteer_civicrm_caseTypes(&$caseTypes) {
+  _volunteer_civix_civicrm_caseTypes($caseTypes);
+}
+
+/**
+ * Implementation of hook_civicrm_alterSettingsFolders
+ *
+ * @link http://wiki.civicrm.org/confluence/display/CRMDOC/hook_civicrm_alterSettingsFolders
+ */
+function volunteer_civicrm_alterSettingsFolders(&$metaDataFolders = NULL) {
+  _volunteer_civix_civicrm_alterSettingsFolders($metaDataFolders);
 }
 
 /**
@@ -185,6 +208,18 @@ function volunteer_civicrm_pageRun(&$page) {
 }
 
 /**
+ * Implementation of hook_civicrm_postProcess
+ *
+ * Handler for postProcess hook.
+ */
+function volunteer_civicrm_postProcess($formName, &$form) {
+  $f = '_' . __FUNCTION__ . '_' . $formName;
+  if (function_exists($f)) {
+    $f($formName, $form);
+  }
+}
+
+/**
  * Callback for event info page
  *
  * Inserts "Volunteer Now" button via {crmRegion} if a project is associated
@@ -239,6 +274,7 @@ function volunteer_civicrm_buildForm($formName, &$form) {
   if (function_exists($f)) {
     $f($formName, $form);
   }
+  _volunteer_addSliderWidget($form);
 }
 
 /**

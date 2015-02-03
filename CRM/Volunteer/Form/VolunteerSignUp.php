@@ -35,6 +35,14 @@ require_once 'CRM/Core/Form.php';
 class CRM_Volunteer_Form_VolunteerSignUp extends CRM_Core_Form {
 
   /**
+   * Determines whether or not slider-widget-enabled fields (e.g., skill level assessments)
+   * should be rendered as slider widgets (TRUE) or multi-selects (FALSE).
+   *
+   * @var boolean
+   */
+  public $allowVolunteerSliderWidget = TRUE;
+
+  /**
    * The URL to which the user should be redirected after successfully
    * submitting the sign-up form
    *
