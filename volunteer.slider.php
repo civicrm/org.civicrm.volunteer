@@ -13,7 +13,7 @@ function _volunteer_civicrm_buildForm_CRM_Custom_Form_Field($formName, CRM_Core_
   $form->_defaultValues['is_slider_widget'] = in_array($field_id, $widgetized_fields);
 
   // add checkbox to the form object
-  $form->add('checkbox', 'is_slider_widget', ts('Use Slider Widget?'));
+  $form->add('checkbox', 'is_slider_widget', ts('Use Slider Selector?'));
 
   // add checkbox to the display
   CRM_Core_Region::instance('page-body')->add(array(
