@@ -58,12 +58,12 @@ function _volunteer_addSliderWidget(CRM_Core_Form &$form) {
     foreach ($db_widgetized_fields as &$value) {
       $value = 'custom_' . $value;
     }
-    $form_field_names = array_keys($form->_fields);
-    $widgetized_fields = array_intersect($form_field_names, $db_widgetized_fields);
+    $form_element_names = array_flip($form->_elementIndex);
+    $widgetized_fields = array_intersect($form_element_names, $db_widgetized_fields);
 
     foreach ($widgetized_fields as $field_name) {
-      $class = CRM_Utils_Array::value('class', $form->getElement($field_name)->_attributes);
-      $form->getElement($field_name)->_attributes['class'] = $class . ' volunteer_slider';
+      $css_classes = CRM_Utils_Array::value('class', $form->getElement($field_name)->_attributes);
+      $form->getElement($field_name)->_attributes['class'] = trim($css_classes . ' volunteer_slider');
     }
 
     if (count($widgetized_fields)) {
