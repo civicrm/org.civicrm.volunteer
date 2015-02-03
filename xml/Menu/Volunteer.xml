@@ -64,4 +64,11 @@
     <title>Profile Widget</title>
     <access_arguments>access CiviCRM</access_arguments>
   </item>
+  <item>
+    <path>civicrm/volunteer/join</path>
+    <title>Notify Me of Volunteer Opportunities</title>
+    <access_callback>1</access_callback>
+    <page_callback>CRM_Volunteer_Page_Router</page_callback>
+    <is_public>true</is_public>
+  </item>
 </menu>
