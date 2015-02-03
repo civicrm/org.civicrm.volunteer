@@ -27,11 +27,17 @@
             $(option).prop('selected', true);
           }
         },
+        // Setting the minimum to -1 allows for deselecting the minimum option when the field is not required
         min: (required ? 0 : -1),
         max: sel.find('option').length - 1,
 
         /**
          * Display the option label for the user's selection
+         *
+         * @see http://api.jqueryui.com/slider/#event-slide
+         *
+         * @param {Event} event The slide event
+         * @param {Object} ui User input
          */
         slide: function(event, ui) {
           var labelEl = $('label[for=' + selID + ']');
@@ -48,6 +54,7 @@
 
           labelEl.find('span.volunteer_option_label').hide().html(desc).fadeIn();
         },
+
         value: sel.find('option:selected').last().index()
       });
 

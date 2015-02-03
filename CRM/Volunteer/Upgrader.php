@@ -531,7 +531,10 @@ class CRM_Volunteer_Upgrader extends CRM_Volunteer_Upgrader_Base {
       ),
     ));
 
-    // hack for CRM-15542
+    // hack for CRM-15542 - The custom field create API doesn't allow an existing option
+    // group to specified; the options must be created with the field. We want to give
+    // this option group a meaningful name and label so it's obvious it's intended to be
+    // reused, so we rename it below.
     civicrm_api3('OptionGroup', 'create', array(
       'id' => $create['values'][$create['id']]['option_group_id'],
       'is_active' => 1,

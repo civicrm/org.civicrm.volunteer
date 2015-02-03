@@ -58,6 +58,9 @@ function _volunteer_addSliderWidget(CRM_Core_Form &$form) {
     foreach ($db_widgetized_fields as &$value) {
       $value = 'custom_' . $value;
     }
+
+    // Compare the global list of widget-enabled fields with the list of elements in this
+    // form to get a list of widget-enabled fields in this form.
     $form_element_names = array_flip($form->_elementIndex);
     $widgetized_fields = array_intersect($form_element_names, $db_widgetized_fields);
 
