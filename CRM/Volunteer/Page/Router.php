@@ -4,7 +4,7 @@ class CRM_Volunteer_Page_Router extends CRM_Core_Page {
 
   function run($args = NULL) {
     if (CRM_Utils_Array::value(0, $args) !== 'civicrm' || CRM_Utils_Array::value(1, $args) !== 'volunteer') {
-      CRM_Utils_System::permissionDenied();
+      CRM_Core_Error::fatal('Invalid page callback config.');
       return;
     }
 
@@ -44,7 +44,7 @@ class CRM_Volunteer_Page_Router extends CRM_Core_Page {
         return $controller->run();
 
       default:
-        CRM_Utils_System::permissionDenied();
+        CRM_Core_Error::fatal('Invalid page callback config.');
         return;
     }
   }
