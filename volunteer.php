@@ -400,21 +400,3 @@ function volunteer_civicrm_alterTemplateFile ($formName, &$form, $context, &$tpl
     $f($formName, $form, $context, $tplName);
   }
 }
-
-/**
- * Delegated implementation of hook_civicrm_alterTemplateFile
- *
- * Don't load the volunteer tab if Multiform prereq is missing.
- *
- * @param type $formName
- * @param type $form
- * @param type $context
- * @param string $tplName
- */
-function _volunteer_civicrm_alterTemplateFile_CRM_Volunteer_Form_Volunteer ($formName, &$form, $context, &$tplName) {
-  $unmet = CRM_Volunteer_Upgrader::checkExtensionDependencies();
-
-  if (in_array('com.ginkgostreet.multiform', $unmet)) {
-    $tplName = 'CRM/Volunteer/MissingDependency.tpl';
-  }
-}
