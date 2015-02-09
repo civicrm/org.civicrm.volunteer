@@ -120,7 +120,11 @@ class CRM_Volunteer_Form_Volunteer extends CRM_Event_Form_ManageEvent {
     // create a dummy using CiviVolunteer's built-in profile. Note: this is
     // necessary to ensure backwards compatibility with versions pre-dating the
     // profile selection widget.
-    if (empty($this->getProfileIDs())) {
+    // Prior to php 5.5 you must store to a var before testing for empty
+    // http://joomla.stackexchange.com/questions/5565/fatal-error-cant-use-method-return-value-in-write-context
+    // hence re-instating the extra line of code
+    $profileIDs = $this->getProfileIDS();
+    if (empty($profileIDS)) {
       $this->_profile_ids[] = civicrm_api3('UFGroup', 'getvalue', array(
         'name' => 'volunteer_sign_up',
         'return' => 'id',
