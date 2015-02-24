@@ -5,21 +5,17 @@
   <description>The CiviVolunteer extension provides tools for signing up, managing and tracking volunteers. The features for this release focus on volunteering at events, but the design creates a foundation for adding support for volunteering in a wide variety of situations.</description>
   <license>AGPL-3.0</license>
   <maintainer>
-    <author>Yashodha Chaku, Michael Daryabeygi, Frank J. G&#xF3;mez, Dave Greenberg, and Coleman Watts</author>
+    <author>Yashodha Chaku, Michael Z. Daryabeygi, Frank J. G&#xF3;mez, Dave Greenberg, and Coleman Watts</author>
     <email>info@civicrm.org</email>
   </maintainer>
-  <releaseDate>2014-02-08</releaseDate>
+  <releaseDate>2015-MM-dd</releaseDate>
   <version>4.5-1.4-dev</version>
   <develStage>development</develStage>
   <compatibility>
     <ver>4.5</ver>
   </compatibility>
   <comments>
-    Developed by CiviCRM LLC, Ginkgo Street Labs, and Confluence Corp with
-    contributions from the community.
-
-    CiviVolunteer requires the Multiform extension, which can be downloaded from
-    https://github.com/ginkgostreet/civicrm_multiform.
+    Developed by CiviCRM LLC &amp; Ginkgo Street Labs with contributions from the community. Special thanks to The Manhattan Neighborhood Network for their funding of the 1.4 release.
   </comments>
   <civix>
     <namespace>CRM/Volunteer</namespace>

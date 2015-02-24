@@ -43,7 +43,6 @@ you want to keep track of your organization's cumulative volunteering totals.
 Dependencies
 ============
 - CiviCRM version 4.5.x
-- [Multiform extension](https://github.com/ginkgostreet/civicrm_multiform)
 
 Known Issues
 ============
