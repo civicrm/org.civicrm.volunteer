@@ -138,18 +138,21 @@ class CRM_Volunteer_Upgrader extends CRM_Volunteer_Upgrader_Base {
   /**
    * @return boolean TRUE on success
    */
-  public function upgrade_1403() {
-    $this->ctx->log->info('Applying update 1403 - creating commendation activity type and related custom fields');
-    $this->installCommendationActivityType();
+  public function upgrade_1401() {
+    $this->ctx->log->info('Applying update 1401 - creating volunteer_interest profile');
+    $this->executeCustomDataFileByAbsPath($this->extensionDir . '/xml/volunteer_interest_install.xml');
     return TRUE;
   }
+
+  // removed by VOL-91; do not reuse
+  // public function upgrade_1402() {}
 
   /**
    * @return boolean TRUE on success
    */
-  public function upgrade_1401() {
-    $this->ctx->log->info('Applying update 1401 - creating volunteer_interest profile');
-    $this->executeCustomDataFileByAbsPath($this->extensionDir . '/xml/volunteer_interest_install.xml');
+  public function upgrade_1403() {
+    $this->ctx->log->info('Applying update 1403 - creating commendation activity type and related custom fields');
+    $this->installCommendationActivityType();
     return TRUE;
   }
 

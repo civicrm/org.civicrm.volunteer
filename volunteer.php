@@ -381,22 +381,7 @@ function _volunteer_civicrm_check_resource_url() {
  * Implements hook_civicrm_alterAPIPermissions
  */
 function volunteer_civicrm_alterAPIPermissions($entity, $action, &$params, &$permissions) {
-// note: unsetting the below would require the default ‘administer CiviCRM’ permission
+// note: unsetting the below would require the default 'administer CiviCRM' permission
   $permissions['volunteer_need']['default'] = array('access CiviEvent', 'edit all events');
   $permissions['volunteer_assignment']['default'] = array('access CiviEvent', 'edit all events');
-}
-
-/**
- * Implementation of hook_civicrm_alterTemplateFile
- *
- * @param type $formName
- * @param type $form
- * @param type $context
- * @param type $tplName
- */
-function volunteer_civicrm_alterTemplateFile ($formName, &$form, $context, &$tplName) {
-  $f = '_' . __FUNCTION__ . '_' . $formName;
-  if (function_exists($f)) {
-    $f($formName, $form, $context, $tplName);
-  }
 }

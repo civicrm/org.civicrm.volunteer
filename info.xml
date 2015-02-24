@@ -15,7 +15,7 @@
     <ver>4.5</ver>
   </compatibility>
   <comments>
-    Developed by CiviCRM LLC & Ginkgo Street Labs with contributions from the community. Special thanks to The Manhattan Neighborhood Network for their funding of the 1.4 release.
+    Developed by CiviCRM LLC &amp; Ginkgo Street Labs with contributions from the community. Special thanks to The Manhattan Neighborhood Network for their funding of the 1.4 release.
   </comments>
   <civix>
     <namespace>CRM/Volunteer</namespace>
