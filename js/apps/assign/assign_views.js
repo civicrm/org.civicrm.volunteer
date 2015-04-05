@@ -86,7 +86,27 @@
       events: {
         'change [name=add-volunteer]': 'addNewContact',
         'click .crm-vol-menu-item a': 'moveContact',
-        'click .crm-vol-del': 'removeContact'
+        'click .crm-vol-del': 'removeContact',
+        'click .crm-vol-search': function (e) {
+          // TODO
+//          var vol_need = this.model.get('id');
+//          var vol_project = CRM.volunteerApp.project_id;
+
+          var settings = {
+            modal: true,
+            title: 'Find Volunteers',
+            width: '75%',
+            height: parseInt($(window).height() * .70),
+            buttons: [{text: ts('Done'), click: function() {$(this).dialog('close');}, icons: {primary: 'ui-icon-close'}}],
+            close: function() {
+              CRM.volunteerApp.module('Search').stop();
+            }
+          };
+
+          $('#crm-volunteer-search-dialog').dialog(settings);
+          CRM.volunteerApp.module('Search').start();
+          e.preventDefault();
+        }
       },
 
       onAfterItemAdded: function() { this.doCount(); },

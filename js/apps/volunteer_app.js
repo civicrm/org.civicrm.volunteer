@@ -1,7 +1,8 @@
 // http://civicrm.org/licensing
 CRM.volunteerApp = new Backbone.Marionette.Application();
 CRM.volunteerApp.addRegions({
-  dialogRegion: '#crm-volunteer-dialog'
+  dialogRegion: '#crm-volunteer-dialog',
+  searchRegion: '#crm-volunteer-search-dialog'
 });
 
 CRM.$(function($) {
@@ -14,7 +15,7 @@ CRM.$(function($) {
       title: $el.text(),
       width: '85%',
       height: parseInt($(window).height() * .80),
-      buttons: [{text: ts('Done'), click: function() {$(this).dialog('close')}, icons: {primary: 'ui-icon-close'}}],
+      buttons: [{text: ts('Done'), click: function() {$(this).dialog('close');}, icons: {primary: 'ui-icon-close'}}],
       close: function() {
         CRM.volunteerApp.module(CRM.volunteerApp.tab).stop();
       }

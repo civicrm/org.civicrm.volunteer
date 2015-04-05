@@ -29,9 +29,14 @@
 {* Main container for dialog *}
 <div id="crm-volunteer-dialog"></div>
 
+{* Container for search dialog *}
+<div id="crm-volunteer-search-dialog"></div>
+
 {include file="RenderUtils.tpl"}
 
 {* Template file for each sub application *}
 {include file="CRM/Volunteer/Form/Manage/Assign.tpl"}
 
 {include file = "CRM/Volunteer/Form/Manage/Define.tpl"}
+
+{include file = "CRM/Volunteer/Form/Manage/Search.tpl"}
