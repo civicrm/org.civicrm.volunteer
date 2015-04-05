@@ -12,12 +12,16 @@ CRM.volunteerApp.module('Search', function(Search, volunteerApp, Backbone, Mario
   // Initialize entities and views
   Search.on('start', function() {
     volunteerApp.Entities.getVolCustomFields().done(function(data) {
+      var collection = new volunteerApp.Entities.VolCustomFields(data);
+      collection.push({
+        column_name: 'group',
+        html_type: 'Text',
+        label: 'Group'
+      });
       Search.collectionView = new Search.fieldsCollectionView({
-        'collection': new volunteerApp.Entities.VolCustomFields(data)
+        'collection': collection
       });
       layout.searchForm.show(Search.collectionView);
-
-      console.dir(data);
     });
 //      .done(function(arrData) {
 //        Assign.flexibleView = new Assign.needsView({

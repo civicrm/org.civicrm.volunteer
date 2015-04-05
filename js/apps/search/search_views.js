@@ -38,7 +38,7 @@
         });
 
         this.template = '#crm-vol-search-field-' + type + '-tpl';
-        this.itemView = Search[type + 'FieldView'];
+//        this.itemView = Search[type + 'FieldView'];
       }
     });
 
@@ -49,6 +49,10 @@
 
       onRender: function() {
         this.$('select').crmSelect2();
+        this.$('input[name="crm-vol-search-field-group"]').attr('placeholder', '- any group -').crmEntityRef({
+          entity: 'group'
+        });
+
         this.$el.append('<input type="submit" value="' + ts('Search') + '" />');
 
         // this is a bit of a hack; submit handlers can't be bound via the events
