@@ -42,10 +42,61 @@
       }
     });
 
+    /**
+     * Returns a field's value(s)
+     *
+     * @param {jQuery object} field
+     * @returns {mixed}
+     */
+    Search.getFieldValue = function (field) {
+      var value = [];
+      if (field.is(':checkbox') || field.is(':radio')) {
+        field.each(function() {
+          var item = CRM.$(this);
+          if (item.is(':checked')) {
+            value.push(item.val());
+          }
+        });
+      } else {
+        value = field.val();
+      }
+
+      if (_.isArray(value)) {
+        if (value.length === 0) {
+          value = null;
+        } else if (value.length === 1) {
+          value = value[0];
+        }
+      }
+      return value;
+    };
 
     Search.fieldsCollectionView = Marionette.CollectionView.extend({
       itemView: fieldView,
       className: 'crm-vol-search-form crm-form-block',
+
+      handleForm: function(e) {
+        e.preventDefault();
+
+        var params = {};
+        Search.formFields.each(function(item) {
+
+          var field = CRM.$('[name=' + item.get('elementName') + ']');
+          var val = Search.getFieldValue(field);
+          if (val) {
+            var key = item.get('id') ? 'custom_' + item.get('id') : 'filter.group_id';
+            if (_.isArray(val)) {
+              params[key] = {IN: val};
+            } else {
+              params[key] = val;
+            }
+          }
+        });
+
+        CRM.api3('Contact', 'get', params).done(function(result) {
+          console.dir(result);
+        });
+      },
 
       onRender: function() {
         this.$('select').crmSelect2();
@@ -57,10 +108,7 @@
 
         // this is a bit of a hack; submit handlers can't be bound via the events
         // attribute because the events are delegated jQuery events and they fire too late
-        CRM.$('form.crm-event-manage-volunteer-search-form-block').submit(function(e) {
-          e.preventDefault();
-          console.log('make API call');
-        });
+        CRM.$('form.crm-event-manage-volunteer-search-form-block').submit(this.handleForm);
       }
 
     });

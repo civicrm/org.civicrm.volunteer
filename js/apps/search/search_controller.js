@@ -12,14 +12,14 @@ CRM.volunteerApp.module('Search', function(Search, volunteerApp, Backbone, Mario
   // Initialize entities and views
   Search.on('start', function() {
     volunteerApp.Entities.getVolCustomFields().done(function(data) {
-      var collection = new volunteerApp.Entities.VolCustomFields(data);
-      collection.push({
+      Search.formFields = new volunteerApp.Entities.VolCustomFields(data);
+      Search.formFields.push({
         column_name: 'group',
         html_type: 'Text',
         label: 'Group'
       });
       Search.collectionView = new Search.fieldsCollectionView({
-        'collection': collection
+        'collection': Search.formFields
       });
       layout.searchForm.show(Search.collectionView);
     });
