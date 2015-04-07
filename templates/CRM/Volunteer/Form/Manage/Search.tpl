@@ -64,32 +64,44 @@
 
 <script type="text/template" id="crm-vol-search-field-checkRadio-tpl">
   <% var elementType = selectMultiple ? 'checkbox' : 'radio'; %>
-  <label><%= label %>: </label>
-  {literal}
-    <% options.forEach(function(item) { %>
-      <% var elementClass = 'crm-form-' + elementType; %>
-      <% var elementID = elementName + '_' + item.value; %>
-      <label for="<%= elementID %>"><%= item.label %> </label>
-      <input class="<%= elementClass %>" id="<%= elementID %>" name="<%= elementName %>" type="<%= elementType %>" value="<%= item.value %>"/>
-    <% }); %>
-  {/literal}
+  <div class="label">
+    <label><%= label %>:</label>
+  </div>
+  <div class="content">
+    {literal}
+      <% options.forEach(function(item) { %>
+        <% var elementClass = 'crm-form-' + elementType; %>
+        <% var elementID = elementName + '_' + item.value; %>
+        <input class="<%= elementClass %>" id="<%= elementID %>" name="<%= elementName %>" type="<%= elementType %>" value="<%= item.value %>"/>
+        <label for="<%= elementID %>"><%= item.label %></label>
+      <% }); %>
+    {/literal}
+  </div>
 </script>
 
 <script type="text/template" id="crm-vol-search-field-select-tpl">
   <% var multipleAttr = (selectMultiple ? 'multiple' : ''); %>
-  <label for="<%= elementName %>"><%= label %>: </label>
-  <select class="crm-form-select" id="<%= elementName %>" <%= multipleAttr %> name="<%= elementName %>">
-  {literal}
-    <% options.forEach(function(item) { %>
-      <option value="<%= item.value %>"><%= item.label %></option>
-    <% }); %>
-  {/literal}
-  </select>
+  <div class="label">
+    <label for="<%= elementName %>"><%= label %>:</label>
+  </div>
+  <div class="content">
+    <select class="big crm-form-select" id="<%= elementName %>" <%= multipleAttr %> name="<%= elementName %>">
+    {literal}
+      <% options.forEach(function(item) { %>
+        <option value="<%= item.value %>"><%= item.label %></option>
+      <% }); %>
+    {/literal}
+    </select>
+  </div>
 </script>
 
 <script type="text/template" id="crm-vol-search-field-text-tpl">
-  <label for="<%= elementName %>"><%= label %>: </label>
-  <input type="text" class="crm-form-text" id="<%= elementName %>" name="<%= elementName %>"/>
+  <div class="label">
+    <label for="<%= elementName %>"><%= label %>:</label>
+  </div>
+  <div class="content">
+    <input type="text" class="big crm-form-text" id="<%= elementName %>" name="<%= elementName %>"/>
+  </div>
 </script>
 
 <script type="text/template" id="crm-vol-search-contact-tpl">

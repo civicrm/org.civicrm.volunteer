@@ -16,7 +16,7 @@
     var fieldView = Marionette.CompositeView.extend({
       hasBeenInitialized: false,
       profileUrl: '',
-      className: 'crm-vol-search-field crm-form-block',
+      className: 'crm-vol-search-field crm-section',
 
       initialize: function() {
         var typeMap = {
