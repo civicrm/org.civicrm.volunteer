@@ -6,6 +6,7 @@
       template: "#crm-vol-search-layout-tpl",
       regions: {
         searchForm: "#crm-vol-search-form-region",
+        searchPager: "#crm-vol-search-pager",
         searchResults: "#crm-vol-search-results-region"
       }
     });
@@ -80,7 +81,7 @@
         dialog.block();
         e.preventDefault();
 
-        var params = {};
+        Search.params = {};
         Search.formFields.each(function(item) {
 
           var field = CRM.$('[name=' + item.get('elementName') + ']');
@@ -88,14 +89,18 @@
           if (val) {
             var key = item.get('id') ? 'custom_' + item.get('id') : 'filter.group_id';
             if (_.isArray(val)) {
-              params[key] = {IN: val};
+              Search.params[key] = {IN: val};
             } else {
-              params[key] = val;
+              Search.params[key] = val;
             }
           }
         });
 
-        volunteerApp.Entities.getContacts(params).done(function(result) {
+        volunteerApp.Entities.getContactCount().done(function(result) {
+          Search.pagerData.set('total', result);
+        });
+
+        volunteerApp.Entities.getContacts().done(function(result) {
           Search.resultsView.collection.reset(result);
           CRM.$('#crm-vol-search-form-region').closest('.crm-accordion-wrapper').addClass('collapsed');
           dialog.unblock();
@@ -115,6 +120,47 @@
         CRM.$('form.crm-event-manage-volunteer-search-form-block').submit(this.handleForm);
       }
 
+    });
+
+    Search.pagerView = Marionette.ItemView.extend({
+      template: '#crm-vol-search-pager-tpl',
+
+      attributes: function() {
+        return {
+          class: 'crm-pager'
+        };
+      },
+
+      modelEvents: {
+        'change': function() {
+          if (this.model.get('end') > this.model.get('total')) {
+            Search.pagerData.set('end', this.model.get('total'));
+          }
+
+          this.render();
+        }
+      },
+
+      onRender: function() {
+        if (this.model.get('total') === 0) {
+          this.$el.hide();
+        } else {
+          this.$el.show();
+        }
+
+        this.$('.crm-button').click(function() {
+          var dialog = CRM.$("#crm-volunteer-search-dialog");
+          dialog.block();
+
+          var increment = $(this).is('.crm-button-type-back') ? -(Search.resultsPerPage) : Search.resultsPerPage;
+          Search.params.options.offset += increment;
+
+          volunteerApp.Entities.getContacts().done(function(result) {
+            Search.resultsView.collection.reset(result);
+            dialog.unblock();
+          });
+        });
+      }
     });
 
     Search.contactView = Marionette.ItemView.extend({

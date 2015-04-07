@@ -38,6 +38,7 @@
   <form class="crm-block crm-form-block crm-event-manage-volunteer-form-block">
     <div class="crm-content-block">
       <div class="crm-results-block">
+        <div id="crm-vol-search-pager"></div>
         <div class="crm-search-results" id="crm-vol-search-results-region">
           <div class="crm-loading-element">{ts domain='org.civicrm.volunteer'}Loading&hellip;{/ts}</div>
         </div>
@@ -111,6 +112,18 @@
   <td><%= state_province %></td>
   <td><%= email %></td>
   <td><%= phone %></td>
+</script>
+
+<script type="text/template" id="crm-vol-search-pager-tpl">
+  <div class="crm-submit-buttons">
+    <% if (start > 1) {literal}{{/literal} %>
+      <span class="crm-button crm-button-type-back">{ts domain='org.civicrm.volunteer'}&lt;&lt; Previous{/ts}</span>
+    <% {literal}}{/literal} %>
+    <% if (total > end) {literal}{{/literal} %>
+      <span class="crm-button crm-button-type-next">{ts domain='org.civicrm.volunteer'}Next &gt;&gt;{/ts}</span>
+    <% {literal}}{/literal} %>
+    <span>Showing contacts <%= start %> - <%= end %> of <%= total %></span>
+  </div>
 </script>
 
 {*
