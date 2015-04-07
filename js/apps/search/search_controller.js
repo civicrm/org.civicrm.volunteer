@@ -12,7 +12,10 @@ CRM.volunteerApp.module('Search', function(Search, volunteerApp, Backbone, Mario
   });
 
   // Initialize entities and views
-  Search.on('start', function() {
+  Search.on('start', function(params) {
+    Search.need_id = params.need_id;
+    Search.cnt_open_assignments = params.cnt_open_assignments;
+
     volunteerApp.Entities.getVolCustomFields().done(function(data) {
       Search.formFields = new volunteerApp.Entities.VolCustomFields(data);
       Search.formFields.push({

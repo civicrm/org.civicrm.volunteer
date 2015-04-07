@@ -178,6 +178,13 @@
         rendered_view.$('[name=selected_contacts]').change(function() {
           var toggle = CRM.$(this).is(':checked');
           $(this).closest('tr').toggleClass('crm-row-selected', toggle);
+
+          var contact_checkboxes = $('#crm-vol-search-results-region [name=selected_contacts]');
+          if (contact_checkboxes.filter(':checked').length >= Search.cnt_open_assignments) {
+            contact_checkboxes.not(':checked').prop('disabled', true);
+          } else {
+            contact_checkboxes.prop('disabled', false);
+          }
         });
       }
     });
@@ -190,8 +197,17 @@
       onRender: function() {
         var rendered_view = this;
         rendered_view.$('[name=select_all_contacts]').change(function() {
-          var toggle = CRM.$(this).is(':checked');
-          rendered_view.$('[name=selected_contacts]').prop('checked', toggle);
+          var selectAll = CRM.$(this).is(':checked');
+          var contacts = rendered_view.$('[name=selected_contacts]');
+
+          if (selectAll) {
+            var max = Search.cnt_open_assignments - contacts.filter(':checked').length;
+            contacts.not(':checked').slice(0, max).prop('checked', true);
+          } else {
+            contacts.prop('checked', false);
+          }
+
+          contacts.first().trigger('change');
         });
       }
     });

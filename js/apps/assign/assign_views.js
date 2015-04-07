@@ -88,10 +88,6 @@
         'click .crm-vol-menu-item a': 'moveContact',
         'click .crm-vol-del': 'removeContact',
         'click .crm-vol-search': function (e) {
-          // TODO
-//          var vol_need = this.model.get('id');
-//          var vol_project = CRM.volunteerApp.project_id;
-
           var settings = {
             modal: true,
             title: 'Find Volunteers',
@@ -102,9 +98,14 @@
               CRM.volunteerApp.module('Search').stop();
             }
           };
-
           $('#crm-volunteer-search-dialog').dialog(settings);
-          CRM.volunteerApp.module('Search').start();
+
+          var params = {
+            need_id: this.model.get('id'),
+            cnt_open_assignments: this.model.get('quantity') - this.collection.length
+          };
+//          var vol_project = CRM.volunteerApp.project_id;
+          CRM.volunteerApp.module('Search').start(params);
           e.preventDefault();
         }
       },
