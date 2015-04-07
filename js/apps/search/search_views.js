@@ -118,7 +118,21 @@
 
     Search.contactView = Marionette.ItemView.extend({
       tagName: 'tr',
-      template: '#crm-vol-search-contact-tpl'
+      template: '#crm-vol-search-contact-tpl',
+
+      attributes: function() {
+        return {
+          class: (this.model.collection.indexOf(this.model) % 2 ? 'even' : 'odd')
+        };
+      },
+
+      onRender: function() {
+        var rendered_view = this;
+        rendered_view.$('[name=selected_contacts]').change(function() {
+          var toggle = CRM.$(this).is(':checked');
+          $(this).closest('tr').toggleClass('crm-row-selected', toggle);
+        });
+      }
     });
 
     Search.resultsCompositeView = Marionette.CompositeView.extend({
@@ -128,7 +142,7 @@
 
       onRender: function() {
         var rendered_view = this;
-        rendered_view.$('[name=select_all_contacts]').change(function(e) {
+        rendered_view.$('[name=select_all_contacts]').change(function() {
           var toggle = CRM.$(this).is(':checked');
           rendered_view.$('[name=selected_contacts]').prop('checked', toggle);
         });
