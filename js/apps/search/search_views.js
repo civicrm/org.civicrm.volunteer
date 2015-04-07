@@ -97,6 +97,7 @@
 
         volunteerApp.Entities.getContacts(params).done(function(result) {
           Search.resultsView.collection.reset(result);
+          CRM.$('#crm-vol-search-form-region').closest('.crm-accordion-wrapper').addClass('collapsed');
           dialog.unblock();
         });
       },
