@@ -67,12 +67,10 @@
   <label><%= label %>: </label>
   {literal}
     <% options.forEach(function(item) { %>
-      <% console.dir(item.is_default); %>
-      <% var checked = (item.is_default === '1') ? 'checked' : ''; %>
       <% var elementClass = 'crm-form-' + elementType; %>
       <% var elementID = elementName + '_' + item.value; %>
       <label for="<%= elementID %>"><%= item.label %> </label>
-      <input <%= checked %> class="<%= elementClass %>" id="<%= elementID %>" name="<%= elementName %>" type="<%= elementType %>" value="<%= item.value %>"/>
+      <input class="<%= elementClass %>" id="<%= elementID %>" name="<%= elementName %>" type="<%= elementType %>" value="<%= item.value %>"/>
     <% }); %>
   {/literal}
 </script>
