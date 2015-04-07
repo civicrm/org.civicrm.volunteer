@@ -76,6 +76,8 @@
       className: 'crm-vol-search-form crm-form-block',
 
       handleForm: function(e) {
+        var dialog = CRM.$("#crm-volunteer-search-dialog");
+        dialog.block();
         e.preventDefault();
 
         var params = {};
@@ -93,8 +95,9 @@
           }
         });
 
-        CRM.api3('Contact', 'get', params).done(function(result) {
-          console.dir(result);
+        volunteerApp.Entities.getContacts(params).done(function(result) {
+          Search.resultsView.collection.reset(result);
+          dialog.unblock();
         });
       },
 
@@ -113,6 +116,15 @@
 
     });
 
+    Search.contactView = Marionette.ItemView.extend({
+      tagName: 'tr',
+      template: '#crm-vol-search-contact-tpl'
+    });
 
+    Search.resultsCompositeView = Marionette.CompositeView.extend({
+      template: '#crm-vol-search-result-tpl',
+      itemView: Search.contactView,
+      itemViewContainer: 'tbody'
+    });
   });
 }(CRM.ts('org.civicrm.volunteer')));

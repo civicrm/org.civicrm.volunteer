@@ -29,14 +29,34 @@
 <script type="text/template" id="crm-vol-search-layout-tpl">
   <form class="crm-block crm-form-block crm-event-manage-volunteer-search-form-block">
     <div id="crm-vol-search-form-region">
-      <div class="crm-loading-element">{ts domain='org.civicrm.volunteer'}Loading{/ts}...</div>
+      <div class="crm-loading-element">{ts domain='org.civicrm.volunteer'}Loading&hellip;{/ts}</div>
     </div>
   </form>
-  <form class="crm-block crm-form-block crm-event-manage-volunteer-form-block hiddenElement">
-    <div id="crm-vol-search-results-region">
-      <div class="crm-loading-element">{ts domain='org.civicrm.volunteer'}Loading{/ts}...</div>
+  <form class="crm-block crm-form-block crm-event-manage-volunteer-form-block">
+    <div class="crm-content-block">
+      <div class="crm-results-block">
+        <div class="crm-search-results" id="crm-vol-search-results-region">
+          <div class="crm-loading-element">{ts domain='org.civicrm.volunteer'}Loading&hellip;{/ts}</div>
+        </div>
+      </div>
     </div>
   </form>
+</script>
+
+<script type="text/template" id="crm-vol-search-result-tpl">
+  <table summary="Search results listings." class="selector row-highlight">
+    <thead class="sticky">
+      <tr>
+        <th scope="col"></th>
+        <th scope="col">{ts domain='org.civicrm.volunteer'}Name{/ts}</th>
+        <th scope="col">{ts domain='org.civicrm.volunteer'}City{/ts}</th>
+        <th scope="col">{ts domain='org.civicrm.volunteer'}State{/ts}</th>
+        <th scope="col">{ts domain='org.civicrm.volunteer'}Email{/ts}</th>
+        <th scope="col">{ts domain='org.civicrm.volunteer'}Phone{/ts}</th>
+      </tr>
+    </thead>
+    <tbody></tbody>
+  </table>
 </script>
 
 <script type="text/template" id="crm-vol-search-field-checkRadio-tpl">
@@ -69,6 +89,15 @@
 <script type="text/template" id="crm-vol-search-field-text-tpl">
   <label for="<%= elementName %>"><%= label %>: </label>
   <input type="text" class="crm-form-text" id="<%= elementName %>" name="<%= elementName %>"/>
+</script>
+
+<script type="text/template" id="crm-vol-search-contact-tpl">
+  <td><input type="checkbox" name="selected_contacts" value="<%= contact_id %>"</td>
+  <td><%= sort_name %></td>
+  <td><%= city %></td>
+  <td><%= state_province %></td>
+  <td><%= email %></td>
+  <td><%= phone %></td>
 </script>
 
 {*

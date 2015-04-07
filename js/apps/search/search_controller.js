@@ -18,21 +18,17 @@ CRM.volunteerApp.module('Search', function(Search, volunteerApp, Backbone, Mario
         html_type: 'Text',
         label: 'Group'
       });
-      Search.collectionView = new Search.fieldsCollectionView({
+      Search.formView = new Search.fieldsCollectionView({
         'collection': Search.formFields
       });
-      layout.searchForm.show(Search.collectionView);
+      layout.searchForm.show(Search.formView);
     });
-//      .done(function(arrData) {
-//        Assign.flexibleView = new Assign.needsView({
-//          collection: volunteerApp.Entities.Needs.getFlexible(arrData)
-//        });
-//        Assign.scheduledView = new Assign.needsView({
-//          collection: volunteerApp.Entities.Needs.getScheduled(arrData)
-//        });
-//        layout.flexibleRegion.show(Assign.flexibleView);
-//        layout.scheduledRegion.show(Assign.scheduledView);
-//      });
+
+    Search.results = new volunteerApp.Entities.Contacts();
+    Search.resultsView = new Search.resultsCompositeView({
+      'collection': Search.results
+    });
+    layout.searchResults.show(Search.resultsView);
   });
 
   // Detach event handlers
