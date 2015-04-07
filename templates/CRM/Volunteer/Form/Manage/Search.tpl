@@ -47,7 +47,7 @@
   <table summary="Search results listings." class="selector row-highlight">
     <thead class="sticky">
       <tr>
-        <th scope="col"></th>
+        <th scope="col"><input type="checkbox" name="select_all_contacts" title="{ts domain='org.civicrm.volunteer'}Select All Rows{/ts}" /></th>
         <th scope="col">{ts domain='org.civicrm.volunteer'}Name{/ts}</th>
         <th scope="col">{ts domain='org.civicrm.volunteer'}City{/ts}</th>
         <th scope="col">{ts domain='org.civicrm.volunteer'}State{/ts}</th>
@@ -92,7 +92,7 @@
 </script>
 
 <script type="text/template" id="crm-vol-search-contact-tpl">
-  <td><input type="checkbox" name="selected_contacts" value="<%= contact_id %>"</td>
+  <td><input class="select-row crm-form-checkbox" type="checkbox" name="selected_contacts" value="<%= contact_id %>" /></td>
   <td><%= sort_name %></td>
   <td><%= city %></td>
   <td><%= state_province %></td>

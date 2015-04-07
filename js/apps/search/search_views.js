@@ -124,7 +124,15 @@
     Search.resultsCompositeView = Marionette.CompositeView.extend({
       template: '#crm-vol-search-result-tpl',
       itemView: Search.contactView,
-      itemViewContainer: 'tbody'
+      itemViewContainer: 'tbody',
+
+      onRender: function() {
+        var rendered_view = this;
+        rendered_view.$('[name=select_all_contacts]').change(function(e) {
+          var toggle = CRM.$(this).is(':checked');
+          rendered_view.$('[name=selected_contacts]').prop('checked', toggle);
+        });
+      }
     });
   });
 }(CRM.ts('org.civicrm.volunteer')));
