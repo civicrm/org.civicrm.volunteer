@@ -28,8 +28,11 @@
 
 <script type="text/template" id="crm-vol-search-layout-tpl">
   <form class="crm-block crm-form-block crm-event-manage-volunteer-search-form-block">
-    <div id="crm-vol-search-form-region">
-      <div class="crm-loading-element">{ts domain='org.civicrm.volunteer'}Loading&hellip;{/ts}</div>
+    <div class="crm-accordion-wrapper">
+      <div class="crm-accordion-header">{ts domain='org.civicrm.volunteer'}Edit Search Criteria{/ts}</div>
+      <div class="crm-accordion-body" id="crm-vol-search-form-region">
+        <div class="crm-loading-element">{ts domain='org.civicrm.volunteer'}Loading&hellip;{/ts}</div>
+      </div>
     </div>
   </form>
   <form class="crm-block crm-form-block crm-event-manage-volunteer-form-block">

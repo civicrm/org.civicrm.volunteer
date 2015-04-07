@@ -107,7 +107,7 @@
           entity: 'group'
         });
 
-        this.$el.append('<input type="submit" value="' + ts('Search') + '" />');
+        this.$el.append('<input class="crm-form-submit" type="submit" value="' + ts('Search') + '" />');
 
         // this is a bit of a hack; submit handlers can't be bound via the events
         // attribute because the events are delegated jQuery events and they fire too late
