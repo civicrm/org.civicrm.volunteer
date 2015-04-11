@@ -17,16 +17,26 @@ CRM.volunteerApp.module('Search', function(Search, volunteerApp, Backbone, Mario
     var needView = scheduledView.children.findByModel(need);
     var status = _.invert(CRM.pseudoConstant.volunteer_status);
 
+    var contactIDs = [];
     CRM.$('.crm-event-manage-volunteer-results-form-block [name=selected_contacts]:checked').each(function() {
-      var contactID = $(this).val();
-      var params = {
-        contact_id: contactID,
-        volunteer_need_id: need.get('id'),
-        status_id: status['Available'],
-        activity_date_time: need.get('start_time')
-      };
-      needView.collection.createNewAssignment(params);
+      contactIDs.push($(this).val());
     });
+
+    var params = {
+      volunteer_need_id: need.get('id'),
+      status_id: status['Available'],
+      activity_date_time: need.get('start_time')
+    };
+
+    var i = 0;
+    var doSave = function() {
+      if (contactIDs.length > i) {
+        params.contact_id = contactIDs[i++];
+        needView.collection.createNewAssignment(params).done(doSave);
+      }
+    };
+
+    doSave();
 
     $(this).dialog('close');;
   };
