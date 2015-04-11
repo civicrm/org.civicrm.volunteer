@@ -88,17 +88,7 @@
         'click .crm-vol-menu-item a': 'moveContact',
         'click .crm-vol-del': 'removeContact',
         'click .crm-vol-search': function (e) {
-          var settings = {
-            modal: true,
-            title: 'Find Volunteers',
-            width: '75%',
-            height: parseInt($(window).height() * .70),
-            buttons: [{text: ts('Done'), click: function() {$(this).dialog('close');}, icons: {primary: 'ui-icon-close'}}],
-            close: function() {
-              CRM.volunteerApp.module('Search').stop();
-            }
-          };
-          $('#crm-volunteer-search-dialog').dialog(settings);
+          $('#crm-volunteer-search-dialog').dialog(CRM.volunteerApp.searchDialogSettings);
 
           var params = {
             need_id: this.model.get('id'),

@@ -35,7 +35,7 @@
       </div>
     </div>
   </form>
-  <form class="crm-block crm-form-block crm-event-manage-volunteer-form-block">
+  <form class="crm-block crm-form-block crm-event-manage-volunteer-results-form-block">
     <div class="crm-content-block">
       <div class="crm-results-block">
         <div id="crm-vol-search-pager"></div>

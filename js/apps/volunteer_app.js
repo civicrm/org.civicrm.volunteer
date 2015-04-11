@@ -9,6 +9,35 @@ CRM.$(function($) {
   // Wait for all scripts to load before starting app
   CRM.volunteerApp.start();
 
+  CRM.volunteerApp.searchDialogSettings = {
+    modal: true,
+    title: 'Find Volunteers',
+    width: '75%',
+    height: parseInt($(window).height() * .70),
+    buttons: [
+      {
+        text: ts('Save'),
+//        disabled: true,
+        click: CRM.volunteerApp.module('Search').saveAssignments,
+        icons: {
+          primary: 'ui-icon-check'
+        }
+      },
+      {
+        text: ts('Cancel'),
+        click: function() {
+          $(this).dialog('close');
+        },
+        icons: {
+          primary: 'ui-icon-close'
+        }
+      }
+    ],
+    close: function() {
+      CRM.volunteerApp.module('Search').stop();
+    }
+  };
+
   function dialogSettings($el) {
     var settings = {
       modal: true,
