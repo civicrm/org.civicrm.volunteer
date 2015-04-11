@@ -17,10 +17,14 @@ CRM.volunteerApp.module('Search', function(Search, volunteerApp, Backbone, Mario
     var needView = scheduledView.children.findByModel(need);
     var status = _.invert(CRM.pseudoConstant.volunteer_status);
 
+    needView.$el.block();
+
     var contactIDs = [];
     CRM.$('.crm-event-manage-volunteer-results-form-block [name=selected_contacts]:checked').each(function() {
       contactIDs.push($(this).val());
     });
+
+    $(this).dialog('close');
 
     var params = {
       volunteer_need_id: need.get('id'),
@@ -33,12 +37,12 @@ CRM.volunteerApp.module('Search', function(Search, volunteerApp, Backbone, Mario
       if (contactIDs.length > i) {
         params.contact_id = contactIDs[i++];
         needView.collection.createNewAssignment(params).done(doSave);
+      } else {
+        needView.$el.unblock();
       }
     };
 
     doSave();
-
-    $(this).dialog('close');;
   };
 
   // Initialize entities and views
