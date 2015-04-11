@@ -111,16 +111,16 @@
   display: block;
 }
 
+#crm-volunteer-dialog .crm-vol-need .crm-vol-need-ctrls .disabled {
+  display: none;
+}
+
 #crm-volunteer-dialog .crm-vol-need-ctrls .crm-vol-action {
   cursor: pointer;
   display: inline-block;
   padding-right: 5px;
   padding-top: 5px;
   position: relative;
-}
-
-#crm-volunteer-dialog .crm-vol-need-ctrls .crm-vol-action:hover {
-
 }
 
 #crm-volunteer-dialog .crm-vol-icon-label {
