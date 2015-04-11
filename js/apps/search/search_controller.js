@@ -79,4 +79,35 @@ CRM.volunteerApp.module('Search', function(Search, volunteerApp, Backbone, Mario
   // Detach event handlers
   Search.on('stop', function() {
   });
+
+  Search.dialogSettings = {
+    modal: true,
+    title: ts('Find Volunteers'),
+    width: '75%',
+    height: parseInt($(window).height() * .70),
+    buttons: [
+      {
+        class: 'crm-vol-search-assign',
+        disabled: true,
+        text: ts('Assign'),
+
+        click: Search.saveAssignments,
+        icons: {
+          primary: 'ui-icon-check'
+        }
+      },
+      {
+        text: ts('Cancel'),
+        click: function() {
+          $(this).dialog('close');
+        },
+        icons: {
+          primary: 'ui-icon-close'
+        }
+      }
+    ],
+    close: function() {
+      Search.stop();
+    }
+  };
 });

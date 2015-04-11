@@ -88,14 +88,14 @@
         'click .crm-vol-menu-item a': 'moveContact',
         'click .crm-vol-del': 'removeContact',
         'click .crm-vol-search': function (e) {
-          $('#crm-volunteer-search-dialog').dialog(CRM.volunteerApp.searchDialogSettings);
+          var Search = CRM.volunteerApp.module('Search');
+          $('#crm-volunteer-search-dialog').dialog(Search.dialogSettings);
 
           var params = {
             need_id: this.model.get('id'),
             cnt_open_assignments: this.model.get('quantity') - this.collection.length
           };
-//          var vol_project = CRM.volunteerApp.project_id;
-          CRM.volunteerApp.module('Search').start(params);
+          Search.start(params);
           e.preventDefault();
         }
       },
