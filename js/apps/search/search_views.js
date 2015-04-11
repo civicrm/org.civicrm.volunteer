@@ -164,7 +164,8 @@
         this.$('.crm-button').addClass('button');
         this.$('.crm-button .ui-icon').addClass('icon');
 
-        this.$('.crm-button').click(function() {
+        this.$('.crm-button').click(function(e) {
+          e.preventDefault();
           var dialog = CRM.$("#crm-volunteer-search-dialog");
           dialog.block();
 
