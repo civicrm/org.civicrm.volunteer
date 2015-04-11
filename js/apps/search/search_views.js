@@ -96,10 +96,6 @@
           }
         });
 
-        volunteerApp.Entities.getContactCount().done(function(result) {
-          Search.pagerData.set('total', result);
-        });
-
         volunteerApp.Entities.getContacts().done(function(result) {
           Search.resultsView.collection.reset(result);
           CRM.$('#crm-vol-search-form-region').closest('.crm-accordion-wrapper').addClass('collapsed');
@@ -146,10 +142,6 @@
 
       modelEvents: {
         'change': function() {
-          if (this.model.get('end') > this.model.get('total')) {
-            Search.pagerData.set('end', this.model.get('total'));
-          }
-
           this.render();
         }
       },

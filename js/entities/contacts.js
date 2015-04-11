@@ -32,17 +32,28 @@ CRM.volunteerApp.module('Entities', function(Entities, volunteerApp, Backbone, M
         'offset': 0
       }
     };
-    CRM.volunteerApp.module('Search').params = _.extend(defaults, CRM.volunteerApp.module('Search').params);
+    var Search = CRM.volunteerApp.module('Search');
+    Search.params = _.extend(defaults, Search.params);
 
-    CRM.volunteerApp.module('Search').pagerData.set({
-      'end': CRM.volunteerApp.module('Search').params.options.offset + CRM.volunteerApp.module('Search').params.options.limit,
-      'start': CRM.volunteerApp.module('Search').params.options.offset + 1
-    });
-
-    var defer = $.Deferred();
-    CRM.api('Contact', 'get', CRM.volunteerApp.module('Search').params, {
+    var defer = CRM.$.Deferred();
+    CRM.api3('Contact', 'get', Search.params, {
       success: function(data) {
-        defer.resolve(_.toArray(data.values));
+        Entities.getContactCount().done(function(cnt) {
+          var end = Search.params.options.offset + Search.params.options.limit;
+          var start = Search.params.options.offset + 1;
+
+          if (end > cnt) {
+            end = cnt;
+          }
+
+          Search.pagerData.set({
+            'end': end,
+            'start': start,
+            'total': cnt
+          });
+
+          defer.resolve(_.toArray(data.values));
+        });
       }
     });
     return defer.promise();
@@ -57,7 +68,7 @@ CRM.volunteerApp.module('Entities', function(Entities, volunteerApp, Backbone, M
     params = _.extend(defaults, CRM.volunteerApp.module('Search').params);
 
     var defer = $.Deferred();
-    CRM.api('Contact', 'getcount', params, {
+    CRM.api3('Contact', 'getcount', params, {
       success: function(data) {
         defer.resolve(data.result);
       }
