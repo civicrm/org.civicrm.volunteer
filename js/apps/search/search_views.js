@@ -113,7 +113,20 @@
           entity: 'group'
         });
 
-        this.$el.append('<input class="crm-form-submit" type="submit" value="' + ts('Search') + '" />');
+        var btn = CRM.$('<button></button>', {
+          'type': 'submit',
+          'class': 'crm-button crm-form-submit'
+        }).button({
+          icons: {primary: 'ui-icon-search'},
+          label: ts('Search')
+        });
+        var btn_wrapper = CRM.$('<div></div>', {class: 'crm-submit-buttons'})
+                .append(btn);
+        this.$el.append(btn_wrapper);
+
+        // styling hack to ensure white icons
+        this.$('.crm-button').addClass('button');
+        this.$('.crm-button .ui-icon').addClass('icon');
 
         // this is a bit of a hack; submit handlers can't be bound via the events
         // attribute because the events are delegated jQuery events and they fire too late
@@ -147,6 +160,17 @@
         } else {
           this.$el.show();
         }
+
+        this.$('.crm-button-type-back').button({
+          icons: {primary: 'ui-icon-triangle-1-w'}
+        });
+        this.$('.crm-button-type-next').button({
+          icons: {secondary: 'ui-icon-triangle-1-e'}
+        });
+
+        // styling hack to ensure white icons
+        this.$('.crm-button').addClass('button');
+        this.$('.crm-button .ui-icon').addClass('icon');
 
         this.$('.crm-button').click(function() {
           var dialog = CRM.$("#crm-volunteer-search-dialog");

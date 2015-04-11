@@ -48,7 +48,7 @@
 </script>
 
 <script type="text/template" id="crm-vol-search-result-tpl">
-  <table summary="Search results listings." class="selector row-highlight">
+  <table summary="{ts domain='org.civicrm.volunteer'}Search results listings.{/ts}" class="selector row-highlight">
     <thead class="sticky">
       <tr>
         <th scope="col"><input type="checkbox" name="select_all_contacts" title="{ts domain='org.civicrm.volunteer'}Select All Rows{/ts}" /></th>
@@ -117,10 +117,10 @@
 <script type="text/template" id="crm-vol-search-pager-tpl">
   <div class="crm-submit-buttons">
     <% if (start > 1) {literal}{{/literal} %>
-      <span class="crm-button crm-button-type-back">{ts domain='org.civicrm.volunteer'}&lt;&lt; Previous{/ts}</span>
+      <button class="crm-button crm-button-type-back">{ts domain='org.civicrm.volunteer'}Previous{/ts}</button>
     <% {literal}}{/literal} %>
     <% if (total > end) {literal}{{/literal} %>
-      <span class="crm-button crm-button-type-next">{ts domain='org.civicrm.volunteer'}Next &gt;&gt;{/ts}</span>
+      <button class="crm-button crm-button-type-next">{ts domain='org.civicrm.volunteer'}Next{/ts}</button>
     <% {literal}}{/literal} %>
     <span>Showing contacts <%= start %> - <%= end %> of <%= total %></span>
   </div>
