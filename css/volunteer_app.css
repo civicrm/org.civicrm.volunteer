@@ -162,6 +162,13 @@
   z-index: 20;
 }
 
+#crm-volunteer-search-dialog .crm-vol-search-field input[type="text"],
+#crm-volunteer-search-dialog .crm-vol-search-field select,
+#crm-volunteer-search-dialog .crm-vol-search-field .select2-choices,
+#crm-volunteer-search-dialog .crm-vol-search-field .select2-container {
+  min-width: 35%;
+}
+
 /*
  * Since we don't know where CiviVolunteer will be installed, we can't specify a
  * relative path to core's white icon set. This stanza is here to counteract rules
