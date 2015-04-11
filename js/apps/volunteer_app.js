@@ -16,8 +16,10 @@ CRM.$(function($) {
     height: parseInt($(window).height() * .70),
     buttons: [
       {
-        text: ts('Save'),
-//        disabled: true,
+        class: 'crm-vol-search-assign',
+        disabled: true,
+        text: ts('Assign'),
+
         click: CRM.volunteerApp.module('Search').saveAssignments,
         icons: {
           primary: 'ui-icon-check'

@@ -180,10 +180,19 @@
           $(this).closest('tr').toggleClass('crm-row-selected', toggle);
 
           var contact_checkboxes = $('#crm-vol-search-results-region [name=selected_contacts]');
-          if (contact_checkboxes.filter(':checked').length >= Search.cnt_open_assignments) {
+          var cnt_selected = contact_checkboxes.filter(':checked').length;
+          if (cnt_selected >= Search.cnt_open_assignments) {
             contact_checkboxes.not(':checked').prop('disabled', true);
           } else {
             contact_checkboxes.prop('disabled', false);
+          }
+
+          var buttonPane = CRM.$('#crm-volunteer-search-dialog').siblings('.ui-dialog-buttonpane');
+          var btn = buttonPane.find('button.crm-vol-search-assign');
+          if (cnt_selected > 0) {
+            btn.button('enable');
+          } else {
+            btn.button('disable');
           }
         });
       }
