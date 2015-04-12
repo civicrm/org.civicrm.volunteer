@@ -14,15 +14,15 @@ CRM.volunteerApp.module('Entities', function(Entities, volunteerApp, Backbone, M
 
     createNewAssignment: function(params) {
       var thisCollection = this;
-      var promise = CRM.$.Deferred();
+      var defer = CRM.$.Deferred();
       CRM.api3('volunteer_assignment', 'create', params, true)
         .done(function(result) {
-          promise.resolve();
+          defer.resolve();
           var id = result.id;
           var assignment = new Entities.Assignment(result.values[id]);
           thisCollection.add(assignment);
       });
-      return promise;
+      return defer.promise();
     }
   });
 
