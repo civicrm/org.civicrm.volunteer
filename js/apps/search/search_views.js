@@ -11,9 +11,6 @@
       }
     });
 
-//    Search.textFieldView = Marionette.ItemView.extend();
-//    Search.multiselectFieldView = Marionette.ItemView.extend();
-
     var fieldView = Marionette.CompositeView.extend({
       hasBeenInitialized: false,
       profileUrl: '',
@@ -39,7 +36,6 @@
         });
 
         this.template = '#crm-vol-search-field-' + type + '-tpl';
-//        this.itemView = Search[type + 'FieldView'];
       }
     });
 
