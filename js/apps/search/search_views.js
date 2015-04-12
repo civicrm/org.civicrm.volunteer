@@ -42,6 +42,8 @@
     /**
      * Returns a field's value(s)
      *
+     * TODO: It might be more consistent to make this a method of fieldView, above.
+     *
      * @param {jQuery object} field
      * @returns {mixed}
      */
