@@ -55,7 +55,7 @@
      * TODO: It might be more consistent to make this a method of fieldView, above.
      *
      * @param {jQuery object} field
-     * @returns {mixed}
+     * @returns {mixed} Array of values if any exist, else null
      */
     Search.getFieldValue = function (field) {
       var value = [];
@@ -67,15 +67,17 @@
           }
         });
       } else {
-        value = field.val();
+        var v = field.val();
+        if (_.isArray(v) && v.length > 0) {
+          // some widgets return an array; in this case, we can return as-is
+          value = v;
+        } else if (v) {
+          value.push(v);
+        }
       }
 
-      if (_.isArray(value)) {
-        if (value.length === 0) {
-          value = null;
-        } else if (value.length === 1) {
-          value = value[0];
-        }
+      if (value.length === 0) {
+        value = null;
       }
       return value;
     };
@@ -98,10 +100,10 @@
             // For custom fields, give the param to contact search the name custom_n.
             // For the group field, name the param filter.group_id.
             var key = item.get('id') ? 'custom_' + item.get('id') : 'filter.group_id';
-            if (_.isArray(val)) {
+            if (val.length > 1) {
               Search.params[key] = {IN: val};
             } else {
-              Search.params[key] = val;
+              Search.params[key] = val[0];
             }
           }
         });
