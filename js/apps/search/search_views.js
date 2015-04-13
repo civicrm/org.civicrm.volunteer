@@ -19,6 +19,14 @@
       initialize: function() {
         // @todo: These field type lists are a little redundant with Entities.allowedCustomFieldTypes;
         // there's probably a smarter way to do this.
+
+        /**
+         * Keys will be used to select the appropriate template for the field, i.e.
+         * '#crm-vol-search-field-' + type + '-tpl'. The array of values represents
+         * the HTML type (i.e., api.customField.getsingle.html_type).
+         *
+         * @type Object
+         */
         var typeMap = {
           checkRadio: ['CheckBox', 'Radio'],
           select: ['AdvMulti-Select', 'Autocomplete-Select', 'Multi-Select', 'Select'],
@@ -87,6 +95,8 @@
           var field = CRM.$('[name=' + item.get('elementName') + ']');
           var val = Search.getFieldValue(field);
           if (val) {
+            // For custom fields, give the param to contact search the name custom_n.
+            // For the group field, name the param filter.group_id.
             var key = item.get('id') ? 'custom_' + item.get('id') : 'filter.group_id';
             if (_.isArray(val)) {
               Search.params[key] = {IN: val};
