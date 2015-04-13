@@ -30,6 +30,6 @@ CRM.volunteerApp.module('Assign', function(Assign, volunteerApp, Backbone, Mario
   // Detach event handlers
   Assign.on('stop', function() {
     $('body').off('click', ':not(".crm-vol-menu-items *")');
-  })
+  });
 
 });

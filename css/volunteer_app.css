@@ -96,3 +96,86 @@
   border-width: 1px;
   color: #2b2b2b;
 }
+
+.crm-vol-need {
+  position: relative;
+}
+
+#crm-volunteer-dialog .crm-vol-need-ctrls {
+  display: none;
+  position: absolute;
+  right: 0;
+}
+
+#crm-volunteer-dialog .crm-vol-need:hover .crm-vol-need-ctrls {
+  display: block;
+}
+
+#crm-volunteer-dialog .crm-vol-need .crm-vol-need-ctrls .disabled {
+  display: none;
+}
+
+#crm-volunteer-dialog .crm-vol-need-ctrls .crm-vol-action {
+  cursor: pointer;
+  display: inline-block;
+  padding-right: 5px;
+  padding-top: 5px;
+  position: relative;
+}
+
+#crm-volunteer-dialog .crm-vol-icon-label {
+  display: none;
+  font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+}
+
+#crm-volunteer-dialog .crm-vol-need-ctrls .crm-vol-action:hover .crm-vol-icon-label {
+  background: #2786C2;
+  border-top-left-radius: 15%;
+  border-bottom-left-radius: 15%;
+  color: #FFFFFF;
+  display: inline-block;
+  line-height: 12px;
+  margin-right: -8px;
+  min-height: 15px;
+  padding: 3px 11px 0 5px;
+  position: relative;
+  top: -5px;
+  z-index: 10;
+}
+
+.crm-vol-filter .icon {
+  background-position: -144px -97px;
+}
+
+.crm-vol-search .icon {
+  background-position: -161px -112px;
+}
+
+.crm-vol-circle {
+  background: #FFFFFF;
+  border: 1px solid #53534D;
+  border-radius: 50%;
+  display: inline-block;
+  height: 16px;
+  position: relative;
+  width: 16px;
+  z-index: 20;
+}
+
+#crm-volunteer-search-dialog .crm-vol-search-field input[type="text"],
+#crm-volunteer-search-dialog .crm-vol-search-field select,
+#crm-volunteer-search-dialog .crm-vol-search-field .select2-choices,
+#crm-volunteer-search-dialog .crm-vol-search-field .select2-container {
+  min-width: 35%;
+}
+
+/*
+ * Since we don't know where CiviVolunteer will be installed, we can't specify a
+ * relative path to core's white icon set. This stanza is here to counteract rules
+ * in CiviCRM core which we incidentally put into play to ensure the icon color.
+ */
+#crm-volunteer-search-dialog .ui-icon {
+  position: absolute;
+  margin-top: 6px;
+  top: 0;
+}

@@ -52,6 +52,18 @@
 </script>
 
 <script type="text/template" id="crm-vol-scheduled-tpl">
+  <div class="crm-vol-need-ctrls">
+    {* This functionality is (temporarily?) slipped.
+    <div class="crm-vol-action crm-vol-filter">
+      <span class="crm-vol-icon-label">{ts domain='org.civicrm.volunteer'}Filter{/ts}</span>
+      <div class="crm-vol-circle"><div class="icon"></div></div>
+    </div>
+    *}
+    <div class="crm-vol-action crm-vol-search">
+      <span class="crm-vol-icon-label">{ts domain='org.civicrm.volunteer'}Search{/ts}</span>
+      <div class="crm-vol-circle"><div class="icon"></div></div>
+    </div>
+  </div>
   <h3><%= pseudoConstant.volunteer_role[role_id] %> (<%= quantity || '{ts domain='org.civicrm.volunteer' escape='js'}Any{/ts}' %>): <%= display_time %></h3>
   <table class="row-highlight">
     <thead><tr>

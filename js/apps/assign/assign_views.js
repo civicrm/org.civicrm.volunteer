@@ -86,7 +86,18 @@
       events: {
         'change [name=add-volunteer]': 'addNewContact',
         'click .crm-vol-menu-item a': 'moveContact',
-        'click .crm-vol-del': 'removeContact'
+        'click .crm-vol-del': 'removeContact',
+        'click .crm-vol-search': function (e) {
+          var Search = CRM.volunteerApp.module('Search');
+          $('#crm-volunteer-search-dialog').dialog(Search.dialogSettings);
+
+          var params = {
+            need_id: this.model.get('id'),
+            cnt_open_assignments: this.model.get('quantity') - this.collection.length
+          };
+          Search.start(params);
+          e.preventDefault();
+        }
       },
 
       onAfterItemAdded: function() { this.doCount(); },
@@ -147,8 +158,10 @@
         var thisView = this;
         this.isFlexible && $('input[name=add-volunteer]', this.$el).crmEntityRef({create: true});
         var quantity = this.model.get('quantity');
+        var vacanciesRemain = quantity > this.collection.length;
+        this.$('.crm-vol-search').toggleClass('disabled', !vacanciesRemain);
         $('.crm-vol-vacancy, .crm-vol-placeholder', this.$el).remove();
-        if (quantity > this.collection.length) {
+        if (vacanciesRemain) {
           var delta = quantity - this.collection.length;
           var msg = this.collection.length ? ts('%1 More Needed', {1: delta}) : ts('%1 Needed', {1: delta});
           $('.crm-vol-assignment-list', this.$el).append('<tr class="crm-vol-vacancy"><td colspan="3">' + msg + '</td></tr>');
