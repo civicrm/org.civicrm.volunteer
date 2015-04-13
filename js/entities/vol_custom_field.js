@@ -21,14 +21,14 @@ CRM.volunteerApp.module('Entities', function(Entities, volunteerApp, Backbone, M
     params = params || {};
     params = _.extend(defaults, params);
 
-    var defer = $.Deferred();
-    CRM.api('CustomGroup', 'getsingle', params, {
+    var defer = CRM.$.Deferred();
+    CRM.api3('CustomGroup', 'getsingle', params, {
       success: function(data) {
         var customFields = data['api.customField.get'].values;
 
         // get options for select lists
         var optionListIDs = [];
-        $.each(customFields, function (i, field) {
+        CRM.$.each(customFields, function (i, field) {
           if (field.hasOwnProperty('option_group_id') && optionListIDs.indexOf(field.option_group_id) === -1) {
             optionListIDs.push(field.option_group_id);
           }
@@ -36,7 +36,7 @@ CRM.volunteerApp.module('Entities', function(Entities, volunteerApp, Backbone, M
 
         Entities.getOptions(optionListIDs)
           .done(function(optionList){
-            $.each(customFields, function(i, field) {
+            CRM.$.each(customFields, function(i, field) {
               if (field.hasOwnProperty('option_group_id')) {
                 customFields[i].options = optionList[field.option_group_id];
               }
@@ -58,7 +58,7 @@ CRM.volunteerApp.module('Entities', function(Entities, volunteerApp, Backbone, M
    *                 e.g. {19: [Object, Object, Object], 21: [Object]}
    */
   Entities.getOptions = function(ids) {
-    var defer = $.Deferred();
+    var defer = CRM.$.Deferred();
 
     CRM.api3('OptionValue', 'get', {
       'is_active': 1,

@@ -17,6 +17,7 @@ CRM.volunteerApp.module('Entities', function(Entities, volunteerApp, Backbone, M
   });
 
   Entities.getContacts = function() {
+    var Search = CRM.volunteerApp.module('Search');
     var defaults = {
       'sequential': 1,
       'return': [
@@ -28,11 +29,10 @@ CRM.volunteerApp.module('Entities', function(Entities, volunteerApp, Backbone, M
         'state_province'
       ],
       'options': {
-        'limit': CRM.volunteerApp.module('Search').resultsPerPage,
+        'limit': Search.resultsPerPage,
         'offset': 0
       }
     };
-    var Search = CRM.volunteerApp.module('Search');
     Search.params = _.extend(defaults, Search.params);
 
     var defer = CRM.$.Deferred();
