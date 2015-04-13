@@ -125,28 +125,4 @@
     <span>Showing contacts <%= start %> - <%= end %> of <%= total %></span>
   </div>
 </script>
-
-{*
-let's narrow the scope a little bit
-
-WE WILL SUPPORT:
-- text ::: Text
-- select (and autocomplete select) ::: Select, AdvMulti-Select, Autocomplete-Select
-- multiselect (and andvanced ms) ::: Multi-Select
-
-WILL PROBABLY SUPPORT:
-- radio ::: Radio
-- checkbox ::: CheckBox
-
-
-WE WILL NOT SUPPORT:
-- note
-- dates
-- state/province
-- country
-- file
-- link
-- contact reference
-*}
-
 {/strip}

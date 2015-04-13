@@ -8,11 +8,14 @@ CRM.volunteerApp.module('Entities', function(Entities, volunteerApp, Backbone, M
     comparator: 'weight'
   });
 
+  Entities.allowedCustomFieldTypes = ['AdvMulti-Select', 'Autocomplete-Select', 'CheckBox', 'Multi-Select', 'Radio', 'Select', 'Text'];
+
   Entities.getVolCustomFields = function(params) {
     var defaults = {
       'extends': 'Individual',
       'name': 'Volunteer_Information',
       'api.customField.get': {
+        'html_type': {'IN': Entities.allowedCustomFieldTypes},
         'is_active': 1,
         'is_searchable': 1
       },

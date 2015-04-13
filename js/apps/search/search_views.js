@@ -17,6 +17,8 @@
       className: 'crm-vol-search-field crm-section',
 
       initialize: function() {
+        // @todo: These field type lists are a little redundant with Entities.allowedCustomFieldTypes;
+        // there's probably a smarter way to do this.
         var typeMap = {
           checkRadio: ['CheckBox', 'Radio'],
           select: ['AdvMulti-Select', 'Autocomplete-Select', 'Multi-Select', 'Select'],
