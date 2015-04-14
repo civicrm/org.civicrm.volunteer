@@ -172,12 +172,24 @@
         // Initialize draggable on any new objects
         $('.crm-vol-assignment:not(.ui-draggable)', this.$el).draggable({
           helper: "clone",
-          zindex: 99999999999,
+          zIndex: 99999999999,
           cancel: '.crm-vol-menu',
           containment: '#crm-volunteer-dialog',
-          start: function() {
+          start: function(e, ui) {
             dragFrom = thisView;
             $('.crm-vol-need table').removeClass('row-highlight');
+
+            // fix the width of the dragged row and the cells within it
+            var td_widths = [];
+            var original_row = CRM.$(e.currentTarget);
+            original_row.children('td').each(function (i) {
+              td_widths[i] = CRM.$(this).width();
+            });
+            var new_row = ui.helper;
+            new_row.width(original_row.width());
+            new_row.children('td').each(function (i) {
+              CRM.$(this).width(td_widths[i]);
+            });
           },
           stop: function() {
             $('.crm-vol-need table').addClass('row-highlight');
