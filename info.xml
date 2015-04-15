@@ -22,6 +22,6 @@
     <namespace>CRM/Volunteer</namespace>
   </civix>
   <urls>
-    <url desc="Documentation">https://github.com/civicrm/civivolunteer/blob/4.5-1.4/README.md</url>
+    <url desc="Documentation">https://github.com/civicrm/org.civicrm.volunteer/blob/v4.5-1.4.0/README.md</url>
   </urls>
 </extension>

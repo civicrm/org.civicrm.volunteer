@@ -71,4 +71,4 @@ Developers within organizations that would like to use CiviVolunteer are more th
 participate in the development and testing effort. Contact us via the project's GitHub
 repository.
 
->> https://github.com/civicrm/civivolunteer
+>> https://github.com/civicrm/org.civicrm.volunteer
