@@ -8,14 +8,15 @@
     <author>Yashodha Chaku, Michael Z. Daryabeygi, Frank J. G&#xF3;mez, Dave Greenberg, and Coleman Watts</author>
     <email>info@civicrm.org</email>
   </maintainer>
-  <releaseDate>2015-MM-dd</releaseDate>
-  <version>4.5-1.4-dev</version>
-  <develStage>development</develStage>
+  <releaseDate>2015-04-15</releaseDate>
+  <version>4.5-1.4</version>
+  <develStage>stable</develStage>
   <compatibility>
     <ver>4.5</ver>
+    <ver>4.6</ver>
   </compatibility>
   <comments>
-    Developed by CiviCRM LLC &amp; Ginkgo Street Labs with contributions from the community. Special thanks to The Manhattan Neighborhood Network for their funding of the 1.4 release.
+    Developed by CiviCRM LLC &amp; Ginkgo Street Labs with contributions from the community. Special thanks to Friends of Georgia State Parks &amp; Historic Sites for funding the initial release, and to The Manhattan Neighborhood Network for funding the 1.4 release.
   </comments>
   <civix>
     <namespace>CRM/Volunteer</namespace>

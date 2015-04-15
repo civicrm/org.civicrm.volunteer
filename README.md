@@ -42,11 +42,11 @@ you want to keep track of your organization's cumulative volunteering totals.
 
 Dependencies
 ============
-- CiviCRM version 4.5.x
+- CiviCRM version 4.5.x or 4.6.x
 
 Known Issues
 ============
-For versions of CiviCRM prior to and including 4.5, the installer will not
+For versions of CiviCRM prior to and including 4.6, the installer will not
 create extension-defined permissions for Joomla installations (see
 [CRM-12059](https://issues.civicrm.org/jira/browse/CRM-12059)). As a result,
 the "register to volunteer" permission does not appear in Joomla's access control
@@ -55,11 +55,6 @@ CiviVolunteer will not create or enforce the "register to volunteer" permission
 in Joomla installations; Joomla admins won't enjoy the same level of permissions
 granularity as installations on other frameworks, and the public sign-up form will
 be accessible to everyone.
-
-For versions of CiviCRM prior to and including 4.4.0, when viewing an existing
-volunteer activity record, the Need field in the CiviVolunteer
-custom data set appears as an integer, rather than as user-friendly text. This is
-fixed in CiviCRM 4.4.1.
 
 What's Next
 ===========
