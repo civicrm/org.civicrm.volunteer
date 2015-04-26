@@ -42,6 +42,25 @@ CRM.volunteerApp.module('Entities', function(Entities, volunteerApp, Backbone, M
             CRM.$.each(customFields, function(i, field) {
               if (field.hasOwnProperty('option_group_id')) {
                 customFields[i].options = optionList[field.option_group_id];
+
+              // Boolean fields don't use option groups, so we supply one
+              } else if (field.data_type === 'Boolean' && field.html_type === 'Radio') {
+                customFields[i].options = [
+                  {
+                    is_active: 1,
+                    is_default: 1,
+                    label: ts("Yes"),
+                    value: 1,
+                    weight: 1
+                  },
+                  {
+                    is_active: 1,
+                    is_default: 0,
+                    label: ts("No"),
+                    value: 0,
+                    weight: 2
+                  }
+                ];
               }
             });
 
