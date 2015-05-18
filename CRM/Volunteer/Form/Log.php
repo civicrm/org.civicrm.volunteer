@@ -193,9 +193,16 @@ class CRM_Volunteer_Form_Log extends CRM_Core_Form {
       // If the row has a contact set, we'll consider this a row worth validating.
       // Note that in the postProcess, rows with no contact ID are not saved, so
       // it's pointless to validate them.
-      if (!empty($value['contact_id'] && !$value['actual_duration'])) {
-        $errors["field[$key][actual_duration]"] =
-          ts('Please enter the actual duration volunteered', array('domain' => 'org.civicrm.volunteer'));
+      if (!empty($value['contact_id'])) {
+        $duration = $value['actual_duration'];
+
+        if (!$duration) {
+          $errors["field[$key][actual_duration]"] =
+            ts('Please enter the actual duration volunteered.', array('domain' => 'org.civicrm.volunteer'));
+        } elseif (!ctype_digit($duration)) {
+          $errors["field[$key][actual_duration]"] =
+            ts('Please enter duration as a number.', array('domain' => 'org.civicrm.volunteer'));
+        }
       }
     }
 
