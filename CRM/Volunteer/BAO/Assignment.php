@@ -242,7 +242,11 @@ class CRM_Volunteer_BAO_Assignment extends CRM_Volunteer_BAO_Activity {
       $params['time_scheduled_minutes'] = CRM_Utils_Array::value('time_scheduled_minutes', $params, CRM_Utils_Array::value('duration', $need));
 
       $project = civicrm_api3('volunteer_project', 'getsingle', array('id' => $need['project_id']));
-      $params['target_contact_id'] = $project['target_contact_id'];
+      // VOL-89: If the beneficiary contact is deleted after the project is created,
+      // the FK constraint makes target_contact_id NULL, which the API can't handle.
+      if (!empty($project['target_contact_id'])) {
+        $params['target_contact_id'] = $project['target_contact_id'];
+      }
 
       // Look up the base entity (e.g. event) as a fallback default
       if (empty($need['start_time']) || (empty($params['subject']) && empty($params['id']))) {
