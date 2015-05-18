@@ -102,6 +102,8 @@
       $form.on('change', '#is_active', function() {
         if ($(this).is(':checked')) {
           $('#org_civicrm_volunteer-event_tab_config').show();
+          showLastAddProfileButtonOnly();
+          preventRemoveAllBottomProfiles();
         } else {
           $('#org_civicrm_volunteer-event_tab_config').hide();
         }
