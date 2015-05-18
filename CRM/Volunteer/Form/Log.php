@@ -91,6 +91,12 @@ class CRM_Volunteer_Form_Log extends CRM_Core_Form {
   /**
    * Build the form object
    *
+   * NOTE: None of the fields in the form can be made required in a strict sense
+   * because rows are prebuilt and revealed via JavaScript as needed; i.e., in
+   * many cases there will be tens of rows which are invisible to the user and
+   * for which the required fields directive will be enforced. Thus, we handle
+   * validation in the formRule where requirements can be more conditional.
+   *
    * @access public
    *
    * @return void
@@ -122,7 +128,13 @@ class CRM_Volunteer_Form_Log extends CRM_Core_Form {
     $count = count($this->_volunteerData);
     for ($rowNumber = 1; $rowNumber <= $this->_batchInfo['item_count']; $rowNumber++) {
       $extra = array();
-      $contactField = $this->addEntityRef("field[$rowNumber][contact_id]", '', array('create' => TRUE, 'class' => 'big', 'placeholder' => ts('- select -', array('domain' => 'org.civicrm.volunteer'))));
+      $entityRefParams = array(
+        'create' => TRUE,
+        'class' => 'big',
+        'placeholder' => ts('- select -', array('domain' => 'org.civicrm.volunteer')),
+      );
+      $isRequired = FALSE;
+      $contactField = $this->addEntityRef("field[$rowNumber][contact_id]", '', $entityRefParams, $isRequired);
       if ($rowNumber <= $count) {
         // readonly for some fields
         $contactField->freeze();
