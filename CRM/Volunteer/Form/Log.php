@@ -188,13 +188,14 @@ class CRM_Volunteer_Form_Log extends CRM_Core_Form {
    */
   static function formRule($params, $files, $self) {
     $errors = array();
-    $volunteerStatus = CRM_Activity_BAO_Activity::buildOptions('status_id', 'validate');
 
     foreach ($params['field'] as $key => $value) {
-      if ($key > count($self->_volunteerData) && !empty($value['contact_id'])) {
-        if ((!$value['actual_duration']) && $value['volunteer_status'] == CRM_Utils_Array::key('Completed', $volunteerStatus) ) {
-          $errors["field[$key][actual_duration]"] = ts('Please enter the actual duration for Completed volunteer activity', array('domain' => 'org.civicrm.volunteer'));
-        }
+      // If the row has a contact set, we'll consider this a row worth validating.
+      // Note that in the postProcess, rows with no contact ID are not saved, so
+      // it's pointless to validate them.
+      if (!empty($value['contact_id'] && !$value['actual_duration'])) {
+        $errors["field[$key][actual_duration]"] =
+          ts('Please enter the actual duration volunteered', array('domain' => 'org.civicrm.volunteer'));
       }
     }
 
