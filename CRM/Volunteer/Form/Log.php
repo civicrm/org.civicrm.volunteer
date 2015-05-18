@@ -189,20 +189,16 @@ class CRM_Volunteer_Form_Log extends CRM_Core_Form {
   static function formRule($params, $files, $self) {
     $errors = array();
 
-    foreach ($params['field'] as $key => $value) {
-      // If the row has a contact set, we'll consider this a row worth validating.
-      // Note that in the postProcess, rows with no contact ID are not saved, so
-      // it's pointless to validate them.
-      if (!empty($value['contact_id'])) {
-        $duration = $value['actual_duration'];
+    $rows = self::extractUsableRows($params['field']);
+    foreach ($rows as $key => $value) {
+      $duration = $value['actual_duration'];
 
-        if (!$duration) {
-          $errors["field[$key][actual_duration]"] =
-            ts('Please enter the actual duration volunteered.', array('domain' => 'org.civicrm.volunteer'));
-        } elseif (!ctype_digit($duration)) {
-          $errors["field[$key][actual_duration]"] =
-            ts('Please enter duration as a number.', array('domain' => 'org.civicrm.volunteer'));
-        }
+      if (!$duration) {
+        $errors["field[$key][actual_duration]"] =
+          ts('Please enter the actual duration volunteered.', array('domain' => 'org.civicrm.volunteer'));
+      } elseif (!ctype_digit($duration)) {
+        $errors["field[$key][actual_duration]"] =
+          ts('Please enter duration as a number.', array('domain' => 'org.civicrm.volunteer'));
       }
     }
 
@@ -258,9 +254,9 @@ class CRM_Volunteer_Form_Log extends CRM_Core_Form {
    */
   public function postProcess() {
     $params = $this->controller->exportValues($this->_name);
+    $validParams = self::extractUsableRows($params['field']);
     $count = 0;
-    foreach ($params['field'] as $key => $value) {
-      if (!empty($value['contact_id'])) {
+    foreach ($validParams as $value) {
         if (!empty($value['activity_id'])) {
           // update the activity record
 
@@ -292,7 +288,6 @@ class CRM_Volunteer_Form_Log extends CRM_Core_Form {
           CRM_Volunteer_BAO_Assignment::createVolunteerActivity($volunteer);
         }
         $count++;
-      }
     }
 
     $statusMsg = ts('Volunteer hours have been logged.', array('domain' => 'org.civicrm.volunteer'));
@@ -300,5 +295,20 @@ class CRM_Volunteer_Form_Log extends CRM_Core_Form {
 
   }
 
-}
+  /**
+   * Extracts usable rows (i.e., those with a contact ID)
+   *
+   * @param array $rows Rows submitted to the form
+   * @return array
+   */
+  static function extractUsableRows (array $rows) {
+    $usableRows = array();
 
+    foreach ($rows as $key => $row) {
+      if (!empty($row['contact_id'])) {
+        $usableRows[$key] = $row;
+      }
+    }
+    return $usableRows;
+  }
+}
