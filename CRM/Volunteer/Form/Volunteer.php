@@ -230,7 +230,12 @@ class CRM_Volunteer_Form_Volunteer extends CRM_Event_Form_ManageEvent {
       ts('Enable Volunteer Management?', array('domain' => 'org.civicrm.volunteer'))
     );
 
-    $this->addEntityRef('target_contact_id', ts('Select Beneficiary', array('domain' => 'org.civicrm.volunteer')), array('create' => TRUE, 'select' => array('allowClear' => FALSE)));
+    $this->addEntityRef(
+      'target_contact_id',
+      ts('Select Beneficiary', array('domain' => 'org.civicrm.volunteer')),
+      array('create' => TRUE, 'select' => array('allowClear' => FALSE)),
+      TRUE
+    );
 
     $this->assign('vid', ($this->getProject() !== FALSE ? $this->getProject()->id : NULL));
 
