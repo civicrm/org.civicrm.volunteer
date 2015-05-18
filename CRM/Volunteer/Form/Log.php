@@ -203,6 +203,9 @@ class CRM_Volunteer_Form_Log extends CRM_Core_Form {
     }
 
     if (!empty($errors)) {
+      // show as many rows as there are data for; prevents invalid "Add Volunteer" rows from being hidden
+      CRM_Core_Smarty::singleton()->assign('showVolunteerRow', count($rows));
+
       return $errors;
     }
 
