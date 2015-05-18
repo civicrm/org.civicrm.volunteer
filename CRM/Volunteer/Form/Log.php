@@ -130,7 +130,7 @@ class CRM_Volunteer_Form_Log extends CRM_Core_Form {
       $extra = array();
       $entityRefParams = array(
         'create' => TRUE,
-        'class' => 'big',
+        'class' => 'big required',
         'placeholder' => ts('- select -', array('domain' => 'org.civicrm.volunteer')),
       );
       $isRequired = FALSE;
@@ -154,7 +154,8 @@ class CRM_Volunteer_Form_Log extends CRM_Core_Form {
 
       $this->add('select', "field[$rowNumber][volunteer_status]", '', $volunteerStatus);
       $this->add('text', "field[$rowNumber][scheduled_duration]", '', array_merge($attributes, $extra));
-      $this->add('text', "field[$rowNumber][actual_duration]", '', $attributes);
+      $durationAttr = array_merge($attributes, array('class' => 'required'));
+      $this->add('text', "field[$rowNumber][actual_duration]", '', $durationAttr);
       $this->add('text', "field[$rowNumber][activity_id]");
     }
 
