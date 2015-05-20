@@ -85,7 +85,7 @@
     {/section}
   </div>
   <a href="#" id="addMoreVolunteer" class="button">
-    <span><div class="icon add-icon"></div>{ts domain='org.civicrm.volunteer'}Add Volunteer{/ts}</span>
+    <span><div class="icon ui-icon-plus"></div>{ts domain='org.civicrm.volunteer'}Add Volunteer{/ts}</span>
   </a>
 
   <div class="crm-submit-buttons">{if $fields}{$form._qf_Batch_refresh.html}{/if} &nbsp; {$form.buttons.html}</div>
