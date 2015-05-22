@@ -190,7 +190,7 @@ class CRM_Volunteer_Form_Log extends CRM_Core_Form {
   static function formRule($params, $files, $self) {
     $errors = array();
 
-    $rows = self::extractUsableRows($params['field']);
+    $rows = self::getCompletedRows($params['field']);
     foreach ($rows as $key => $value) {
       $duration = $value['actual_duration'];
 
@@ -258,7 +258,7 @@ class CRM_Volunteer_Form_Log extends CRM_Core_Form {
    */
   public function postProcess() {
     $params = $this->controller->exportValues($this->_name);
-    $validParams = self::extractUsableRows($params['field']);
+    $validParams = self::getCompletedRows($params['field']);
     $count = 0;
     foreach ($validParams as $value) {
       if (!empty($value['activity_id'])) {
@@ -298,19 +298,19 @@ class CRM_Volunteer_Form_Log extends CRM_Core_Form {
   }
 
   /**
-   * Extracts usable rows (i.e., those with a contact ID)
+   * Gets completed rows (i.e., those with a contact ID)
    *
    * @param array $rows Rows submitted to the form
    * @return array
    */
-  static function extractUsableRows (array $rows) {
-    $usableRows = array();
+  static function getCompletedRows (array $rows) {
+    $completedRows = array();
 
     foreach ($rows as $key => $row) {
       if (!empty($row['contact_id'])) {
-        $usableRows[$key] = $row;
+        $completedRows[$key] = $row;
       }
     }
-    return $usableRows;
+    return $completedRows;
   }
 }
