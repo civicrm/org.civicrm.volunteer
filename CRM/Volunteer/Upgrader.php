@@ -157,6 +157,27 @@ class CRM_Volunteer_Upgrader extends CRM_Volunteer_Upgrader_Base {
   }
 
   /**
+   * Fix for VOL-89.
+   *
+   * @return boolean TRUE on success
+   */
+  public function upgrade_1404() {
+    $this->ctx->log->info('Applying update 1404 - Replacing null values in
+      civicrm_volunteer_project.target_contact_id with the ID of the default organization');
+
+    $domainContactId = civicrm_api3('Domain', 'getvalue', array(
+      'current_domain' => 1,
+      'return' => "contact_id",
+    ));
+    $placeholders = array(
+      1 => array($domainContactId, 'Integer'),
+    );
+    $query = CRM_Core_DAO::executeQuery('UPDATE civicrm_volunteer_project SET target_contact_id = %1 WHERE target_contact_id IS NULL', $placeholders);
+
+    return !is_a($query, 'DB_Error');
+  }
+
+  /**
    * Example: Run an external SQL script when the module is uninstalled
    *
   public function uninstall() {
