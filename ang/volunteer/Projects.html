@@ -1,0 +1,32 @@
+<div class="crm-container">
+  <div crm-ui-debug="projects"></div>
+
+  <form name="myForm" crm-ui-id-scope>
+      <table class="display dataTable no-footer" role="grid">
+          <thead>
+          <tr role="row">
+              <td class="sorting ui-state-default">{{ ts('Volunteer Project') }}</td>
+              <td class="sorting ui-state-default">{{ ts('Time') }}</td>
+              <td class="sorting ui-state-default">{{ ts('Active') }}</td>
+              <td class="sorting ui-state-default">{{ ts('Associated Entity') }}</td>
+              <td></td>
+          </tr>
+          </thead>
+          <tbody>
+              <tr ng-repeat="project in projects" role="row">
+                  <td>{{ project.name }} (ID: {{ project.id }})</td>
+                  <td>{{ project.time }}</td>
+                  <td>{{ project.is_active ? ts("yes") : ts("no") }}</td>
+                  <td>{{ project.entity_table }}</td>
+                  <td class="right nowrap">
+                      <div><a href="#/volunteer/project/{{project.id}}">{{ ts('Edit') }}</a></div>
+                      <div><a >{{ ts('Define Needs') }}</a></div>
+                      <div><a >{{ ts('Assign Volunteers') }}</a></div>
+                      <div><a >{{ ts('Log Hours') }}</a></div>
+                      <div><a >{{ ts('More') }}</a></div>
+                  </td>
+              </tr>
+          </tbody>
+      </table>
+  </form>
+</div>

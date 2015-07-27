@@ -1,0 +1,43 @@
+<div class="crm-container">
+  <div crm-ui-debug="volunteers"></div>
+
+  <form name="civiVolunteers" crm-ui-id-scope>
+
+    <div class="help">
+    </div>
+
+    <div class="volunteerList">
+      <fieldset>
+        <legend>{{ ts("Available Volunteers") }}</legend>
+        <table class="display dataTable no-footer" role="grid">
+          <thead>
+          <tr role="row">
+            <td class="sorting ui-state-default">{{ ts('Name') }}</td>
+            <td class="sorting ui-state-default">{{ ts('Email') }}</td>
+            <td class="sorting ui-state-default">{{ ts('Phone') }}</td>
+            <td class="ui-state-default"></td>
+          </tr>
+          <tbody>
+            <tr ng-repeat="volunteer in volunteers" role="row">
+              <td><a target="_blank" href="{{ contact_url }}?reset=1&cid={{ volunteer.contact_id }}">{{ volunteer.display_name }}</a></td>
+              <td>{{ volunteer.email }}</td>
+              <td>{{ volunteer.phone_number }}</td>
+              <td class="right"><a ng-click="actionsMenu()">{{ ts('Actions') }}</a></td>
+            </tr>
+          </tbody>
+        </table>
+      </fieldset>
+    </div>
+
+    <div>
+      <input id="target_contact_id"  class="crm-action-menu action-icon-plus" ng-model="newVolunteer" crm-entityref="{entity: 'Contact', create: true, select: {placeholder: ts('Add Volunteer'),allowClear:true}}" />
+      <button ng-click="save()" type="button" class="ui-button ui-widget float-right ui-state-default ui-corner-all ui-button-text-icon-primary ui-state-hover" role="button">
+        <span class="ui-button-icon-primary ui-icon ui-icon-close"></span>
+        <span class="ui-button-text">{{ ts('Done') }}</span>
+      </button>
+    </div>
+
+
+  </form>
+
+</div>

@@ -1,0 +1,50 @@
+<div class="crm-container">
+  <div crm-ui-debug="project"></div>
+  <div id="backboneIncludes"></div>
+
+  <form name="projectForm" crm-ui-id-scope>
+
+    <div class="help">
+    </div>
+
+    <h2>{{project.name}}</h2>
+
+    <table class="form-layout">
+      <tbody>
+        <tr>
+          <td class="label">
+            <label>Project Name</label>
+          </td>
+          <td>
+            <input ng-model="project.name" />
+          </td>
+        </tr>
+        <tr>
+          <td class="label">
+            <label for="target_contact_id">Select Beneficiary</label>
+            <a class="helpicon" title="Beneficiary Help" href="#" onclick="CRM.help(&quot;Beneficiary&quot;, {&quot;id&quot;:&quot;id-volunteer-beneficiary&quot;,&quot;file&quot;:&quot;CRM\/Volunteer\/Form\/Volunteer&quot;}); return false;">&nbsp;</a>
+          </td>
+          <td>
+            <input id="target_contact_id" crm-entityref="{entity: 'Contact', select: {allowClear:true}}" ng-model="project.target_contact_id" />
+          </td>
+      </tr>
+      </tbody>
+    </table>
+
+
+
+
+
+
+    <fieldset>
+      <legend>{{ ts("Included Profiles") }}</legend>
+      <div id="org_civicrm_volunteer-sign-up-profiles">
+
+      </div>
+      <a ng-click="addProfile()" class="crm-hover-button crm-button-add-profile" style="display: inline-block;">
+        <span class="icon ui-icon-plus"></span>add another profile
+      </a>
+    </fieldset>
+  </form>
+
+</div>

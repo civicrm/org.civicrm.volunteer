@@ -1,0 +1,55 @@
+<div class="crm-container">
+  <div crm-ui-debug="roles"></div>
+
+  <form name="volunteerNeeds" crm-ui-id-scope>
+
+    <div class="help">
+      {{ ts('Use this form to specify the number of volunteers needed for each role and time slot. If no needs are specified, volunteers will be considered to be generally available.') }}
+    </div>
+
+    <div class="crm-block crm-form-block crm-vol-define-needs-block">
+      <fieldset>
+        <legend>{{ ts("Define Volunteer Needs") }}</legend>
+        <table class="crm-vol-define-needs-table" role="grid">
+          <thead>
+          <tr role="row">
+            <td class="sorting ui-state-default">{{ ts('Role') }}</td>
+            <td class="sorting ui-state-default">{{ ts('Volunteers Needed') }}</td>
+            <td class="sorting ui-state-default">{{ ts('Start Date/Time') }}</td>
+            <td class="sorting ui-state-default">{{ ts('Minutes') }}</td>
+            <td class="sorting ui-state-default">{{ ts('Public') }}</td>
+            <td class="sorting ui-state-default">{{ ts('Enabled') }}</td>
+            <td class="ui-state-default"></td>
+          </tr>
+          <tbody>
+          <tr ng-repeat="need in needs" role="row">
+            <td>{{ need.role_label }}</td>
+            <td>{{ need.needed }}</td>
+            <td>{{ need.display_time }}</td>
+            <td>{{ need.minutes }}</td>
+            <td>{{ need.visibility_id }}</td>
+            <td><input type="checkbox" ng-model="need.is_active" /></td>
+            <td class="right">
+              <a ng-click="deleteRole()" class="crm-vol-del" title="Delete">
+                <img src="http://localhost:7979/sites/all/modules/civicrm/i/close.png" alt="Delete">
+              </a>
+            </td>
+          </tr>
+          </tbody>
+        </table>
+        <div>
+          <select crm-ui-select="{placeholder: ts('Create New'), allowClear:true}" class="crm-action-menu action-icon-plus"  ng-model="newRole" ng-options="role.label for role in roles track by role.value">
+          </select>
+          {{newRole}}
+          <p><input type="checkbox" ng-model="allowSpecification" /> {{ts('Allow users to sign up without specifying a shift.') }}</p>
+        </div>
+      </fieldset>
+    </div>
+
+
+    <div>
+      <button crm-icon="check" ng-click="save()">{{ts('Save')}}</button>
+    </div>
+</form>
+
+</div>

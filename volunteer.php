@@ -390,3 +390,18 @@ function volunteer_civicrm_alterAPIPermissions($entity, $action, &$params, &$per
   $permissions['volunteer_need']['default'] = array('access CiviEvent', 'edit all events');
   $permissions['volunteer_assignment']['default'] = array('access CiviEvent', 'edit all events');
 }
+
+function volunteer_civicrm_angularModules(&$angularModule) {
+  $angularModule['volunteer'] = array(
+      'ext' => 'org.civicrm.volunteer',
+      'js' =>
+          array (
+              0 => 'ang/volunteer.js',
+              1 => 'ang/volunteer/*.js',
+              2 => 'ang/volunteer/*/*.js'
+          ),
+      'css' => array (0 => 'ang/volunteer.css'),
+      'partials' => array (0 => 'ang/volunteer'),
+      'settings' => array ()
+  );
+}
