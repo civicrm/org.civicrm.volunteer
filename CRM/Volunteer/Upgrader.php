@@ -55,8 +55,61 @@ class CRM_Volunteer_Upgrader extends CRM_Volunteer_Upgrader_Base {
 
     $this->installCommendationActivityType();
 
+    $this->schemaUpgrade20();
+
     // uncomment the next line to insert sample data
     // $this->executeSqlFile('sql/volunteer_sample.mysql');
+  }
+
+  /**
+   * @return boolean Returns TRUE on success
+   */
+  private function schemaUpgrade20 () {
+    try {
+      $optionGroup = civicrm_api('OptionGroup', 'create', array(
+        'name' => 'volunteer_project_role',
+        'title' => 'Volunteer Project Role',
+        'description' => ts("Used to describe a contact's relationship to a project at large (e.g., beneficiary, manager). Not to be confused with roles volunteers may hold in a project (e.g., usher, ticket taker).", array('domain' => 'org.civicrm.volunteer')),
+        'is_reserved' => 1,
+        'is_active' => 1,
+        'version' => 3,
+      ));
+      $optionGroupId = $optionGroup['id'];
+    } catch (Exception $e) {
+      // if an exception is thrown, most likely the option group already exists,
+      // in which case we'll just use that one
+      $optionGroupId = civicrm_api3('OptionGroup', 'getvalue', array(
+        'name' => 'volunteer_project_role',
+        'return' => 'id',
+      ));
+    }
+
+    $optionDefaults = array(
+      'is_active' => 1,
+      'is_reserved' => 1,
+      'option_group_id' => $optionGroupId,
+    );
+
+    $options = array(
+      array(
+        'name' => 'volunteer_manager',
+        'label' => ts('Manager', array('domain' => 'org.civicrm.volunteer')),
+        'value' => 1,
+        'weight' => 1,
+      ),
+      array(
+        'name' => 'volunteer_beneficiary',
+        'label' => ts('Beneficiary', array('domain' => 'org.civicrm.volunteer')),
+        'value' => 2,
+        'weight' => 2,
+      ),
+    );
+
+    foreach ($options as $opt) {
+      civicrm_api3('OptionValue', 'create', $optionDefaults + $opt);
+    }
+
+    return $this->executeSqlFile('sql/volunteer_upgrade_2.0.sql');
   }
 
   private function installCommendationActivityType() {
@@ -154,6 +207,11 @@ class CRM_Volunteer_Upgrader extends CRM_Volunteer_Upgrader_Base {
     $this->ctx->log->info('Applying update 1403 - creating commendation activity type and related custom fields');
     $this->installCommendationActivityType();
     return TRUE;
+  }
+
+  public function upgrade_2001() {
+    $this->ctx->log->info('Applying update 2001 - Upgrading schema to 2.0');
+    return $this->schemaUpgrade20();
   }
 
   /**
