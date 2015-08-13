@@ -62,9 +62,11 @@ class CRM_Volunteer_Upgrader extends CRM_Volunteer_Upgrader_Base {
   }
 
   /**
-   * @return boolean Returns TRUE on success
+   * Makes schema changes to accommodate 2.0 functionality/refactoring.
+   *
+   * Used in both the install and the upgrade.
    */
-  private function schemaUpgrade20 () {
+  private function schemaUpgrade20() {
     try {
       $optionGroup = civicrm_api('OptionGroup', 'create', array(
         'name' => 'volunteer_project_role',
@@ -110,11 +112,15 @@ class CRM_Volunteer_Upgrader extends CRM_Volunteer_Upgrader_Base {
     }
 
     $this->executeSqlFile('sql/volunteer_upgrade_2.0.sql');
+  }
 
-    /*
-     * Populate the title field of existing records based on the title of the
-     * associated entity (probably civicrm_event).
-     */
+  /**
+   * Migration of project titles into civicrm_volunteer_project.
+   *
+   * Populates the title field of existing projects based on the title of the
+   * associated entity (probably civicrm_event).
+   */
+  private function migrateProjectTitles() {
     $dao = CRM_Core_DAO::executeQuery('
       SELECT DISTINCT `entity_table`
       FROM `civicrm_volunteer_project`
@@ -231,7 +237,9 @@ class CRM_Volunteer_Upgrader extends CRM_Volunteer_Upgrader_Base {
 
   public function upgrade_2001() {
     $this->ctx->log->info('Applying update 2001 - Upgrading schema to 2.0');
-    return $this->schemaUpgrade20();
+    $this->schemaUpgrade20();
+    $this->migrateProjectTitles();
+    return TRUE;
   }
 
   /**
