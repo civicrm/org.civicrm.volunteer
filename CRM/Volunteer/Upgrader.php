@@ -109,7 +109,27 @@ class CRM_Volunteer_Upgrader extends CRM_Volunteer_Upgrader_Base {
       civicrm_api3('OptionValue', 'create', $optionDefaults + $opt);
     }
 
-    return $this->executeSqlFile('sql/volunteer_upgrade_2.0.sql');
+    $this->executeSqlFile('sql/volunteer_upgrade_2.0.sql');
+
+    /*
+     * Populate the title field of existing records based on the title of the
+     * associated entity (probably civicrm_event).
+     */
+    $dao = CRM_Core_DAO::executeQuery('
+      SELECT DISTINCT `entity_table`
+      FROM `civicrm_volunteer_project`
+    ');
+    while ($dao->fetch()) {
+      $query = '
+        UPDATE `civicrm_volunteer_project` AS `project`
+        INNER JOIN ' . $dao->entity_table . ' AS `entity`
+        ON `project`.`entity_id` = `entity`.`id`
+        SET `project`.`title` = `entity`.`title`
+        WHERE `project`.`entity_table` = %1';
+      CRM_Core_DAO::executeQuery($query, array(
+        1 => array($dao->entity_table, 'String')
+      ));
+    }
   }
 
   private function installCommendationActivityType() {
