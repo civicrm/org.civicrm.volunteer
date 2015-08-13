@@ -68,13 +68,12 @@ class CRM_Volunteer_Upgrader extends CRM_Volunteer_Upgrader_Base {
    */
   private function schemaUpgrade20() {
     try {
-      $optionGroup = civicrm_api('OptionGroup', 'create', array(
+      $optionGroup = civicrm_api3('OptionGroup', 'create', array(
         'name' => 'volunteer_project_role',
         'title' => 'Volunteer Project Role',
         'description' => ts("Used to describe a contact's relationship to a project at large (e.g., beneficiary, manager). Not to be confused with roles volunteers may hold in a project (e.g., usher, ticket taker).", array('domain' => 'org.civicrm.volunteer')),
         'is_reserved' => 1,
         'is_active' => 1,
-        'version' => 3,
       ));
       $optionGroupId = $optionGroup['id'];
     } catch (Exception $e) {
