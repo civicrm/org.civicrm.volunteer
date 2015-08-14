@@ -135,7 +135,7 @@ class CRM_Volunteer_DAO_ProjectContact extends CRM_Core_DAO
         'project_id' => array(
           'name' => 'project_id',
           'type' => CRM_Utils_Type::T_INT,
-          'title' => ts('CiviVolunteer Project ID') ,
+          'title' => ts('CiviVolunteer Project ID', array('domain' => 'org.civicrm.volunteer')) ,
           'description' => 'Foreign key to the Volunteer Project for this record',
           'required' => true,
           'FKClassName' => 'CRM_Volunteer_DAO_Project',
@@ -143,7 +143,7 @@ class CRM_Volunteer_DAO_ProjectContact extends CRM_Core_DAO
         'contact_id' => array(
           'name' => 'contact_id',
           'type' => CRM_Utils_Type::T_INT,
-          'title' => ts('Contact ID') ,
+          'title' => ts('Contact ID', array('domain' => 'org.civicrm.volunteer')) ,
           'description' => 'Foreign key to the Contact for this record',
           'required' => true,
           'FKClassName' => 'CRM_Contact_DAO_Contact',
@@ -151,7 +151,7 @@ class CRM_Volunteer_DAO_ProjectContact extends CRM_Core_DAO
         'role_id' => array(
           'name' => 'role_id',
           'type' => CRM_Utils_Type::T_INT,
-          'title' => ts('Role') ,
+          'title' => ts('Role', array('domain' => 'org.civicrm.volunteer')) ,
           'description' => 'Nature of the contact role in the Volunteer Project (e.g., Beneficiary). See option group volunteer_project_role.',
           'required' => true,
         ) ,

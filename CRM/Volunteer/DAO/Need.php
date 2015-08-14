@@ -169,7 +169,7 @@ class CRM_Volunteer_DAO_Need extends CRM_Core_DAO
         'volunteer_need_id' => array(
           'name' => 'id',
           'type' => CRM_Utils_Type::T_INT,
-          'title' => ts('CiviVolunteer Need ID') ,
+          'title' => ts('CiviVolunteer Need ID', array('domain' => 'org.civicrm.volunteer')) ,
           'description' => 'Need Id',
           'required' => true,
         ) ,
@@ -183,32 +183,32 @@ class CRM_Volunteer_DAO_Need extends CRM_Core_DAO
         'start_time' => array(
           'name' => 'start_time',
           'type' => CRM_Utils_Type::T_DATE + CRM_Utils_Type::T_TIME,
-          'title' => ts('Start Date and Time') ,
+          'title' => ts('Start Date and Time', array('domain' => 'org.civicrm.volunteer')) ,
         ) ,
         'duration' => array(
           'name' => 'duration',
           'type' => CRM_Utils_Type::T_INT,
-          'title' => ts('Duration') ,
+          'title' => ts('Duration', array('domain' => 'org.civicrm.volunteer')) ,
           'description' => 'Length in minutes of this volunteer time slot.',
         ) ,
         'is_flexible' => array(
           'name' => 'is_flexible',
           'type' => CRM_Utils_Type::T_BOOLEAN,
-          'title' => ts('Flexible') ,
+          'title' => ts('Flexible', array('domain' => 'org.civicrm.volunteer')) ,
           'description' => 'Boolean indicating whether or not the time and role are flexible. Activities linked to a flexible need indicate that the volunteer is generally available.',
           'required' => true,
         ) ,
         'quantity' => array(
           'name' => 'quantity',
           'type' => CRM_Utils_Type::T_INT,
-          'title' => ts('Quantity') ,
+          'title' => ts('Quantity', array('domain' => 'org.civicrm.volunteer')) ,
           'description' => 'The number of volunteers needed for this need.',
           'default' => 'NULL',
         ) ,
         'visibility_id' => array(
           'name' => 'visibility_id',
           'type' => CRM_Utils_Type::T_INT,
-          'title' => ts('Visibility') ,
+          'title' => ts('Visibility', array('domain' => 'org.civicrm.volunteer')) ,
           'description' => ' Indicates whether this need is offered on public volunteer signup forms. Implicit FK to option_value row in visibility option_group.',
           'default' => 'NULL',
           'pseudoconstant' => array(
@@ -219,7 +219,7 @@ class CRM_Volunteer_DAO_Need extends CRM_Core_DAO
         'role_id' => array(
           'name' => 'role_id',
           'type' => CRM_Utils_Type::T_INT,
-          'title' => ts('Role') ,
+          'title' => ts('Role', array('domain' => 'org.civicrm.volunteer')) ,
           'description' => 'The role associated with this need. Implicit FK to option_value row in volunteer_role option_group.',
           'default' => 'NULL',
           'pseudoconstant' => array(
@@ -230,7 +230,7 @@ class CRM_Volunteer_DAO_Need extends CRM_Core_DAO
         'is_active' => array(
           'name' => 'is_active',
           'type' => CRM_Utils_Type::T_BOOLEAN,
-          'title' => ts('Enabled') ,
+          'title' => ts('Enabled', array('domain' => 'org.civicrm.volunteer')) ,
           'description' => 'Is this need enabled?',
           'required' => true,
           'default' => '1',

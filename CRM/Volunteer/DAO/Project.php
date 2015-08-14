@@ -158,14 +158,14 @@ class CRM_Volunteer_DAO_Project extends CRM_Core_DAO
         'volunteer_project_id' => array(
           'name' => 'id',
           'type' => CRM_Utils_Type::T_INT,
-          'title' => ts('CiviVolunteer Project ID') ,
+          'title' => ts('CiviVolunteer Project ID', array('domain' => 'org.civicrm.volunteer')) ,
           'description' => 'Project Id',
           'required' => true,
         ) ,
         'title' => array(
           'name' => 'title',
           'type' => CRM_Utils_Type::T_STRING,
-          'title' => ts('Title') ,
+          'title' => ts('Title', array('domain' => 'org.civicrm.volunteer')) ,
           'description' => 'The title of the Volunteer Project',
           'required' => true,
           'maxlength' => 255,
@@ -174,7 +174,7 @@ class CRM_Volunteer_DAO_Project extends CRM_Core_DAO
         'description' => array(
           'name' => 'description',
           'type' => CRM_Utils_Type::T_TEXT,
-          'title' => ts('Description') ,
+          'title' => ts('Description', array('domain' => 'org.civicrm.volunteer')) ,
           'description' => 'Full description of the Volunteer Project. Text and HTML allowed. Displayed on sign-up screens.',
           'required' => false,
           'rows' => 8,
@@ -186,7 +186,7 @@ class CRM_Volunteer_DAO_Project extends CRM_Core_DAO
         'entity_table' => array(
           'name' => 'entity_table',
           'type' => CRM_Utils_Type::T_STRING,
-          'title' => ts('Entity Table') ,
+          'title' => ts('Entity Table', array('domain' => 'org.civicrm.volunteer')) ,
           'description' => 'Entity table for entity_id (initially civicrm_event)',
           'required' => true,
           'maxlength' => 64,
@@ -201,7 +201,7 @@ class CRM_Volunteer_DAO_Project extends CRM_Core_DAO
         'is_active' => array(
           'name' => 'is_active',
           'type' => CRM_Utils_Type::T_BOOLEAN,
-          'title' => ts('Enabled') ,
+          'title' => ts('Enabled', array('domain' => 'org.civicrm.volunteer')) ,
           'description' => 'Is this need enabled?',
           'required' => true,
           'default' => '1',
