@@ -20,6 +20,28 @@
      <autoincrement>true</autoincrement>
   </primaryKey>
   <field>
+    <name>title</name>
+    <title>Title</title>
+    <type>varchar</type>
+    <length>255</length>
+    <required>true</required>
+    <add>4.5</add>
+    <comment>The title of the Volunteer Project</comment>
+  </field>
+  <field>
+    <name>description</name>
+    <title>Description</title>
+    <type>text</type>
+    <required>false</required>
+    <add>4.5</add>
+    <comment>Full description of the Volunteer Project. Text and HTML allowed. Displayed on sign-up screens.</comment>
+    <html>
+      <type>RichTextEditor</type>
+      <rows>8</rows>
+      <cols>60</cols>
+    </html>
+  </field>
+  <field>
     <name>entity_table</name>
     <type>varchar</type>
     <length>64</length>
@@ -35,21 +57,6 @@
     <comment>Implicit FK project entity (initially eventID).</comment>
   </field>
   <field>
-    <name>target_contact_id</name>
-    <type>int unsigned</type>
-    <required>false</required>
-    <add>4.4</add>
-    <comment>FK to civicrm_contact. The target (or beneficiary) of the volunteer activity
-    </comment>
-  </field>
-  <foreignKey>
-    <name>target_contact_id</name>
-    <table>civicrm_contact</table>
-    <key>id</key>
-    <add>4.4</add>
-    <onDelete>SET NULL</onDelete>
-  </foreignKey>
-  <field>
     <name>is_active</name>
     <type>boolean</type>
     <title>Enabled</title>
@@ -58,4 +65,18 @@
     <comment>Is this need enabled?</comment>
     <add>4.4</add>
   </field>
+  <field>
+    <name>campaign_id</name>
+    <type>int unsigned</type>
+    <required>false</required>
+    <add>4.5</add>
+    <comment>The campaign associated with this Volunteer Project.</comment>
+  </field>
+  <foreignKey>
+    <name>campaign_id</name>
+    <table>civicrm_campaign</table>
+    <key>id</key>
+    <add>4.5</add>
+    <onDelete>SET NULL</onDelete>
+  </foreignKey>
 </table>
