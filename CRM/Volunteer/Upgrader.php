@@ -69,9 +69,9 @@ class CRM_Volunteer_Upgrader extends CRM_Volunteer_Upgrader_Base {
   private function schemaUpgrade20() {
     try {
       $optionGroup = civicrm_api3('OptionGroup', 'create', array(
-        'name' => 'volunteer_project_role',
-        'title' => 'Volunteer Project Role',
-        'description' => ts("Used to describe a contact's relationship to a project at large (e.g., beneficiary, manager). Not to be confused with roles volunteers may hold in a project (e.g., usher, ticket taker).", array('domain' => 'org.civicrm.volunteer')),
+        'name' => 'volunteer_project_relationship',
+        'title' => 'Volunteer Project Relationship',
+        'description' => ts("Used to describe a contact's relationship to a project at large (e.g., beneficiary, manager). Not to be confused with contact-to-contact relationships.", array('domain' => 'org.civicrm.volunteer')),
         'is_reserved' => 1,
         'is_active' => 1,
       ));
@@ -80,7 +80,7 @@ class CRM_Volunteer_Upgrader extends CRM_Volunteer_Upgrader_Base {
       // if an exception is thrown, most likely the option group already exists,
       // in which case we'll just use that one
       $optionGroupId = civicrm_api3('OptionGroup', 'getvalue', array(
-        'name' => 'volunteer_project_role',
+        'name' => 'volunteer_project_relationship',
         'return' => 'id',
       ));
     }

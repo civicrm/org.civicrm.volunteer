@@ -37,11 +37,11 @@
     <onDelete>CASCADE</onDelete>
   </foreignKey>
   <field>
-    <name>role_id</name>
-    <title>Role</title>
+    <name>relationship_type_id</name>
+    <title>Relationship Type</title>
     <type>int unsigned</type>
     <required>true</required>
     <add>4.5</add>
-    <comment>Nature of the contact role in the Volunteer Project (e.g., Beneficiary). See option group volunteer_project_role.</comment>
+    <comment>Nature of the contact's relationship to the Volunteer Project (e.g., Beneficiary). See option group volunteer_project_relationship.</comment>
   </field>
 </table>
