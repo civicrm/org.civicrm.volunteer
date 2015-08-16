@@ -36,14 +36,6 @@
 class CRM_Volunteer_BAO_Project extends CRM_Volunteer_DAO_Project {
 
   /**
-   * The title of the Project, inherited from its associated entity
-   *
-   * @var string
-   * @access public (via __get method)
-   */
-  private $title;
-
-  /**
    * The ID of the flexible Need for this Project. Accessible via __get method.
    *
    * @var int
@@ -231,11 +223,14 @@ class CRM_Volunteer_BAO_Project extends CRM_Volunteer_DAO_Project {
    * @access public
    */
   public static function dataExists($params) {
+    if (CRM_Utils_Array::value('id', $params)) {
+      return TRUE;
+    }
+
     if (
-      CRM_Utils_Array::value('id', $params) || (
-        CRM_Utils_Array::value('entity_table', $params) &&
-        CRM_Utils_Array::value('entity_id', $params)
-      )
+      CRM_Utils_Array::value('entity_id', $params) &&
+      CRM_Utils_Array::value('entity_table', $params) &&
+      CRM_Utils_Array::value('title', $params)
     ) {
       return TRUE;
     }
@@ -327,7 +322,7 @@ class CRM_Volunteer_BAO_Project extends CRM_Volunteer_DAO_Project {
   }
 
   /**
-   * Sets and returns name of the entity associated with this Project
+   * Sets and returns the start date of the entity associated with this Project
    *
    * @access private
    */
@@ -350,7 +345,7 @@ class CRM_Volunteer_BAO_Project extends CRM_Volunteer_DAO_Project {
   }
 
   /**
-   * Sets and returns name of the entity associated with this Project
+   * Sets and returns the end date of the entity associated with this Project
    *
    * @access private
    */
