@@ -193,6 +193,11 @@ function volunteer_civicrm_entityTypes(&$entityTypes) {
     'class' => 'CRM_Volunteer_DAO_Project',
     'table' => 'civicrm_volunteer_project',
   );
+  $entityTypes[] = array(
+    'name'  => 'VolunteerProjectContact',
+    'class' => 'CRM_Volunteer_DAO_ProjectContact',
+    'table' => 'civicrm_volunteer_project_contact',
+  );
 }
 
 /**
