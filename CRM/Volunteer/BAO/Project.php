@@ -151,6 +151,17 @@ class CRM_Volunteer_BAO_Project extends CRM_Volunteer_DAO_Project {
 
     $project->save();
 
+    $projectContacts = CRM_Utils_Array::value('projectContacts', $params);
+    foreach ($projectContacts as $relationshipType => $contactIds) {
+      foreach ($contactIds as $id) {
+        civicrm_api3('VolunteerProjectContact', 'create', array(
+          'contact_id' => $id,
+          'project_id' => $project->id,
+          'relationship_type_id' => $relationshipType,
+        ));
+      }
+    }
+
     return $project;
   }
 
