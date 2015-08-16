@@ -72,7 +72,20 @@ function _civicrm_api3_volunteer_project_contact_create_spec(&$params) {
  * @access public
  */
 function civicrm_api3_volunteer_project_contact_get($params) {
-  return _civicrm_api3_basic_get(_civicrm_api3_get_BAO(__FUNCTION__), $params);
+  $result = _civicrm_api3_basic_get(_civicrm_api3_get_BAO(__FUNCTION__), $params);
+  if (!empty($result['values'])) {
+    foreach ($result['values'] as &$projectContact) {
+      $optionValue = civicrm_api3('OptionValue', 'getsingle', array(
+        'option_group_id' => CRM_Volunteer_BAO_ProjectContact::RELATIONSHIP_OPTION_GROUP,
+        'value' => $projectContact['relationship_type_id'],
+      ));
+
+      $projectContact['relationship_type_label'] = $optionValue['label'];
+      $projectContact['relationship_type_name'] = $optionValue['name'];
+    }
+  }
+  return $result;
+
 }
 
 /**
