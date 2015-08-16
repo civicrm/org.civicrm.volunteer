@@ -165,6 +165,10 @@ class CRM_Volunteer_DAO_ProjectContact extends CRM_Core_DAO
           'title' => ts('Relationship Type', array('domain' => 'org.civicrm.volunteer')) ,
           'description' => 'Nature of the contact\'s relationship to the Volunteer Project (e.g., Beneficiary). See option group volunteer_project_relationship.',
           'required' => true,
+          'pseudoconstant' => array(
+            'optionGroupName' => 'volunteer_project_relationship',
+            'optionEditPath' => 'civicrm/admin/options/volunteer_project_relationship',
+          )
         ) ,
       );
     }

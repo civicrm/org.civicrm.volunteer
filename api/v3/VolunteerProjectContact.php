@@ -58,7 +58,7 @@ function civicrm_api3_volunteer_project_contact_create($params) {
 function _civicrm_api3_volunteer_project_contact_create_spec(&$params) {
   $params['project_id']['api.required'] = 1;
   $params['contact_id']['api.required'] = 1;
-  $params['role_id']['api.required'] = 1;
+  $params['relationship_type_id']['api.required'] = 1;
 }
 
 /**

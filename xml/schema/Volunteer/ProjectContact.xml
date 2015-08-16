@@ -55,5 +55,8 @@
     <required>true</required>
     <add>4.5</add>
     <comment>Nature of the contact's relationship to the Volunteer Project (e.g., Beneficiary). See option group volunteer_project_relationship.</comment>
+    <pseudoconstant>
+      <optionGroupName>volunteer_project_relationship</optionGroupName>
+    </pseudoconstant>
   </field>
 </table>
