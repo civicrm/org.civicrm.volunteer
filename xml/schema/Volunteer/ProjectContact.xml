@@ -7,6 +7,18 @@
   <add>4.5</add>
   <log>true</log>
   <field>
+    <name>id</name>
+    <uniqueName>volunteer_project_contact_id</uniqueName>
+    <title>CiviVolunteer ProjectContact Row ID</title>
+    <type>int unsigned</type>
+    <required>true</required>
+    <add>4.5</add>
+  </field>
+  <primaryKey>
+     <name>id</name>
+     <autoincrement>true</autoincrement>
+  </primaryKey>
+  <field>
     <name>project_id</name>
     <title>CiviVolunteer Project ID</title>
     <type>int unsigned</type>

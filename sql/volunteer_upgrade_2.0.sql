@@ -1,8 +1,10 @@
 CREATE TABLE IF NOT EXISTS `civicrm_volunteer_project_contact` (
+  `id` INT(10) unsigned NOT NULL AUTO_INCREMENT,
   `project_id` INT(10) unsigned NOT NULL COMMENT 'Foreign key to the Volunteer Project for this record',
   `contact_id` INT(10) unsigned NOT NULL COMMENT 'Foreign key to the Contact for this record',
   `relationship_type_id` INT(10) unsigned NOT NULL COMMENT 'Nature of the contact''s relationship to the Volunteer Project (e.g., Beneficiary). See option group volunteer_project_relationship.',
-  PRIMARY KEY (`project_id`, `contact_id`, `relationship_type_id`),
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `UI_project_contact_rel` (`project_id`, `contact_id`, `relationship_type_id`),
   CONSTRAINT `FK_civicrm_volunteer_project_contact_project_id`
     FOREIGN KEY (`project_id`)
     REFERENCES `civicrm_volunteer_project`(`id`)

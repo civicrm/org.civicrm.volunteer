@@ -81,6 +81,11 @@ class CRM_Volunteer_DAO_ProjectContact extends CRM_Core_DAO
    */
   static $_log = true;
   /**
+   *
+   * @var int unsigned
+   */
+  public $id;
+  /**
    * Foreign key to the Volunteer Project for this record
    *
    * @var int unsigned
@@ -93,11 +98,11 @@ class CRM_Volunteer_DAO_ProjectContact extends CRM_Core_DAO
    */
   public $contact_id;
   /**
-   * Nature of the contact role in the Volunteer Project (e.g., Beneficiary). See option group volunteer_project_role.
+   * Nature of the contact's relationship to the Volunteer Project (e.g., Beneficiary). See option group volunteer_project_relationship.
    *
    * @var int unsigned
    */
-  public $role_id;
+  public $relationship_type_id;
   /**
    * class constructor
    *
@@ -132,6 +137,12 @@ class CRM_Volunteer_DAO_ProjectContact extends CRM_Core_DAO
   {
     if (!(self::$_fields)) {
       self::$_fields = array(
+        'volunteer_project_contact_id' => array(
+          'name' => 'id',
+          'type' => CRM_Utils_Type::T_INT,
+          'title' => ts('CiviVolunteer ProjectContact Row ID', array('domain' => 'org.civicrm.volunteer')) ,
+          'required' => true,
+        ) ,
         'project_id' => array(
           'name' => 'project_id',
           'type' => CRM_Utils_Type::T_INT,
@@ -148,11 +159,11 @@ class CRM_Volunteer_DAO_ProjectContact extends CRM_Core_DAO
           'required' => true,
           'FKClassName' => 'CRM_Contact_DAO_Contact',
         ) ,
-        'role_id' => array(
-          'name' => 'role_id',
+        'relationship_type_id' => array(
+          'name' => 'relationship_type_id',
           'type' => CRM_Utils_Type::T_INT,
-          'title' => ts('Role', array('domain' => 'org.civicrm.volunteer')) ,
-          'description' => 'Nature of the contact role in the Volunteer Project (e.g., Beneficiary). See option group volunteer_project_role.',
+          'title' => ts('Relationship Type', array('domain' => 'org.civicrm.volunteer')) ,
+          'description' => 'Nature of the contact\'s relationship to the Volunteer Project (e.g., Beneficiary). See option group volunteer_project_relationship.',
           'required' => true,
         ) ,
       );
@@ -169,9 +180,10 @@ class CRM_Volunteer_DAO_ProjectContact extends CRM_Core_DAO
   {
     if (!(self::$_fieldKeys)) {
       self::$_fieldKeys = array(
+        'id' => 'volunteer_project_contact_id',
         'project_id' => 'project_id',
         'contact_id' => 'contact_id',
-        'role_id' => 'role_id',
+        'relationship_type_id' => 'relationship_type_id',
       );
     }
     return self::$_fieldKeys;
