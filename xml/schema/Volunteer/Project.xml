@@ -66,7 +66,22 @@
     <add>4.4</add>
   </field>
   <field>
+    <name>loc_block_id</name>
+    <type>int unsigned</type>
+    <title>Location Block ID</title>
+    <comment>FK to Location Block ID</comment>
+    <add>4.5</add>
+  </field>
+  <foreignKey>
+    <name>loc_block_id</name>
+    <table>civicrm_loc_block</table>
+    <key>id</key>
+    <onDelete>SET NULL</onDelete>
+    <add>4.5</add>
+  </foreignKey>
+  <field>
     <name>campaign_id</name>
+    <title>Campaign</title>
     <type>int unsigned</type>
     <required>false</required>
     <add>4.5</add>

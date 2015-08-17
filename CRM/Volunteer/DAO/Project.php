@@ -117,6 +117,12 @@ class CRM_Volunteer_DAO_Project extends CRM_Core_DAO
    */
   public $is_active;
   /**
+   * FK to Location Block ID
+   *
+   * @var int unsigned
+   */
+  public $loc_block_id;
+  /**
    * The campaign associated with this Volunteer Project.
    *
    * @var int unsigned
@@ -142,6 +148,7 @@ class CRM_Volunteer_DAO_Project extends CRM_Core_DAO
   {
     if (!self::$_links) {
       self::$_links = static ::createReferenceColumns(__CLASS__);
+      self::$_links[] = new CRM_Core_Reference_Basic(self::getTableName() , 'loc_block_id', 'civicrm_loc_block', 'id');
       self::$_links[] = new CRM_Core_Reference_Basic(self::getTableName() , 'campaign_id', 'civicrm_campaign', 'id');
     }
     return self::$_links;
@@ -206,9 +213,17 @@ class CRM_Volunteer_DAO_Project extends CRM_Core_DAO
           'required' => true,
           'default' => '1',
         ) ,
+        'loc_block_id' => array(
+          'name' => 'loc_block_id',
+          'type' => CRM_Utils_Type::T_INT,
+          'title' => ts('Location Block ID') ,
+          'description' => 'FK to Location Block ID',
+          'FKClassName' => 'CRM_Core_DAO_LocBlock',
+        ) ,
         'campaign_id' => array(
           'name' => 'campaign_id',
           'type' => CRM_Utils_Type::T_INT,
+          'title' => ts('Campaign', array('domain' => 'org.civicrm.volunteer')) ,
           'description' => 'The campaign associated with this Volunteer Project.',
           'required' => false,
           'FKClassName' => 'CRM_Campaign_DAO_Campaign',
@@ -233,6 +248,7 @@ class CRM_Volunteer_DAO_Project extends CRM_Core_DAO
         'entity_table' => 'entity_table',
         'entity_id' => 'entity_id',
         'is_active' => 'is_active',
+        'loc_block_id' => 'loc_block_id',
         'campaign_id' => 'campaign_id',
       );
     }
