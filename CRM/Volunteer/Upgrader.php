@@ -93,16 +93,25 @@ class CRM_Volunteer_Upgrader extends CRM_Volunteer_Upgrader_Base {
 
     $options = array(
       array(
-        'name' => 'volunteer_manager',
-        'label' => ts('Manager', array('domain' => 'org.civicrm.volunteer')),
+        'name' => 'volunteer_owner',
+        'label' => ts('Owner', array('domain' => 'org.civicrm.volunteer')),
+        'description' => ts('This contact owns the volunteer project. Useful if restricting edit/delete privileges.', array('domain' => 'org.civicrm.volunteer')),
         'value' => 1,
         'weight' => 1,
       ),
       array(
-        'name' => 'volunteer_beneficiary',
-        'label' => ts('Beneficiary', array('domain' => 'org.civicrm.volunteer')),
+        'name' => 'volunteer_manager',
+        'label' => ts('Manager', array('domain' => 'org.civicrm.volunteer')),
+        'description' => ts('This contact manages the volunteers in a project and will receive related notifications, etc.', array('domain' => 'org.civicrm.volunteer')),
         'value' => 2,
         'weight' => 2,
+      ),
+      array(
+        'name' => 'volunteer_beneficiary',
+        'label' => ts('Beneficiary', array('domain' => 'org.civicrm.volunteer')),
+        'description' => ts('This contact benefits from the volunteer project (e.g., if organizations are brokering volunteers to other orgs).', array('domain' => 'org.civicrm.volunteer')),
+        'value' => 3,
+        'weight' => 3,
       ),
     );
 
