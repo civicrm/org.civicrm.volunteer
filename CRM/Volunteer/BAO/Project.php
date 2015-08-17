@@ -125,12 +125,17 @@ class CRM_Volunteer_BAO_Project extends CRM_Volunteer_DAO_Project {
   }
 
   /**
-   * create a Volunteer Project
-   * takes an associative array and creates a Project object
+   * Create a Volunteer Project
    *
-   * This function is invoked from within the web form layer and also from the api layer
+   * Takes an associative array and creates a Project object. This function is
+   * invoked from within the web form layer and also from the API layer. Allows
+   * the creation of project contacts, e.g.:
    *
-   * @param array   $params      (reference ) an assoc array of name/value pairs
+   * $params['project_contacts'] = array(
+   *   $relationship_type_name_or_id => $arr_contact_ids,
+   * );
+   *
+   * @param array   $params      an assoc array of name/value pairs
    *
    * @return CRM_Volunteer_BAO_Project object
    * @access public
@@ -151,7 +156,7 @@ class CRM_Volunteer_BAO_Project extends CRM_Volunteer_DAO_Project {
 
     $project->save();
 
-    $projectContacts = CRM_Utils_Array::value('projectContacts', $params);
+    $projectContacts = CRM_Utils_Array::value('project_contacts', $params);
     foreach ($projectContacts as $relationshipType => $contactIds) {
       foreach ($contactIds as $id) {
         civicrm_api3('VolunteerProjectContact', 'create', array(

@@ -88,7 +88,7 @@ class CRM_Volunteer_Form_Volunteer extends CRM_Event_Form_ManageEvent {
     unset($params['target_contact_id']);
 
     if (!empty($targetContacts)) {
-      $params['projectContacts']['volunteer_beneficiary'] = explode(',', $targetContacts);
+      $params['project_contacts']['volunteer_beneficiary'] = explode(',', $targetContacts);
     }
 
     $this->minimumProjectParams($params);

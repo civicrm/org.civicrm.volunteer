@@ -60,6 +60,13 @@ function _civicrm_api3_volunteer_project_create_spec(&$params) {
   $params['entity_table']['api.required'] = 1;
   $params['title']['api.required'] = 1;
   $params['is_active']['api.default'] = 1;
+  $params['project_contacts'] = array(
+    'title' => 'Project Contacts',
+    'description' => 'Array of [volunteer relationship type] => [contact IDs].
+      See CRM_Volunteer_BAO_Project::create().',
+    'type' => CRM_Utils_Type::T_STRING,
+  );
+
 }
 
 /**
