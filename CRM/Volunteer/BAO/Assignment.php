@@ -254,14 +254,15 @@ class CRM_Volunteer_BAO_Assignment extends CRM_Volunteer_BAO_Activity {
         $project = civicrm_api3('VolunteerProject', 'getsingle', array(
           'id' => $need['project_id'],
         ));
-        $event = civicrm_api3(str_replace('civicrm_', '', $project['entity_table']), 'getsingle', array('id' => $project['entity_id']));
 
         if (empty($params['activity_date_time'])) {
-          $params['activity_date_time'] = CRM_Utils_Array::value('start_date', $event);
+          // TODO: This will work for events, but other entities may have differently named time fields
+          $associatedEntity = civicrm_api3(str_replace('civicrm_', '', $project['entity_table']), 'getsingle', array('id' => $project['entity_id']));
+          $params['activity_date_time'] = CRM_Utils_Array::value('start_date', $associatedEntity);
         }
 
         if (empty($params['subject']) && empty($params['id'])) {
-          $params['subject'] = CRM_Utils_Array::value('title', $event);
+          $params['subject'] = $project['title'];
         }
       }
     }
