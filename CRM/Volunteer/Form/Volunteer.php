@@ -74,10 +74,9 @@ class CRM_Volunteer_Form_Volunteer extends CRM_Event_Form_ManageEvent {
         $beneficiaryIds[] = $v['contact_id'];
       }
       $this->_project->target_contact_id = implode(',', $beneficiaryIds);
-      return $this->_project;
-    } else {
-      return $this->_project;
     }
+
+    return $this->_project;
   }
 
    /***
