@@ -39,9 +39,16 @@ ADD `title` VARCHAR(255) COLLATE utf8_unicode_ci NOT NULL
 ADD `description` TEXT COLLATE utf8_unicode_ci
   COMMENT 'Full description of the Volunteer Project. Text and HTML allowed. Displayed on sign-up screens.'
   AFTER `title`,
+ADD `loc_block_id` INT(10) unsigned DEFAULT NULL
+  COMMENT 'FK to Location Block ID'
+  AFTER `is_active`,
+ADD CONSTRAINT `FK_civicrm_volunteer_project_loc_block_id`
+  FOREIGN KEY (`loc_block_id`)
+  REFERENCES `civicrm_loc_block`(`id`)
+  ON DELETE SET NULL,
 ADD `campaign_id` INT(10) unsigned DEFAULT NULL
   COMMENT 'The campaign associated with this Volunteer Project.'
-  AFTER `is_active`,
+  AFTER `loc_block_id`,
 ADD CONSTRAINT `FK_civicrm_volunteer_project_campaign_id`
   FOREIGN KEY (`campaign_id`)
   REFERENCES `civicrm_campaign`(`id`)
