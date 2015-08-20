@@ -55,8 +55,95 @@ class CRM_Volunteer_Upgrader extends CRM_Volunteer_Upgrader_Base {
 
     $this->installCommendationActivityType();
 
+    $this->schemaUpgrade20();
+
     // uncomment the next line to insert sample data
     // $this->executeSqlFile('sql/volunteer_sample.mysql');
+  }
+
+  /**
+   * Makes schema changes to accommodate 2.0 functionality/refactoring.
+   *
+   * Used in both the install and the upgrade.
+   */
+  private function schemaUpgrade20() {
+    try {
+      $optionGroup = civicrm_api3('OptionGroup', 'create', array(
+        'name' => CRM_Volunteer_BAO_ProjectContact::RELATIONSHIP_OPTION_GROUP,
+        'title' => 'Volunteer Project Relationship',
+        'description' => ts("Used to describe a contact's relationship to a project at large (e.g., beneficiary, manager). Not to be confused with contact-to-contact relationships.", array('domain' => 'org.civicrm.volunteer')),
+        'is_reserved' => 1,
+        'is_active' => 1,
+      ));
+      $optionGroupId = $optionGroup['id'];
+    } catch (Exception $e) {
+      // if an exception is thrown, most likely the option group already exists,
+      // in which case we'll just use that one
+      $optionGroupId = civicrm_api3('OptionGroup', 'getvalue', array(
+        'name' => CRM_Volunteer_BAO_ProjectContact::RELATIONSHIP_OPTION_GROUP,
+        'return' => 'id',
+      ));
+    }
+
+    $optionDefaults = array(
+      'is_active' => 1,
+      'is_reserved' => 1,
+      'option_group_id' => $optionGroupId,
+    );
+
+    $options = array(
+      array(
+        'name' => 'volunteer_owner',
+        'label' => ts('Owner', array('domain' => 'org.civicrm.volunteer')),
+        'description' => ts('This contact owns the volunteer project. Useful if restricting edit/delete privileges.', array('domain' => 'org.civicrm.volunteer')),
+        'value' => 1,
+        'weight' => 1,
+      ),
+      array(
+        'name' => 'volunteer_manager',
+        'label' => ts('Manager', array('domain' => 'org.civicrm.volunteer')),
+        'description' => ts('This contact manages the volunteers in a project and will receive related notifications, etc.', array('domain' => 'org.civicrm.volunteer')),
+        'value' => 2,
+        'weight' => 2,
+      ),
+      array(
+        'name' => 'volunteer_beneficiary',
+        'label' => ts('Beneficiary', array('domain' => 'org.civicrm.volunteer')),
+        'description' => ts('This contact benefits from the volunteer project (e.g., if organizations are brokering volunteers to other orgs).', array('domain' => 'org.civicrm.volunteer')),
+        'value' => 3,
+        'weight' => 3,
+      ),
+    );
+
+    foreach ($options as $opt) {
+      civicrm_api3('OptionValue', 'create', $optionDefaults + $opt);
+    }
+
+    $this->executeSqlFile('sql/volunteer_upgrade_2.0.sql');
+  }
+
+  /**
+   * Migration of project titles into civicrm_volunteer_project.
+   *
+   * Populates the title field of existing projects based on the title of the
+   * associated entity (probably civicrm_event).
+   */
+  private function migrateProjectTitles() {
+    $dao = CRM_Core_DAO::executeQuery('
+      SELECT DISTINCT `entity_table`
+      FROM `civicrm_volunteer_project`
+    ');
+    while ($dao->fetch()) {
+      $query = '
+        UPDATE `civicrm_volunteer_project` AS `project`
+        INNER JOIN ' . $dao->entity_table . ' AS `entity`
+        ON `project`.`entity_id` = `entity`.`id`
+        SET `project`.`title` = `entity`.`title`
+        WHERE `project`.`entity_table` = %1';
+      CRM_Core_DAO::executeQuery($query, array(
+        1 => array($dao->entity_table, 'String')
+      ));
+    }
   }
 
   private function installCommendationActivityType() {
@@ -153,6 +240,13 @@ class CRM_Volunteer_Upgrader extends CRM_Volunteer_Upgrader_Base {
   public function upgrade_1403() {
     $this->ctx->log->info('Applying update 1403 - creating commendation activity type and related custom fields');
     $this->installCommendationActivityType();
+    return TRUE;
+  }
+
+  public function upgrade_2001() {
+    $this->ctx->log->info('Applying update 2001 - Upgrading schema to 2.0');
+    $this->schemaUpgrade20();
+    $this->migrateProjectTitles();
     return TRUE;
   }
 

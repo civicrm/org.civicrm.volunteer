@@ -241,19 +241,28 @@ class CRM_Volunteer_BAO_Assignment extends CRM_Volunteer_BAO_Activity {
       $params['volunteer_role_id'] = CRM_Utils_Array::value('volunteer_role_id', $params, CRM_Utils_Array::value('role_id', $need));
       $params['time_scheduled_minutes'] = CRM_Utils_Array::value('time_scheduled_minutes', $params, CRM_Utils_Array::value('duration', $need));
 
-      $project = civicrm_api3('volunteer_project', 'getsingle', array('id' => $need['project_id']));
-      $params['target_contact_id'] = $project['target_contact_id'];
+      $projectContact = civicrm_api3('VolunteerProjectContact', 'get', array(
+        'project_id' => $need['project_id'],
+        'relationship_type_id' => 'volunteer_beneficiary',
+      ));
+      foreach ($projectContact['values'] as $pc) {
+        $params['target_contact_id'][] = $pc['contact_id'];
+      }
 
       // Look up the base entity (e.g. event) as a fallback default
       if (empty($need['start_time']) || (empty($params['subject']) && empty($params['id']))) {
-        $event = civicrm_api3(str_replace('civicrm_', '', $project['entity_table']), 'getsingle', array('id' => $project['entity_id']));
+        $project = civicrm_api3('VolunteerProject', 'getsingle', array(
+          'id' => $need['project_id'],
+        ));
 
         if (empty($params['activity_date_time'])) {
-          $params['activity_date_time'] = CRM_Utils_Array::value('start_date', $event);
+          // TODO: This will work for events, but other entities may have differently named time fields
+          $associatedEntity = civicrm_api3(str_replace('civicrm_', '', $project['entity_table']), 'getsingle', array('id' => $project['entity_id']));
+          $params['activity_date_time'] = CRM_Utils_Array::value('start_date', $associatedEntity);
         }
 
         if (empty($params['subject']) && empty($params['id'])) {
-          $params['subject'] = CRM_Utils_Array::value('title', $event);
+          $params['subject'] = $project['title'];
         }
       }
     }

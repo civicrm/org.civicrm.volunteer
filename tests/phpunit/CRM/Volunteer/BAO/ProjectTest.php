@@ -42,29 +42,6 @@ class CRM_Volunteer_BAO_ProjectTest extends VolunteerTestAbstract {
     $this->assertTrue(CRM_Volunteer_BAO_Project::isOff('0'));
   }
 
-  /**
-   * A project should inherit the title of its associated entity; effectively we
-   * are testing our magic __get() method and its delegate _get_title();
-   */
-  function testGetEventProjectTitle() {
-    $title = 'CiviVolunteer Unit Testing Sprint';
-    $entity_table = 'civicrm_event';
-
-    // create Event with specified title
-    $event = CRM_Core_DAO::createTestObject('CRM_Event_BAO_Event', array('title' => $title));
-    $this->assertEquals($title, $event->title, 'Failed to prepopulate named Event');
-
-    // create Project associated with our Event
-    $params = array(
-      'entity_id' => $event->id,
-      'entity_table' => $entity_table,
-    );
-    $project = CRM_Core_DAO::createTestObject('CRM_Volunteer_BAO_Project', $params);
-
-    // test project title
-    $this->assertEquals($title, $project->title, 'Project title does not match associated Event title');
-  }
-
   function testProjectRetrieveByID () {
     $project = CRM_Core_DAO::createTestObject('CRM_Volunteer_BAO_Project');
     $this->assertObjectHasAttribute('id', $project, 'Failed to prepopulate Volunteer Project');

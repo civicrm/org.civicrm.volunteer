@@ -36,14 +36,6 @@
 class CRM_Volunteer_BAO_Project extends CRM_Volunteer_DAO_Project {
 
   /**
-   * The title of the Project, inherited from its associated entity
-   *
-   * @var string
-   * @access public (via __get method)
-   */
-  private $title;
-
-  /**
    * The ID of the flexible Need for this Project. Accessible via __get method.
    *
    * @var int
@@ -133,12 +125,17 @@ class CRM_Volunteer_BAO_Project extends CRM_Volunteer_DAO_Project {
   }
 
   /**
-   * create a Volunteer Project
-   * takes an associative array and creates a Project object
+   * Create a Volunteer Project
    *
-   * This function is invoked from within the web form layer and also from the api layer
+   * Takes an associative array and creates a Project object. This function is
+   * invoked from within the web form layer and also from the API layer. Allows
+   * the creation of project contacts, e.g.:
    *
-   * @param array   $params      (reference ) an assoc array of name/value pairs
+   * $params['project_contacts'] = array(
+   *   $relationship_type_name_or_id => $arr_contact_ids,
+   * );
+   *
+   * @param array   $params      an assoc array of name/value pairs
    *
    * @return CRM_Volunteer_BAO_Project object
    * @access public
@@ -158,6 +155,17 @@ class CRM_Volunteer_BAO_Project extends CRM_Volunteer_DAO_Project {
     $project->copyValues($params);
 
     $project->save();
+
+    $projectContacts = CRM_Utils_Array::value('project_contacts', $params);
+    foreach ($projectContacts as $relationshipType => $contactIds) {
+      foreach ($contactIds as $id) {
+        civicrm_api3('VolunteerProjectContact', 'create', array(
+          'contact_id' => $id,
+          'project_id' => $project->id,
+          'relationship_type_id' => $relationshipType,
+        ));
+      }
+    }
 
     return $project;
   }
@@ -231,11 +239,14 @@ class CRM_Volunteer_BAO_Project extends CRM_Volunteer_DAO_Project {
    * @access public
    */
   public static function dataExists($params) {
+    if (CRM_Utils_Array::value('id', $params)) {
+      return TRUE;
+    }
+
     if (
-      CRM_Utils_Array::value('id', $params) || (
-        CRM_Utils_Array::value('entity_table', $params) &&
-        CRM_Utils_Array::value('entity_id', $params)
-      )
+      CRM_Utils_Array::value('entity_id', $params) &&
+      CRM_Utils_Array::value('entity_table', $params) &&
+      CRM_Utils_Array::value('title', $params)
     ) {
       return TRUE;
     }
@@ -327,7 +338,7 @@ class CRM_Volunteer_BAO_Project extends CRM_Volunteer_DAO_Project {
   }
 
   /**
-   * Sets and returns name of the entity associated with this Project
+   * Sets and returns the start date of the entity associated with this Project
    *
    * @access private
    */
@@ -350,7 +361,7 @@ class CRM_Volunteer_BAO_Project extends CRM_Volunteer_DAO_Project {
   }
 
   /**
-   * Sets and returns name of the entity associated with this Project
+   * Sets and returns the end date of the entity associated with this Project
    *
    * @access private
    */

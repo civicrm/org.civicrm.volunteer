@@ -42,15 +42,6 @@ class CRM_Volunteer_Form_VolunteerReport extends CRM_Report_Form {
     $this->customGroup = CRM_Volunteer_BAO_Assignment::getCustomGroup();
     $this->customFields = CRM_Volunteer_BAO_Assignment::getCustomFields();
     $this->activityTypeID = CRM_Volunteer_BAO_Assignment::getActivityTypeId();
-    $titleQuery = "SELECT e.id, e.title FROM civicrm_event e
-      INNER JOIN civicrm_volunteer_project p ON e.id = p.entity_id
-      WHERE p.is_active = 1";
-    $titles = CRM_Core_DAO::executeQuery($titleQuery);
-    $this->title = array();
-    while ($titles->fetch()) {
-      $this->title[$titles->id] = $titles->title;
-    }
-    asort($this->title);
     $this->_columns = array(
       'project' => array(
         'fields' => array(
@@ -211,10 +202,13 @@ class CRM_Volunteer_Form_VolunteerReport extends CRM_Report_Form {
           ),
           'id' => array(
             'title' => ts('Project', array('domain' => 'org.civicrm.volunteer')),
-            'operatorType' => CRM_Report_Form::OP_MULTISELECT,
-            'options' => $this->title,
-            'alias' => 'project_civireport',
+            'operatorType' => CRM_Report_Form::OP_ENTITYREF,
             'type' => CRM_Utils_Type::T_INT,
+            'attributes' => array(
+              'entity' => 'VolunteerProject',
+              'select' => array('minimumInputLength' => 0),
+            ),
+            'alias' => 'project_civireport',
           ),
           'status_id' => array(
             'title' => ts('Activity Status', array('domain' => 'org.civicrm.volunteer')),
@@ -364,10 +358,8 @@ class CRM_Volunteer_Form_VolunteerReport extends CRM_Report_Form {
              LEFT JOIN civicrm_volunteer_need n
                     ON n.id = cg.{$this->customFields['volunteer_need_id']['column_name']}
              LEFT JOIN civicrm_option_value {$this->_aliases['role']} ON ( {$this->_aliases['role']}.value = cg.{$this->customFields['volunteer_role_id']['column_name']} AND {$this->_aliases['role']}.option_group_id = {$roleID} )
-             LEFT JOIN civicrm_volunteer_project vp
-                    ON vp.id = n.project_id
-             LEFT JOIN civicrm_event {$this->_aliases['project']}
-                    ON {$this->_aliases['project']}.id = vp.entity_id
+             LEFT JOIN civicrm_volunteer_project {$this->_aliases['project']}
+                    ON {$this->_aliases['project']}.id = n.project_id
              LEFT JOIN civicrm_activity_contact {$this->_aliases['civicrm_activity_assignment']}
                     ON {$this->_aliases['civicrm_activity']}.id = {$this->_aliases['civicrm_activity_assignment']}.activity_id AND
                        {$this->_aliases['civicrm_activity_assignment']}.record_type_id = {$assigneeID}

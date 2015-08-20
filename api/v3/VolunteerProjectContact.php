@@ -1,9 +1,9 @@
 <?php
 /*
  +--------------------------------------------------------------------+
- | CiviCRM version 4.4                                                |
+ | CiviCRM version 4.6                                                |
  +--------------------------------------------------------------------+
- | Copyright CiviCRM LLC (c) 2004-2013                                |
+ | Copyright CiviCRM LLC (c) 2004-2015                                |
  +--------------------------------------------------------------------+
  | This file is a part of CiviCRM.                                    |
  |                                                                    |
@@ -26,26 +26,26 @@
  */
 
 /**
- * File for the CiviCRM APIv3 Volunteer Project functions
+ * File for the CiviCRM APIv3 Volunteer Project Contact functions
  *
  * @package CiviVolunteer_APIv3
- * @subpackage API_Volunteer_Project
- * @copyright CiviCRM LLC (c) 2004-2013
+ * @subpackage API_Volunteer_Project_Contact
+ * @copyright CiviCRM LLC (c) 2004-2015
  */
 
 
 /**
- * Create or update a project
+ * Create or update a project contact
  *
- * @param array $params  Associative array of property
- *                       name/value pairs to insert in new 'project'
+ * @param array $params  Associative array of properties
+ *                       name/value pairs to insert in new 'project contact'
  * @example
  *
  * @return array api result array
- * {@getfields volunteer_project_create}
+ * {@getfields volunteer_project_contact_create}
  * @access public
  */
-function civicrm_api3_volunteer_project_create($params) {
+function civicrm_api3_volunteer_project_contact_create($params) {
   return _civicrm_api3_basic_create(_civicrm_api3_get_BAO(__FUNCTION__), $params);
 }
 
@@ -55,42 +55,44 @@ function civicrm_api3_volunteer_project_create($params) {
  * The metadata is used for setting defaults, documentation & validation
  * @param array $params array or parameters determined by getfields
  */
-function _civicrm_api3_volunteer_project_create_spec(&$params) {
-  $params['entity_id']['api.required'] = 1;
-  $params['entity_table']['api.required'] = 1;
-  $params['title']['api.required'] = 1;
-  $params['is_active']['api.default'] = 1;
-  $params['project_contacts'] = array(
-    'title' => 'Project Contacts',
-    'description' => 'Array of [volunteer relationship type] => [contact IDs].
-      See CRM_Volunteer_BAO_Project::create().',
-    'type' => CRM_Utils_Type::T_STRING,
-  );
-
+function _civicrm_api3_volunteer_project_contact_create_spec(&$params) {
+  $params['project_id']['api.required'] = 1;
+  $params['contact_id']['api.required'] = 1;
+  $params['relationship_type_id']['api.required'] = 1;
 }
 
 /**
- * Returns array of projects matching a set of one or more project properties
+ * Returns array of project contacts matching a set of one or more properties
  *
  * @param array $params  Array of one or more valid
- *                       property_name=>value pairs. If $params is set
- *                       as null, all projects will be returned
+ *                       property_name=>value pairs.
  *
- * @return array  Array of matching projects
- * {@getfields volunteer_project_get}
+ * @return array  Array of matching project contacts
+ * {@getfields volunteer_project_contact_get}
  * @access public
  */
-function civicrm_api3_volunteer_project_get($params) {
-  return _civicrm_api3_basic_get(_civicrm_api3_get_BAO(__FUNCTION__), $params);
+function civicrm_api3_volunteer_project_contact_get($params) {
+  $result = _civicrm_api3_basic_get(_civicrm_api3_get_BAO(__FUNCTION__), $params);
+  if (!empty($result['values'])) {
+    foreach ($result['values'] as &$projectContact) {
+      $optionValue = civicrm_api3('OptionValue', 'getsingle', array(
+        'option_group_id' => CRM_Volunteer_BAO_ProjectContact::RELATIONSHIP_OPTION_GROUP,
+        'value' => $projectContact['relationship_type_id'],
+      ));
+
+      $projectContact['relationship_type_label'] = $optionValue['label'];
+      $projectContact['relationship_type_name'] = $optionValue['name'];
+    }
+  }
+  return $result;
+
 }
-function _civicrm_api3_volunteer_project_get_spec(&$params) {
-  $params['id']['api.aliases'] = array('project_id');
-}
+
 /**
- * delete an existing project
+ * Delete an existing project contact
  *
- * This method is used to delete any existing project. id of the project
- * to be deleted is required field in $params array
+ * This method is used to delete the relationship(s) between a contact and a
+ * project.
  *
  * @param array $params  array containing id of the project
  *                       to be deleted
@@ -100,6 +102,6 @@ function _civicrm_api3_volunteer_project_get_spec(&$params) {
  * {@getfields volunteer_project_delete}
  * @access public
  */
-function civicrm_api3_volunteer_project_delete($params) {
+function civicrm_api3_volunteer_project_contact_delete($params) {
   return _civicrm_api3_basic_delete(_civicrm_api3_get_BAO(__FUNCTION__), $params);
 }
