@@ -23,6 +23,7 @@ class api_v3_VolunteerProjectTest extends VolunteerTestAbstract {
       'entity_id' => 1,
       'entity_table' => 'civicrm_event',
       'is_active' => 1,
+      'title' => 'Unit Testing for CiviVolunteer (How Meta)',
     );
 
     $this->callAPIAndDocument('VolunteerProject', 'create', $params, __FUNCTION__, __FILE__);
