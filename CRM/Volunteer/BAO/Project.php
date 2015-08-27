@@ -36,6 +36,17 @@
 class CRM_Volunteer_BAO_Project extends CRM_Volunteer_DAO_Project {
 
   /**
+   * Array of attributes on the related entity, translated to a common vocabulary.
+   *
+   * For example, an event's 'start_date' property is standardized to
+   * 'start_time.'
+   *
+   * @see CRM_Volunteer_BAO_Project::getEntityAttributes()
+   * @var array
+   */
+  private $entityAttributes = array();
+
+  /**
    * The ID of the flexible Need for this Project. Accessible via __get method.
    *
    * @var int
@@ -290,26 +301,30 @@ class CRM_Volunteer_BAO_Project extends CRM_Volunteer_DAO_Project {
   }
 
   /**
-   * Sets and returns name of the entity associated with this Project
+   * Fetches attributes for the associated entity and puts them in
+   * $this->entityAttributes, using a common vocabulary defined in $arrayKeys.
    *
-   * @access private
+   * @see CRM_Volunteer_BAO_Project::$entityAttributes
+   * @return array
    */
-  private function _get_title() {
-    if (!$this->title) {
+  public function getEntityAttributes() {
+    if (!$this->entityAttributes) {
+      $arrayKeys = array('start_time', 'title');
+      $this->entityAttributes = array_fill_keys($arrayKeys, NULL);
+
       if ($this->entity_table && $this->entity_id) {
         switch ($this->entity_table) {
           case 'civicrm_event' :
-            $params = array(
+            $result = civicrm_api3('Event', 'getsingle', array(
               'id' => $this->entity_id,
-              'return' => array('title'),
-            );
-            $result = civicrm_api3('Event', 'get', $params);
-            $this->title = $result['values'][$this->entity_id]['title'];
+            ));
+            $this->entityAttributes['title'] = $result['title'];
+            $this->entityAttributes['start_time'] = $result['start_date'];
             break;
         }
       }
     }
-    return $this->title;
+    return $this->entityAttributes;
   }
 
   /**

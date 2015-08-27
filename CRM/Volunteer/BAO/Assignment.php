@@ -250,19 +250,17 @@ class CRM_Volunteer_BAO_Assignment extends CRM_Volunteer_BAO_Activity {
       }
 
       // Look up the base entity (e.g. event) as a fallback default
-      if (empty($need['start_time']) || (empty($params['subject']) && empty($params['id']))) {
-        $project = civicrm_api3('VolunteerProject', 'getsingle', array(
-          'id' => $need['project_id'],
-        ));
+      if ((empty($need['start_time']) || empty($params['subject'])) && empty($params['id'])) {
+        $project = CRM_Volunteer_BAO_Project::retrieveByID($need['project_id']);
 
-        if (empty($params['activity_date_time'])) {
-          // TODO: This will work for events, but other entities may have differently named time fields
-          $associatedEntity = civicrm_api3(str_replace('civicrm_', '', $project['entity_table']), 'getsingle', array('id' => $project['entity_id']));
-          $params['activity_date_time'] = CRM_Utils_Array::value('start_date', $associatedEntity);
+        if (empty($params['activity_date_time']) && empty($params['id'])) {
+          // if the related entity doesn't provide a good default, use tomorrow
+          $tomorrow = date('Y-m-d H:i:s', strtotime('tomorrow'));
+          $params['activity_date_time'] = CRM_Utils_Array::value('start_time', $project->getEntityAttributes(), $tomorrow);
         }
 
         if (empty($params['subject']) && empty($params['id'])) {
-          $params['subject'] = $project['title'];
+          $params['subject'] = $project->title;
         }
       }
     }
@@ -288,4 +286,5 @@ class CRM_Volunteer_BAO_Assignment extends CRM_Volunteer_BAO_Activity {
     }
     return FALSE;
   }
+
 }
