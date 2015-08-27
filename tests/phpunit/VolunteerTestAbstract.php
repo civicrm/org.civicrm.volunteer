@@ -10,7 +10,8 @@ abstract class VolunteerTestAbstract extends CiviUnitTestCase {
   /**
    * Ensure that, if the database is repopulated, CiviVolunteer's install
    * operations are run, adding custom option group, activity fields, etc. to
-   * the testing db.
+   * the testing DB. NOTE: Installation/alteration of tables not managed by
+   * core (e.g., civicrm_volunteer_project) should not be reproduced here.
    *
    * @param type $perClass
    * @param type $object
@@ -21,7 +22,7 @@ abstract class VolunteerTestAbstract extends CiviUnitTestCase {
       return FALSE;
     }
 
-    // code adapted from CRM_Volunteer_Upgrader::install().
+    // Code adapted from CRM_Volunteer_Upgrader::install().
     $upgrader = new CRM_Volunteer_Upgrader('org.civicrm.volunteer', dirname(__FILE__) . '/../../');
 
     $activityTypeId = $upgrader->createActivityType(CRM_Volunteer_BAO_Assignment::CUSTOM_ACTIVITY_TYPE);
@@ -35,7 +36,17 @@ abstract class VolunteerTestAbstract extends CiviUnitTestCase {
     $smarty->assign('customIDs', $customIDs);
 
     $upgrader->executeCustomDataTemplateFile('volunteer-customdata.xml.tpl');
+
     $upgrader->createVolunteerActivityStatus();
+
+    $upgrader->createVolunteerContactType();
+    $volContactTypeCustomGroupID = $upgrader->createVolunteerContactCustomGroup();
+    $upgrader->createVolunteerContactCustomFields($volContactTypeCustomGroupID);
+
+    $upgrader->installCommendationActivityType();
+
+    $upgrader->installProjectRelationships();
+
     return TRUE;
   }
 }

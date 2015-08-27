@@ -19,6 +19,7 @@ class CRM_Volunteer_BAO_ProjectTest extends VolunteerTestAbstract {
     $params = array(
       'entity_id' => 1,
       'entity_table' => 'civicrm_event',
+      'title' => 'Unit Testing for CiviVolunteer (How Meta)',
     );
 
     $project = CRM_Volunteer_BAO_Project::create($params);

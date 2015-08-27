@@ -6,8 +6,6 @@ require_once 'VolunteerTestAbstract.php';
  * Test class for Volunteer Need API - volunteer_need
  */
 class api_v3_VolunteerNeedTest extends VolunteerTestAbstract {
-  static protected $_params;
-  static protected $_project_id;
 
   function setUp() {
     $this->quickCleanup(array('civicrm_volunteer_need', 'civicrm_volunteer_project'));
