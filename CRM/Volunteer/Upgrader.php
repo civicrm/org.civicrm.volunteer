@@ -62,11 +62,9 @@ class CRM_Volunteer_Upgrader extends CRM_Volunteer_Upgrader_Base {
   }
 
   /**
-   * Makes schema changes to accommodate 2.0 functionality/refactoring.
-   *
-   * Used in both the install and the upgrade.
+   * Installs option group and options for project relationships.
    */
-  private function schemaUpgrade20() {
+  public function installProjectRelationships() {
     try {
       $optionGroup = civicrm_api3('OptionGroup', 'create', array(
         'name' => CRM_Volunteer_BAO_ProjectContact::RELATIONSHIP_OPTION_GROUP,
@@ -118,7 +116,15 @@ class CRM_Volunteer_Upgrader extends CRM_Volunteer_Upgrader_Base {
     foreach ($options as $opt) {
       civicrm_api3('OptionValue', 'create', $optionDefaults + $opt);
     }
+  }
 
+  /**
+   * Makes schema changes to accommodate 2.0 functionality/refactoring.
+   *
+   * Used in both the install and the upgrade.
+   */
+  public function schemaUpgrade20() {
+    $this->installProjectRelationships();
     $this->executeSqlFile('sql/volunteer_upgrade_2.0.sql');
   }
 
@@ -146,7 +152,7 @@ class CRM_Volunteer_Upgrader extends CRM_Volunteer_Upgrader_Base {
     }
   }
 
-  private function installCommendationActivityType() {
+  public function installCommendationActivityType() {
     $activityTypeID = $this->createActivityType(CRM_Volunteer_BAO_Commendation::CUSTOM_ACTIVITY_TYPE,
       ts('Volunteer Commendation', array('domain' => 'org.civicrm.volunteer'))
     );
@@ -413,7 +419,7 @@ class CRM_Volunteer_Upgrader extends CRM_Volunteer_Upgrader_Base {
    * @return int
    * @throws CRM_Core_Exception
    */
-  private function createVolunteerContactType() {
+  public function createVolunteerContactType() {
     $id = NULL;
     $get = civicrm_api3('ContactType', 'get', array(
       'name' => self::customContactTypeName,
@@ -450,7 +456,7 @@ class CRM_Volunteer_Upgrader extends CRM_Volunteer_Upgrader_Base {
    * @return int
    * @throws CRM_Core_Exception
    */
-  private function createVolunteerContactCustomGroup() {
+  public function createVolunteerContactCustomGroup() {
     $id = NULL;
     $get = civicrm_api3('CustomGroup', 'get', array(
       'name' => self::customContactGroupName,
@@ -482,7 +488,7 @@ class CRM_Volunteer_Upgrader extends CRM_Volunteer_Upgrader_Base {
    * @param int $customGroupID The group to which the field should be added
    * @throws CRM_Core_Exception
    */
-  private function createVolunteerContactCustomFields($customGroupID) {
+  public function createVolunteerContactCustomFields($customGroupID) {
     if (!is_int($customGroupID)) {
       throw new CRM_Core_Exception('Non-numeric custom group ID provided.');
     }
