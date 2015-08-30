@@ -82,7 +82,6 @@ class CRM_Volunteer_Form_VolunteerSignUp extends CRM_Core_Form {
    */
   function setDefaultValues() {
     $defaults = array();
-    $defaults['volunteer_role_id'] = CRM_Volunteer_BAO_Need::FLEXIBLE_ROLE_ID;
 
     if (key_exists('userID', $_SESSION['CiviCRM'])) {
       foreach($this->getProfileIDs() as $profileID) {
@@ -143,54 +142,8 @@ class CRM_Volunteer_Form_VolunteerSignUp extends CRM_Core_Form {
 
   function buildQuickForm() {
     CRM_Utils_System::setTitle(ts('Sign Up to Volunteer for %1', array(1 => $this->_project->title)));
-    CRM_Core_Resources::singleton()->addScriptFile('org.civicrm.volunteer',
-      'templates/CRM/Volunteer/Form/VolunteerSignUp.js', 500, 'html-header');
 
     $this->buildCustom();
-
-    // don't show the roles dropdown if the flexible need is the only open need
-    if (count($this->_project->open_needs)) {
-
-      $role_options = array();
-      // special treatment for the flexible need
-      if (array_key_exists(CRM_Volunteer_BAO_Need::FLEXIBLE_ROLE_ID, $this->_project->roles)) {
-        $role_options[CRM_Volunteer_BAO_Need::FLEXIBLE_ROLE_ID] =
-          $this->_project->roles[CRM_Volunteer_BAO_Need::FLEXIBLE_ROLE_ID];
-      }
-      // add open needs to the option list
-      foreach ($this->_project->open_needs as $open) {
-        $role_id = $open['role_id'];
-        $role_options[$role_id] = $this->_project->roles[$role_id];
-      }
-
-      $this->add(
-        'select',               // field type
-        'volunteer_role_id',    // field name
-        ts('Volunteer Role', array('domain' => 'org.civicrm.volunteer')),   // field label
-        $role_options, // list of options
-        true                    // is required
-      );
-    }
-
-    // don't show the dropdown if the flexible need is the only need
-    $role_ids = array_keys($this->_project->roles);
-    $first_role_id = $role_ids[0];
-    if (count($this->_project->open_needs) > 1
-      || $first_role_id !== CRM_Volunteer_BAO_Need::FLEXIBLE_ROLE_ID
-    ) {
-      $select = $this->add(
-        'select',               // field type
-        'volunteer_need_id',    // field name
-        ts('Time', array('domain' => 'org.civicrm.volunteer')),            // field label
-        array(),                // list of options
-        false                    // is required
-      );
-
-      foreach ($this->_project->open_needs as $id => $data) {
-        $select->addOption($data['label'], $id, array('data-role' => $data['role_id']));
-      }
-
-    }
 
     $this->addButtons(array(
       array(
@@ -208,20 +161,6 @@ class CRM_Volunteer_Form_VolunteerSignUp extends CRM_Core_Form {
   function postProcess() {
     $cid = CRM_Utils_Array::value('userID', $_SESSION['CiviCRM'], NULL);
     $values = $this->controller->exportValues();
-    $isFlexible = FALSE;
-
-    // Role id is not present in form $values when the only public need is the flexible need.
-    // So if role id is not set OR if it matches flexible role id constant then use the flexible need id
-    if (! isset($values['volunteer_role_id']) || (int) CRM_Utils_Array::value('volunteer_role_id', $values) === CRM_Volunteer_BAO_Need::FLEXIBLE_ROLE_ID) {
-      $isFlexible = TRUE;
-      foreach ($this->_project->needs as $n) {
-        if ($n['is_flexible'] === '1') {
-          $values['volunteer_need_id'] = $n['id'];
-          break;
-        }
-      }
-    }
-    unset($values['volunteer_role_id']); // we don't need this anymore
 
     $params = array(
       'id' => CRM_Utils_Array::value('volunteer_need_id', $values),
