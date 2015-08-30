@@ -11,7 +11,34 @@ class CRM_Volunteer_Permission extends CRM_Core_Permission {
   public static function getVolunteerPermissions() {
     $prefix = ts('CiviVolunteer', array('domain' => 'org.civicrm.volunteer')) . ': ';
     return array(
-      'register to volunteer' => $prefix . ts('register to volunteer', array('domain' => 'org.civicrm.volunteer')),
+      'register to volunteer' => array(
+        $prefix . ts('register to volunteer', array('domain' => 'org.civicrm.volunteer')),
+        ts('Access public-facing volunteer opportunity listings and registration forms', array('domain' => 'org.civicrm.volunteer')),
+      ),
+      'log own hours' => array(
+        $prefix . ts('log own hours', array('domain' => 'org.civicrm.volunteer')),
+        ts('Access forms to self-report performed volunteer hours', array('domain' => 'org.civicrm.volunteer')),
+      ),
+      'create volunteer projects' => array(
+        $prefix . ts('create volunteer projects', array('domain' => 'org.civicrm.volunteer')),
+        ts('Create a new volunteer project record in CiviCRM', array('domain' => 'org.civicrm.volunteer')),
+      ),
+      'edit own volunteer projects' => array(
+        $prefix . ts('edit own volunteer projects', array('domain' => 'org.civicrm.volunteer')),
+        ts('Edit volunteer project records for which the user is specified as the Owner', array('domain' => 'org.civicrm.volunteer')),
+      ),
+      'edit all volunteer projects' => array(
+        $prefix . ts('edit all volunteer projects', array('domain' => 'org.civicrm.volunteer')),
+        ts('Edit all volunteer project records, regardless of ownership', array('domain' => 'org.civicrm.volunteer')),
+      ),
+      'delete own volunteer projects' => array(
+        $prefix . ts('delete own volunteer projects', array('domain' => 'org.civicrm.volunteer')),
+        ts('Delete volunteer project records for which the user is specified as the Owner', array('domain' => 'org.civicrm.volunteer')),
+      ),
+      'delete all volunteer projects' => array(
+        $prefix . ts('delete all volunteer projects', array('domain' => 'org.civicrm.volunteer')),
+        ts('Delete any volunteer project record, regardless of ownership', array('domain' => 'org.civicrm.volunteer')),
+      ),
     );
   }
 
@@ -37,4 +64,56 @@ class CRM_Volunteer_Permission extends CRM_Core_Permission {
 
     return parent::check($permissions);
   }
+
+  /**
+   * Checks whether the logged in user has permission to perform an action
+   * against a specified project.
+   *
+   * @param int $op
+   *   See the constants in CRM_Core_Action.
+   * @param int $projectId
+   *   Required except if the operation is an add.
+   * @return boolean
+   *   TRUE is the action is allowed; else FALSE.
+   */
+  public static function checkProjectPerms($op, $projectId = NULL) {
+    if ($op !== CRM_Core_Action::ADD && empty($projectId)) {
+      CRM_Core_Error::fatal('Missing required parameter Project ID');
+    }
+
+    $contactId = CRM_Core_Session::getLoggedInContactID();
+
+    switch ($op) {
+      case CRM_Core_Action::ADD:
+        return self::check('create volunteer projects');
+
+      case CRM_Core_Action::UPDATE:
+        if (self::check('edit all volunteer projects')) {
+          return TRUE;
+        }
+
+        $projectOwners = CRM_Volunteer_BAO_Project::getContactsByRelationship($projectId, 'volunteer_owner');
+        if (self::check('edit own volunteer projects')
+          && in_array($contactId, $projectOwners)) {
+          return TRUE;
+        }
+        break;
+
+      case CRM_Core_Action::DELETE:
+        if (self::check('delete all volunteer projects')) {
+          return TRUE;
+        }
+
+        $projectOwners = CRM_Volunteer_BAO_Project::getContactsByRelationship($projectId, 'volunteer_owner');
+        if (self::check('delete own volunteer projects')
+          && in_array($contactId, $projectOwners)) {
+          return TRUE;
+        }
+        break;
+
+      default:
+        return FALSE;
+    }
+  }
+
 }

@@ -230,4 +230,24 @@ class CRM_Volunteer_BAO_ProjectTest extends VolunteerTestAbstract {
 
     return array($project, $need, $role_id);
   }
+
+  function testGetContactsByRelationship() {
+    $contactId = 1;
+    $relType = CRM_Core_OptionGroup::getValue(CRM_Volunteer_BAO_ProjectContact::RELATIONSHIP_OPTION_GROUP,
+            'volunteer_owner', 'name');
+
+    $project = CRM_Core_DAO::createTestObject('CRM_Volunteer_BAO_Project');
+    $this->assertObjectHasAttribute('id', $project, 'Failed to prepopulate Volunteer Project');
+
+    $projectContact = CRM_Core_DAO::createTestObject('CRM_Volunteer_BAO_ProjectContact', array(
+      'contact_id' => $contactId,
+      'project_id' => $project->id,
+      'relationship_type_id' => $relType
+    ));
+    $this->assertObjectHasAttribute('id', $projectContact, 'Failed to prepopulate Volunteer Project Contact');
+
+    $contacts = CRM_Volunteer_BAO_Project::getContactsByRelationship($project->id, $relType);
+    $this->assertTrue(in_array($contactId, $contacts));
+  }
+
 }
