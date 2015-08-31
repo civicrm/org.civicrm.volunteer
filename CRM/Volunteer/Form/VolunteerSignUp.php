@@ -60,20 +60,21 @@ class CRM_Volunteer_Form_VolunteerSignUp extends CRM_Core_Form {
   protected $_mode;
 
   /**
+   * The needs the volunteer is signing up for.
+   *
+   * @var array
+   *   need_id => api.VolunteerNeed.getsingle
+   * @protected
+   */
+  protected $_needs = array();
+
+  /**
    * The profile IDs associated with this form.
    *
    * @var array
    * @protected
    */
   protected $_profile_ids = array();
-
-  /**
-   * the project we are processing
-   *
-   * @var CRM_Volunteer_BAO_Project
-   * @protected
-   */
-  protected $_project;
 
   /**
    * Set default values for the form.
@@ -107,14 +108,25 @@ class CRM_Volunteer_Form_VolunteerSignUp extends CRM_Core_Form {
       CRM_Utils_System::permissionDenied();
     }
 
-    $vid = CRM_Utils_Request::retrieve('vid', 'Positive', $this, TRUE);
-    $this->_project = CRM_Volunteer_BAO_Project::retrieveByID($vid);
-
-    $this->setDestination();
-    $this->assign('vid', $this->_project->id);
-    if (empty($this->_project->needs)) {
-      CRM_Core_Error::fatal('Project has no public volunteer needs enabled');
+    $validNeedIds = array();
+    $needs = CRM_Utils_Request::retrieve('needs', 'String', $this, TRUE);
+    if (!is_array($needs)) {
+      $needs = explode(',', $needs);
     }
+
+    foreach($needs as $need) {
+      if (CRM_Utils_Type::validate($need, 'Positive', FALSE)) {
+        $validNeedIds[] = $need;
+      }
+    }
+    $api = civicrm_api3('VolunteerNeed', 'get', array(
+      'id' => array('IN' => $validNeedIds),
+    ));
+    $this->_needs = $api['values'];
+
+    // TODO: where should we send the user post-registration? to the as-yet
+    // unfinished list of available volunteer opportunities?
+//    $this->setDestination();
     $this->_action = CRM_Utils_Request::retrieve('action', 'String', $this, FALSE);
 
     // current mode
@@ -122,26 +134,40 @@ class CRM_Volunteer_Form_VolunteerSignUp extends CRM_Core_Form {
   }
 
   /**
-   * Search for profiles by Volunteer Project ID
-   * @param type $projectId
-   * @return array of UFGroup (Profile) Ids
+   * Search for profiles
+   *
+   * @return array
+   *   UFGroup (Profile) Ids
    */
   function getProfileIDs() {
     if (empty($this->_profile_ids)) {
-      $dao = new CRM_Core_DAO_UFJoin();
-      $dao->entity_table = CRM_Volunteer_BAO_Project::$_tableName;
-      $dao->entity_id = $this->_project->id;
-      $dao->orderBy('weight asc');
-      $dao->find();
-      while ($dao->fetch()) {
-        $this->_profile_ids[] = $dao->uf_group_id;
+      $profileIds = $projectIds = array();
+
+      foreach ($this->_needs as $need) {
+        $projectIds[] = $need['project_id'];
       }
+      $projectIds = array_unique($projectIds);
+
+      foreach ($projectIds as $projectId) {
+        $dao = new CRM_Core_DAO_UFJoin();
+        $dao->entity_table = CRM_Volunteer_BAO_Project::$_tableName;
+        $dao->entity_id = $projectId;
+        $dao->orderBy('weight asc');
+        $dao->find();
+
+        while ($dao->fetch()) {
+          $profileIds[] = $dao->uf_group_id;
+        }
+      }
+
+      $this->_profile_ids = array_unique($profileIds);
     }
+
     return $this->_profile_ids;
   }
 
   function buildQuickForm() {
-    CRM_Utils_System::setTitle(ts('Sign Up to Volunteer for %1', array(1 => $this->_project->title)));
+    CRM_Utils_System::setTitle(ts('Sign Up to Volunteer'));
 
     $this->buildCustom();
 
@@ -162,22 +188,16 @@ class CRM_Volunteer_Form_VolunteerSignUp extends CRM_Core_Form {
     $cid = CRM_Utils_Array::value('userID', $_SESSION['CiviCRM'], NULL);
     $values = $this->controller->exportValues();
 
-    $params = array(
-      'id' => CRM_Utils_Array::value('volunteer_need_id', $values),
-      'version' => 3,
-    );
-    $need = civicrm_api('VolunteerNeed', 'getsingle', $params);
-
-    $profile_fields = array();
+    $profileFields = array();
     foreach ($this->getProfileIDs() as $profileID) {
-      $profile_fields += CRM_Core_BAO_UFGroup::getFields($profileID);
+      $profileFields += CRM_Core_BAO_UFGroup::getFields($profileID);
     }
-    $profile_values = array_intersect_key($values, $profile_fields);
-    $builtin_values = array_diff_key($values, $profile_values);
+    $profileValues = array_intersect_key($values, $profileFields);
+    $activityValues = array_diff_key($values, $profileValues);
 
     // Search for duplicate
     if (!$cid) {
-      $dedupeParams = CRM_Dedupe_Finder::formatParams($profile_values, 'Individual');
+      $dedupeParams = CRM_Dedupe_Finder::formatParams($profileValues, 'Individual');
       $dedupeParams['check_permission'] = FALSE;
       $ids = CRM_Dedupe_Finder::dupesByParams($dedupeParams, 'Individual');
       if ($ids) {
@@ -186,29 +206,32 @@ class CRM_Volunteer_Form_VolunteerSignUp extends CRM_Core_Form {
     }
 
     $cid = CRM_Contact_BAO_Contact::createProfileContact(
-      $profile_values,
-      $profile_fields,
+      $profileValues,
+      $profileFields,
       $cid
     );
 
     $activity_statuses = CRM_Activity_BAO_Activity::buildOptions('status_id', 'create');
 
-    $builtin_values['activity_date_time'] = CRM_Utils_Array::value('start_time', $need);
-    $builtin_values['assignee_contact_id'] = $cid;
-    $builtin_values['is_test'] = ($this->_mode === 'test' ? 1 : 0);
-    // below we assume that volunteers are always signing up only themselves;
-    // for now this is a safe assumption, but we may need to revisit this.
-    $builtin_values['source_contact_id'] = $cid;
+    foreach($this->_needs as $need) {
+      $activityValues['volunteer_need_id'] = $need['id'];
+      $activityValues['activity_date_time'] = CRM_Utils_Array::value('start_time', $need);
+      $activityValues['assignee_contact_id'] = $cid;
+      $activityValues['is_test'] = ($this->_mode === 'test' ? 1 : 0);
+      // below we assume that volunteers are always signing up only themselves;
+      // for now this is a safe assumption, but we may need to revisit this.
+      $activityValues['source_contact_id'] = $cid;
 
-    // Set status to Available if user selected Flexible Need, else set to Scheduled.
-    if ($isFlexible) {
-      $builtin_values['status_id'] = CRM_Utils_Array::key('Available', $activity_statuses);
-    } else {
-      $builtin_values['status_id'] = CRM_Utils_Array::key('Scheduled', $activity_statuses);
+      // Set status to Available if user selected Flexible Need, else set to Scheduled.
+      if (CRM_Utils_Array::value('is_flexible', $need)) {
+        $activityValues['status_id'] = CRM_Utils_Array::key('Available', $activity_statuses);
+      } else {
+        $activityValues['status_id'] = CRM_Utils_Array::key('Scheduled', $activity_statuses);
+      }
+
+      $activityValues['time_scheduled_minutes'] = CRM_Utils_Array::value('duration', $need);
+      CRM_Volunteer_BAO_Assignment::createVolunteerActivity($activityValues);
     }
-    $builtin_values['subject'] = $this->_project->title;
-    $builtin_values['time_scheduled_minutes'] = CRM_Utils_Array::value('duration', $need);
-    CRM_Volunteer_BAO_Assignment::createVolunteerActivity($builtin_values);
 
     $statusMsg = ts('You are scheduled to volunteer. Thank you!', array('domain' => 'org.civicrm.volunteer'));
     CRM_Core_Session::setStatus($statusMsg, '', 'success');
