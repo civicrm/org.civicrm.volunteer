@@ -58,9 +58,9 @@
 {if $form.is_active.value}
 <table class="crm-block crm-form-block crm-event-manage-volunteer-form-block">
   <tr>
-    <td><a href="#" class="button crm-volunteer-popup" data-vid="{$vid}" data-tab="Define"><span><div class="icon edit-icon"></div>{ts domain='org.civicrm.volunteer'}Define Volunteer Needs{/ts}</span></a></td>
-    <td><a href="#" class="button crm-volunteer-popup" data-vid="{$vid}" data-tab="Assign"><span><div class="icon edit-icon"></div>{ts domain='org.civicrm.volunteer'}Assign Volunteers{/ts}</span></a></td>
-    <td><a href="{$volunteerLogURL}" class="button" data-popup-settings='{literal}{"dialog":{"width":"85%", "height":"80%"}}{/literal}'><span><div class="icon edit-icon"></div>{ts domain='org.civicrm.volunteer'}Log Volunteer Hours{/ts}</span></a></td>
+    <td><a href="#" class="button crm-volunteer-popup" data-vid="{$vid}" data-tab="Define"><span><div class="icon ui-icon-pencil"></div>{ts domain='org.civicrm.volunteer'}Define Volunteer Needs{/ts}</span></a></td>
+    <td><a href="#" class="button crm-volunteer-popup" data-vid="{$vid}" data-tab="Assign"><span><div class="icon ui-icon-pencil"></div>{ts domain='org.civicrm.volunteer'}Assign Volunteers{/ts}</span></a></td>
+    <td><a href="{$volunteerLogURL}" class="button" data-popup-settings='{literal}{"dialog":{"width":"85%", "height":"80%"}}{/literal}'><span><div class="icon ui-icon-pencil"></div>{ts domain='org.civicrm.volunteer'}Log Volunteer Hours{/ts}</span></a></td>
   </tr>
 </table>
 {/if}
@@ -102,6 +102,8 @@
       $form.on('change', '#is_active', function() {
         if ($(this).is(':checked')) {
           $('#org_civicrm_volunteer-event_tab_config').show();
+          showLastAddProfileButtonOnly();
+          preventRemoveAllBottomProfiles();
         } else {
           $('#org_civicrm_volunteer-event_tab_config').hide();
         }

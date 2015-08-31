@@ -31,14 +31,20 @@
   <div class="crm-copy-fields crm-grid-table" id="crm-log-entry-table" data-vid="{$vid}">
     <div class="crm-grid-header">
       <div class="crm-grid-cell"></div>
-      <div class="crm-grid-cell">{ts domain='org.civicrm.volunteer'}Contact{/ts}</div>
+      <div class="crm-grid-cell">
+        {ts domain='org.civicrm.volunteer'}Contact{/ts}
+        <span class="crm-marker" title="{ts domain='org.civicrm.volunteer'}This field is required.{/ts}">*</span>
+      </div>
       <div class="crm-grid-cell">{ts domain='org.civicrm.volunteer'}Role{/ts}</div>
       <div class="crm-grid-cell">{ts domain='org.civicrm.volunteer'}Start Date{/ts}</div>
       <div class="crm-grid-cell">{ts domain='org.civicrm.volunteer'}Scheduled Duration{/ts}</div>
-      <div class="crm-grid-cell"><img src="{$config->resourceBase}i/copy.png"
-                                      alt="{ts domain='org.civicrm.volunteer'}Click to copy Actual Duration from row one to all rows.{/ts}"
-                                      fname="actual_duration" class="action-icon"
-                                      title="{ts domain='org.civicrm.volunteer'}Click here to copy the Actual Duration value in row one to ALL rows.{/ts}"/>{ts}Actual Duration{/ts}
+      <div class="crm-grid-cell">
+        <img src="{$config->resourceBase}i/copy.png"
+             alt="{ts domain='org.civicrm.volunteer'}Click to copy Actual Duration from row one to all rows.{/ts}"
+             fname="actual_duration" class="action-icon"
+             title="{ts domain='org.civicrm.volunteer'}Click here to copy the Actual Duration value in row one to ALL rows.{/ts}" />
+        {ts}Actual Duration{/ts}
+        <span class="crm-marker" title="{ts domain='org.civicrm.volunteer'}This field is required.{/ts}">*</span>
       </div>
       <div class="crm-grid-cell"><img src="{$config->resourceBase}i/copy.png"
                                       alt="{ts domain='org.civicrm.volunteer'}Click to copy Volunteer Status from row one to all rows.{/ts}"
@@ -85,7 +91,7 @@
     {/section}
   </div>
   <a href="#" id="addMoreVolunteer" class="button">
-    <span><div class="icon add-icon"></div>{ts domain='org.civicrm.volunteer'}Add Volunteer{/ts}</span>
+    <span><div class="icon ui-icon-plus"></div>{ts domain='org.civicrm.volunteer'}Add Volunteer{/ts}</span>
   </a>
 
   <div class="crm-submit-buttons">{if $fields}{$form._qf_Batch_refresh.html}{/if} &nbsp; {$form.buttons.html}</div>

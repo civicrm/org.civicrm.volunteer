@@ -65,15 +65,10 @@ class CRM_Volunteer_Form_Volunteer extends CRM_Event_Form_ManageEvent {
       $this->minimumProjectParams($params);
       $this->_project = current(CRM_Volunteer_BAO_Project::retrieve($params));
 
-      $beneficiaryIds = array();
-      $results = civicrm_api3('VolunteerProjectContact', 'get', array(
-        'relationship_type_id' => 'volunteer_beneficiary',
-        'project_id' => $this->_project->id,
-      ));
-      foreach ($results['values'] as $v) {
-        $beneficiaryIds[] = $v['contact_id'];
+      if ($this->_project) {
+        $beneficiaryIds = CRM_Volunteer_BAO_Project::getContactsByRelationship($this->_project->id, 'volunteer_beneficiary');
+        $this->_project->target_contact_id = implode(',', $beneficiaryIds);
       }
-      $this->_project->target_contact_id = implode(',', $beneficiaryIds);
     }
 
     return $this->_project;
@@ -247,7 +242,12 @@ class CRM_Volunteer_Form_Volunteer extends CRM_Event_Form_ManageEvent {
       ts('Enable Volunteer Management?', array('domain' => 'org.civicrm.volunteer'))
     );
 
-    $this->addEntityRef('target_contact_id', ts('Select Beneficiary', array('domain' => 'org.civicrm.volunteer')), array('create' => TRUE, 'select' => array('allowClear' => FALSE), 'multiple' => TRUE));
+    $this->addEntityRef(
+      'target_contact_id',
+      ts('Select Beneficiary', array('domain' => 'org.civicrm.volunteer')),
+      array('create' => TRUE, 'select' => array('allowClear' => FALSE)),
+      TRUE
+    );
 
     $this->assign('vid', ($this->getProject() !== FALSE ? $this->getProject()->id : NULL));
 
