@@ -58,6 +58,16 @@ class CRM_Volunteer_BAO_Need extends CRM_Volunteer_DAO_Need {
    * @static
    */
   static function &create($params) {
+    $projectId = CRM_Utils_Array::value('project_id', $params);
+    $op = CRM_Core_Action::UPDATE;
+
+    if (!empty($params['check_permissions']) && !CRM_Volunteer_Permission::checkProjectPerms($op, $projectId)) {
+      CRM_Utils_System::permissionDenied();
+
+      // FIXME: If we don't return here, the script keeps executing. This is not
+      // what I expect from CRM_Utils_System::permissionDenied().
+      return FALSE;
+    }
 
     if (empty($params)) {
       return;

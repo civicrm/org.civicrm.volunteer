@@ -136,6 +136,29 @@ class CRM_Volunteer_BAO_Project extends CRM_Volunteer_DAO_Project {
   }
 
   /**
+   * Gets related contacts of a specified type for a project.
+   *
+   * @param int $projectId
+   * @param mixed $relationshipType
+   *   Use either the value or the machine name for the optionValue
+   * @return array
+   *   Array of contact IDs
+   */
+  public static function getContactsByRelationship($projectId, $relationshipType) {
+    $contactIds = array();
+
+    $api = civicrm_api3('VolunteerProjectContact', 'get', array(
+      'project_id' => $projectId,
+      'relationship_type_id' => $relationshipType,
+    ));
+    foreach ($api['values'] as $rel) {
+      $contactIds[] = $rel['contact_id'];
+    }
+
+    return $contactIds;
+  }
+
+  /**
    * Create a Volunteer Project
    *
    * Takes an associative array and creates a Project object. This function is
@@ -153,6 +176,16 @@ class CRM_Volunteer_BAO_Project extends CRM_Volunteer_DAO_Project {
    * @static
    */
   static function create(array $params) {
+    $projectId = CRM_Utils_Array::value('id', $params);
+    $op = empty($projectId) ? CRM_Core_Action::ADD : CRM_Core_Action::UPDATE;
+
+    if (!empty($params['check_permissions']) && !CRM_Volunteer_Permission::checkProjectPerms($op, $projectId)) {
+      CRM_Utils_System::permissionDenied();
+
+      // FIXME: If we don't return here, the script keeps executing. This is not
+      // what I expect from CRM_Utils_System::permissionDenied().
+      return FALSE;
+    }
 
     // check required params
     if (!self::dataExists($params)) {
