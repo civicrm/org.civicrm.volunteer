@@ -66,7 +66,6 @@ function _civicrm_api3_volunteer_project_create_spec(&$params) {
       See CRM_Volunteer_BAO_Project::create().',
     'type' => CRM_Utils_Type::T_STRING,
   );
-
 }
 
 /**
@@ -81,10 +80,23 @@ function _civicrm_api3_volunteer_project_create_spec(&$params) {
  * @access public
  */
 function civicrm_api3_volunteer_project_get($params) {
-  return _civicrm_api3_basic_get(_civicrm_api3_get_BAO(__FUNCTION__), $params);
+  $result = CRM_Volunteer_BAO_Project::retrieve($params);
+  foreach ($result as $k => $dao) {
+    $result[$k] = $dao->toArray();
+  }
+  return civicrm_api3_create_success($result, $params, 'VolunteerProject', 'get');
 }
+
 function _civicrm_api3_volunteer_project_get_spec(&$params) {
   $params['id']['api.aliases'] = array('project_id');
+  $params['project_contacts'] = array(
+    'title' => 'Project Contacts',
+    'description' => 'Array of [volunteer relationship type] => [contact IDs].
+      See CRM_Volunteer_BAO_Project::retrieve(). This parameter is used for
+      filtering only; project contacts are not returned.',
+    'type' => CRM_Utils_Type::T_STRING,
+  );
+
 }
 /**
  * delete an existing project

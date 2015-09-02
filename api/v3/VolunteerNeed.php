@@ -95,8 +95,19 @@ function civicrm_api3_volunteer_need_get($params) {
   }
   return $result;
 }
+
+/**
+ * Adjust Metadata for Get action
+ *
+ * The metadata is used for setting defaults, documentation, validation, aliases, etc.
+ *
+ * @param array $params
+ */
 function _civicrm_api3_volunteer_need_get_spec(&$params) {
+  // this alias facilitates chaining from api.volunteer_project.get
+  $params['volunteer_need_project_id']['api.aliases'] = array('volunteer_project_id');
 }
+
 /**
  * delete an existing need
  *

@@ -234,8 +234,15 @@ class CRM_Volunteer_BAO_Project extends CRM_Volunteer_DAO_Project {
   }
 
   /**
-   * Get a list of Projects matching the params, where params keys are column
-   * names of civicrm_volunteer_project.
+   * Get a list of Projects matching the params.
+   *
+   * This function is invoked from within the web form layer and also from the
+   * API layer. Params keys are either column names of civicrm_volunteer_project, or
+   * 'project_contacts.' @see CRM_Volunteer_BAO_Project::create() for details on
+   * this parameter.
+   *
+   * NOTE: This method does not return data re project_contacts; however,
+   * this parameter can be used to filter the list of Projects that is returned.
    *
    * @param array $params
    * @return array of CRM_Volunteer_BAO_Project objects
@@ -243,8 +250,28 @@ class CRM_Volunteer_BAO_Project extends CRM_Volunteer_DAO_Project {
   static function retrieve(array $params) {
     $result = array();
 
+    $projectIds = array();
+    if (!empty($params['project_contacts'])) {
+      foreach ($params['project_contacts'] as $relType => $contactIds) {
+        $api = civicrm_api3('VolunteerProjectContact', 'get', array(
+          'contact_id' => array("IN" => (array) $contactIds),
+          'relationship_type_id' => $relType,
+        ));
+        foreach ($api['values'] as $data) {
+          $projectIds[] = $data['project_id'];
+        }
+      }
+      unset($params['project_contacts']);
+    }
+
     $project = new CRM_Volunteer_BAO_Project();
     $project->copyValues($params);
+
+    if (!empty($projectIds)) {
+      $valuesSql = implode(', ', array_unique($projectIds));
+      $project->whereAdd(" id IN ({$valuesSql}) ");
+    }
+
     $project->find();
 
     while ($project->fetch()) {
