@@ -74,8 +74,15 @@ Required vars: volOppData, searchParams
       </tr>
     </thead>
     <tbody>
-      <tr ng-repeat="need in volOppData().needs" role="row">
-        <td>{{volOppData().projects[need.project_id].title}}</td>
+      <tr ng-repeat="need in volOppData().needs" ng-init="project = volOppData().projects[need.project_id]" role="row">
+        <td>
+          {{project.title}}
+          <span
+            class="icon ui-icon-comment"
+            ng-show="project.description"
+            ng-click="showProjectDescription(project)">
+          </span>
+        </td>
         <td>{{need.role_label}}</td>
         <td>{{need.display_time}}</td>
         <td></td>

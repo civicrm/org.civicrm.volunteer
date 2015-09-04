@@ -118,6 +118,10 @@
       );
     };
 
+    $scope.showProjectDescription = function (project) {
+      CRM.alert(project.description, project.title, 'info', {expires: 0});
+    }
+
   });
 
 })(angular, CRM.$, CRM._);
