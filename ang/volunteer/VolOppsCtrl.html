@@ -83,7 +83,13 @@ Required vars: volOppData, searchParams
             ng-click="showProjectDescription(project)">
           </span>
         </td>
-        <td>{{need.role_label}}</td>
+        <td>{{need.role_label}}
+          <span
+            class="icon ui-icon-comment"
+            ng-show="need.role_description"
+            ng-click="showRoleDescription(need)">
+          </span>
+        </td>
         <td>{{need.display_time}}</td>
         <td></td>
       </tr>

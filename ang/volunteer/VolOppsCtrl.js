@@ -120,7 +120,11 @@
 
     $scope.showProjectDescription = function (project) {
       CRM.alert(project.description, project.title, 'info', {expires: 0});
-    }
+    };
+
+    $scope.showRoleDescription = function (need) {
+      CRM.alert(need.role_description, need.role_label, 'info', {expires: 0});
+    };
 
   });
 
