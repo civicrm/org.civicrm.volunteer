@@ -1,0 +1,87 @@
+<!--
+Controller: VolOppsCtrl
+Required vars: volOppData, searchParams
+-->
+
+<div class="crm-container">
+  <div crm-ui-debug="volOppData()"></div>
+  <div crm-ui-debug="searchParams"></div>
+
+  <!-- Search Form -->
+  <h2>Search</h2>
+  <div class="crm-block ui-tabs ui-widget ui-widget-content ui-corner-all" ng-form="volOppSearchForm" crm-ui-id-scope>
+    <div class="crm-group">
+      <div crm-ui-field="{name: 'volOppSearchForm.role', title: ts('Role')}">
+        <input
+          crm-entityref="{
+            entity: 'OptionValue',
+            select: {
+              minimumInputLength: 0,
+              placeholder: ts('Select Volunteer Roles'),
+              multiple: true
+            },
+            api: {
+              params: {option_group_id: 'volunteer_role'}
+            }
+          }"
+          crm-ui-id="caseTypeDetailForm.role"
+          type="text"
+          name="role"
+          ng-model="searchParams.role"
+          class="big crm-form-text"
+        />
+      </div>
+      <div crm-ui-field="{name: 'volOppSearchForm.beneficiary', title: ts('Beneficiary')}">
+        <!--
+        TODO: CiviVolunteer perhaps needs to provide a group which beneficiaries
+        can be added to so we don't expose the whole database. Actually, the
+        result of api.VolunteerProjectContact.get might do with the right params.
+        -->
+        <input
+          crm-entityref="{
+            select: {
+              minimumInputLength: 0,
+              placeholder: ts('Select Beneficiary'),
+              multiple: true
+            },
+            api: {
+              params: {contact_type: 'Organization'}
+            }
+          }"
+          crm-ui-id="volOppSearchForm.beneficiary"
+          type="text"
+          name="beneficiary"
+          ng-model="searchParams.beneficiary"
+          class="big crm-form-text"
+        />
+      </div>
+    </div>
+    <div class="crm-buttons">
+      <button crm-icon="search" ng-click="search()">{{ts('Search')}}</button>
+    </div>
+  </div>
+
+
+  <!-- Results -->
+  <h2>Available Opportunities</h2>
+  <table class="display dataTable no-footer" role="grid">
+    <thead>
+      <tr role="row">
+        <td class="sorting ui-state-default">{{ts('Volunteer Project')}}</td>
+        <td class="sorting ui-state-default">{{ts('Role')}}</td>
+        <td class="sorting ui-state-default">{{ts('Time')}}</td>
+        <td class="sorting ui-state-default">{{ts('Length')}}</td>
+        <td class="sorting ui-state-default">{{ts('Sign up!')}}</td>
+      </tr>
+    </thead>
+    <tbody>
+      <tr ng-repeat="need in volOppData().needs" role="row">
+        <td>{{volOppData().projects[need.project_id].title}}</td>
+        <td>{{need.role_label}}</td>
+        <td>{{need.start_time}}</td>
+        <td>{{need.duration}}</td>
+        <td></td>
+      </tr>
+    </tbody>
+  </table>
+</div>
