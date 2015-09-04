@@ -70,7 +70,6 @@ Required vars: volOppData, searchParams
         <td class="sorting ui-state-default">{{ts('Volunteer Project')}}</td>
         <td class="sorting ui-state-default">{{ts('Role')}}</td>
         <td class="sorting ui-state-default">{{ts('Time')}}</td>
-        <td class="sorting ui-state-default">{{ts('Length')}}</td>
         <td class="sorting ui-state-default">{{ts('Sign up!')}}</td>
       </tr>
     </thead>
@@ -78,8 +77,7 @@ Required vars: volOppData, searchParams
       <tr ng-repeat="need in volOppData().needs" role="row">
         <td>{{volOppData().projects[need.project_id].title}}</td>
         <td>{{need.role_label}}</td>
-        <td>{{need.start_time}}</td>
-        <td>{{need.duration}}</td>
+        <td>{{need.display_time}}</td>
         <td></td>
       </tr>
     </tbody>
