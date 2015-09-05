@@ -105,11 +105,13 @@
     var ts = $scope.ts = CRM.ts('org.civicrm.volunteer');
     var hs = $scope.hs = crmUiHelp({file: 'ang/VolOppsCtrl'}); // See: templates/ang/VolOppsCtrl.hlp
 
+    var volOppsInCart = {};
+
     // on page load, search based on the URL params
     volOppSearch.search();
 
-    $scope.volOppData = volOppSearch.getResult;
     $scope.searchParams = volOppSearch.userSpecifiedSearchParams;
+    $scope.volOppData = volOppSearch.getResult;
 
     $scope.search = function () {
       return crmStatus(
@@ -118,12 +120,27 @@
       );
     };
 
+    $scope.shoppingCart = function () {
+      return volOppsInCart;
+    };
+
     $scope.showProjectDescription = function (project) {
       CRM.alert(project.description, project.title, 'info', {expires: 0});
     };
 
     $scope.showRoleDescription = function (need) {
       CRM.alert(need.role_description, need.role_label, 'info', {expires: 0});
+    };
+
+    $scope.toggleSelection = function (need) {
+      need.inCart = !need.hasOwnProperty('inCart') ? true : !need.inCart;
+
+      // if the need was just added to the cart...
+      if (need.inCart) {
+        volOppsInCart[need.id] = need;
+      } else {
+        delete volOppsInCart[need.id];
+      }
     };
 
   });
