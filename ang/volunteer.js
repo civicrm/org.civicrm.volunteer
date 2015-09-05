@@ -5,6 +5,11 @@
       'crmUi', 'crmUtil', 'ngRoute'
     ])
 
+    // Makes lodash/underscore available in templates
+    .run(function($rootScope) {
+      $rootScope._ = _;
+    })
+
     .factory('volOppSearch', ['crmApi', '$location', '$route', function(crmApi, $location, $route) {
       // search result is stored here
       var result = {

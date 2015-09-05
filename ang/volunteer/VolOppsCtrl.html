@@ -104,7 +104,9 @@ Required vars: volOppData, searchParams
     </table>
 
     <div class="crm-buttons">
-      <button crm-icon="search" ng-click="checkout()">{{ts('Sign Up!')}}</button>
+      <button crm-icon="check" ng-click="checkout()" ng-disabled="_.size(shoppingCart()) === 0">
+        {{ts('Sign Up!')}}
+      </button>
     </div>
   </div>
 
