@@ -92,7 +92,13 @@ Required vars: volOppData, searchParams
             </span>
           </td>
           <td>{{need.display_time}}</td>
-          <td></td>
+          <td>
+            <span
+              class="icon ui-icon-trash"
+              ng-checked="need.inCart"
+              ng-click="toggleSelection(need)"
+            </span>
+          </td>
         </tr>
       </tbody>
     </table>
