@@ -54,16 +54,18 @@
         $location.search(userSpecifiedSearchParams);
 
         angular.forEach(userSpecifiedSearchParams, function(value, key) {
-          switch(key) {
-            case "beneficiary":
-              if (!apiParams.hasOwnProperty('project_contacts')) {
-                apiParams.project_contacts = {};
-              }
-              apiParams.project_contacts.volunteer_beneficiary = value.split(',');
-              break;
-            case "role":
-              apiParams["api.VolunteerNeed.get"].role_id = {IN: value.split(',')};
-              break;
+          if (value) {
+            switch(key) {
+              case "beneficiary":
+                  if (!apiParams.hasOwnProperty('project_contacts')) {
+                    apiParams.project_contacts = {};
+                  }
+                  apiParams.project_contacts.volunteer_beneficiary = value.split(',');
+                break;
+              case "role":
+                  apiParams["api.VolunteerNeed.get"].role_id = {IN: value.split(',')};
+                break;
+            }
           }
         });
 
