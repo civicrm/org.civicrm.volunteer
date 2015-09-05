@@ -63,7 +63,7 @@
             if (!apiParams.hasOwnProperty('project_contacts')) {
               apiParams.project_contacts = {};
             }
-            apiParams.project_contacts.volunteer_beneficiary = {IN: value.split(',')};
+            apiParams.project_contacts.volunteer_beneficiary = value.split(',');
             break;
           case "role":
             apiParams["api.VolunteerNeed.get"].role_id = {IN: value.split(',')};

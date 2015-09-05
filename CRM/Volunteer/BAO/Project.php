@@ -260,6 +260,12 @@ class CRM_Volunteer_BAO_Project extends CRM_Volunteer_DAO_Project {
         foreach ($api['values'] as $data) {
           $projectIds[] = $data['project_id'];
         }
+
+        // if none of the passed contacts are related to any projects, then
+        // there's no need to continue
+        if (empty($projectIds)) {
+          return $result;
+        }
       }
       unset($params['project_contacts']);
     }
