@@ -74,6 +74,19 @@
           }
         });
 
+        // handle dates separately from other params
+        var dateStartExists = userSpecifiedSearchParams.hasOwnProperty('date_start') && userSpecifiedSearchParams.date_start;
+        var dateEndExists = userSpecifiedSearchParams.hasOwnProperty('date_start') && userSpecifiedSearchParams.date_end;
+        if (dateStartExists && dateEndExists) {
+          apiParams["api.VolunteerNeed.get"].start_time = {BETWEEN: [
+            userSpecifiedSearchParams.date_start, userSpecifiedSearchParams.date_end
+          ]};
+        } else if (dateStartExists) {
+          apiParams["api.VolunteerNeed.get"].start_time = {">": userSpecifiedSearchParams.date_start};
+        } else if (dateEndExists) {
+          apiParams["api.VolunteerNeed.get"].start_time = {"<": userSpecifiedSearchParams.date_end};
+        }
+
         var api = crmApi('VolunteerProject', 'get', apiParams);
         return api.then(function(data) {
 

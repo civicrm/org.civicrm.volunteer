@@ -9,57 +9,65 @@ Required vars: volOppData, searchParams
 
   <!-- Search Form -->
   <h2>{{ts('Find Volunteer Opportunities')}}</h2>
-  <div class="crm-block ui-tabs ui-widget ui-widget-content ui-corner-all" ng-form="volOppSearchForm" crm-ui-id-scope>
-    <div class="crm-group">
-      <div crm-ui-field="{name: 'volOppSearchForm.role', title: ts('Role')}">
-        <input
-          crm-entityref="{
-            entity: 'OptionValue',
-            select: {
-              minimumInputLength: 0,
-              placeholder: ts('Select Volunteer Roles'),
-              multiple: true
-            },
-            api: {
-              params: {option_group_id: 'volunteer_role'}
-            }
-          }"
-          crm-ui-id="caseTypeDetailForm.role"
-          type="text"
-          name="role"
-          ng-model="searchParams.role"
-          class="big crm-form-text"
-        />
+  <form name="volOppSearchForm" crm-ui-id-scope>
+    <div class="crm-block ui-tabs ui-widget ui-widget-content ui-corner-all">
+      <div class="crm-group">
+        <div crm-ui-field="{name: 'volOppSearchForm.date_start', title: ts('Between')}">
+          <input crm-ui-id="volOppSearchForm.date_start" crm-ui-datepicker="{time: false}" ng-model="searchParams.date_start" />
+          <label crm-ui-for="volOppSearchForm.date_end">and</label>
+          <input crm-ui-id="volOppSearchForm.date_end" crm-ui-datepicker="{time: false}" ng-model="searchParams.date_end" />
+        </div>
+
+        <div crm-ui-field="{name: 'volOppSearchForm.role', title: ts('Role')}">
+          <input
+            crm-entityref="{
+              entity: 'OptionValue',
+              select: {
+                minimumInputLength: 0,
+                placeholder: ts('Select Volunteer Roles'),
+                multiple: true
+              },
+              api: {
+                params: {option_group_id: 'volunteer_role'}
+              }
+            }"
+            crm-ui-id="volOppSearchForm.role"
+            type="text"
+            name="role"
+            ng-model="searchParams.role"
+            class="big crm-form-text"
+          />
+        </div>
+        <div crm-ui-field="{name: 'volOppSearchForm.beneficiary', title: ts('Beneficiary')}">
+          <!--
+          TODO: CiviVolunteer perhaps needs to provide a group which beneficiaries
+          can be added to so we don't expose the whole database. Actually, the
+          result of api.VolunteerProjectContact.get might do with the right params.
+          -->
+          <input
+            crm-entityref="{
+              select: {
+                minimumInputLength: 0,
+                placeholder: ts('Select Beneficiary'),
+                multiple: true
+              },
+              api: {
+                params: {contact_type: 'Organization'}
+              }
+            }"
+            crm-ui-id="volOppSearchForm.beneficiary"
+            type="text"
+            name="beneficiary"
+            ng-model="searchParams.beneficiary"
+            class="big crm-form-text"
+          />
+        </div>
       </div>
-      <div crm-ui-field="{name: 'volOppSearchForm.beneficiary', title: ts('Beneficiary')}">
-        <!--
-        TODO: CiviVolunteer perhaps needs to provide a group which beneficiaries
-        can be added to so we don't expose the whole database. Actually, the
-        result of api.VolunteerProjectContact.get might do with the right params.
-        -->
-        <input
-          crm-entityref="{
-            select: {
-              minimumInputLength: 0,
-              placeholder: ts('Select Beneficiary'),
-              multiple: true
-            },
-            api: {
-              params: {contact_type: 'Organization'}
-            }
-          }"
-          crm-ui-id="volOppSearchForm.beneficiary"
-          type="text"
-          name="beneficiary"
-          ng-model="searchParams.beneficiary"
-          class="big crm-form-text"
-        />
+      <div class="crm-buttons">
+        <button crm-icon="search" ng-click="search()">{{ts('Search')}}</button>
       </div>
     </div>
-    <div class="crm-buttons">
-      <button crm-icon="search" ng-click="search()">{{ts('Search')}}</button>
-    </div>
-  </div>
+  </form>
 
 
   <!-- Shopping Cart -->

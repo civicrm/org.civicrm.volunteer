@@ -20,6 +20,19 @@
     volOppSearch.search();
 
     $scope.searchParams = volOppSearch.userSpecifiedSearchParams;
+    // set default dates
+    var today = new Date();
+    if (!$scope.searchParams.hasOwnProperty('date_start')) {
+      $scope.searchParams.date_start =
+        [today.getFullYear(), today.getMonth() + 1, today.getDate()].join('-');
+    }
+    if (!$scope.searchParams.hasOwnProperty('date_end')) {
+      var end = new Date();
+      end.setDate(today.getDate() + 30);
+      $scope.searchParams.date_end =
+        [end.getFullYear(), end.getMonth() + 1, end.getDate()].join('-');
+    }
+
     $scope.volOppData = volOppSearch.getResult;
 
     $scope.checkout = function () {
