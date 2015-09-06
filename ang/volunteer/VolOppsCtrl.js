@@ -19,17 +19,17 @@
     // on page load, search based on the URL params
     volOppSearch.search();
 
-    $scope.searchParams = volOppSearch.userSpecifiedSearchParams;
+    $scope.searchParams = volOppSearch.getParams;
     // set default dates
     var today = new Date();
-    if (!$scope.searchParams.hasOwnProperty('date_start')) {
-      $scope.searchParams.date_start =
+    if (!$scope.searchParams().hasOwnProperty('date_start')) {
+      $scope.searchParams().date_start =
         [today.getFullYear(), today.getMonth() + 1, today.getDate()].join('-');
     }
-    if (!$scope.searchParams.hasOwnProperty('date_end')) {
+    if (!$scope.searchParams().hasOwnProperty('date_end')) {
       var end = new Date();
       end.setDate(today.getDate() + 30);
-      $scope.searchParams.date_end =
+      $scope.searchParams().date_end =
         [end.getFullYear(), end.getMonth() + 1, end.getDate()].join('-');
     }
 

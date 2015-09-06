@@ -5,7 +5,7 @@ Required vars: volOppData, searchParams
 
 <div class="crm-container">
   <div crm-ui-debug="volOppData()"></div>
-  <div crm-ui-debug="searchParams"></div>
+  <div crm-ui-debug="searchParams()"></div>
 
   <!-- Search Form -->
   <h2>{{ts('Find Volunteer Opportunities')}}</h2>
@@ -13,9 +13,9 @@ Required vars: volOppData, searchParams
     <div class="crm-block ui-tabs ui-widget ui-widget-content ui-corner-all">
       <div class="crm-group">
         <div crm-ui-field="{name: 'volOppSearchForm.date_start', title: ts('Between')}">
-          <input crm-ui-id="volOppSearchForm.date_start" crm-ui-datepicker="{time: false}" ng-model="searchParams.date_start" />
+          <input crm-ui-id="volOppSearchForm.date_start" crm-ui-datepicker="{time: false}" ng-model="searchParams().date_start" />
           <label crm-ui-for="volOppSearchForm.date_end">and</label>
-          <input crm-ui-id="volOppSearchForm.date_end" crm-ui-datepicker="{time: false}" ng-model="searchParams.date_end" />
+          <input crm-ui-id="volOppSearchForm.date_end" crm-ui-datepicker="{time: false}" ng-model="searchParams().date_end" />
         </div>
 
         <div crm-ui-field="{name: 'volOppSearchForm.role', title: ts('Role')}">
@@ -34,7 +34,7 @@ Required vars: volOppData, searchParams
             crm-ui-id="volOppSearchForm.role"
             type="text"
             name="role"
-            ng-model="searchParams.role"
+            ng-model="searchParams().role"
             class="big crm-form-text"
           />
         </div>
@@ -58,7 +58,7 @@ Required vars: volOppData, searchParams
             crm-ui-id="volOppSearchForm.beneficiary"
             type="text"
             name="beneficiary"
-            ng-model="searchParams.beneficiary"
+            ng-model="searchParams().beneficiary"
             class="big crm-form-text"
           />
         </div>

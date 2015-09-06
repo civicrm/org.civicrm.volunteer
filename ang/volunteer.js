@@ -53,7 +53,11 @@
         clearResult();
 
         // if no params are passed, get the data out of the URL
-        userSpecifiedSearchParams = searchParams || $route.current.params;
+        if (searchParams) {
+          userSpecifiedSearchParams = searchParams();
+        } else {
+          userSpecifiedSearchParams = $route.current.params;
+        }
 
         // update the URL for bookmarkability
         $location.search(userSpecifiedSearchParams);
@@ -110,8 +114,7 @@
       return {
         getResult: getResult,
         getParams: getUserSpecifiedSearchParams,
-        search: search,
-        userSpecifiedSearchParams: userSpecifiedSearchParams
+        search: search
       };
 
     }]);
