@@ -71,6 +71,9 @@
                   }
                   apiParams.project_contacts.volunteer_beneficiary = value.split(',');
                 break;
+              case "project":
+                apiParams["id"] = value;
+                break;
               case "role":
                   apiParams["api.VolunteerNeed.get"].role_id = {IN: value.split(',')};
                 break;
@@ -79,8 +82,8 @@
         });
 
         // handle dates separately from other params
-        var dateStartExists = userSpecifiedSearchParams.hasOwnProperty('date_start') && userSpecifiedSearchParams.date_start;
-        var dateEndExists = userSpecifiedSearchParams.hasOwnProperty('date_start') && userSpecifiedSearchParams.date_end;
+        var dateStartExists = $route.current.params.hasOwnProperty('date_start') && $route.current.params.date_start;
+        var dateEndExists = $route.current.params.hasOwnProperty('date_start') && $route.current.params.date_end;
         if (dateStartExists && dateEndExists) {
           apiParams["api.VolunteerNeed.get"].start_time = {BETWEEN: [
             userSpecifiedSearchParams.date_start, userSpecifiedSearchParams.date_end

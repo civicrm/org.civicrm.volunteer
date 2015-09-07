@@ -9,7 +9,7 @@
     });
   });
 
-  angular.module('volunteer').controller('VolOppsCtrl', function ($scope, $window, crmStatus, crmUiHelp, volOppSearch) {
+  angular.module('volunteer').controller('VolOppsCtrl', function ($route, $scope, $window, crmStatus, crmUiHelp, volOppSearch) {
     // The ts() and hs() functions help load strings for this module.
     var ts = $scope.ts = CRM.ts('org.civicrm.volunteer');
     var hs = $scope.hs = crmUiHelp({file: 'ang/VolOppsCtrl'}); // See: templates/ang/VolOppsCtrl.hlp
@@ -36,19 +36,20 @@
     $scope.volOppData = volOppSearch.getResult;
 
     $scope.checkout = function () {
-      var path = 'civicrm/volunteer/signup';
-      var query = {reset: 1};
-
-      if (volOppsInCart.length > 0) {
-        query.needs = _.keys(volOppsInCart);
-        $window.location.href = CRM.url(path, query);
+      if ($route.current.params.hasOwnProperty('dest') && $route.current.params.dest) {
+        var dest = $route.current.params.dest;
       } else {
-        CRM.alert(
-          ts('Please select at least volunteer opportunity to sign up for.'),
-          ts('Submission Error'),
-          'alert'
-        );
+        var dest = 'list';
       }
+
+      var path = 'civicrm/volunteer/signup';
+      var query = {
+        reset: 1,
+        needs: _.keys(volOppsInCart),
+        dest: dest
+      };
+
+      $window.location.href = CRM.url(path, query);
     };
 
     $scope.search = function () {
