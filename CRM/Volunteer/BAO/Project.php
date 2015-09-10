@@ -253,32 +253,47 @@ class CRM_Volunteer_BAO_Project extends CRM_Volunteer_DAO_Project {
    */
   public static function retrieve(array $params) {
     $result = array();
-    $whereClauses = array();
+
+    $query = CRM_Utils_SQL_Select::from('`civicrm_volunteer_project` vp')
+      ->select('DISTINCT vp.*');
 
     if (!empty($params['project_contacts'])) {
-      $whereClauses['project_contacts'] = self::buildContactWhere($params['project_contacts']);
-
-      // if none of the passed contacts are related to any projects, then
-      // there's no need to continue
-      if ($whereClauses['project_contacts'] === FALSE) {
-        return $result;
+      $contactJoin = self::buildContactJoin($params['project_contacts']);
+      if ($contactJoin) {
+        $query->join('vpc', $contactJoin);
       }
     }
 
+    if (!empty($params['proximity'])) {
+      $query->join('loc', 'INNER JOIN `civicrm_loc_block` loc ON loc.id = vp.loc_block_id')
+        ->join('civicrm_address', 'INNER JOIN `civicrm_address` ON civicrm_address.id = loc.address_id')
+        ->where(self::buildProximityWhere($params['proximity']));
+    }
+
+    // This step is here to support both naming conventions for specifying params
+    // (e.g., volunteer_project_id and id) while normalizing how we access them
+    // (e.g., $project->id)
     $project = new CRM_Volunteer_BAO_Project();
     $project->copyValues($params);
 
-    foreach($whereClauses as $where) {
-      $project->whereAdd($where);
+    foreach ($project->fields() as $field) {
+      $fieldName = $field['name'];
+
+      if (!empty($project->$fieldName)) {
+        $query->where('!column = @value', array(
+          'column' => $fieldName,
+          'value' => $project->$fieldName,
+        ));
+      }
     }
 
-    $project->find();
-
-    while ($project->fetch()) {
-      $result[(int) $project->id] = clone $project;
+    $dao = self::executeQuery($query->toSQL());
+    while ($dao->fetch()) {
+      $fetchedProject = new CRM_Volunteer_BAO_Project();
+      $fetchedProject->copyValues(clone $dao);
+      $result[(int) $dao->id] = $fetchedProject;
     }
-
-    $project->free();
+    $dao->free();
 
     return $result;
   }
@@ -294,26 +309,64 @@ class CRM_Volunteer_BAO_Project extends CRM_Volunteer_DAO_Project {
    *   Boolean FALSE if no projects have the specified contact relationships;
    *   String SQL fragment otherwise
    */
-  private static function buildContactWhere(array $projectContacts) {
+  private static function buildContactJoin(array $projectContacts) {
     $result = FALSE;
-    $projectIds = array();
+    $onClauses = array();
+
+    $relTypes = CRM_Core_OptionGroup::values(
+      CRM_Volunteer_BAO_ProjectContact::RELATIONSHIP_OPTION_GROUP,
+      TRUE, FALSE, FALSE, NULL, 'name');
 
     foreach ($projectContacts as $relType => $contactIds) {
-      $api = civicrm_api3('VolunteerProjectContact', 'get', array(
-        'contact_id' => array("IN" => (array) $contactIds),
-        'relationship_type_id' => $relType,
-      ));
-      foreach ($api['values'] as $data) {
-        $projectIds[] = $data['project_id'];
+      if (!CRM_Utils_Type::validate($relType, 'Integer', FALSE)) {
+        $relType = $relTypes[$relType];
       }
+      $contactIds = implode(',', (array) $contactIds);
 
-      if (!empty($projectIds)) {
-        $valuesSql = implode(', ', array_unique($projectIds));
-        $result = "id IN ({$valuesSql})";
-      }
+      $onClauses[] = "(vpc.contact_id IN ($contactIds) AND vpc.relationship_type_id = $relType)";
+    }
+
+    if (count($onClauses)) {
+      $strOnClauses = implode(' OR ', $onClauses);
+      $result = "INNER JOIN `civicrm_volunteer_project_contact` vpc
+        ON vp.id = vpc.project_id AND ($strOnClauses)";
     }
 
     return $result;
+  }
+
+  /**
+   * Helper method to filter Projects by location.
+   *
+   * @param array $params
+   *   <ol>
+   *     <li>float lat - required</li>
+   *     <li>float lon - required</li>
+   *     <li>float radius - required</li>
+   *     <li>string unit - optional, defaults to meters unless 'mile' is specified</li>
+   *   </ol>
+   * @return string
+   *   SQL fragment (partial where clause)
+   * @throws Exception
+   */
+  private static function buildProximityWhere(array $params) {
+    $lat = $lon = $radius = $unit = NULL;
+    extract($params, EXTR_IF_EXISTS);
+
+    // check and ensure that lat/long and radius are floats
+    if (
+      !CRM_Utils_Rule::numeric($lat) ||
+      !CRM_Utils_Rule::numeric($lon) ||
+      !CRM_Utils_Rule::numeric($radius)
+    ) {
+      throw new Exception(ts('Latitude, Longitude and Radius should exist and be numeric'));
+    }
+
+    $conversionFactor = ($unit == "mile") ? 1609.344 : 1000;
+    //radius in meters
+    $radius = $radius * $conversionFactor;
+
+    return CRM_Contact_BAO_ProximityQuery::where($lat, $lon, $radius);
   }
 
   /**
@@ -373,16 +426,20 @@ class CRM_Volunteer_BAO_Project extends CRM_Volunteer_DAO_Project {
   }
 
   /**
-   * Given an associative array of name/value pairs, extract all the values
-   * that belong to this object and initialize the object with said values. This
-   * override adds a little data massaging prior to calling its parent.
+   * Initialize this object with provided values. This override adds a little
+   * data massaging prior to calling its parent.
    *
-   * @param array $params (reference ) associative array of name/value pairs
+   * @param mixed $params
+   *   An associative array of name/value pairs or a CRM_Core_DAO object
    *
    * @return boolean      did we copy all null values into the object
    * @access public
    */
   public function copyValues(&$params) {
+    if (is_a($params, 'CRM_Core_DAO')) {
+      $params = get_object_vars($params);
+    }
+
     if (array_key_exists('is_active', $params)) {
       /*
        * don't force is_active to have a value if none was set, to allow searches
