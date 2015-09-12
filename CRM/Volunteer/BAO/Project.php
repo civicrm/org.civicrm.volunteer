@@ -241,7 +241,7 @@ class CRM_Volunteer_BAO_Project extends CRM_Volunteer_DAO_Project {
    * <ol>
    *   <li>project_contacts (@see CRM_Volunteer_BAO_Project::create() and
    *     CRM_Volunteer_BAO_Project::buildContactWhere)</li>
-   *   <li>proximity (@see unwritten)</li>
+   *   <li>proximity (@see CRM_Volunteer_BAO_Project::buildProximityWhere)</li>
    * </ol>
    *
    * NOTE: This method does not return data related to the special params
@@ -340,9 +340,13 @@ class CRM_Volunteer_BAO_Project extends CRM_Volunteer_DAO_Project {
    *
    * @param array $params
    *   <ol>
-   *     <li>float lat - required</li>
-   *     <li>float lon - required</li>
+   *     <li>string city - optional. Not used in this function, just passed along for geocoding.</li>
+   *     <li>mixed country - required if lat/lon not provided. Can be country_id or string.</li>
+   *     <li>float lat - required if country not provided</li>
+   *     <li>float lon - required if country not provided</li>
+   *     <li>string postal_code - optional. Not used in this function, just passed along for geocoding.</li>
    *     <li>float radius - required</li>
+   *     <li>string street_address - optional. Not used in this function, just passed along for geocoding.</li>
    *     <li>string unit - optional, defaults to meters unless 'mile' is specified</li>
    *   </ol>
    * @return string
@@ -350,7 +354,7 @@ class CRM_Volunteer_BAO_Project extends CRM_Volunteer_DAO_Project {
    * @throws Exception
    */
   private static function buildProximityWhere(array $params) {
-    $city = $country = $lat = $lon = $postal_code = $radius = $street_address = $unit = NULL;
+    $country = $lat = $lon = $radius = $unit = NULL;
     extract($params, EXTR_IF_EXISTS);
 
     // ensure that radius is a float
