@@ -350,16 +350,39 @@ class CRM_Volunteer_BAO_Project extends CRM_Volunteer_DAO_Project {
    * @throws Exception
    */
   private static function buildProximityWhere(array $params) {
-    $lat = $lon = $radius = $unit = NULL;
+    $city = $country = $lat = $lon = $postal_code = $radius = $street_address = $unit = NULL;
     extract($params, EXTR_IF_EXISTS);
 
-    // check and ensure that lat/long and radius are floats
-    if (
-      !CRM_Utils_Rule::numeric($lat) ||
-      !CRM_Utils_Rule::numeric($lon) ||
-      !CRM_Utils_Rule::numeric($radius)
-    ) {
-      throw new Exception(ts('Latitude, Longitude and Radius should exist and be numeric'));
+    // ensure that radius is a float
+    if (!CRM_Utils_Rule::numeric($radius)) {
+      throw new Exception(ts('Radius should exist and be numeric'));
+    }
+
+    if (!CRM_Utils_Rule::numeric($lat) || !CRM_Utils_Rule::numeric($lon)) {
+      if (empty($country)) {
+        throw new Exception(ts('Either Country or both Latitude and Longitude are required'));
+      }
+
+      // TODO: I think CRM_Utils_Geocode_*::format should be responsible for this
+      if (CRM_Utils_Type::validate($country, 'Positive', FALSE)) {
+        $country = civicrm_api3('Country', 'getvalue', array(
+          'id' => $country,
+          'return' => 'name',
+        ));
+      }
+
+      // TODO: support other geocoders
+      $geocodeSuccess = CRM_Utils_Geocode_Google::format($params);
+      if (!$geocodeSuccess) {
+        // this is intentionally a string; a query like "SELECT * FROM foo WHERE FALSE"
+        // will return an empty set, which is what we should do if the provided address
+        // can't be geocoded
+        return 'FALSE';
+      }
+      // $params is passed to the geocoder by reference; on success, these values
+      // will be available
+      $lat = $params['geo_code_1'];
+      $lon = $params['geo_code_2'];
     }
 
     $conversionFactor = ($unit == "mile") ? 1609.344 : 1000;

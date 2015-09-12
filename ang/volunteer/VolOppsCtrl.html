@@ -64,6 +64,68 @@ Required vars: volOppData, searchParams
             />
           </div>
         </div>
+        <div class="crm-vol-proximity" crm-ui-accordion="{title: ts('Proximity Search'), collapsed: true}">
+          <div crm-ui-field="{name: 'volOppSearchForm.radius', title: ts('Within')}">
+            <input
+              class="four crm-form-text"
+              crm-ui-id="volOppSearchForm.radius"
+              ng-model="searchParams().proximity.radius"
+              ng-required="isProximitySearch()"
+              type="number"
+            />
+            <select
+              crm-ui-id="volOppSearchForm.unit"
+              ng-model="searchParams().proximity.unit"
+              ng-options="option.value as option.label for option in proximityUnits"
+              ng-required="isProximitySearch()">
+            </select>
+            <label crm-ui-for="volOppSearchForm.unit">of:</label>
+          </div>
+          <div crm-ui-field="{name: 'volOppSearchForm.street_address', title: ts('Street Address')}">
+            <input
+              class="crm-form-text"
+              crm-ui-id="volOppSearchForm.street_address"
+              ng-model="searchParams().proximity.street_address"
+              type="text"
+            />
+          </div>
+          <div crm-ui-field="{name: 'volOppSearchForm.city', title: ts('City')}">
+            <input
+              class="crm-form-text"
+              crm-ui-id="volOppSearchForm.city"
+              ng-model="searchParams().proximity.city"
+              type="text"
+            />
+          </div>
+          <div
+            crm-ui-field="{name: 'volOppSearchForm.postal_code', title: ts('Postal Code')}"
+            ng-required="isProximitySearch()"
+          >
+            <input
+              class="crm-form-text"
+              crm-ui-id="volOppSearchForm.postal_code"
+              ng-model="searchParams().proximity.postal_code"
+              type="text"
+            />
+          </div>
+          <div crm-ui-field="{name: 'volOppSearchForm.country', title: ts('Country')}">
+            <input
+              class="big crm-form-text"
+              crm-entityref="{
+                entity: 'Country',
+                select: {
+                  minimumInputLength: 0,
+                  placeholder: ts('Select Country'),
+                  multiple: false
+                }
+              }"
+              crm-ui-id="volOppSearchForm.country"
+              ng-model="searchParams().proximity.country"
+              ng-required="isProximitySearch()"
+              type="text"
+            />
+          </div>
+        </div>
         <div class="crm-buttons">
           <button crm-icon="search" ng-click="search()">{{ts('Search')}}</button>
         </div>
