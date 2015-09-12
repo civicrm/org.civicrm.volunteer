@@ -1,0 +1,162 @@
+<!--
+Controller: VolOppsCtrl
+Required vars: volOppData, searchParams
+-->
+
+<div class="crm-container">
+  <div crm-ui-debug="volOppData()"></div>
+  <div crm-ui-debug="searchParams()"></div>
+
+  <!-- Search Form -->
+  <h2>{{ts('Find Volunteer Opportunities')}}</h2>
+  <form name="volOppSearchForm" crm-ui-id-scope>
+    <div class="crm-block ui-tabs ui-widget ui-widget-content ui-corner-all">
+      <div class="crm-group">
+        <div crm-ui-field="{name: 'volOppSearchForm.date_start', title: ts('Between')}">
+          <input crm-ui-id="volOppSearchForm.date_start" crm-ui-datepicker="{time: false}" ng-model="searchParams().date_start" />
+          <label crm-ui-for="volOppSearchForm.date_end">and</label>
+          <input crm-ui-id="volOppSearchForm.date_end" crm-ui-datepicker="{time: false}" ng-model="searchParams().date_end" />
+        </div>
+
+        <div crm-ui-field="{name: 'volOppSearchForm.role', title: ts('Role')}">
+          <input
+            crm-entityref="{
+              entity: 'OptionValue',
+              select: {
+                minimumInputLength: 0,
+                placeholder: ts('Select Volunteer Roles'),
+                multiple: true
+              },
+              api: {
+                params: {option_group_id: 'volunteer_role'}
+              }
+            }"
+            crm-ui-id="volOppSearchForm.role"
+            type="text"
+            name="role"
+            ng-model="searchParams().role"
+            class="big crm-form-text"
+          />
+        </div>
+        <div crm-ui-field="{name: 'volOppSearchForm.beneficiary', title: ts('Beneficiary')}">
+          <!--
+          TODO: CiviVolunteer perhaps needs to provide a group which beneficiaries
+          can be added to so we don't expose the whole database. Actually, the
+          result of api.VolunteerProjectContact.get might do with the right params.
+          -->
+          <input
+            crm-entityref="{
+              select: {
+                minimumInputLength: 0,
+                placeholder: ts('Select Beneficiary'),
+                multiple: true
+              },
+              api: {
+                params: {contact_type: 'Organization'}
+              }
+            }"
+            crm-ui-id="volOppSearchForm.beneficiary"
+            type="text"
+            name="beneficiary"
+            ng-model="searchParams().beneficiary"
+            class="big crm-form-text"
+          />
+        </div>
+      </div>
+      <div class="crm-buttons">
+        <button crm-icon="search" ng-click="search()">{{ts('Search')}}</button>
+      </div>
+    </div>
+  </form>
+
+
+  <!-- Shopping Cart -->
+  <h2>{{ts('Your Selected Volunteer Opportunities')}}</h2>
+  <div class="crm-block ui-tabs ui-widget ui-widget-content ui-corner-all" ng-form="volOppCheckoutForm" crm-ui-id-scope>
+    <table class="display dataTable no-footer" role="grid">
+      <thead>
+        <tr role="row">
+          <td class="sorting ui-state-default">{{ts('Project')}}</td>
+          <td class="sorting ui-state-default">{{ts('Role')}}</td>
+          <td class="sorting ui-state-default">{{ts('Time')}}</td>
+          <td class="sorting ui-state-default">{{ts('Remove')}}</td>
+        </tr>
+      </thead>
+      <tbody>
+        <tr ng-repeat="need in shoppingCart()" ng-init="project = volOppData().projects[need.project_id]" role="row">
+          <td>
+            {{project.title}}
+            <span
+              class="icon ui-icon-comment"
+              ng-show="project.description"
+              ng-click="showProjectDescription(project)">
+            </span>
+          </td>
+          <td>{{need.role_label}}
+            <span
+              class="icon ui-icon-comment"
+              ng-show="need.role_description"
+              ng-click="showRoleDescription(need)">
+            </span>
+          </td>
+          <td>{{need.display_time}}</td>
+          <td>
+            <span
+              class="icon ui-icon-trash"
+              ng-checked="need.inCart"
+              ng-click="toggleSelection(need)"
+            </span>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+
+    <div class="crm-buttons">
+      <button crm-icon="check" ng-click="checkout()" ng-disabled="_.size(shoppingCart()) === 0">
+        {{ts('Sign Up!')}}
+      </button>
+    </div>
+  </div>
+
+
+  <!-- Results -->
+  <h2>{{ts('Available Volunteer Opportunities')}}</h2>
+  <table class="display dataTable no-footer" role="grid">
+    <thead>
+      <tr role="row">
+        <td class="sorting ui-state-default">{{ts('Project')}}</td>
+        <td class="sorting ui-state-default">{{ts('Role')}}</td>
+        <td class="sorting ui-state-default">{{ts('Time')}}</td>
+        <td class="sorting ui-state-default">{{ts('Sign up!')}}</td>
+      </tr>
+    </thead>
+    <tbody>
+      <tr ng-repeat="need in volOppData().needs" ng-init="project = volOppData().projects[need.project_id]" role="row">
+        <td>
+          {{project.title}}
+          <span
+            class="icon ui-icon-comment"
+            ng-show="project.description"
+            ng-click="showProjectDescription(project)">
+          </span>
+        </td>
+        <td>{{need.role_label}}
+          <span
+            class="icon ui-icon-comment"
+            ng-show="need.role_description"
+            ng-click="showRoleDescription(need)">
+          </span>
+        </td>
+        <td>{{need.display_time}}</td>
+        <td>
+          <input
+            type="checkbox"
+            ng-checked="need.inCart"
+            ng-click="toggleSelection(need)"
+            class="crm-form-checkbox"
+          />
+        </td>
+      </tr>
+    </tbody>
+  </table>
+</div>

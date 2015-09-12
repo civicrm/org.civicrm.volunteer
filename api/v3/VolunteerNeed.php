@@ -84,19 +84,33 @@ function civicrm_api3_volunteer_need_get($params) {
         $need['display_time'] = ts('Flexible', array('domain' => 'org.civicrm.volunteer'));
       }
       if (isset($need['role_id'])) {
-        $need['role_label'] = CRM_Core_OptionGroup::getLabel(
-          CRM_Volunteer_BAO_Assignment::ROLE_OPTION_GROUP,
-          $need['role_id']
+        $role = CRM_Core_OptionGroup::getRowValues(
+          CRM_Volunteer_BAO_Assignment::ROLE_OPTION_GROUP, $need['role_id'],
+          'value'
         );
+        $need['role_label'] = $role['label'];
+        $need['role_description'] = $role['description'];
       } elseif (CRM_Utils_Array::value('is_flexible', $need)) {
         $need['role_label'] = CRM_Volunteer_BAO_Need::getFlexibleRoleLabel();
+        $need['role_description'] = NULL;
       }
     }
   }
   return $result;
 }
+
+/**
+ * Adjust Metadata for Get action
+ *
+ * The metadata is used for setting defaults, documentation, validation, aliases, etc.
+ *
+ * @param array $params
+ */
 function _civicrm_api3_volunteer_need_get_spec(&$params) {
+  // this alias facilitates chaining from api.volunteer_project.get
+  $params['volunteer_need_project_id']['api.aliases'] = array('volunteer_project_id');
 }
+
 /**
  * delete an existing need
  *

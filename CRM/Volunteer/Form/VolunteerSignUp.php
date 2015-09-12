@@ -77,6 +77,14 @@ class CRM_Volunteer_Form_VolunteerSignUp extends CRM_Core_Form {
   protected $_profile_ids = array();
 
   /**
+   * The project IDs associated with this form.
+   *
+   * @var array
+   * @protected
+   */
+  protected $projectIds = array();
+
+  /**
    * Set default values for the form.
    *
    * @access public
@@ -124,9 +132,12 @@ class CRM_Volunteer_Form_VolunteerSignUp extends CRM_Core_Form {
     ));
     $this->_needs = $api['values'];
 
-    // TODO: where should we send the user post-registration? to the as-yet
-    // unfinished list of available volunteer opportunities?
-//    $this->setDestination();
+    foreach ($this->_needs as $need) {
+      $this->projectIds[] = $need['project_id'];
+    }
+    $this->projectIds = array_unique($this->projectIds);
+
+    $this->setDestination();
     $this->_action = CRM_Utils_Request::retrieve('action', 'String', $this, FALSE);
 
     // current mode
@@ -141,14 +152,9 @@ class CRM_Volunteer_Form_VolunteerSignUp extends CRM_Core_Form {
    */
   function getProfileIDs() {
     if (empty($this->_profile_ids)) {
-      $profileIds = $projectIds = array();
+      $profileIds = array();
 
-      foreach ($this->_needs as $need) {
-        $projectIds[] = $need['project_id'];
-      }
-      $projectIds = array_unique($projectIds);
-
-      foreach ($projectIds as $projectId) {
+      foreach ($this->projectIds as $projectId) {
         $dao = new CRM_Core_DAO_UFJoin();
         $dao->entity_table = CRM_Volunteer_BAO_Project::$_tableName;
         $dao->entity_id = $projectId;
@@ -277,13 +283,25 @@ class CRM_Volunteer_Form_VolunteerSignUp extends CRM_Core_Form {
    * after successfully submitting the sign-up form
    */
   protected function setDestination() {
-    switch ($this->_project->entity_table) {
-      case 'civicrm_event':
-        $path = 'civicrm/event/info';
-        $query = "reset=1&id={$this->_project->entity_id}";
-        break;
+    $path = $query = $fragment = NULL;
+
+    $dest = CRM_Utils_Request::retrieve('dest', 'String', $this, FALSE);
+    switch ($dest) {
+      case 'event':
+        // If only one project is associated with the form, send the user back
+        // to that event form; otherwise, default to the vol opps page.
+        if (count($this->projectIds) === 1) {
+          $eventId = CRM_Volunteer_BAO_Project::retrieveByID($this->projectIds[0])->entity_id;
+          $path = 'civicrm/event/info';
+          $query = "reset=1&id={$eventId}";
+          break;
+        }
+      case 'list':
+      default:
+        $path = 'civicrm/a/';
+        $fragment = '/volunteer/opportunities';
     }
 
-    $this->_destination = CRM_Utils_System::url($path, $query);
+    $this->_destination = CRM_Utils_System::url($path, $query, FALSE, $fragment);
   }
 }
