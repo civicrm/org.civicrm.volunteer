@@ -151,9 +151,8 @@
 
           //remove profiles no longer needed
           $.each(profileIds, function(profileId) {
-            console.log("removing profile", profileId);
-            //todo: This is not implemented, so we need to shim it
-            //crmApi("UFJoin", "delete", {id: profileId});
+            //todo: This is implemented in civiVol but should be added to core.
+            crmApi("VolunteerProject", "removeprofile", {id: profileId});
           });
         });
 
