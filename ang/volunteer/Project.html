@@ -1,6 +1,5 @@
 <div class="crm-container">
   <div crm-ui-debug="project"></div>
-  <div crm-ui-debug="relationship_types"></div>
   <div crm-ui-debug="relationships"></div>
   <div crm-ui-debug="profiles"></div>
   <div id="backboneIncludes"></div>
@@ -12,7 +11,7 @@
     <fieldset>
       <legend>{{ ts("Project Settings") }}</legend>
       <div crm-ui-field="{name: 'projectForm.title', title: ts('Project Title')}">
-        <input crm-ui-id="projectForm.title" ng-model="project.title" />
+        <input crm-ui-id="projectForm.title" ng-model="project.title" ng-required="true" />
       </div>
 
       <div crm-ui-field="{name: 'projectForm.description', title: ts('Project Description')}">
@@ -45,6 +44,10 @@
       <legend>{{ ts("Included Profiles") }}</legend>
       <div id="org_civicrm_volunteer-sign-up-profiles">
         <div ng-repeat="profile in profiles" class='crm-profile-selector-container'>
+          <a ng-click="removeProfile($index)" class="crm-hover-button crm-button-remove-profile">
+            <span class="icon ui-icon-circle-close"></span>
+          </a>
+
           <input crm-profile-selector="{}" ng-model="profile.uf_group_id">
         </div>
       </div>
@@ -52,6 +55,11 @@
         <span class="icon ui-icon-plus"></span>add another profile
       </a>
     </fieldset>
+    <div class="crm-submit-buttons">
+        <span class="crm-button crm-icon-button">
+          <span class="crm-button-icon ui-icon-check"> </span> <input type="submit" ng-click="saveProject()" value="{{ts('Save Changes')}}" class="crm-form-submit" accesskey="S" />
+        </span>
+    </div>
   </form>
 
 </div>
