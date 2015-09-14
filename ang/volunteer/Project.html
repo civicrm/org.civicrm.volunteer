@@ -2,6 +2,7 @@
   <div crm-ui-debug="project"></div>
   <div crm-ui-debug="relationship_types"></div>
   <div crm-ui-debug="relationships"></div>
+  <div crm-ui-debug="profiles"></div>
   <div id="backboneIncludes"></div>
 
   <form name="projectForm" crm-ui-id-scope>
@@ -43,7 +44,9 @@
     <fieldset>
       <legend>{{ ts("Included Profiles") }}</legend>
       <div id="org_civicrm_volunteer-sign-up-profiles">
-
+        <div ng-repeat="profile in profiles" class='crm-profile-selector-container'>
+          <input crm-profile-selector="{}" ng-model="profile.uf_group_id">
+        </div>
       </div>
       <a ng-click="addProfile()" class="crm-hover-button crm-button-add-profile" style="display: inline-block;">
         <span class="icon ui-icon-plus"></span>add another profile
