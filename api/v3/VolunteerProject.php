@@ -140,3 +140,8 @@ function civicrm_api3_volunteer_project_removeprofile($params) {
   return _civicrm_api3_basic_delete('CRM_Core_BAO_UFJoin', $params);
 }
 
+
+function civicrm_api3_volunteer_project_locations($params) {
+  return civicrm_api3_create_success(CRM_Event_BAO_Event::getLocationEvents(), $params, 'VolunteerProject', 'get');
+}
+
