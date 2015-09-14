@@ -121,3 +121,22 @@ function _civicrm_api3_volunteer_project_get_spec(&$params) {
 function civicrm_api3_volunteer_project_delete($params) {
   return _civicrm_api3_basic_delete(_civicrm_api3_get_BAO(__FUNCTION__), $params);
 }
+
+
+/**
+ * remove a UFJoin record
+ *
+ *
+ *
+ * @param array $params  array containing id of the project
+ *                       to be deleted
+ *
+ * @return array  returns flag true if successfull, error
+ *                message otherwise
+ * {@getfields volunteer_project_delete}
+ * @access public
+ */
+function civicrm_api3_volunteer_project_removeprofile($params) {
+  return _civicrm_api3_basic_delete('CRM_Core_BAO_UFJoin', $params);
+}
+
