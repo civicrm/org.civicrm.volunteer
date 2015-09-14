@@ -1,5 +1,7 @@
 <div class="crm-container">
   <div crm-ui-debug="project"></div>
+  <div crm-ui-debug="relationship_types"></div>
+  <div crm-ui-debug="relationships"></div>
   <div id="backboneIncludes"></div>
 
   <form name="projectForm" crm-ui-id-scope>
@@ -7,14 +9,35 @@
     <div class="help"></div>
 
     <fieldset>
-      <legend>{{ ts("Included Profiles") }}</legend>
-      <h2>{{project.title}}</h2>
-      <div crm-ui-field="{name: 'projectForm.title', title: hs('Project Title')}">
+      <legend>{{ ts("Project Settings") }}</legend>
+      <div crm-ui-field="{name: 'projectForm.title', title: ts('Project Title')}">
         <input crm-ui-id="projectForm.title" ng-model="project.title" />
       </div>
-      <div crm-ui-field="{name: 'projectForm.beneficiary', title: hs('id-volunteer-beneficiary-title')}, help: hs('id-volunteer-beneficiary')">
-        <input id="beneficiary" crm-entityref="{entity: 'Contact', select: {allowClear:true}}" ng-model="beneficiary" />
+
+      <div crm-ui-field="{name: 'projectForm.description', title: ts('Project Description')}">
+        <textarea crm-ui-id="projectForm.description" ng-model="project.description"></textarea>
       </div>
+
+      <div crm-ui-field='{name: "projectForm.campaign", title: ts("Campaign")}'>
+        <input crm-ui-id="projectForm.campaign" crm-entityref="{entity: 'Campaign', select: {allowClear:true}}" ng-model="project.campaign" />
+      </div>
+
+      <div crm-ui-field='{name: "projectForm.locBlock", title: ts("Location Block")}'>
+        <input crm-ui-id="projectForm.locBlock" crm-entityref="{entity: 'LocBlock', select: {allowClear:true}}" ng-model="project.loc_block_id" />
+      </div>
+
+      <div crm-ui-field="{name: 'projectForm.is_active', title: ts('Is this Project Active')}">
+        <input type="checkbox" crm-ui-id="projectForm.is_active" ng-model="project.is_active" />
+      </div>
+    </fieldset>
+
+    <fieldset>
+      <legend>{{ ts("Relationships") }}</legend>
+
+      <div ng-repeat="rType in relationship_types" crm-ui-field='{name: "projectForm[rType.name]", title: ts(rType.label)}'>
+        <input crm-ui-id="projectForm[rType.name]" crm-entityref="{entity: 'Contact', select: {allowClear:true, multiple: true}}" ng-model="relationships[rType.value]" />
+      </div>
+
     </fieldset>
 
     <fieldset>
