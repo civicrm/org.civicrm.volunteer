@@ -91,6 +91,12 @@
     $scope.addProfile = function() {
       $scope.profiles.push({"is_active": "1", "module": "CiviVolunteer", "weight": 1});
     };
+
+    //Make sure there is always a minimum of one profile selector
+    if ($scope.profiles.length === 0) {
+      $scope.addProfile();
+    }
+
     $scope.removeProfile = function(index) {
       $scope.profiles.splice(index, 1);
     };
