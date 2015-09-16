@@ -51,3 +51,13 @@
 #org_civicrm_volunteer-sign-up-profiles .crm-profile-selector-container:only-child .crm-button-remove-profile {
   display: none;
 }
+
+.crm-vol-extra-top {
+  margin-top: 15px;
+}
+#crm-vol-location-block {
+  width: 90%;
+}
+#crm-vol-location-block .crm-accordion-body {
+  padding: 10px;
+}
