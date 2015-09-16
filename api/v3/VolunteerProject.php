@@ -128,20 +128,39 @@ function civicrm_api3_volunteer_project_delete($params) {
  *
  *
  *
- * @param array $params  array containing id of the project
- *                       to be deleted
+ * @param array $params  array containing id of the profile
+ *                       to be removed
  *
  * @return array  returns flag true if successfull, error
  *                message otherwise
- * {@getfields volunteer_project_delete}
- * @access public
  */
 function civicrm_api3_volunteer_project_removeprofile($params) {
   return _civicrm_api3_basic_delete('CRM_Core_BAO_UFJoin', $params);
 }
 
-
+/**
+ * Returns an key/value array of location blocks with proper names
+ * Instead of the null values returned when using a crmEntityref
+ * connected to the locBlock entity
+ *
+ * @param $params
+ * @return array
+ *
+ */
 function civicrm_api3_volunteer_project_locations($params) {
   return civicrm_api3_create_success(CRM_Event_BAO_Event::getLocationEvents(), $params, 'VolunteerProject', 'get');
+}
+
+
+/**
+ * Saves/creates an entire location block with a single call instead of
+ * requiring a handful of calls/promises/resolutions from angular
+ *
+ * @param $params
+ * @return array
+ *
+ */
+function civicrm_api3_volunteer_project_savelocblock($params) {
+
 }
 
