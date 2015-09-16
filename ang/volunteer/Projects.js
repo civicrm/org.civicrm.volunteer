@@ -29,21 +29,71 @@
 
     $scope.searchParams = {};
     $scope.projects = projectData.values;
+    $scope.batchAction = "";
+    $scope.allSelected = false;
 
-  /*
-  $scope.save = function save() {
-      return crmStatus(
-        // Status messages. For defaults, just use "{}"
-        {start: ts('Saving...'), success: ts('Saved')},
-        // The save action. Note that crmApi() returns a promise.
-        crmApi('Contact', 'create', {
-          id: myContact.id,
-          first_name: myContact.first_name,
-          last_name: myContact.last_name
-        })
-      );
+    $scope.batchActions = {
+      "enable": {
+        label: ts("Enable"),
+        run: function() {
+          CRM.confirm(ts("Are you sure you want to Enable the selected Projects?"))
+            .on('crmConfirm:yes', function() {
+              $.each($scope.projects, function (index, project) {
+                if (project.selected) {
+                  project.is_active = 1;
+                  crmApi("VolunteerProject", "create", {id: project.id, is_active: project.is_active});
+                }
+              });
+              $scope.$apply();
+            });
+        }
+      },
+      "disable": {
+        label: ts("Disable"),
+        run: function() {
+          CRM.confirm(ts("Are you sure you want to Disable the selected Projects?"))
+            .on('crmConfirm:yes', function() {
+              $.each($scope.projects, function (index, project) {
+                if (project.selected) {
+                  project.is_active = 0;
+                  crmApi("VolunteerProject", "create", {id: project.id, is_active: project.is_active});
+                }
+              });
+              $scope.$apply();
+            });
+        }
+      },
+      "delete": {
+        label: ts("Delete"),
+        run: function() {
+          //todo: Implement delete.
+          console.log("Batch Delete");
+        }
+      }
     };
-    */
+    $scope.runBatch = function() {
+      if(!!$scope.batchAction) {
+        $scope.batchActions[$scope.batchAction].run();
+      }
+    };
+    $scope.watchSelected = function() {
+      var all = true;
+      $.each($scope.projects, function(index, project) {
+        all = (all && project.selected);
+      });
+      $scope.allSelected = all;
+    };
+    $scope.selectAll = function() {
+      if($scope.allSelected) {
+        $.each($scope.projects, function(index, project) {
+          project.selected = true;
+        });
+      } else {
+        $.each($scope.projects, function(index, project) {
+          project.selected = false;
+        });
+      }
+    };
   });
 
 })(angular, CRM.$, CRM._);

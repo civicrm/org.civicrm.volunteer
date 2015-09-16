@@ -5,8 +5,13 @@
   <div class="crm-vol-widgets crm-vol-manage-widgets"></div>
   <div class="clear"></div>
   <div class="crm-vol-buttons crm-vol-mange-buttons crm-vol-half-responsive">
-    //settings
-    //Add Project
+    <input type="button" value="{{ts('Volunteer Settings')}}" /><br /><br />
+    <input type="button" value="{{ts('Add Project')}}" /><br /><br />
+    <select crm-ui-select="{placeholder: ts('Bulk Actions'), allowClear: true, width: '150'}" ng-model="batchAction" id="batchAction">
+      <option />
+      <option ng-repeat="(key, action) in batchActions" value="{{key}}">{{action.label}}</option>
+    </select>
+    <input type="button" value="{{ts('Run')}}" ng-click="runBatch()" />
   </div>
   <div class="crm-vol-search crm-vol-manage-search crm-vol-half-responsive">
     <form name="volProjectSearchForm" crm-ui-id-scope>
@@ -39,9 +44,10 @@
 
 
   <div class="clear"></div>
-    <table class="display dataTable no-footer" role="grid">
+    <table id="crm-vol-project-list" class="display dataTable no-footer" role="grid">
         <thead>
         <tr role="row">
+            <td class="ui-state-default"><input type="checkbox" ng-model="allSelected" ng-change="selectAll()" /></td>
             <td class="sorting ui-state-default">{{ ts('Volunteer Project') }}</td>
             <td class="sorting ui-state-default">{{ ts('Active') }}</td>
             <td class="sorting ui-state-default">{{ ts('Associated Entity') }}</td>
@@ -50,8 +56,9 @@
         </thead>
         <tbody>
             <tr ng-repeat="project in projects | filter:searchParams" role="row">
+                <td><input type="checkbox" ng-model="project.selected" ng-change="watchSelected()" /></td>
                 <td>{{ project.title }} (ID: {{ project.id }})</td>
-                <td>{{ project.is_active ? ts("yes") : ts("no") }}</td>
+                <td>{{ project.is_active == 1 ? ts("yes") : ts("no") }}</td>
                 <td>{{ project.entity_table }}</td>
                 <td class="right nowrap">
                     <div><a href="#/volunteer/manage/{{project.id}}">{{ ts('Edit') }}</a></div>
