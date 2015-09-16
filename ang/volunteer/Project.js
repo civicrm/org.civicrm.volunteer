@@ -16,11 +16,21 @@
               "option_group_id": "volunteer_project_relationship"
             });
           },
+          phone_types: function(crmApi) {
+            return crmApi('OptionValue', 'get', {
+              "sequential": 1,
+              "option_group_id": "phone_type",
+              "return": "value,label"
+            });
+          },
           relationship_data: function(crmApi, $route) {
             return crmApi('VolunteerProjectContact', 'get', {
               "sequential": 1,
               "project_id": $route.current.params.projectId
             });
+          },
+          location_blocks: function(crmApi) {
+            return crmApi('VolunteerProject', 'locations', {});
           },
           profiles: function(crmApi, $route) {
             return crmApi('UFJoin', 'get', {
@@ -56,7 +66,7 @@
   // The controller uses *injection*. This default injects a few things:
   //   $scope -- This is the set of variables shared between JS and HTML.
   //   crmApi, crmStatus, crmUiHelp -- These are services provided by civicrm-core.
-  angular.module('volunteer').controller('VolunteerProject', function($scope, $location, crmApi, crmStatus, crmUiAlert, crmUiHelp, crmProfiles, project, is_entity, profile_status, relationship_types, relationship_data, profiles) {
+  angular.module('volunteer').controller('VolunteerProject', function($scope, $location, crmApi, crmStatus, crmUiAlert, crmUiHelp, crmProfiles, project, is_entity, profile_status, relationship_types, relationship_data, profiles, location_blocks, phone_types) {
     // The ts() and hs() functions help load strings for this module.
     var ts = $scope.ts = CRM.ts('org.civicrm.volunteer');
     var hs = $scope.hs = crmUiHelp({file: 'CRM/Volunteer/Form/Volunteer'}); // See: templates/CRM/volunteer/Project.hlp
@@ -80,13 +90,61 @@
     $(profiles.values).each(function(index, profile) {
       profileIds[profile.id] = true;
     });
+    $scope.locationBlocks = location_blocks.values;
+    $scope.locationBlocks[0] = "Create a new Location";
+    $scope.locBlock = {};
     $scope.profiles = profiles.values;
     $scope.relationships = relationships;
     $scope.relationship_types = relationship_types.values;
+    $scope.phone_types = phone_types.values;
     $scope.profile_status = profile_status;
     $scope.is_entity = is_entity;
     project.is_active = (project.is_active === "1");
     $scope.project = project;
+
+
+    $scope.refreshLocBlock = function() {
+      if (!!$scope.project.loc_block_id) {
+        $.ajax({
+          url: CRM.url('civicrm/ajax/locBlock', 'reset=1'),
+          data: {'lbid': $scope.project.loc_block_id},
+          dataType: 'json',
+          success: function (data) {
+            var locBlockData = {};
+            $.each(data, function (index, item) {
+              if (index === "count_loc_used") {
+                locBlockData.count_loc_used = item;
+              } else {
+                var objName = index.split("_").slice(0, 2).join("_");
+                var propName = index.split("_").slice(2).join("_");
+                if (!locBlockData.hasOwnProperty(objName)) {
+                  locBlockData[objName] = {};
+                }
+                locBlockData[objName][propName] = item;
+              }
+            });
+            //Calling apply because otherwise the view doesn't refresh
+            // until a text field is focus/blurred or changed
+            $scope.locBlock = locBlockData;
+            $scope.$apply();
+          }
+        });
+      }
+    };
+    //Refresh as soon as we are up and running because we don't have this data yet.
+    $scope.refreshLocBlock();
+
+    $scope.locBlockChanged = function() {
+      if($scope.project.loc_block_id == 0) {
+        $scope.locBlock = {};
+        $("#crm-vol-location-block .crm-accordion-body").slideDown({complete: function() {
+          $("#crm-vol-location-block .crm-accordion-wrapper").removeClass("collapsed");
+        }});
+      } else {
+        //Load the data from the server.
+        $scope.refreshLocBlock();
+      }
+    };
 
     $scope.addProfile = function() {
       $scope.profiles.push({"is_active": "1", "module": "CiviVolunteer", "weight": 1});
