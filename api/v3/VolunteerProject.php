@@ -96,7 +96,13 @@ function _civicrm_api3_volunteer_project_get_spec(&$params) {
       filtering only; project contacts are not returned.',
     'type' => CRM_Utils_Type::T_STRING,
   );
-
+  $params['proximity'] = array(
+    'title' => 'Proximity',
+    'description' => 'Array of parameters (lat, lon, radius, unit) by which to
+      geographically limit results. See CRM_Volunteer_BAO_Project::retrieve().
+      This parameter is used for filtering only; project contacts are not returned.',
+    'type' => CRM_Utils_Type::T_STRING,
+  );
 }
 /**
  * delete an existing project

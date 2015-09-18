@@ -72,7 +72,10 @@
                   apiParams.project_contacts.volunteer_beneficiary = value.split(',');
                 break;
               case "project":
-                apiParams["id"] = value;
+                apiParams.id = value;
+                break;
+              case "proximity":
+                apiParams.proximity = value;
                 break;
               case "role":
                   apiParams["api.VolunteerNeed.get"].role_id = {IN: value.split(',')};

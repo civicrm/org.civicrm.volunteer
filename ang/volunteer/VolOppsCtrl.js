@@ -52,6 +52,26 @@
       $window.location.href = CRM.url(path, query);
     };
 
+    /**
+     * Returns true if a proximity search has been started; else false.
+     *
+     * @returns {Boolean}
+     */
+    $scope.isProximitySearch = function () {
+      var result = false;
+      $('.crm-vol-proximity input').each(function() {
+        var val = $(this).val();
+        result = (val != '' && val != '?' );
+
+        // a single populated field is enough to make it a proximity search,
+        // so we can break the loop
+        if (result) {
+          return false;
+        }
+      });
+      return result;
+    };
+
     $scope.search = function () {
       return crmStatus(
         {start: ts('Searching...'), success: ts('Search complete')},
@@ -81,6 +101,11 @@
         delete volOppsInCart[need.id];
       }
     };
+
+    $scope.proximityUnits = [
+      {value: 'km', label: ts('km')},
+      {value: 'miles', label: ts('miles')}
+    ];
 
   });
 

@@ -1,1 +1,19 @@
 /* Add any CSS rules for Angular module "volunteer" */
+.crm-vol-half-responsive {
+  box-sizing: border-box;
+  width: 49%;
+  display: inline-block;
+}
+.crm-vol-half-responsive:nth-child(odd) {
+  float: left;
+}
+.crm-vol-half-responsive:nth-child(even) {
+  float: right;
+}
+
+@media (max-width: 1000px) {
+  .crm-vol-half-responsive {
+    width: 100%;
+    float: none;
+  }
+}
