@@ -389,6 +389,7 @@ function volunteer_civicrm_alterAPIPermissions($entity, $action, &$params, &$per
 // note: unsetting the below would require the default 'administer CiviCRM' permission
   $permissions['volunteer_need']['default'] = array('access CiviEvent', 'edit all events');
   $permissions['volunteer_assignment']['default'] = array('access CiviEvent', 'edit all events');
+  $permissions['volunteer_commendation']['default'] = array('access CiviEvent', 'edit all events');
 }
 
 function volunteer_civicrm_angularModules(&$angularModule) {
