@@ -187,7 +187,11 @@ Required vars: volOppData, searchParams
   <div class="clear"></div>
 
   <!-- Results -->
-  <div class="crm-vol-opp-results">
+  <div class="crm-vol-opp-results messages status no-popup" ng-show="_.size(volOppData().needs) === 0">
+    <div class="icon inform-icon"></div>
+    No results found. Please try different search criteria.
+  </div>
+  <div class="crm-vol-opp-results" ng-show="_.size(volOppData().needs) > 0">
     <h2>{{ts('Available Volunteer Opportunities')}}</h2>
     <table class="display dataTable no-footer" role="grid">
       <thead>
