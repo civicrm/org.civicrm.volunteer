@@ -44,6 +44,11 @@
             options: {limit: 0},
             sequential: 0,
             visibility_id: "public"
+          },
+          "api.VolunteerProjectContact.get": {
+            options: {limit: 0},
+            "relationship_type_id":"volunteer_beneficiary",
+            "api.Contact.get":{}
           }
         };
       };
@@ -111,6 +116,17 @@
               result.needs[need.id] = need;
             });
             delete result.projects[key]["api.VolunteerNeed.get"];
+
+            angular.forEach(project["api.VolunteerProjectContact.get"].values, function(projectContact) {
+              if (!result.projects[projectContact.project_id].hasOwnProperty('beneficiaries')) {
+                result.projects[projectContact.project_id].beneficiaries = [];
+              }
+              result.projects[projectContact.project_id].beneficiaries.push({
+                id: projectContact.contact_id,
+                display_name: projectContact["api.Contact.get"].values[0].display_name
+              });
+            });
+            delete result.projects[key]["api.VolunteerProjectContact.get"];
           });
 
           return getResult();

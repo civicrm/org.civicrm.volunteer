@@ -197,6 +197,7 @@ Required vars: volOppData, searchParams
       <thead>
       <tr role="row">
         <td class="sorting ui-state-default">{{ts('Project')}}</td>
+        <td class="sorting ui-state-default">{{ts('Beneficiary')}}</td>
         <td class="sorting ui-state-default">{{ts('Role')}}</td>
         <td class="sorting ui-state-default">{{ts('Time')}}</td>
         <td class="sorting ui-state-default">{{ts('Sign up!')}}</td>
@@ -211,6 +212,9 @@ Required vars: volOppData, searchParams
               ng-show="project.description"
               ng-click="showProjectDescription(project)">
             </span>
+        </td>
+        <td>
+          <span class="beneficiary" ng-repeat="ben in project.beneficiaries">{{ben.display_name}}</span>
         </td>
         <td>{{need.role_label}}
             <span
