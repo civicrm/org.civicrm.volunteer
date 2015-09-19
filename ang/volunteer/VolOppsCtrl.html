@@ -8,7 +8,7 @@ Required vars: volOppData, searchParams
   <div crm-ui-debug="searchParams()"></div>
 
   <!-- Search Form -->
-  <div class="crm-vol-half-responsive">
+  <div class="crm-vol-half-responsive crm-vol-opp-search">
     <h2>{{ts('Find Volunteer Opportunities')}}</h2>
     <form name="volOppSearchForm" crm-ui-id-scope>
       <div class="crm-block ui-tabs ui-widget ui-widget-content ui-corner-all">
@@ -135,7 +135,7 @@ Required vars: volOppData, searchParams
 
 
   <!-- Shopping Cart -->
-  <div class="crm-vol-half-responsive">
+  <div class="crm-vol-half-responsive crm-vol-opp-cart">
     <h2>{{ts('Your Selected Volunteer Opportunities')}}</h2>
     <div class="crm-block ui-tabs ui-widget ui-widget-content ui-corner-all " ng-form="volOppCheckoutForm" crm-ui-id-scope>
       <table class="display dataTable no-footer" role="grid">
@@ -187,43 +187,45 @@ Required vars: volOppData, searchParams
   <div class="clear"></div>
 
   <!-- Results -->
-  <h2>{{ts('Available Volunteer Opportunities')}}</h2>
-  <table class="display dataTable no-footer" role="grid">
-    <thead>
-    <tr role="row">
-      <td class="sorting ui-state-default">{{ts('Project')}}</td>
-      <td class="sorting ui-state-default">{{ts('Role')}}</td>
-      <td class="sorting ui-state-default">{{ts('Time')}}</td>
-      <td class="sorting ui-state-default">{{ts('Sign up!')}}</td>
-    </tr>
-    </thead>
-    <tbody>
-      <tr ng-repeat="need in volOppData().needs" ng-init="project = volOppData().projects[need.project_id]" role="row">
+  <div class="crm-vol-opp-results">
+    <h2>{{ts('Available Volunteer Opportunities')}}</h2>
+    <table class="display dataTable no-footer" role="grid">
+      <thead>
+      <tr role="row">
+        <td class="sorting ui-state-default">{{ts('Project')}}</td>
+        <td class="sorting ui-state-default">{{ts('Role')}}</td>
+        <td class="sorting ui-state-default">{{ts('Time')}}</td>
+        <td class="sorting ui-state-default">{{ts('Sign up!')}}</td>
+      </tr>
+      </thead>
+      <tbody>
+        <tr ng-repeat="need in volOppData().needs" ng-init="project = volOppData().projects[need.project_id]" role="row">
+          <td>
+            {{project.title}}
+            <span
+              class="icon ui-icon-comment"
+              ng-show="project.description"
+              ng-click="showProjectDescription(project)">
+            </span>
+        </td>
+        <td>{{need.role_label}}
+            <span
+              class="icon ui-icon-comment"
+              ng-show="need.role_description"
+              ng-click="showRoleDescription(need)">
+            </span>
+        </td>
+        <td>{{need.display_time}}</td>
         <td>
-          {{project.title}}
-          <span
-            class="icon ui-icon-comment"
-            ng-show="project.description"
-            ng-click="showProjectDescription(project)">
-          </span>
-      </td>
-      <td>{{need.role_label}}
-          <span
-            class="icon ui-icon-comment"
-            ng-show="need.role_description"
-            ng-click="showRoleDescription(need)">
-          </span>
-      </td>
-      <td>{{need.display_time}}</td>
-      <td>
-        <input
-          type="checkbox"
-          ng-checked="need.inCart"
-          ng-click="toggleSelection(need)"
-          class="crm-form-checkbox"
-          />
-      </td>
-    </tr>
-    </tbody>
-  </table>
+          <input
+            type="checkbox"
+            ng-checked="need.inCart"
+            ng-click="toggleSelection(need)"
+            class="crm-form-checkbox"
+            />
+        </td>
+      </tr>
+      </tbody>
+    </table>
+  </div>
 </div>
