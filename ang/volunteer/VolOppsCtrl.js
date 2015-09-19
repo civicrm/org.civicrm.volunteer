@@ -71,7 +71,23 @@
     };
 
     $scope.showProjectDescription = function (project) {
-      CRM.alert(project.description, project.title, 'info', {expires: 0});
+      var description = project.description;
+      var addressBlock = '';
+      if (project.hasOwnProperty('location')) {
+        if (!_.isEmpty(project.location.streetAddress)) {
+          addressBlock += project.location.streetAddress + '<br />';
+        }
+        if (!_.isEmpty(project.location.city)) {
+          addressBlock += project.location.city + '<br />';
+        }
+        if (!_.isEmpty(project.location.postalCode)) {
+          addressBlock += project.location.postalCode;
+        }
+      }
+      if (!_.isEmpty(addressBlock)) {
+        addressBlock = '<p><strong>Location:</strong><br />' + addressBlock + '</p>';
+      }
+      CRM.alert(description + addressBlock, project.title, 'info', {expires: 0});
     };
 
     $scope.showRoleDescription = function (need) {

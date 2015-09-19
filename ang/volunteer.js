@@ -39,6 +39,9 @@
           is_active: 1,
           sequential: 0,
           options: {limit: 0},
+          "api.LocBlock.getsingle": {
+            "api.Address.getsingle": {}
+          },
           "api.VolunteerNeed.get": {
             is_active: 1,
             options: {limit: 0},
@@ -112,6 +115,18 @@
           });
 
           angular.forEach(result.projects, function(project, key) {
+            if (project.hasOwnProperty("api.LocBlock.getsingle")
+              && project["api.LocBlock.getsingle"].hasOwnProperty('api.Address.getsingle')
+            ) {
+              // TODO: support state and country, which we get back as unfriendly IDs
+              result.projects[key].location = {
+                city: project["api.LocBlock.getsingle"]["api.Address.getsingle"].city,
+                postalCode: project["api.LocBlock.getsingle"]["api.Address.getsingle"].postal_code,
+                streetAddress: project["api.LocBlock.getsingle"]["api.Address.getsingle"].street_address
+              };
+            }
+            delete result.projects[key]["api.LocBlock.getsingle"];
+
             angular.forEach(project["api.VolunteerNeed.get"].values, function(need) {
               result.needs[need.id] = need;
             });
