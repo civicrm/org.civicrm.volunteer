@@ -25,6 +25,12 @@
   display: block;
 }
 
+.crm-vol-opp-cart table .icon,
+.crm-vol-opp-results table .icon
+{
+  cursor: pointer;
+}
+
 .crm-vol-opp-results {
   margin-top: 2em;
 }
