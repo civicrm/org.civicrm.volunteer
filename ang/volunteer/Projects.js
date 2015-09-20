@@ -20,7 +20,7 @@
   //   $scope -- This is the set of variables shared between JS and HTML.
   //   crmApi, crmStatus, crmUiHelp -- These are services provided by civicrm-core.
   //   myContact -- The current contact, defined above in config().
-  angular.module('volunteer').controller('VolunteerProjects', function($scope, crmApi, crmStatus, crmUiHelp, projectData) {
+  angular.module('volunteer').controller('VolunteerProjects', function($scope, crmApi, crmStatus, crmUiHelp, projectData, $location) {
     // The ts() and hs() functions help load strings for this module.
     var ts = $scope.ts = CRM.ts('volunteer');
     var hs = $scope.hs = crmUiHelp({file: 'CRM/volunteer/Projects'}); // See: templates/CRM/volunteer/Projects.hlp
@@ -31,6 +31,14 @@
     $scope.projects = projectData.values;
     $scope.batchAction = "";
     $scope.allSelected = false;
+    $scope.needBase = CRM.url("civicrm/volunteer/need");
+    $scope.assignBase = CRM.url("civicrm/volunteer/assign");
+
+    $scope.showLogHours = function() {
+      var url = CRM.url("civicrm/volunteer/loghours", "reset=1&action=add&vid=" + this.project.id);
+      var settings = {"dialog":{"width":"85%", "height":"80%"}};
+      CRM.loadForm(url, settings);
+    };
 
     $scope.batchActions = {
       "enable": {

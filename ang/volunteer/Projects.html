@@ -2,72 +2,75 @@
   <div crm-ui-debug="projects"></div>
   <div crm-ui-debug="searchParams"></div>
 
-  <div class="crm-vol-widgets crm-vol-manage-widgets"></div>
-  <div class="clear"></div>
-  <div class="crm-vol-buttons crm-vol-mange-buttons crm-vol-half-responsive">
-    <input type="button" value="{{ts('Volunteer Settings')}}" /><br /><br />
-    <input type="button" value="{{ts('Add Project')}}" /><br /><br />
-    <select crm-ui-select="{placeholder: ts('Bulk Actions'), allowClear: true, width: '150'}" ng-model="batchAction" id="batchAction">
-      <option />
-      <option ng-repeat="(key, action) in batchActions" value="{{key}}">{{action.label}}</option>
-    </select>
-    <input type="button" value="{{ts('Run')}}" ng-click="runBatch()" />
-  </div>
-  <div class="crm-vol-search crm-vol-manage-search crm-vol-half-responsive">
-    <form name="volProjectSearchForm" crm-ui-id-scope>
-      <fieldset class="crm-vol-ui-fieldset ui-corner-all">
-        <legend>Find Volunteer Projects</legend>
-        <div class="crm-group">
-          <div crm-ui-field="{name: 'volProjectSearchForm.title', title: ts('Title')}">
-            <input crm-ui-id="volProjectSearchForm.title" ng-model="searchParams.title" />
-          </div>
-          <div crm-ui-field="{name: 'volProjectSearchForm.campaign', title: ts('Campaign')}">
-            <input
-              crm-entityref="{
+  <div class="crm-form-block">
+    <div class="crm-vol-widgets crm-vol-manage-widgets"></div>
+    <div class="clear"></div>
+    <div class="crm-vol-buttons crm-vol-mange-buttons crm-vol-half-responsive">
+
+      <a href="#/volunteer/manage/0" class="button"><span><div class="icon ui-icon-plus"></div>{{ts('Add Project')}}</span></a><br /><br />
+
+      <select crm-ui-select="{placeholder: ts('Bulk Actions'), allowClear: true, width: '150'}" ng-model="batchAction" id="batchAction">
+        <option />
+        <option ng-repeat="(key, action) in batchActions" value="{{key}}">{{action.label}}</option>
+      </select>
+      <input type="button" value="{{ts('Run')}}" ng-click="runBatch()" />
+    </div>
+    <div class="crm-vol-search crm-vol-manage-search crm-vol-half-responsive">
+      <form name="volProjectSearchForm" crm-ui-id-scope>
+        <fieldset class="crm-vol-ui-fieldset ui-corner-all">
+          <legend>Find Volunteer Projects</legend>
+          <div class="crm-group">
+            <div crm-ui-field="{name: 'volProjectSearchForm.title', title: ts('Title')}">
+              <input crm-ui-id="volProjectSearchForm.title" ng-model="searchParams.title" />
+            </div>
+            <div crm-ui-field="{name: 'volProjectSearchForm.campaign', title: ts('Campaign')}">
+              <input
+                crm-entityref="{
               entity: 'Campaign',
               select: {
                 minimumInputLength: 0,
                 placeholder: ts('Search for a Campaign')
               }
             }"
-              crm-ui-id="volProjectSearchForm.campaign"
-              type="text"
-              name="campaign"
-              ng-model="searchParams.campaign"
-              class="big crm-form-text"
-              />
+                crm-ui-id="volProjectSearchForm.campaign"
+                type="text"
+                name="campaign"
+                ng-model="searchParams.campaign"
+                class="big crm-form-text"
+                />
+            </div>
           </div>
-        </div>
-      </fieldset>
-    </form>
-  </div>
+        </fieldset>
+      </form>
+    </div>
 
 
-  <div class="clear"></div>
+    <div class="clear"></div>
     <table id="crm-vol-project-list" class="display dataTable no-footer" role="grid">
-        <thead>
-        <tr role="row">
-            <td class="ui-state-default"><input type="checkbox" ng-model="allSelected" ng-change="selectAll()" /></td>
-            <td class="sorting ui-state-default">{{ ts('Volunteer Project') }}</td>
-            <td class="sorting ui-state-default">{{ ts('Active') }}</td>
-            <td class="sorting ui-state-default">{{ ts('Associated Entity') }}</td>
-            <td class="ui-state-default"></td>
-        </tr>
-        </thead>
-        <tbody>
-            <tr ng-repeat="project in projects | filter:searchParams" role="row">
-                <td><input type="checkbox" ng-model="project.selected" ng-change="watchSelected()" /></td>
-                <td>{{ project.title }} (ID: {{ project.id }})</td>
-                <td>{{ project.is_active == 1 ? ts("yes") : ts("no") }}</td>
-                <td>{{ project.entity_table }}</td>
-                <td class="right nowrap">
-                    <div><a href="#/volunteer/manage/{{project.id}}">{{ ts('Edit') }}</a></div>
-                    <div><a >{{ ts('Define Needs') }}</a></div>
-                    <div><a >{{ ts('Assign Volunteers') }}</a></div>
-                    <div><a >{{ ts('Log Hours') }}</a></div>
-                    <div><a >{{ ts('More') }}</a></div>
-                </td>
-            </tr>
-        </tbody>
+      <thead>
+      <tr role="row">
+        <td class="ui-state-default"><input type="checkbox" ng-model="allSelected" ng-change="selectAll()" /></td>
+        <td class="sorting ui-state-default">{{ ts('Volunteer Project') }}</td>
+        <td class="sorting ui-state-default">{{ ts('Active') }}</td>
+        <td class="sorting ui-state-default">{{ ts('Associated Entity') }}</td>
+        <td class="ui-state-default"></td>
+      </tr>
+      </thead>
+      <tbody>
+      <tr ng-repeat="project in projects | filter:searchParams" role="row">
+        <td><input type="checkbox" ng-model="project.selected" ng-change="watchSelected()" /></td>
+        <td>{{ project.title }} (ID: {{ project.id }})</td>
+        <td>{{ project.is_active == 1 ? ts("yes") : ts("no") }}</td>
+        <td>{{ project.entity_table }}</td>
+        <td class="right nowrap">
+          <div><a href="#/volunteer/manage/{{project.id}}">{{ ts('Edit') }}</a></div>
+          <div><a href="{{needBase}}">{{ ts('Define Needs') }}</a></div>
+          <div><a href="{{assignBase}}">{{ ts('Assign Volunteers') }}</a></div>
+          <div><a ng-click="showLogHours()">{{ ts('Log Hours') }}</a></div>
+          <div><a >{{ ts('More') }}</a></div>
+        </td>
+      </tr>
+      </tbody>
     </table>
+  </div>
 </div>
