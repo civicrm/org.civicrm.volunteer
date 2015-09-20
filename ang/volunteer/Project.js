@@ -6,9 +6,13 @@
         templateUrl: '~/volunteer/Project.html',
         resolve: {
           project: function(crmApi, $route) {
-            return crmApi('VolunteerProject', 'getsingle', {
-              id: $route.current.params.projectId
-            });
+            if ($route.current.params.projectId == 0) {
+              return {};
+            } else {
+              return crmApi('VolunteerProject', 'getsingle', {
+                id: $route.current.params.projectId
+              });
+            }
           },
           relationship_types: function(crmApi) {
             return crmApi('OptionValue', 'get', {
@@ -24,20 +28,28 @@
             });
           },
           relationship_data: function(crmApi, $route) {
-            return crmApi('VolunteerProjectContact', 'get', {
-              "sequential": 1,
-              "project_id": $route.current.params.projectId
-            });
+            if ($route.current.params.projectId == 0) {
+              return {"values": []};
+            } else {
+              return crmApi('VolunteerProjectContact', 'get', {
+                "sequential": 1,
+                "project_id": $route.current.params.projectId
+              });
+            }
           },
           location_blocks: function(crmApi) {
             return crmApi('VolunteerProject', 'locations', {});
           },
           profiles: function(crmApi, $route) {
-            return crmApi('UFJoin', 'get', {
-              "sequential": 1,
-              "module": "CiviVolunteer",
-              "entity_id": $route.current.params.projectId
-            });
+            if ($route.current.params.projectId == 0) {
+              return {"values": []};
+            } else {
+              return crmApi('UFJoin', 'get', {
+                "sequential": 1,
+                "module": "CiviVolunteer",
+                "entity_id": $route.current.params.projectId
+              });
+            }
           },
           is_entity: function() { return false; },
           profile_status: function(crmProfiles) {
@@ -55,8 +67,6 @@
     // The ts() and hs() functions help load strings for this module.
     var ts = $scope.ts = CRM.ts('org.civicrm.volunteer');
     var hs = $scope.hs = crmUiHelp({file: 'CRM/Volunteer/Form/Volunteer'}); // See: templates/CRM/volunteer/Project.hlp
-    project.profileCount = 0;
-
 
     var relationships = {};
     var relationship_remove_list = {};
@@ -71,10 +81,6 @@
       relationships[relationship.relationship_type_id].push(relationship.contact_id);
     });
 
-    var profileIds = {};
-    $(profiles.values).each(function(index, profile) {
-      profileIds[profile.id] = true;
-    });
     $scope.locationBlocks = location_blocks.values;
     $scope.locationBlocks[0] = "Create a new Location";
     $scope.locBlock = {};
@@ -147,6 +153,11 @@
       var valid = true;
 
 
+      if(!$scope.project.title) {
+        CRM.status(ts("Title is a required field"), "Required");
+        valid = false;
+      }
+
       //Do some validation here...
 
       return valid;
@@ -186,16 +197,25 @@
           //save the profiles
           $($scope.profiles).each(function(index, profile) {
             profile.entity_id = projectId;
-            if(profile.hasOwnProperty("id")) {
-              delete profileIds[profile.id];
-            }
             crmApi("UFJoin", "create", profile);
           });
 
           //remove profiles no longer needed
-          $.each(profileIds, function(profileId) {
-            //todo: This is implemented in civiVol but should be added to core.
-            crmApi("VolunteerProject", "removeprofile", {id: profileId});
+          return crmApi('UFJoin', 'get', {
+            "sequential": 1,
+            "module": "CiviVolunteer",
+            "entity_id": projectId
+          }).then(function(result) {
+            $.each(result.values, function(index, profile) {
+              $.each($scope.profiles, function(index, item) {
+                if (item.id == profile.id) {
+                  return;
+                }
+              });
+
+              //todo: This is implemented in civiVol but should be added to core.
+              crmApi("VolunteerProject", "removeprofile", {id: profile.id});
+            });
           });
         });
 

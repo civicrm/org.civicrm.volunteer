@@ -84,7 +84,7 @@
       <legend>{{ ts("Relationships") }}</legend>
 
       <div ng-repeat="rType in relationship_types" crm-ui-field='{name: "projectForm[rType.name]", title: ts(rType.label)}'>
-        <input crm-ui-id="projectForm[rType.name]" crm-entityref="{entity: 'VolunteerProject', select: {allowClear:true, multiple: true}}" ng-model="relationships[rType.value]" />
+        <input crm-ui-id="projectForm[rType.name]" crm-entityref="{entity: 'Contact', select: {allowClear:true, multiple: true}}" ng-model="relationships[rType.value]" />
       </div>
 
     </fieldset>
@@ -97,7 +97,7 @@
             <span class="icon ui-icon-circle-close"></span>
           </a>
 
-          <input crm-profile-selector="{}" ng-model="profile.uf_group_id">
+          <input crm-profile-selector="{}" ng-model="profile.uf_group_id" />
         </div>
       </div>
       <a ng-click="addProfile()" class="crm-hover-button crm-button-add-profile" style="display: inline-block;">
