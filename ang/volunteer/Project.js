@@ -44,21 +44,6 @@
             return crmProfiles.load();
           }
         }
-      }).when('/volunteer/manage/:entityTable/:entityId', {
-        controller: 'VolunteerProject',
-        templateUrl: '~/volunteer/Project.html',
-        resolve: {
-          project: function(crmApi, $route) {
-            return crmApi('VolunteerProject', 'getsingle', {
-              entity_table: $route.current.params.entityId,
-              entity_id: $route.current.params.entityTable
-            });
-          },
-          is_entity: function() { return true; },
-          profile_status: function(crmProfiles) {
-            return crmProfiles.load();
-          }
-        }
       });
     }
   );
