@@ -61,3 +61,10 @@
 #crm-vol-location-block .crm-accordion-body {
   padding: 10px;
 }
+.crm-vol-search fieldset {
+  padding: 2px 5px;
+}
+
+#crm-vol-project-list a {
+  cursor: pointer;
+}
