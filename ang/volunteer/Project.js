@@ -63,23 +63,20 @@
   // The controller uses *injection*. This default injects a few things:
   //   $scope -- This is the set of variables shared between JS and HTML.
   //   crmApi, crmStatus, crmUiHelp -- These are services provided by civicrm-core.
-  angular.module('volunteer').controller('VolunteerProject', function($scope, $location, crmApi, crmStatus, crmUiAlert, crmUiHelp, crmProfiles, project, is_entity, profile_status, relationship_types, relationship_data, profiles, location_blocks, phone_types) {
+  angular.module('volunteer').controller('VolunteerProject', function($scope, $location, $q, crmApi, crmStatus, crmUiAlert, crmUiHelp, crmProfiles, project, is_entity, profile_status, relationship_types, relationship_data, profiles, location_blocks, phone_types) {
     // The ts() and hs() functions help load strings for this module.
     var ts = $scope.ts = CRM.ts('org.civicrm.volunteer');
     var hs = $scope.hs = crmUiHelp({file: 'CRM/Volunteer/Form/Volunteer'}); // See: templates/CRM/volunteer/Project.hlp
 
     var relationships = {};
-    var relationship_remove_list = {};
     $(relationship_data.values).each(function(index, relationship) {
       if (!relationships.hasOwnProperty(relationship.relationship_type_id)) {
         relationships[relationship.relationship_type_id] = [];
       }
-      if (!relationship_remove_list.hasOwnProperty(relationship.relationship_type_id)) {
-        relationship_remove_list[relationship.relationship_type_id] = {};
-      }
-      relationship_remove_list[relationship.relationship_type_id][relationship.contact_id] = relationship.id;
       relationships[relationship.relationship_type_id].push(relationship.contact_id);
     });
+
+    var originalRelationships = _.clone(relationships);
 
     $scope.locationBlocks = location_blocks.values;
     $scope.locationBlocks[0] = "Create a new Location";
@@ -170,59 +167,80 @@
 
 
           //save the relationships
+          var rPromises = [];
           $.each($scope.relationships, function(rType, rData) {
             if(typeof(rData) === "string") {
               rData = rData.split(",");
             }
             $.each(rData, function (index, contactId) {
-              if(contactId) {
-                if (relationship_remove_list.hasOwnProperty(rType)) {
-                  relationship_remove_list[rType][contactId] = false;
-                }
-                crmApi("VolunteerProjectContact", "create", {project_id: projectId, relationship_type_id: rType, contact_id: contactId});
+              if(contactId && (!originalRelationships.hasOwnProperty(rType) || originalRelationships[rType].indexOf(contactId) === -1)) {
+                rPromises.push(crmApi("VolunteerProjectContact", "create", {project_id: projectId, relationship_type_id: rType, contact_id: contactId}));
               }
             });
           });
 
-          //Remove the extraneous relationships
-          $.each(relationship_remove_list, function(rType, rData) {
-            $.each(rData, function (index, id) {
-              if(id) {
-                crmApi("VolunteerProjectContact", "delete", {"id": id});
+          $q.all(rPromises).then(function(x) {
+            //Remove the extraneous relationships
+            crmApi('VolunteerProjectContact', 'get', {
+              "project_id": projectId
+            }).then(function(result) {
+              if (result.count > 0) {
+
+                var rels = {};
+                $.each($scope.relationships, function (rType, rTypeData) {
+                  if(typeof(rTypeData) === "string") {
+                    rels[rType] = rTypeData.split(",");
+                  } else {
+                    rels[rType] = rTypeData;
+                  }
+                });
+
+                $.each(result.values, function (index, relation) {
+                  if (!rels.hasOwnProperty(relation.relationship_type_id) || rels[relation.relationship_type_id].indexOf(relation.contact_id) === -1) {
+                    crmApi("VolunteerProjectContact", "delete", {"id": relation.id});
+                  }
+                });
               }
             });
           });
 
 
           //save the profiles
+          var pPromises = [];
           $($scope.profiles).each(function(index, profile) {
             profile.entity_id = projectId;
-            crmApi("UFJoin", "create", profile);
+            pPromises.push(crmApi("UFJoin", "create", profile));
           });
+
 
           //remove profiles no longer needed
-          return crmApi('UFJoin', 'get', {
-            "sequential": 1,
-            "module": "CiviVolunteer",
-            "entity_id": projectId
-          }).then(function(result) {
-            $.each(result.values, function(index, profile) {
-              $.each($scope.profiles, function(index, item) {
-                if (item.id == profile.id) {
-                  return;
+          $q.all(pPromises).then(function() {
+            crmApi('UFJoin', 'get', {
+              "sequential": 1,
+              "module": "CiviVolunteer",
+              "entity_id": projectId
+            }).then(function(result) {
+              $.each(result.values, function(index, profile) {
+                var remove = true;
+                $.each($scope.profiles, function(index, item) {
+                  if (item.id == profile.id) {
+                    remove = false;
+                  }
+                });
+
+                if(remove) {
+                  //todo: This is implemented in civiVol but should be added to core.
+                  crmApi("VolunteerProject", "removeprofile", {id: profile.id});
                 }
               });
-
-              //todo: This is implemented in civiVol but should be added to core.
-              crmApi("VolunteerProject", "removeprofile", {id: profile.id});
             });
           });
-        });
 
         //Let the user know we are saving
         crmUiAlert({text: ts('Changes saved successfully'), title: ts('Saved'), type: 'success'});
         //Forward to someplace else
-        $location.path( "/volunteer/manage" );
+        //$location.path( "/volunteer/manage" );
+        });
       } else {
         return false;
       }
