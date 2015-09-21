@@ -181,8 +181,8 @@ function civicrm_api3_volunteer_project_savelocblock($params) {
   $locBlockData = array();
 
   //Address 1
-  if(array_key_exists("address_1", $params) && is_array($params['address_1'])) {
-    $locBlockData['address'][1] = $params['address_1'];
+  if(array_key_exists("address", $params) && is_array($params['address'])) {
+    $locBlockData['address'][1] = $params['address'];
     if(!array_key_exists("location_type_id", $locBlockData['address'][1])) {
       $locBlockData['address'][1]['location_type_id'] = 1;
     }
@@ -196,8 +196,8 @@ function civicrm_api3_volunteer_project_savelocblock($params) {
   }
 
   //Email 1
-  if(array_key_exists("email_1", $params) && is_array($params['email_1'])) {
-    $locBlockData['email'][1] = $params['email_1'];
+  if(array_key_exists("email", $params) && is_array($params['email'])) {
+    $locBlockData['email'][1] = $params['email'];
     if(!array_key_exists("location_type_id", $locBlockData['email'][1])) {
       $locBlockData['email'][1]['location_type_id'] = 1;
     }
@@ -212,8 +212,8 @@ function civicrm_api3_volunteer_project_savelocblock($params) {
   }
 
   //Phone 1
-  if(array_key_exists("phone_1", $params) && is_array($params['phone_1'])) {
-    $locBlockData['phone'][1] = $params['phone_1'];
+  if(array_key_exists("phone", $params) && is_array($params['phone'])) {
+    $locBlockData['phone'][1] = $params['phone'];
     if(!array_key_exists("location_type_id", $locBlockData['phone'][1])) {
       $locBlockData['phone'][1]['location_type_id'] = 1;
     }

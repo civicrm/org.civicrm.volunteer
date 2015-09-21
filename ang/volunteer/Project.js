@@ -93,29 +93,16 @@
 
     $scope.refreshLocBlock = function() {
       if (!!$scope.project.loc_block_id) {
-        $.ajax({
-          url: CRM.url('civicrm/ajax/locBlock', 'reset=1'),
-          data: {'lbid': $scope.project.loc_block_id},
-          dataType: 'json',
-          success: function (data) {
-            var locBlockData = {};
-            $.each(data, function (index, item) {
-              if (index === "count_loc_used") {
-                locBlockData.count_loc_used = item;
-              } else {
-                var objName = index.split("_").slice(0, 2).join("_");
-                var propName = index.split("_").slice(2).join("_");
-                if (!locBlockData.hasOwnProperty(objName)) {
-                  locBlockData[objName] = {};
-                }
-                locBlockData[objName][propName] = item;
-              }
-            });
-            //Calling apply because otherwise the view doesn't refresh
-            // until a text field is focus/blurred or changed
-            $scope.locBlock = locBlockData;
-            $scope.locBlockIsDirty = false;
-            $scope.$apply();
+        crmApi("LocBlock", "get", {
+          "return": "all",
+          "sequential": 1,
+          "id": $scope.project.loc_block_id
+        }).then(function(result) {
+          if(!result.is_error) {
+            $scope.locBlock = result.values[0];
+
+          } else {
+            CRM.alert(result.error);
           }
         });
       }
@@ -181,15 +168,14 @@
 
         var pReqs = {};
 
-        if($scope.project.loc_block_id === 0) {
+        if($scope.project.loc_block_id == 0) {
           $scope.locBlockIsDirty = true;
-          pReqs.locBlock = crmApi('LocBlock', 'create', {"sequential": 1});
+          pReqs.locBlock = crmApi('LocBlock', 'create');
         }
 
         $q.all(pReqs).then(function(pReqResults) {
 
-          if($scope.project.loc_block_id === 0) {
-            console.log(pReqResults);
+          if($scope.project.loc_block_id == 0) {
             $scope.project.loc_block_id = pReqResults.locBlock.id;
           }
 
@@ -278,7 +264,7 @@
             //Let the user know we are saving
             crmUiAlert({text: ts('Changes saved successfully'), title: ts('Saved'), type: 'success'});
             //Forward to someplace else
-            //$location.path( "/volunteer/manage" );
+            $location.path( "/volunteer/manage" );
           });
         });
       } else {
