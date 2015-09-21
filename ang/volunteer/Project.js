@@ -151,9 +151,21 @@
 
 
       if(!$scope.project.title) {
-        CRM.status(ts("Title is a required field"), "Required");
+        CRM.alert(ts("Title is a required field"), "Required");
         valid = false;
       }
+
+      if ($scope.profiles.length === 0) {
+        CRM.alert(ts("You must select at least one Profile"), "Required");
+        valid = false;
+      }
+      $.each($scope.profiles, function(index, profile) {
+        if(!profile.uf_group_id) {
+          CRM.alert(ts("Please select at least one profile, and remove empty selections"), "Required");
+          valid = false;
+        }
+      });
+
 
       //Do some validation here...
 
