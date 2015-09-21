@@ -148,7 +148,23 @@ function civicrm_api3_volunteer_project_removeprofile($params) {
  *
  */
 function civicrm_api3_volunteer_project_locations($params) {
-  return civicrm_api3_create_success(CRM_Event_BAO_Event::getLocationEvents(), $params, 'VolunteerProject', 'get');
+
+  $locations = array();
+
+  $query = "
+SELECT CONCAT_WS(' :: ' , ca.name, ca.street_address, ca.city, sp.name, ca.supplemental_address_1, ca.supplemental_address_2) title, lb.id
+FROM   civicrm_loc_block lb
+INNER JOIN civicrm_address ca   ON lb.address_id = ca.id
+LEFT  JOIN civicrm_state_province sp ON ca.state_province_id = sp.id
+ORDER BY sp.name, ca.city, ca.street_address ASC
+";
+
+  $dao = CRM_Core_DAO::executeQuery($query);
+  while ($dao->fetch()) {
+    $locations[$dao->id] = $dao->title;
+  }
+
+  return civicrm_api3_create_success($locations, $params, 'VolunteerProject', 'locations');
 }
 
 
