@@ -114,6 +114,7 @@
             //Calling apply because otherwise the view doesn't refresh
             // until a text field is focus/blurred or changed
             $scope.locBlock = locBlockData;
+            $scope.locBlockIsDirty = false;
             $scope.$apply();
           }
         });
@@ -132,6 +133,9 @@
         //Load the data from the server.
         $scope.refreshLocBlock();
       }
+    };
+    $scope.locBlockDirty = function() {
+      $scope.locBlockIsDirty = true;
     };
 
     $scope.addProfile = function() {
@@ -174,84 +178,108 @@
 
     $scope.saveProject = function() {
       if ($scope.validateProject()) {
-        crmApi('VolunteerProject', 'create', $scope.project).then(function(result) {
-          var projectId = result.id;
+
+        var pReqs = {};
+
+        if($scope.project.loc_block_id === 0) {
+          $scope.locBlockIsDirty = true;
+          pReqs.locBlock = crmApi('LocBlock', 'create', {"sequential": 1});
+        }
+
+        $q.all(pReqs).then(function(pReqResults) {
+
+          if($scope.project.loc_block_id === 0) {
+            console.log(pReqResults);
+            $scope.project.loc_block_id = pReqResults.locBlock.id;
+          }
+
+          crmApi('VolunteerProject', 'create', $scope.project).then(function(result) {
+            var projectId = result.id;
 
 
-          //save the relationships
-          var rPromises = [];
-          $.each($scope.relationships, function(rType, rData) {
-            if(typeof(rData) === "string") {
-              rData = rData.split(",");
+            //Save the LocBlock
+            if($scope.locBlockIsDirty) {
+              $scope.locBlock.entity_id = projectId;
+              $scope.locBlock.id = $scope.project.loc_block_id;
+              crmApi('VolunteerProject', 'savelocblock', $scope.locBlock);
             }
-            $.each(rData, function (index, contactId) {
-              if(contactId && (!originalRelationships.hasOwnProperty(rType) || originalRelationships[rType].indexOf(contactId) === -1)) {
-                rPromises.push(crmApi("VolunteerProjectContact", "create", {project_id: projectId, relationship_type_id: rType, contact_id: contactId}));
+
+
+            //save the relationships
+            var rPromises = [];
+            $.each($scope.relationships, function(rType, rData) {
+              if(typeof(rData) === "string") {
+                rData = rData.split(",");
               }
-            });
-          });
-
-          $q.all(rPromises).then(function(x) {
-            //Remove the extraneous relationships
-            crmApi('VolunteerProjectContact', 'get', {
-              "project_id": projectId
-            }).then(function(result) {
-              if (result.count > 0) {
-
-                var rels = {};
-                $.each($scope.relationships, function (rType, rTypeData) {
-                  if(typeof(rTypeData) === "string") {
-                    rels[rType] = rTypeData.split(",");
-                  } else {
-                    rels[rType] = rTypeData;
-                  }
-                });
-
-                $.each(result.values, function (index, relation) {
-                  if (!rels.hasOwnProperty(relation.relationship_type_id) || rels[relation.relationship_type_id].indexOf(relation.contact_id) === -1) {
-                    crmApi("VolunteerProjectContact", "delete", {"id": relation.id});
-                  }
-                });
-              }
-            });
-          });
-
-
-          //save the profiles
-          var pPromises = [];
-          $($scope.profiles).each(function(index, profile) {
-            profile.entity_id = projectId;
-            pPromises.push(crmApi("UFJoin", "create", profile));
-          });
-
-
-          //remove profiles no longer needed
-          $q.all(pPromises).then(function() {
-            crmApi('UFJoin', 'get', {
-              "sequential": 1,
-              "module": "CiviVolunteer",
-              "entity_id": projectId
-            }).then(function(result) {
-              $.each(result.values, function(index, profile) {
-                var remove = true;
-                $.each($scope.profiles, function(index, item) {
-                  if (item.id == profile.id) {
-                    remove = false;
-                  }
-                });
-
-                if(remove) {
-                  //todo: This is implemented in civiVol but should be added to core.
-                  crmApi("VolunteerProject", "removeprofile", {id: profile.id});
+              $.each(rData, function (index, contactId) {
+                if(contactId && (!originalRelationships.hasOwnProperty(rType) || originalRelationships[rType].indexOf(contactId) === -1)) {
+                  rPromises.push(crmApi("VolunteerProjectContact", "create", {project_id: projectId, relationship_type_id: rType, contact_id: contactId}));
                 }
               });
             });
-          });
 
-        //Let the user know we are saving
-        crmUiAlert({text: ts('Changes saved successfully'), title: ts('Saved'), type: 'success'});
-        //Forward to someplace else
-        //$location.path( "/volunteer/manage" );
+            $q.all(rPromises).then(function(x) {
+              //Remove the extraneous relationships
+              crmApi('VolunteerProjectContact', 'get', {
+                "project_id": projectId
+              }).then(function(result) {
+                if (result.count > 0) {
+
+                  var rels = {};
+                  $.each($scope.relationships, function (rType, rTypeData) {
+                    if(typeof(rTypeData) === "string") {
+                      rels[rType] = rTypeData.split(",");
+                    } else {
+                      rels[rType] = rTypeData;
+                    }
+                  });
+
+                  $.each(result.values, function (index, relation) {
+                    if (!rels.hasOwnProperty(relation.relationship_type_id) || rels[relation.relationship_type_id].indexOf(relation.contact_id) === -1) {
+                      crmApi("VolunteerProjectContact", "delete", {"id": relation.id});
+                    }
+                  });
+                }
+              });
+            });
+
+
+            //save the profiles
+            var pPromises = [];
+            $($scope.profiles).each(function(index, profile) {
+              profile.entity_id = projectId;
+              pPromises.push(crmApi("UFJoin", "create", profile));
+            });
+
+
+            //remove profiles no longer needed
+            $q.all(pPromises).then(function() {
+              crmApi('UFJoin', 'get', {
+                "sequential": 1,
+                "module": "CiviVolunteer",
+                "entity_id": projectId
+              }).then(function(result) {
+                $.each(result.values, function(index, profile) {
+                  var remove = true;
+                  $.each($scope.profiles, function(index, item) {
+                    if (item.id == profile.id) {
+                      remove = false;
+                    }
+                  });
+
+                  if(remove) {
+                    //todo: This is implemented in civiVol but should be added to core.
+                    crmApi("VolunteerProject", "removeprofile", {id: profile.id});
+                  }
+                });
+              });
+            });
+
+            //Let the user know we are saving
+            crmUiAlert({text: ts('Changes saved successfully'), title: ts('Saved'), type: 'success'});
+            //Forward to someplace else
+            //$location.path( "/volunteer/manage" );
+          });
         });
       } else {
         return false;
