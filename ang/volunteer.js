@@ -93,8 +93,8 @@
         });
 
         // handle dates separately from other params
-        var dateStartExists = $route.current.params.hasOwnProperty('date_start') && $route.current.params.date_start;
-        var dateEndExists = $route.current.params.hasOwnProperty('date_start') && $route.current.params.date_end;
+        var dateStartExists = userSpecifiedSearchParams.hasOwnProperty('date_start') && userSpecifiedSearchParams.date_start;
+        var dateEndExists = userSpecifiedSearchParams.hasOwnProperty('date_end') && userSpecifiedSearchParams.date_end;
         if (dateStartExists && dateEndExists) {
           apiParams["api.VolunteerNeed.get"].start_time = {BETWEEN: [
             userSpecifiedSearchParams.date_start, userSpecifiedSearchParams.date_end
