@@ -240,7 +240,7 @@ class CRM_Volunteer_BAO_Project extends CRM_Volunteer_DAO_Project {
    * API layer. Special params include:
    * <ol>
    *   <li>project_contacts (@see CRM_Volunteer_BAO_Project::create() and
-   *     CRM_Volunteer_BAO_Project::buildContactWhere)</li>
+   *     CRM_Volunteer_BAO_Project::Join)</li>
    *   <li>proximity (@see CRM_Volunteer_BAO_Project::buildProximityWhere)</li>
    * </ol>
    *
@@ -368,6 +368,7 @@ class CRM_Volunteer_BAO_Project extends CRM_Volunteer_DAO_Project {
       }
 
       // TODO: I think CRM_Utils_Geocode_*::format should be responsible for this
+      // If/when CRM-17245 is closed, this if-block can be removed.
       if (CRM_Utils_Type::validate($country, 'Positive', FALSE)) {
         $country = civicrm_api3('Country', 'getvalue', array(
           'id' => $country,

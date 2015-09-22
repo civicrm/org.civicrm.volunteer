@@ -20,19 +20,6 @@
     volOppSearch.search();
 
     $scope.searchParams = volOppSearch.getParams;
-    // set default dates
-    var today = new Date();
-    if (!$scope.searchParams().hasOwnProperty('date_start')) {
-      $scope.searchParams().date_start =
-        [today.getFullYear(), today.getMonth() + 1, today.getDate()].join('-');
-    }
-    if (!$scope.searchParams().hasOwnProperty('date_end')) {
-      var end = new Date();
-      end.setDate(today.getDate() + 30);
-      $scope.searchParams().date_end =
-        [end.getFullYear(), end.getMonth() + 1, end.getDate()].join('-');
-    }
-
     $scope.volOppData = volOppSearch.getResult;
 
     $scope.checkout = function () {
@@ -84,7 +71,23 @@
     };
 
     $scope.showProjectDescription = function (project) {
-      CRM.alert(project.description, project.title, 'info', {expires: 0});
+      var description = project.description;
+      var addressBlock = '';
+      if (project.hasOwnProperty('location')) {
+        if (!_.isEmpty(project.location.streetAddress)) {
+          addressBlock += project.location.streetAddress + '<br />';
+        }
+        if (!_.isEmpty(project.location.city)) {
+          addressBlock += project.location.city + '<br />';
+        }
+        if (!_.isEmpty(project.location.postalCode)) {
+          addressBlock += project.location.postalCode;
+        }
+      }
+      if (!_.isEmpty(addressBlock)) {
+        addressBlock = '<p><strong>Location:</strong><br />' + addressBlock + '</p>';
+      }
+      CRM.alert(description + addressBlock, project.title, 'info', {expires: 0});
     };
 
     $scope.showRoleDescription = function (need) {

@@ -62,6 +62,18 @@ function _civicrm_api3_volunteer_project_contact_create_spec(&$params) {
 }
 
 /**
+ * Adjust Metadata for Get action
+ *
+ * The metadata is used for setting defaults, documentation, validation, aliases, etc.
+ *
+ * @param array $params
+ */
+function _civicrm_api3_volunteer_project_contact_get_spec(&$params) {
+  // this alias facilitates chaining from api.volunteer_project.get
+  $params['project_id']['api.aliases'] = array('volunteer_project_id');
+}
+
+/**
  * Returns array of project contacts matching a set of one or more properties
  *
  * @param array $params  Array of one or more valid

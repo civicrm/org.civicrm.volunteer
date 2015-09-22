@@ -1,4 +1,3 @@
-/* Add any CSS rules for Angular module "volunteer" */
 .crm-vol-half-responsive {
   box-sizing: border-box;
   width: 49%;
@@ -16,4 +15,26 @@
     width: 100%;
     float: none;
   }
+
+  .crm-vol-opp-cart {
+    margin-top: 2em;
+  }
+}
+
+.crm-vol-opp-results span.beneficiary {
+  display: block;
+}
+
+.crm-vol-opp-cart table .icon,
+.crm-vol-opp-results table .icon
+{
+  cursor: pointer;
+}
+
+.crm-vol-opp-results {
+  margin-top: 2em;
+}
+
+#tabs-wrapper {
+  display: none;
 }
