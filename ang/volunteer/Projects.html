@@ -48,13 +48,13 @@
     <div class="clear"></div>
     <table id="crm-vol-project-list" class="display dataTable no-footer" role="grid">
       <thead>
-      <tr role="row">
-        <td class="ui-state-default"><input type="checkbox" ng-model="allSelected" ng-change="selectAll()" /></td>
-        <td class="sorting ui-state-default">{{ ts('Volunteer Project') }}</td>
-        <td class="sorting ui-state-default">{{ ts('Active') }}</td>
-        <td class="sorting ui-state-default">{{ ts('Associated Entity') }}</td>
-        <td class="ui-state-default"></td>
-      </tr>
+        <tr role="row">
+          <th class="ui-state-default"><input type="checkbox" ng-model="allSelected" ng-change="selectAll()" /></th>
+          <th class="ui-state-default">{{ ts('Volunteer Project') }}</th>
+          <th class="ui-state-default">{{ ts('Active') }}</th>
+          <th class="ui-state-default">{{ ts('Associated Entity') }}</th>
+          <th class="ui-state-default"></th>
+        </tr>
       </thead>
       <tbody>
       <tr ng-repeat="project in projects | filter:searchParams" role="row">
