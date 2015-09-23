@@ -74,8 +74,16 @@
       "delete": {
         label: ts("Delete"),
         run: function() {
-          //todo: Implement delete.
-          console.log("Batch Delete");
+          CRM.confirm({message: ts("Are you sure you want to Delete the selected Projects?")})
+            .on('crmConfirm:yes', function() {
+              $.each($scope.projects, function (index, project) {
+                if (project.selected) {
+                  crmApi("VolunteerProject", "delete", {id: project.id}, true);
+                  delete $scope.projects[index];
+                }
+              });
+              $scope.$apply();
+            });
         }
       }
     };
