@@ -416,26 +416,14 @@ class CRM_Volunteer_BAO_Project extends CRM_Volunteer_DAO_Project {
   }
 
   /**
-   * Check if there is absolute minimum of data to add the object
+   * Check if there is absolute minimum of data to add the object.
    *
-   * @param array  $params         (reference ) an assoc array of name/value pairs
-   *
+   * @param array $params
+   *   An associatve array of name/value pairs
    * @return boolean
-   * @access public
    */
   public static function dataExists($params) {
-    if (CRM_Utils_Array::value('id', $params)) {
-      return TRUE;
-    }
-
-    if (
-      CRM_Utils_Array::value('entity_id', $params) &&
-      CRM_Utils_Array::value('entity_table', $params) &&
-      CRM_Utils_Array::value('title', $params)
-    ) {
-      return TRUE;
-    }
-    return FALSE;
+    return (CRM_Utils_Array::value('id', $params) || CRM_Utils_Array::value('title', $params));
   }
 
   /**

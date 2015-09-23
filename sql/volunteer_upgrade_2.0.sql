@@ -54,4 +54,7 @@ ADD CONSTRAINT `FK_civicrm_volunteer_project_campaign_id`
   REFERENCES `civicrm_campaign`(`id`)
   ON DELETE SET NULL,
 DROP FOREIGN KEY `FK_civicrm_volunteer_project_target_contact_id`,
-DROP COLUMN `target_contact_id`;
+DROP COLUMN `target_contact_id`,
+DROP INDEX `unique_entity`,
+MODIFY `entity_table` varchar(64) NULL,
+MODIFY `entity_id` int(10) NULL;

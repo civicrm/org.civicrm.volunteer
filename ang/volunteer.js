@@ -77,6 +77,9 @@
                   if (!apiParams.hasOwnProperty('project_contacts')) {
                     apiParams.project_contacts = {};
                   }
+                  if (typeof(value) !== "string") {
+                    value = value.toString();
+                  }
                   apiParams.project_contacts.volunteer_beneficiary = value.split(',');
                 break;
               case "project":
@@ -86,6 +89,9 @@
                 apiParams.proximity = value;
                 break;
               case "role":
+                  if (typeof(value) !== "string") {
+                    value = value.toString();
+                  }
                   apiParams["api.VolunteerNeed.get"].role_id = {IN: value.split(',')};
                 break;
             }

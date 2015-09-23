@@ -38,3 +38,33 @@
 #tabs-wrapper {
   display: none;
 }
+
+.crm-container fieldset.crm-vol-ui-fieldset, fieldset.crm-vol-ui-fieldset {
+  border: 1px solid #aaa;
+}
+
+.crm-button-remove-profile {
+  display: inline-block;
+  float: left;
+}
+
+#org_civicrm_volunteer-sign-up-profiles .crm-profile-selector-container:only-child .crm-button-remove-profile {
+  display: none;
+}
+
+.crm-vol-extra-top {
+  margin-top: 15px;
+}
+#crm-vol-location-block {
+  width: 90%;
+}
+#crm-vol-location-block .crm-accordion-body {
+  padding: 10px;
+}
+.crm-vol-search fieldset {
+  padding: 2px 5px;
+}
+
+#crm-vol-project-list a {
+  cursor: pointer;
+}

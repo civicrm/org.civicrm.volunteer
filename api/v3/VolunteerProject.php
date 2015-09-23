@@ -56,8 +56,6 @@ function civicrm_api3_volunteer_project_create($params) {
  * @param array $params array or parameters determined by getfields
  */
 function _civicrm_api3_volunteer_project_create_spec(&$params) {
-  $params['entity_id']['api.required'] = 1;
-  $params['entity_table']['api.required'] = 1;
   $params['title']['api.required'] = 1;
   $params['is_active']['api.default'] = 1;
   $params['project_contacts'] = array(
@@ -121,3 +119,121 @@ function _civicrm_api3_volunteer_project_get_spec(&$params) {
 function civicrm_api3_volunteer_project_delete($params) {
   return _civicrm_api3_basic_delete(_civicrm_api3_get_BAO(__FUNCTION__), $params);
 }
+
+
+/**
+ * remove a UFJoin record
+ *
+ *
+ *
+ * @param array $params  array containing id of the profile
+ *                       to be removed
+ *
+ * @return array  returns flag true if successfull, error
+ *                message otherwise
+ */
+function civicrm_api3_volunteer_project_removeprofile($params) {
+  return _civicrm_api3_basic_delete('CRM_Core_BAO_UFJoin', $params);
+}
+
+/**
+ * Returns an key/value array of location blocks with proper names
+ * Instead of the null values returned when using a crmEntityref
+ * connected to the locBlock entity
+ *
+ * @param $params
+ * @return array
+ *
+ */
+function civicrm_api3_volunteer_project_locations($params) {
+
+  $locations = array();
+
+  $query = "
+SELECT CONCAT_WS(' :: ' , ca.name, ca.street_address, ca.city, sp.name, ca.supplemental_address_1, ca.supplemental_address_2) title, lb.id
+FROM   civicrm_loc_block lb
+INNER JOIN civicrm_address ca   ON lb.address_id = ca.id
+LEFT  JOIN civicrm_state_province sp ON ca.state_province_id = sp.id
+ORDER BY sp.name, ca.city, ca.street_address ASC
+";
+
+  $dao = CRM_Core_DAO::executeQuery($query);
+  while ($dao->fetch()) {
+    $locations[$dao->id] = $dao->title;
+  }
+
+  return civicrm_api3_create_success($locations, $params, 'VolunteerProject', 'locations');
+}
+
+
+/**
+ * Saves/creates an entire location block with a single call instead of
+ * requiring a handful of calls/promises/resolutions from angular
+ *
+ * @param $params
+ * @return array
+ *
+ */
+function civicrm_api3_volunteer_project_savelocblock($params) {
+
+  $locBlockData = array();
+
+  //Address 1
+  if(array_key_exists("address", $params) && is_array($params['address'])) {
+    $locBlockData['address'][1] = $params['address'];
+    if(!array_key_exists("location_type_id", $locBlockData['address'][1])) {
+      $locBlockData['address'][1]['location_type_id'] = 1;
+    }
+  }
+  //Address 2
+  if(array_key_exists("address_2", $params) && is_array($params['address_2'])) {
+    $locBlockData['address'][2] = $params['address_2'];
+    if(!array_key_exists("location_type_id", $locBlockData['address'][2])) {
+      $locBlockData['address'][2]['location_type_id'] = 2;
+    }
+  }
+
+  //Email 1
+  if(array_key_exists("email", $params) && is_array($params['email'])) {
+    $locBlockData['email'][1] = $params['email'];
+    if(!array_key_exists("location_type_id", $locBlockData['email'][1])) {
+      $locBlockData['email'][1]['location_type_id'] = 1;
+    }
+  }
+
+  //Email 2
+  if(array_key_exists("email_2", $params) && is_array($params['email_2'])) {
+    $locBlockData['email'][2] = $params['email_2'];
+    if(!array_key_exists("location_type_id", $locBlockData['email'][2])) {
+      $locBlockData['email'][2]['location_type_id'] = 2;
+    }
+  }
+
+  //Phone 1
+  if(array_key_exists("phone", $params) && is_array($params['phone'])) {
+    $locBlockData['phone'][1] = $params['phone'];
+    if(!array_key_exists("location_type_id", $locBlockData['phone'][1])) {
+      $locBlockData['phone'][1]['location_type_id'] = 1;
+    }
+  }
+
+  //Phone 2
+  if(array_key_exists("phone_2", $params) && is_array($params['phone_2'])) {
+    $locBlockData['phone'][2] = $params['phone_2'];
+    if(!array_key_exists("location_type_id", $locBlockData['phone'][2])) {
+      $locBlockData['phone'][2]['location_type_id'] = 2;
+    }
+  }
+
+  if(array_key_exists("id", $params) && is_array($params['id']) && !$params['id'] == 0) {
+    $locBlockData['id'] = $params['id'];
+  }
+
+  $locBlockData['entity_table'] = 'civicrm_volunteer_project';
+  $locBlockData['entity_id'] = $params['entity_id'];
+  $location = CRM_Core_BAO_Location::create($locBlockData, TRUE, 'VolunteerProject');
+
+  return civicrm_api3_create_success($location['id'], "VolunteerProject", "SaveLocBlock", $params);
+
+}
+
