@@ -56,8 +56,6 @@ function civicrm_api3_volunteer_project_create($params) {
  * @param array $params array or parameters determined by getfields
  */
 function _civicrm_api3_volunteer_project_create_spec(&$params) {
-  $params['entity_id']['api.required'] = 1;
-  $params['entity_table']['api.required'] = 1;
   $params['title']['api.required'] = 1;
   $params['is_active']['api.default'] = 1;
   $params['project_contacts'] = array(
