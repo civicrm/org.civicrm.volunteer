@@ -37,16 +37,99 @@ function volunteer_civicrm_config(&$config) {
 }
 
 /**
- * Implementation of hook_civicrm_caseTypes
+ * Implementation of hook_civicrm_navigationMenu.
  *
- * Generate a list of case-types
+ * Adds CiviVolunteer navigation items just before the Administer menu.
  *
- * Note: This hook only runs in CiviCRM 4.4+.
- *
- * @link http://wiki.civicrm.org/confluence/display/CRMDOC/hook_civicrm_caseTypes
+ * @link http://wiki.civicrm.org/confluence/display/CRMDOC/hook_civicrm_navigationMenu
  */
-function volunteer_civicrm_caseTypes(&$caseTypes) {
-  _volunteer_civix_civicrm_caseTypes($caseTypes);
+function volunteer_civicrm_navigationMenu(&$params) {
+  // get the Administer menu ID and position in the $params array
+  $administerMenuId = CRM_Core_DAO::getFieldValue('CRM_Core_BAO_Navigation', 'Administer', 'id', 'name');
+  $posOfAdminMenu = array_search($administerMenuId, array_keys($params));
+
+  $newNavId = _getMenuKeyMax($params);
+  $volMenu = array(
+    $newNavId => array(
+      'attributes' => array(
+        'label' => ts('Volunteers', array('domain' => 'org.civicrm.volunteer')),
+        'name' => 'volunteer_volunteers',
+        'url' => NULL,
+        'permission' => NULL,
+        'operator' => NULL,
+        'separator' => 0,
+        'parentID' => NULL,
+        'navID' => $newNavId,
+        'active' => 1,
+      ),
+      'child' => array(
+        $newNavId + 1 => array(
+          'attributes' => array(
+            'label' => ts('New Volunteer Project', array('domain' => 'org.civicrm.volunteer')),
+            'name' => 'volunteer_new_project',
+            'url' => 'civicrm/a/#/volunteer/manage/0',
+            'permission' => NULL,
+            'operator' => NULL,
+            'separator' => 0,
+            'parentID' => $newNavId,
+            'navID' => $newNavId + 1,
+            'active' => 1,
+          ),
+          'child' => array(),
+        ),
+        $newNavId + 2 => array(
+          'attributes' => array(
+            'label' => ts('Manage Volunteer Projects', array('domain' => 'org.civicrm.volunteer')),
+            'name' => 'volunteer_manage_projects',
+            'url' => 'civicrm/a/#/volunteer/manage',
+            'permission' => NULL,
+            'operator' => NULL,
+            'separator' => 0,
+            'parentID' => $newNavId,
+            'navID' => $newNavId + 2,
+            'active' => 1,
+          ),
+          'child' => array(),
+        ),
+        $newNavId + 3 => array(
+          'attributes' => array(
+            'label' => ts('Search for Volunteer Opportunities', array('domain' => 'org.civicrm.volunteer')),
+            'name' => 'volunteer_opp_search',
+            'url' => 'civicrm/a/#/volunteer/opportunities',
+            'permission' => NULL,
+            'operator' => NULL,
+            'separator' => 0,
+            'parentID' => $newNavId,
+            'navID' => $newNavId + 3,
+            'active' => 1,
+          ),
+          'child' => array(),
+        ),
+      ),
+    ),
+  );
+
+  // insert volunteer menu before the admininster menu
+  $params = array_slice($params, 0, $posOfAdminMenu, true)
+    + $volMenu + array_slice($params, $posOfAdminMenu, NULL, true);
+}
+
+/**
+ * Helper function for getting the highest key in the navigation menu.
+ *
+ * Taken from http://wiki.civicrm.org/confluence/display/CRMDOC/hook_civicrm_navigationMenu.
+ *
+ * @param array $menuArray
+ * @return int
+ */
+function _getMenuKeyMax($menuArray) {
+  $max = array(max(array_keys($menuArray)));
+  foreach($menuArray as $v) {
+    if (!empty($v['child'])) {
+      $max[] = _getMenuKeyMax($v['child']);
+    }
+  }
+  return max($max);
 }
 
 /**
