@@ -8,9 +8,9 @@
     <author>Yashodha Chaku, Michael Z. Daryabeygi, Frank J. G&#xF3;mez, Dave Greenberg, and Coleman Watts</author>
     <email>info@civicrm.org</email>
   </maintainer>
-  <releaseDate>2015-04-15</releaseDate>
-  <version>4.5-1.4.0</version>
-  <develStage>stable</develStage>
+  <releaseDate>2015-09-23</releaseDate>
+  <version>4.5-2.0.0-alpha-1</version>
+  <develStage>alpha</develStage>
   <compatibility>
     <ver>4.5</ver>
     <ver>4.6</ver>
