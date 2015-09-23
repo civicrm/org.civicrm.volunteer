@@ -77,7 +77,8 @@ class CRM_Volunteer_Permission extends CRM_Core_Permission {
    *   TRUE is the action is allowed; else FALSE.
    */
   public static function checkProjectPerms($op, $projectId = NULL) {
-    if ($op !== CRM_Core_Action::ADD && empty($projectId)) {
+    $opsRequiringProjectId = array(CRM_Core_Action::UPDATE, CRM_Core_Action::DELETE,);
+    if (in_array($op, $opsRequiringProjectId) && empty($projectId)) {
       CRM_Core_Error::fatal('Missing required parameter Project ID');
     }
 
@@ -97,7 +98,6 @@ class CRM_Volunteer_Permission extends CRM_Core_Permission {
           && in_array($contactId, $projectOwners)) {
           return TRUE;
         }
-        break;
 
       case CRM_Core_Action::DELETE:
         if (self::check('delete all volunteer projects')) {
@@ -109,7 +109,11 @@ class CRM_Volunteer_Permission extends CRM_Core_Permission {
           && in_array($contactId, $projectOwners)) {
           return TRUE;
         }
-        break;
+
+      case CRM_Core_Action::VIEW:
+        if (self::check('register to volunteer')) {
+          return TRUE;
+        }
 
       default:
         return FALSE;
