@@ -44,12 +44,12 @@
       "enable": {
         label: ts("Enable"),
         run: function() {
-          CRM.confirm(ts("Are you sure you want to Enable the selected Projects?"))
+          CRM.confirm({message: ts("Are you sure you want to Enable the selected Projects?")})
             .on('crmConfirm:yes', function() {
               $.each($scope.projects, function (index, project) {
                 if (project.selected) {
                   project.is_active = 1;
-                  crmApi("VolunteerProject", "create", {id: project.id, is_active: project.is_active});
+                  crmApi("VolunteerProject", "create", {id: project.id, is_active: project.is_active}, true);
                 }
               });
               $scope.$apply();
@@ -59,12 +59,12 @@
       "disable": {
         label: ts("Disable"),
         run: function() {
-          CRM.confirm(ts("Are you sure you want to Disable the selected Projects?"))
+          CRM.confirm({message: ts("Are you sure you want to Disable the selected Projects?")})
             .on('crmConfirm:yes', function() {
               $.each($scope.projects, function (index, project) {
                 if (project.selected) {
                   project.is_active = 0;
-                  crmApi("VolunteerProject", "create", {id: project.id, is_active: project.is_active});
+                  crmApi("VolunteerProject", "create", {id: project.id, is_active: project.is_active}, true);
                 }
               });
               $scope.$apply();
