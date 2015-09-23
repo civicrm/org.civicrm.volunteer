@@ -92,6 +92,7 @@
 
       <div ng-repeat="rType in relationship_types" crm-ui-field='{name: "projectForm[rType.name]", title: ts(rType.label)}'>
         <input crm-ui-id="projectForm[rType.name]" crm-entityref="{entity: 'Contact', select: {allowClear:true, multiple: true}}" ng-model="relationships[rType.value]" />
+        <div class="description" ng-show="rType.description">{{rType.description}}</div>
       </div>
 
     </fieldset>
