@@ -71,4 +71,10 @@
     <page_callback>CRM_Volunteer_Page_Router</page_callback>
     <is_public>true</is_public>
   </item>
+  <item>
+    <path>civicrm/volunteer/backbonetemplates</path>
+    <title>Load Backbone Templates</title>
+    <page_callback>CRM_Volunteer_Page_Backbone</page_callback>
+    <access_arguments>access CiviEvent,edit all events</access_arguments>
+  </item>
 </menu>
