@@ -184,7 +184,7 @@
       }
 
       function loadStyleFile(url) {
-        CRM.$("#backbone_resources").append("<link href='"+url+"' />");
+        CRM.$("#backbone_resources").append('<link rel="stylesheet" type="text/css" href="' + url + '" />');
       }
 
       function loadTemplate(index, url) {
