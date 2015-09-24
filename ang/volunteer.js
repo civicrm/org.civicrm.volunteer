@@ -74,13 +74,13 @@
           if (value) {
             switch(key) {
               case "beneficiary":
-                  if (!apiParams.hasOwnProperty('project_contacts')) {
-                    apiParams.project_contacts = {};
-                  }
-                  if (typeof(value) !== "string") {
-                    value = value.toString();
-                  }
-                  apiParams.project_contacts.volunteer_beneficiary = value.split(',');
+                if (!apiParams.hasOwnProperty('project_contacts')) {
+                  apiParams.project_contacts = {};
+                }
+                if (typeof(value) !== "string") {
+                  value = value.toString();
+                }
+                apiParams.project_contacts.volunteer_beneficiary = value.split(',');
                 break;
               case "project":
                 apiParams.id = value;
@@ -89,10 +89,10 @@
                 apiParams.proximity = value;
                 break;
               case "role":
-                  if (typeof(value) !== "string") {
-                    value = value.toString();
-                  }
-                  apiParams["api.VolunteerNeed.get"].role_id = {IN: value.split(',')};
+                if (typeof(value) !== "string") {
+                  value = value.toString();
+                }
+                apiParams["api.VolunteerNeed.get"].role_id = {IN: value.split(',')};
                 break;
             }
           }
@@ -160,6 +160,146 @@
         search: search
       };
 
-    }]);
+    }]).factory('volBackbone', function(crmApi, crmProfiles, $q) {
+
+      //This was done as a recursive function because the scripts
+      //Must execute in order.
+      function loadNextScript(scripts, callback, fail) {
+        var script = scripts.shift();
+        CRM.$.getScript(script)
+          .done(function(scriptData, status) {
+            if(scripts.length > 0) {
+              loadNextScript(scripts, callback, fail);
+            } else {
+              callback();
+            }
+          }).fail(function(jqxhr, settings, exception) {
+            console.log(exception);
+            fail(exception);
+          });
+      }
+
+      function loadSettings(settings) {
+        CRM.$.extend(CRM, settings);
+      }
+
+      function loadStyleFile(url) {
+        CRM.$("#backbone_resources").append("<link href='"+url+"' />");
+      }
+
+      function loadTemplate(index, url) {
+        var deferred = $q.defer();
+        if(CRM.$("#volunteer_backbone_templates").length === 0) {
+          CRM.$("body").append("<div id='volunteer_backbone_templates'></div>");
+        }
+        CRM.$("#volunteer_backbone_templates").append("<div id='volunteer_backbone_template_"+index+ "'></div>");
+        CRM.$("#volunteer_backbone_template_" + index).load(CRM.url(url, {snippet: 5}), function(response) {
+          deferred.resolve(response);
+        });
+
+        return deferred.promise;
+      }
+
+      function loadScripts(scripts) {
+        var deferred = $q.defer();
+
+
+        //mess with the jQuery versions
+        CRM.origJQuery = window.jQuery;
+        window.jQuery = CRM.$;
+
+        //We need to put underscore on the global scope or backbone fails to load
+        if(!window._) {
+          window._ = CRM._;
+        }
+
+        loadNextScript(scripts, function () {
+          window.jQuery = CRM.origJQuery;
+          delete CRM.origJQuery;
+          CRM.volunteerBackboneScripts = true;
+          deferred.resolve(true);
+        }, function(status) {
+          deferred.resolve(status);
+        });
+
+        return deferred.promise;
+      }
+
+
+      function verifyScripts() {
+        //todo: figure out a way to check this.
+        return !!CRM.volunteerBackboneScripts;
+      }
+      function verifyTemplates() {
+        return (angular.element("#volunteer_backbone_templates").length > 0);
+      }
+      function verifySettings() {
+        return !!CRM.volunteerBackboneSettings;
+      }
+
+      return {
+        verify: function() {
+          return (!!window.Backbone && verifyScripts() && verifySettings() && verifyTemplates());
+        },
+        load: function() {
+          var deferred = $q.defer();
+          var promises = [];
+          var preReqs = {};
+
+          //Get all the colunteer info from the server.
+          preReqs.volunteer = crmApi('VolunteerProject', 'loadbackbone');
+
+          if(!crmProfiles.verify()) {
+            preReqs.profiles = crmProfiles.load();
+          }
+
+          $q.all(preReqs).then(function(resources) {
+
+            if (CRM.$("#backbone_resources").length < 1) {
+              CRM.$("body").append("<div id='backbone_resources'></div>");
+            }
+
+            //The setting must be loaded before the libraries
+            //Because the libraries depend on the settings.
+            //loadSettings will once it is finished do it's own
+            //check and spawn the loadBakcbone task when it is complete.
+            if(!verifySettings()) {
+              loadSettings(resources.volunteer.values.settings);
+              CRM.volunteerBackboneSettings = true;
+            }
+
+            if(!verifyScripts()) {
+              promises.push(loadScripts(resources.volunteer.values.scripts));
+            }
+
+            if(!verifyTemplates()) {
+              CRM.$.each(resources.volunteer.values.templates, function(index, url) {
+                promises.push(loadTemplate(index, url));
+              });
+            }
+
+            CRM.$.each(resources.volunteer.values.css, function(index, url) {
+              loadStyleFile(url);
+            });
+
+            $q.all(promises).then(
+              function () {
+                //I'm not sure what normally triggers this event, but when cramming it
+                //into angular the event isn't triggered. So I'm doing it here, otherwise
+                //The backbone stuff fails.
+                CRM.volunteerApp.trigger("initialize:before");
+                
+                deferred.resolve(true);
+              },
+              function () {
+                console.log("Failed to load all backbone resources");
+                deferred.reject(ts("Failed to load all backbone resources"));
+              }
+            );
+          });
+          return deferred.promise;
+        }
+      };
+    });
 
 })(angular, CRM.$, CRM._);
