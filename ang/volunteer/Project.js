@@ -63,7 +63,7 @@
   // The controller uses *injection*. This default injects a few things:
   //   $scope -- This is the set of variables shared between JS and HTML.
   //   crmApi, crmStatus, crmUiHelp -- These are services provided by civicrm-core.
-  angular.module('volunteer').controller('VolunteerProject', function($scope, $location, $q, crmApi, crmStatus, crmUiAlert, crmUiHelp, crmProfiles, project, is_entity, profile_status, relationship_types, relationship_data, profiles, location_blocks, phone_types) {
+  angular.module('volunteer').controller('VolunteerProject', function($scope, $location, $q, crmApi, crmStatus, crmUiAlert, crmUiHelp, crmProfiles, project, is_entity, profile_status, relationship_types, relationship_data, profiles, location_blocks, phone_types, volBackbone) {
     // The ts() and hs() functions help load strings for this module.
     var ts = $scope.ts = CRM.ts('org.civicrm.volunteer');
     var hs = $scope.hs = crmUiHelp({file: 'CRM/Volunteer/Form/Volunteer'}); // See: templates/CRM/volunteer/Project.hlp
@@ -163,7 +163,12 @@
       return valid;
     };
 
-    $scope.saveProject = function() {
+    /**
+     * Helper function which actually saves a form submission.
+     *
+     * @returns {Mixed} Returns project ID on success, boolean FALSE on failure.
+     */
+    saveProject = function() {
       if ($scope.validateProject()) {
 
         var pReqs = {};
@@ -173,13 +178,13 @@
           pReqs.locBlock = crmApi('LocBlock', 'create');
         }
 
-        $q.all(pReqs).then(function(pReqResults) {
+        return $q.all(pReqs).then(function(pReqResults) {
 
           if($scope.project.loc_block_id == 0) {
             $scope.project.loc_block_id = pReqResults.locBlock.id;
           }
 
-          crmApi('VolunteerProject', 'create', $scope.project).then(function(result) {
+          return crmApi('VolunteerProject', 'create', $scope.project).then(function(result) {
             var projectId = result.id;
 
 
@@ -261,16 +266,39 @@
               });
             });
 
-            //Let the user know we are saving
-            crmUiAlert({text: ts('Changes saved successfully'), title: ts('Saved'), type: 'success'});
-            //Forward to someplace else
-            $location.path( "/volunteer/manage" );
+            return projectId;
           });
         });
       } else {
         return false;
       }
-    }
+    };
+
+    $scope.saveAndDone = function() {
+      saveProject().then(function(projectId) {
+        if (projectId) {
+          crmUiAlert({text: ts('Changes saved successfully'), title: ts('Saved'), type: 'success'});
+          $location.path( "/volunteer/manage" );
+        }
+      });
+    };
+
+    $scope.saveAndNext = function() {
+      saveProject().then(function(projectId) {
+        if (projectId) {
+          crmUiAlert({text: ts('Changes saved successfully'), title: ts('Saved'), type: 'success'});
+
+          volBackbone.load().then(function() {
+            CRM.volunteerPopup(ts('Define Needs'), 'Define', projectId);
+            $location.path( "/volunteer/manage" );
+          });
+        }
+      });
+    };
+
+    $scope.cancel = function() {
+      $location.path( "/volunteer/manage" );
+    };
   });
 
 })(angular, CRM.$, CRM._);
