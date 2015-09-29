@@ -6,6 +6,8 @@ Required vars: volOppData, searchParams
 <div class="crm-container">
   <div crm-ui-debug="volOppData()"></div>
   <div crm-ui-debug="searchParams()"></div>
+  <div crm-ui-debug="proximityUnits"></div>
+  <div crm-ui-debug="countries"></div>
 
   <!-- Search Form -->
   <div class="crm-vol-half-responsive crm-vol-opp-search">
@@ -109,21 +111,14 @@ Required vars: volOppData, searchParams
             />
           </div>
           <div crm-ui-field="{name: 'volOppSearchForm.country', title: ts('Country')}">
-            <input
-              class="big crm-form-text"
-              crm-entityref="{
-                entity: 'Country',
-                select: {
-                  minimumInputLength: 0,
-                  placeholder: ts('Select Country'),
-                  multiple: false
-                }
-              }"
+            <select
+              class="big crm-form-select"
               crm-ui-id="volOppSearchForm.country"
+              crm-ui-select="{placeholder: ts('Select Country'), allowClear:true}"
               ng-model="searchParams().proximity.country"
-              ng-required="isProximitySearch()"
-              type="text"
-            />
+              ng-options="k as v.name for (k, v) in countries"
+              ng-required="isProximitySearch()">
+            </select>
           </div>
         </div>
         <div class="crm-buttons">
