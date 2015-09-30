@@ -21,6 +21,7 @@
  *
  */
 function civicrm_api3_volunteer_util_loadbackbone($params) {
+
   $results = array("css" => array(), "templates" => array(), "scripts" => array(), "settings" => array());
 
   $ccr = CRM_Core_Resources::singleton();
@@ -43,9 +44,15 @@ function civicrm_api3_volunteer_util_loadbackbone($params) {
       'volunteer_role' => CRM_Volunteer_BAO_Need::buildOptions('role_id', 'get'),
       'volunteer_status' => CRM_Activity_BAO_Activity::buildOptions('status_id', 'validate'),
     ),
+    // TODO: This API is about satisfying generic depenedencies need to build
+    // the backbone-based volunteer UIs inside an Angular app. Previously
+    // CRM.volunteer.default_date provided the start time of the event as a
+    // default for new needs; project-specific information does not belong in
+    // this API so we'll temporarily set this for noon of the next day until
+    // we have an alternative mechanism.
     'volunteer' => array(
       //'default_date' => CRM_Utils_Array::value('start_date', $entity),
-      'default_date' => "2016-02-22 17:00:00",
+      'default_date' => date("Y-m-d H:i:s", strtotime('tomorrow noon')),
     ),
     'config' => array(
       'timeInputFormat' => $config->timeInputFormat,
