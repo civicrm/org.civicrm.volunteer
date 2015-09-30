@@ -236,4 +236,3 @@ function civicrm_api3_volunteer_project_savelocblock($params) {
   return civicrm_api3_create_success($location['id'], "VolunteerProject", "SaveLocBlock", $params);
 
 }
-
