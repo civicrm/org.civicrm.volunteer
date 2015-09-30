@@ -473,6 +473,32 @@ function volunteer_civicrm_alterAPIPermissions($entity, $action, &$params, &$per
   $permissions['volunteer_need']['default'] = array('access CiviEvent', 'edit all events');
   $permissions['volunteer_assignment']['default'] = array('access CiviEvent', 'edit all events');
   $permissions['volunteer_commendation']['default'] = array('access CiviEvent', 'edit all events');
+
+  // allow fairly liberal access to the volunteer opp listing UI, which uses lots of API calls
+  if (_isVolListingApiCall($entity, $action) && CRM_Volunteer_Permission::checkProjectPerms(CRM_Core_Action::VIEW)) {
+    $params['check_permissions'] = FALSE;
+  }
+}
+
+/**
+ * This is a helper function to volunteer_civicrm_alterAPIPermissions.
+ *
+ * It encapsulates the logic for determining whether or not the API calls in
+ * question are of the type that the volunteer opportunities search/listing
+ * depends on.
+ *
+ * @param string $entity
+ *   The noun in an API call (e.g., volunteer_project)
+ * @param string $action
+ *   The verb in an API call (e.g., get)
+ * @return boolean
+ *   True if the API call is of the type that the vol opps UI depends on.
+ */
+function _isVolListingApiCall($entity, $action) {
+  $actions = array('get', 'getsingle');
+  $entities = array('loc_block', 'volunteer_project_contact', 'volunteer_need', 'volunteer_project');
+
+  return (in_array($entity, $entities) && in_array($action, $actions));
 }
 
 function volunteer_civicrm_angularModules(&$angularModule) {
