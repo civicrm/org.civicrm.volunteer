@@ -213,12 +213,22 @@
       function loadScripts(scripts) {
         var deferred = $q.defer();
 
-
-        //mess with the jQuery versions
+        // What's this weird stuff going on with jQuery, you ask?
+        //
+        // Based on a discussion with totten, we anticipate problems with
+        // competing versions of jQuery. On a given page, there are two copies
+        // of jQuery (CMS's and CRM's), but only one of them includes Civi's
+        // custom widgets and preferred add-ons (crmDatepicker, etc). jQuery
+        // version problems wouldn't manifest all the time -- in many cases, the
+        // different variants of jQuery are interchangeable, but we suspect that
+        // certain directives (like crm-ui-datepicker) would fail in snippet
+        // mode because they can't access a required jQuery function. So far
+        // there don't seem to be any problems, but I'm flagging this as needing
+        // more testing and as a potential source of mysterious problems.
         CRM.origJQuery = window.jQuery;
         window.jQuery = CRM.$;
 
-        //We need to put underscore on the global scope or backbone fails to load
+        // We need to put underscore on the global scope or backbone fails to load
         if(!window._) {
           window._ = CRM._;
         }
@@ -299,7 +309,7 @@
                 //into angular the event isn't triggered. So I'm doing it here, otherwise
                 //The backbone stuff fails.
                 CRM.volunteerApp.trigger("initialize:before");
-                
+
                 deferred.resolve(true);
               },
               function () {
