@@ -256,8 +256,7 @@
           var promises = [];
           var preReqs = {};
 
-          //Get all the colunteer info from the server.
-          preReqs.volunteer = crmApi('VolunteerProject', 'loadbackbone');
+          preReqs.volunteer = crmApi('VolunteerUtil', 'loadbackbone');
 
           if(!crmProfiles.verify()) {
             preReqs.profiles = crmProfiles.load();
