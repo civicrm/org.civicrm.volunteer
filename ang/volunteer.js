@@ -160,10 +160,15 @@
         search: search
       };
 
-    }]).factory('volBackbone', function(crmApi, crmProfiles, $q) {
+    }])
 
-      //This was done as a recursive function because the scripts
-      //Must execute in order.
+    /**
+     * This is a service for loading the backbone-based volunteer UIs (and their
+     * prerequisite scripts) into angular routes.
+     */
+    .factory('volBackbone', function(crmApi, crmProfiles, $q) {
+
+      // This was done as a recursive function because the scripts must execute in order.
       function loadNextScript(scripts, callback, fail) {
         var script = scripts.shift();
         CRM.$.getScript(script)
@@ -187,6 +192,12 @@
         CRM.$("#backbone_resources").append('<link rel="stylesheet" type="text/css" href="' + url + '" />');
       }
 
+      /**
+       * Fetches a URL and puts the fetched HTML into #volunteer_backbone_templates.
+       *
+       * The intended use is to fetch a Smarty-generated page which contains all
+       * of the backbone templates (e.g., <script type="text/template">foo</script>).
+       */
       function loadTemplate(index, url) {
         var deferred = $q.defer();
         if(CRM.$("#volunteer_backbone_templates").length === 0) {
@@ -225,9 +236,9 @@
         return deferred.promise;
       }
 
-
+      // TODO: Figure out a more authoritative way to check this, rather than
+      // simply setting and checking a flag.
       function verifyScripts() {
-        //todo: figure out a way to check this.
         return !!CRM.volunteerBackboneScripts;
       }
       function verifyTemplates() {
@@ -259,10 +270,8 @@
               CRM.$("body").append("<div id='backbone_resources'></div>");
             }
 
-            //The setting must be loaded before the libraries
-            //Because the libraries depend on the settings.
-            //loadSettings will once it is finished do it's own
-            //check and spawn the loadBakcbone task when it is complete.
+            // The settings must be loaded before the libraries
+            // because the libraries depend on the settings.
             if(!verifySettings()) {
               loadSettings(resources.volunteer.values.settings);
               CRM.volunteerBackboneSettings = true;

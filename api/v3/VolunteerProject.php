@@ -241,8 +241,11 @@ function civicrm_api3_volunteer_project_savelocblock($params) {
  * This function will return the needed pieces to load up the backbone/
  * marionette project backend from within an angular page.
  *
- * @param $params
+ * @param array $params
+ *   Not presently used.
  * @return array
+ *   Keyed with "css," "templates," "scripts," and "settings," this array
+ *   contains the dependencies of the backbone-based volunteer app.
  *
  */
 function civicrm_api3_volunteer_project_loadbackbone($params) {
@@ -251,7 +254,6 @@ function civicrm_api3_volunteer_project_loadbackbone($params) {
   $ccr = CRM_Core_Resources::singleton();
   $config = CRM_Core_Config::singleton();
 
-  //Add our stylesheet
   $results['css'][] = $ccr->getUrl('org.civicrm.volunteer', 'css/volunteer_app.css');
 
   $baseDir = CRM_Extension_System::singleton()->getMapper()->keyToBasePath('org.civicrm.volunteer') . '/';
@@ -264,8 +266,6 @@ function civicrm_api3_volunteer_project_loadbackbone($params) {
   // Add our template
   $results['templates'][] = 'civicrm/volunteer/backbonetemplates';
 
-
-  //$ccr->addSetting(array(
   $results['settings'] = array(
     'pseudoConstant' => array(
       'volunteer_need_visibility' => array_flip(CRM_Volunteer_BAO_Need::buildOptions('visibility_id', 'validate')),
@@ -306,8 +306,6 @@ function civicrm_api3_volunteer_project_loadbackbone($params) {
       ),
     ),
   );
-
-
 
   return civicrm_api3_create_success($results, "VolunteerProject", "loadBackbone", $params);
 }
