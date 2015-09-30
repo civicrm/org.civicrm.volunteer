@@ -200,11 +200,10 @@
        */
       function loadTemplate(index, url) {
         var deferred = $q.defer();
-        if(CRM.$("#volunteer_backbone_templates").length === 0) {
-          CRM.$("body").append("<div id='volunteer_backbone_templates'></div>");
-        }
-        CRM.$("#volunteer_backbone_templates").append("<div id='volunteer_backbone_template_"+index+ "'></div>");
-        CRM.$("#volunteer_backbone_template_" + index).load(CRM.url(url, {snippet: 5}), function(response) {
+        var divId = 'volunteer_backbone_template_' + index;
+
+        CRM.$("#volunteer_backbone_templates").append("<div id='" + divId + "'></div>");
+        CRM.$("#" + divId).load(CRM.url(url, {snippet: 5}), function(response) {
           deferred.resolve(response);
         });
 
@@ -242,7 +241,7 @@
         return !!CRM.volunteerBackboneScripts;
       }
       function verifyTemplates() {
-        return (angular.element("#volunteer_backbone_templates").length > 0);
+        return (angular.element("#volunteer_backbone_templates div").length > 0);
       }
       function verifySettings() {
         return !!CRM.volunteerBackboneSettings;
@@ -268,6 +267,10 @@
 
             if (CRM.$("#backbone_resources").length < 1) {
               CRM.$("body").append("<div id='backbone_resources'></div>");
+            }
+
+            if(CRM.$("#volunteer_backbone_templates").length < 1) {
+              CRM.$("body").append("<div id='volunteer_backbone_templates'></div>");
             }
 
             // The settings must be loaded before the libraries
