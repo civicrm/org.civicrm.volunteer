@@ -39,6 +39,7 @@
           is_active: 1,
           sequential: 0,
           options: {limit: 0},
+          "api.Campaign.getsingle": {},
           "api.LocBlock.getsingle": {
             "api.Address.getsingle": {}
           },
@@ -121,6 +122,13 @@
           });
 
           angular.forEach(result.projects, function(project, key) {
+            if (project.hasOwnProperty("api.Campaign.getsingle")
+              && project["api.Campaign.getsingle"].hasOwnProperty('title')
+            ) {
+              result.projects[key].campaign_title = project["api.Campaign.getsingle"].title;
+            }
+            delete result.projects[key]["api.Campaign.getsingle"];
+
             if (project.hasOwnProperty("api.LocBlock.getsingle")
               && project["api.LocBlock.getsingle"].hasOwnProperty('api.Address.getsingle')
             ) {
