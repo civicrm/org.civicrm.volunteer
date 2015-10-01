@@ -21,7 +21,10 @@
       </div>
 
       <div crm-ui-field='{name: "projectForm.campaign_id", title: ts("Campaign")}'>
-        <input class="big crm-form-text" crm-ui-id="projectForm.campaign_id" crm-entityref="{entity: 'Campaign', select: {allowClear:true}}" ng-model="project.campaign_id" />
+        <input
+          class="big crm-form-text" crm-ui-id="projectForm.campaign_id"
+          crm-entityref="{entity: 'Campaign', select: {allowClear:true, minimumInputLength: 0}}"
+          ng-model="project.campaign_id" />
       </div>
 
       <div crm-ui-field='{name: "projectForm.locBlock", title: ts("Location")}'>
