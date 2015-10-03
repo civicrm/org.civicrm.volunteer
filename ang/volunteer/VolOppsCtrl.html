@@ -15,13 +15,13 @@ Required vars: volOppData, searchParams
     <form name="volOppSearchForm" crm-ui-id-scope>
       <div class="crm-block ui-tabs ui-widget ui-widget-content ui-corner-all">
         <div class="crm-group">
-          <div crm-ui-field="{name: 'volOppSearchForm.date_start', title: ts('Between')}">
+          <div crm-ui-field="{name: 'volOppSearchForm.date_start', title: ts('Between')}" class="crm-vol-opp-time">
             <input crm-ui-id="volOppSearchForm.date_start" crm-ui-datepicker="{time: false}" ng-model="searchParams().date_start" />
             <label crm-ui-for="volOppSearchForm.date_end">and</label>
             <input crm-ui-id="volOppSearchForm.date_end" crm-ui-datepicker="{time: false}" ng-model="searchParams().date_end" />
           </div>
 
-          <div crm-ui-field="{name: 'volOppSearchForm.role', title: ts('Role')}">
+          <div crm-ui-field="{name: 'volOppSearchForm.role', title: ts('Role')}" class="crm-vol-opp-role">
             <input
               crm-entityref="{
                 entity: 'OptionValue',
@@ -41,7 +41,7 @@ Required vars: volOppData, searchParams
               class="big crm-form-text"
             />
           </div>
-          <div crm-ui-field="{name: 'volOppSearchForm.beneficiary', title: ts('Beneficiary')}">
+          <div crm-ui-field="{name: 'volOppSearchForm.beneficiary', title: ts('Beneficiary')}" class="crm-vol-opp-beneficiary">
             <!--
             TODO: CiviVolunteer perhaps needs to provide a group which beneficiaries
             can be added to so we don't expose the whole database. Actually, the
@@ -67,7 +67,7 @@ Required vars: volOppData, searchParams
           </div>
         </div>
         <div class="crm-vol-proximity" crm-ui-accordion="{title: ts('Proximity Search'), collapsed: true}">
-          <div crm-ui-field="{name: 'volOppSearchForm.radius', title: ts('Within')}">
+          <div crm-ui-field="{name: 'volOppSearchForm.radius', title: ts('Within')}" class="crm-vol-opp-radius">
             <input
               class="four crm-form-text"
               crm-ui-id="volOppSearchForm.radius"
@@ -83,7 +83,7 @@ Required vars: volOppData, searchParams
             </select>
             <label crm-ui-for="volOppSearchForm.unit">of:</label>
           </div>
-          <div crm-ui-field="{name: 'volOppSearchForm.street_address', title: ts('Street Address')}">
+          <div crm-ui-field="{name: 'volOppSearchForm.street_address', title: ts('Street Address')}" class="crm-vol-opp-street">
             <input
               class="crm-form-text"
               crm-ui-id="volOppSearchForm.street_address"
@@ -91,7 +91,7 @@ Required vars: volOppData, searchParams
               type="text"
             />
           </div>
-          <div crm-ui-field="{name: 'volOppSearchForm.city', title: ts('City')}">
+          <div crm-ui-field="{name: 'volOppSearchForm.city', title: ts('City')}" class="crm-vol-opp-city">
             <input
               class="crm-form-text"
               crm-ui-id="volOppSearchForm.city"
@@ -101,7 +101,7 @@ Required vars: volOppData, searchParams
           </div>
           <div
             crm-ui-field="{name: 'volOppSearchForm.postal_code', title: ts('Postal Code')}"
-            ng-required="isProximitySearch()"
+            ng-required="isProximitySearch()" class="crm-vol-opp-postal"
           >
             <input
               class="crm-form-text"
@@ -110,7 +110,7 @@ Required vars: volOppData, searchParams
               type="text"
             />
           </div>
-          <div crm-ui-field="{name: 'volOppSearchForm.country', title: ts('Country')}">
+          <div crm-ui-field="{name: 'volOppSearchForm.country', title: ts('Country')}" class="crm-vol-opp-country">
             <select
               class="big crm-form-select"
               crm-ui-id="volOppSearchForm.country"
