@@ -85,5 +85,27 @@ function civicrm_api3_volunteer_util_loadbackbone($params) {
     ),
   );
 
-  return civicrm_api3_create_success($results, "VolunteerProject", "loadBackbone", $params);
+  return civicrm_api3_create_success($results, "VolunteerUtil", "loadbackbone", $params);
+}
+
+/**
+ * This function returns the permissions defined by the volunteer extension.
+ *
+ * @param array $params
+ *   Not presently used.
+ * @return array
+ */
+function civicrm_api3_volunteer_util_getperms($params) {
+  $results = array();
+
+  foreach(CRM_Volunteer_Permission::getVolunteerPermissions() as $k => $v) {
+    $results[] = array(
+      'description' => $v[1],
+      'label' => $v[0],
+      'name' => $k,
+      'safe_name' => strtolower(str_replace(array(' ', '-'), '_', $k)),
+    );
+  }
+
+  return civicrm_api3_create_success($results, "VolunteerUtil", "getperms", $params);
 }

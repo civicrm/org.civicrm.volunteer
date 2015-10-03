@@ -514,4 +514,9 @@ function volunteer_civicrm_angularModules(&$angularModule) {
       'partials' => array (0 => 'ang/volunteer'),
       'settings' => array ()
   );
+
+  // Perhaps the placement of this code is a little hackish; unless/until we
+  // extend Civi\Angular\Page\Main, there doesn't appear to be a better
+  // alternative. This populates CRM.permissions on the client side.
+  CRM_Core_Resources::singleton()->addPermissions(array_keys(CRM_Volunteer_Permission::getVolunteerPermissions()));
 }
