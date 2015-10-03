@@ -7,7 +7,10 @@
         resolve: {
           project: function(crmApi, $route) {
             if ($route.current.params.projectId == 0) {
-              return {};
+              return {
+                // default new projects to active
+                is_active: "1"
+              };
             } else {
               return crmApi('VolunteerProject', 'getsingle', {
                 id: $route.current.params.projectId
