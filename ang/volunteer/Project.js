@@ -44,15 +44,28 @@
             return crmApi('VolunteerProject', 'locations', {});
           },
           profiles: function(crmApi, $route) {
-            if ($route.current.params.projectId == 0) {
-              return {"values": []};
-            } else {
-              return crmApi('UFJoin', 'get', {
-                "sequential": 1,
-                "module": "CiviVolunteer",
-                "entity_id": $route.current.params.projectId
-              });
-            }
+            return crmApi('UFJoin', 'get', {
+              entity_id: $route.current.params.projectId,
+              entity_table: "civicrm_volunteer_project",
+              sequential: 1
+            }).then(function(data) {
+              if (data.count > 0) {
+                return data.values;
+              } else {
+                return crmApi('UFGroup', 'getvalue', {
+                  name: "volunteer_sign_up",
+                  "return": "id"
+                }).then(function(data) {
+                  return [{
+                    "is_active": "1",
+                    "module": "CiviVolunteer",
+                    "entity_table": "civicrm_volunteer_project",
+                    "weight": "1",
+                    "uf_group_id": data.result
+                  }];
+                });
+              }
+            });
           },
           is_entity: function() { return false; },
           profile_status: function(crmProfiles) {
@@ -63,9 +76,7 @@
     }
   );
 
-  // The controller uses *injection*. This default injects a few things:
-  //   $scope -- This is the set of variables shared between JS and HTML.
-  //   crmApi, crmStatus, crmUiHelp -- These are services provided by civicrm-core.
+
   angular.module('volunteer').controller('VolunteerProject', function($scope, $location, $q, crmApi, crmStatus, crmUiAlert, crmUiHelp, crmProfiles, project, is_entity, profile_status, relationship_types, relationship_data, profiles, location_blocks, phone_types, volBackbone) {
     // The ts() and hs() functions help load strings for this module.
     var ts = $scope.ts = CRM.ts('org.civicrm.volunteer');
@@ -84,7 +95,7 @@
     $scope.locationBlocks = location_blocks.values;
     $scope.locationBlocks[0] = "Create a new Location";
     $scope.locBlock = {};
-    $scope.profiles = profiles.values;
+    $scope.profiles = profiles;
     $scope.relationships = relationships;
     $scope.relationship_types = relationship_types.values;
     $scope.phone_types = phone_types.values;
@@ -129,13 +140,21 @@
     };
 
     $scope.addProfile = function() {
-      $scope.profiles.push({"is_active": "1", "module": "CiviVolunteer", "weight": 1});
+      $scope.profiles.push({
+        "entity_table": "civicrm_volunteer_project",
+        "is_active": "1",
+        "module": "CiviVolunteer",
+        "weight": getMaxProfileWeight() + 1
+      });
     };
 
-    //Make sure there is always a minimum of one profile selector
-    if ($scope.profiles.length === 0) {
-      $scope.addProfile();
-    }
+    var getMaxProfileWeight = function() {
+      var weights = [0];
+      $.each($scope.profiles, function (index, data) {
+        weights.push(parseInt(data.weight));
+      });
+      return _.max(weights);
+    };
 
     $scope.removeProfile = function(index) {
       $scope.profiles.splice(index, 1);
