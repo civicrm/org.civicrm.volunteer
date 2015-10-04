@@ -95,7 +95,7 @@
     <fieldset class="crm-vol-relationships">
       <legend>{{ts("Relationships")}}</legend>
 
-      <div ng-repeat="rType in relationship_types" crm-ui-field='{name: "projectForm[rType.name]", title: ts(rType.label)}'>
+      <div ng-repeat="rType in relationship_types" crm-ui-field="{name: projectForm[rType.name], title: ts(rType.label)}" ng-class="'crm-vol-rel-' + rType.name">
         <input crm-ui-id="projectForm[rType.name]" crm-entityref="{entity: 'Contact', select: {allowClear:true, multiple: true}}" ng-model="relationships[rType.value]" />
         <div class="description" ng-show="rType.description">{{rType.description}}</div>
       </div>
