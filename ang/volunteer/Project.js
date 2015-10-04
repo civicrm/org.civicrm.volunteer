@@ -258,32 +258,29 @@
 
 
             //save the profiles
+            var savedProfileIds = [];
             var pPromises = [];
             $($scope.profiles).each(function(index, profile) {
               profile.entity_id = projectId;
-              pPromises.push(crmApi("UFJoin", "create", profile));
+              pPromises.push(
+                crmApi("UFJoin", "create", profile).then(function(data) {
+                  savedProfileIds.push(data.values[0].id);
+                })
+              );
             });
-
 
             //remove profiles no longer needed
             $q.all(pPromises).then(function() {
               crmApi('UFJoin', 'get', {
                 "sequential": 1,
                 "module": "CiviVolunteer",
-                "entity_id": projectId
+                entity_id: projectId,
+                entity_table: 'civicrm_volunteer_project',
+                id: {"NOT IN": savedProfileIds}
               }).then(function(result) {
                 $.each(result.values, function(index, profile) {
-                  var remove = true;
-                  $.each($scope.profiles, function(index, item) {
-                    if (item.id == profile.id) {
-                      remove = false;
-                    }
-                  });
-
-                  if(remove) {
-                    //todo: This is implemented in civiVol but should be added to core.
-                    crmApi("VolunteerProject", "removeprofile", {id: profile.id});
-                  }
+                  //todo: This is implemented in civiVol but should be added to core.
+                  crmApi("VolunteerProject", "removeprofile", {id: profile.id});
                 });
               });
             });
