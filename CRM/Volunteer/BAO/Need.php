@@ -58,9 +58,16 @@ class CRM_Volunteer_BAO_Need extends CRM_Volunteer_DAO_Need {
    * @static
    */
   static function &create($params) {
-    $projectId = CRM_Utils_Array::value('project_id', $params);
-    $op = CRM_Core_Action::UPDATE;
+    $need = new CRM_Volunteer_BAO_Need();
+    $need->copyValues($params);
+    $projectId = $need->getProjectId();
 
+    if ($projectId === FALSE) {
+      CRM_Core_Error::fatal('Missing required Need ID or Project ID');
+    }
+
+    // creating a Need constitutes updating a Project
+    $op = CRM_Core_Action::UPDATE;
     if (!empty($params['check_permissions']) && !CRM_Volunteer_Permission::checkProjectPerms($op, $projectId)) {
       CRM_Utils_System::permissionDenied();
 
@@ -73,12 +80,31 @@ class CRM_Volunteer_BAO_Need extends CRM_Volunteer_DAO_Need {
       return;
     }
 
-    $need = new CRM_Volunteer_DAO_Need();
-
-    $need->copyValues($params);
     $need->save();
 
     return $need;
+  }
+
+  /**
+   * Returns the Need's Project ID.
+   *
+   * @return mixed
+   *   On success, int project ID. On failure, boolean FALSE.
+   */
+  public function getProjectId() {
+    // If the project ID was passed into the create method, or if the object is
+    // already fully loaded, we already have the project ID and can return it...
+    if (isset($this->project_id) && CRM_Utils_Type::validate($this->project_id, 'Positive', FALSE)) {
+      return (int) $this->project_id;
+    }
+
+    // ... otherwise we have to look it up from the database
+    if (isset($this->id) && CRM_Utils_Type::validate($this->id, 'Positive', FALSE)) {
+      $dbNeed = $this->findById($this->id);
+      return $dbNeed->project_id;
+    }
+
+    return FALSE;
   }
 
   /**
