@@ -56,6 +56,7 @@ class CRM_Volunteer_Upgrader extends CRM_Volunteer_Upgrader_Base {
     $this->installCommendationActivityType();
 
     $this->schemaUpgrade20();
+    $this->addNeedEndDate();
 
     // uncomment the next line to insert sample data
     // $this->executeSqlFile('sql/volunteer_sample.mysql');
@@ -126,6 +127,15 @@ class CRM_Volunteer_Upgrader extends CRM_Volunteer_Upgrader_Base {
   public function schemaUpgrade20() {
     $this->installProjectRelationships();
     $this->executeSqlFile('sql/volunteer_upgrade_2.0.sql');
+  }
+
+  /**
+   * Makes schema changes to support fuzzy dates for needs (VOL-142).
+   *
+   * Used in both the install and the upgrade.
+   */
+  public function addNeedEndDate() {
+    $this->executeSqlFile('sql/volunteer_need_end_date.sql');
   }
 
   /**
@@ -274,6 +284,12 @@ class CRM_Volunteer_Upgrader extends CRM_Volunteer_Upgrader_Base {
     $this->ctx->log->info('Applying update 2001 - Upgrading schema to 2.0');
     $this->schemaUpgrade20();
     $this->migrateProjectTitles();
+    return TRUE;
+  }
+
+  public function upgrade_2002() {
+    $this->ctx->log->info('Applying update 2002 - Adding end_date to civicrm_volunteer_need');
+    $this->addNeedEndDate();
     return TRUE;
   }
 
