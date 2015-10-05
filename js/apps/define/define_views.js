@@ -57,7 +57,6 @@
       },
 
       updateNeed: function(e) {
-        var thisView = this;
         var field_name = e.currentTarget.name;
         var value = e.currentTarget.value;
 
