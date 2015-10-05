@@ -185,7 +185,7 @@
       }
 
       function loadSettings(settings) {
-        CRM.$.extend(CRM, settings);
+        CRM.$.extend(true, CRM, settings);
       }
 
       function loadStyleFile(url) {
