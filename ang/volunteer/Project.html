@@ -1,4 +1,4 @@
-<div class="crm-container">
+<div class="crm-vol-project" crm-vol-perm-to-class>
   <div crm-ui-debug="project"></div>
   <div crm-ui-debug="relationships"></div>
   <div crm-ui-debug="profiles"></div>
@@ -10,52 +10,54 @@
     <!-- temporarily hiding this as I'm not sure the intent and it looks unfinished -->
     <div class="help" ng-hide="1"></div>
 
-    <fieldset>
+    <fieldset class="crm-vol-project-settings">
       <legend>{{ts("Project Settings")}}</legend>
-      <div crm-ui-field="{name: 'projectForm.title', title: ts('Project Title')}">
+      <div class="crm-vol-title" crm-ui-field="{name: 'projectForm.title', title: ts('Project Title')}">
         <input class="big crm-form-text" crm-ui-id="projectForm.title" ng-model="project.title" ng-required="true" />
       </div>
 
-      <div crm-ui-field="{name: 'projectForm.description', title: ts('Project Description')}">
+      <div class="crm-vol-description" crm-ui-field="{name: 'projectForm.description', title: ts('Project Description')}">
         <textarea class="big crm-form-textarea" crm-ui-id="projectForm.description" ng-model="project.description"></textarea>
       </div>
 
-      <div crm-ui-field='{name: "projectForm.campaign_id", title: ts("Campaign")}'>
+      <div class="crm-vol-campaign" crm-ui-field='{name: "projectForm.campaign_id", title: ts("Campaign")}'>
         <input
           class="big crm-form-text" crm-ui-id="projectForm.campaign_id"
           crm-entityref="{entity: 'Campaign', select: {allowClear:true, minimumInputLength: 0}}"
           ng-model="project.campaign_id" />
       </div>
 
-      <div crm-ui-field='{name: "projectForm.locBlock", title: ts("Location")}'>
-        <select class="big crm-form-select" ng-change="locBlockChanged()" crm-ui-select="{placeholder: '', allowClear:true}" ng-options="key as value for (key , value) in locationBlocks" ng-model="project.loc_block_id">
+      <div class="crm-vol-location" crm-ui-field='{name: "projectForm.locBlock", title: ts("Location")}'>
+        <select class="big crm-form-select crm-vol-location-block-id"
+          ng-change="locBlockChanged()" crm-ui-select="{placeholder: '', allowClear:true}"
+          ng-options="key as value for (key , value) in locationBlocks" ng-model="project.loc_block_id">
           <option />
         </select>
         <div id="crm-vol-location-block" class="crm-vol-extra-top" crm-ui-accordion="{title: ts('Edit Location'), collapsed: project.loc_block_id !==0}" ng-hide="!project.loc_block_id">
           <div class="status" ng-show="locBlock.count_loc_used > 0">{{ts("This location is used by other events/projects. Modifying location information will change values for all events/projects")}}</div>
-          <fieldset>
+          <fieldset class="crm-vol-location-address">
             <legend>{{ts("Address")}}</legend>
-            <div crm-ui-field='{name: "projectForm.locBlock.street_address", title: ts("Street Address")}'>
+            <div class="crm-vol-location-street" crm-ui-field='{name: "projectForm.locBlock.street_address", title: ts("Street Address")}'>
               <input size="30" crm-ui-id="projectForm.locBlock.street_address" ng-change="locBlockDirty()" ng-model="locBlock.address.street_address" />
             </div>
-            <div crm-ui-field='{name: "projectForm.locBlock.supplemental_address_1", title: ts("Supplemental Address 1")}'>
+            <div class="crm-vol-location-sup1" crm-ui-field='{name: "projectForm.locBlock.supplemental_address_1", title: ts("Supplemental Address 1")}'>
               <input size="30" crm-ui-id="projectForm.locBlock.supplemental_address_1" ng-change="locBlockDirty()" ng-model="locBlock.address.supplemental_address_1" />
             </div>
-            <div crm-ui-field='{name: "projectForm.locBlock.supplemental_address_2", title: ts("Supplemental Address 2")}'>
+            <div class="crm-vol-location-sup2" crm-ui-field='{name: "projectForm.locBlock.supplemental_address_2", title: ts("Supplemental Address 2")}'>
               <input size="30" crm-ui-id="projectForm.locBlock.supplemental_address_2" ng-change="locBlockDirty()" ng-model="locBlock.address.supplemental_address_2" />
             </div>
-            <div crm-ui-field='{name: "projectForm.locBlock.city", title: ts("City")}'>
+            <div class="crm-vol-location-city" crm-ui-field='{name: "projectForm.locBlock.city", title: ts("City")}'>
               <input crm-ui-id="projectForm.locBlock.city" ng-change="locBlockDirty()" ng-model="locBlock.address.city" />
             </div>
-            <div crm-ui-field='{name: "projectForm.locBlock.postal", title: ts("Postal Code - Suffix")}'>
+            <div class="crm-vol-location-postal" crm-ui-field='{name: "projectForm.locBlock.postal", title: ts("Postal Code - Suffix")}'>
               <input size="9" crm-ui-id="projectForm.locBlock.postal" ng-change="locBlockDirty()" ng-model="locBlock.address.postal_code" />
               -
               <input size="5" crm-ui-id="projectForm.locBlock.postal_code_suffix" ng-change="locBlockDirty()" ng-model="locBlock.address.postal_code_suffix" />
             </div>
           </fieldset>
-          <fieldset>
+          <fieldset class="crm-vol-location-phone">
             <legend>{{ts("Phone")}}</legend>
-            <div crm-ui-field='{name: "projectForm.locBlock.phone1", title: ts("Phone 1")}'>
+            <div class="crm-vol-location-phone1" crm-ui-field='{name: "projectForm.locBlock.phone1", title: ts("Phone 1")}'>
               <input crm-ui-id="projectForm.locBlock.phone1" ng-change="locBlockDirty()" ng-model="locBlock.phone.phone" />
               {{ts("ext.")}} <input size="5" ng-change="locBlockDirty()" ng-model="locBlock.phone.phone_ext" />
               <select crm-ui-select="{width: '100', allowClear: true}" ng-change="locBlockDirty()" ng-model="locBlock.phone.phone_type_id">
@@ -63,7 +65,7 @@
                 <option ng-repeat="pType in phone_types" value="{{pType.value}}">{{pType.label}}</option>
               </select>
             </div>
-            <div crm-ui-field='{name: "projectForm.locBlock.phone2", title: ts("Phone 2")}'>
+            <div class="crm-vol-location-phone2" crm-ui-field='{name: "projectForm.locBlock.phone2", title: ts("Phone 2")}'>
               <input crm-ui-id="projectForm.locBlock.phone2" ng-change="locBlockDirty()" ng-model="locBlock.phone_2.phone" />
               {{ts("ext.")}} <input size="5" ng-change="locBlockDirty()" ng-model="locBlock.phone_2.phone_ext" />
               <select crm-ui-select="{width: '100', allowClear: true}" ng-change="locBlockDirty()" ng-model="locBlock.phone_2.phone_type_id">
@@ -72,12 +74,12 @@
               </select>
             </div>
           </fieldset>
-          <fieldset>
+          <fieldset class="crm-vol-location-email">
             <legend>{{ts("Email")}}</legend>
-            <div crm-ui-field='{name: "projectForm.locBlock.email1", title: ts("Email 1")}'>
+            <div class="crm-vol-location-email1" crm-ui-field='{name: "projectForm.locBlock.email1", title: ts("Email 1")}'>
               <input size="30" type="email" crm-ui-id="projectForm.locBlock.email1" ng-change="locBlockDirty()" ng-model="locBlock.email.email" />
             </div>
-            <div crm-ui-field='{name: "projectForm.locBlock.email2", title: ts("Email 2")}'>
+            <div class="crm-vol-location-email2" crm-ui-field='{name: "projectForm.locBlock.email2", title: ts("Email 2")}'>
               <input size="30" type="email" crm-ui-id="projectForm.locBlock.email2" ng-change="locBlockDirty()" ng-model="locBlock.email_2.email" />
             </div>
           </fieldset>
@@ -85,22 +87,22 @@
       </div>
 
 
-      <div crm-ui-field="{name: 'projectForm.is_active', title: ts('Is this Project Active?')}">
+      <div class="crm-vol-is_active" crm-ui-field="{name: 'projectForm.is_active', title: ts('Is this Project Active?')}">
         <input type="checkbox" crm-ui-id="projectForm.is_active" ng-model="project.is_active" />
       </div>
     </fieldset>
 
-    <fieldset>
+    <fieldset class="crm-vol-relationships">
       <legend>{{ts("Relationships")}}</legend>
 
-      <div ng-repeat="rType in relationship_types" crm-ui-field='{name: "projectForm[rType.name]", title: ts(rType.label)}'>
+      <div ng-repeat="rType in relationship_types" crm-ui-field="{name: projectForm[rType.name], title: ts(rType.label)}" ng-class="'crm-vol-rel-' + rType.name">
         <input crm-ui-id="projectForm[rType.name]" crm-entityref="{entity: 'Contact', select: {allowClear:true, multiple: true}}" ng-model="relationships[rType.value]" />
         <div class="description" ng-show="rType.description">{{rType.description}}</div>
       </div>
 
     </fieldset>
 
-    <fieldset>
+    <fieldset class="crm-vol-profiles">
       <legend>{{ts("Profiles")}}</legend>
       <div class="help">
         <p>

@@ -39,6 +39,7 @@
           is_active: 1,
           sequential: 0,
           options: {limit: 0},
+          "api.Campaign.getsingle": {},
           "api.LocBlock.getsingle": {
             "api.Address.getsingle": {}
           },
@@ -121,6 +122,13 @@
           });
 
           angular.forEach(result.projects, function(project, key) {
+            if (project.hasOwnProperty("api.Campaign.getsingle")
+              && project["api.Campaign.getsingle"].hasOwnProperty('title')
+            ) {
+              result.projects[key].campaign_title = project["api.Campaign.getsingle"].title;
+            }
+            delete result.projects[key]["api.Campaign.getsingle"];
+
             if (project.hasOwnProperty("api.LocBlock.getsingle")
               && project["api.LocBlock.getsingle"].hasOwnProperty('api.Address.getsingle')
             ) {
@@ -161,6 +169,31 @@
       };
 
     }])
+
+
+    // Example: <div crm-vol-perm-to-class></div>
+    // Adds a class to the element for each volunteer permission the user has.
+    // This does not provide security but a better UX; i.e., don't show me
+    // buttons I can't use.
+    .directive('crmVolPermToClass', function(crmApi) {
+      return {
+        restrict: 'A',
+        scope: {},
+        link: function (scope, element, attrs) {
+          var classes = [];
+          crmApi('VolunteerUtil', 'getperms').then(function(perms) {
+            angular.forEach(perms.values, function(value) {
+              if (CRM.checkPerm(value.name) === true) {
+                classes.push('crm-vol-perm-' + value.safe_name);
+              }
+            });
+
+            $(element).addClass(classes.join(' '));
+          });
+        }
+      };
+    })
+
 
     /**
      * This is a service for loading the backbone-based volunteer UIs (and their

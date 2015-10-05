@@ -97,6 +97,12 @@
     $scope.showProjectDescription = function (project) {
       var description = project.description;
       var addressBlock = '';
+      var campaignBlock = '';
+
+      if (project.hasOwnProperty('campaign_title') && !_.isEmpty(project.campaign_title)) {
+        campaignBlock = '<p><strong>' + ts('Campaign:') + '</strong><br />' + project.campaign_title + '</p>';
+      }
+
       if (project.hasOwnProperty('location')) {
         if (!_.isEmpty(project.location.streetAddress)) {
           addressBlock += project.location.streetAddress + '<br />';
@@ -111,7 +117,7 @@
       if (!_.isEmpty(addressBlock)) {
         addressBlock = '<p><strong>Location:</strong><br />' + addressBlock + '</p>';
       }
-      CRM.alert(description + addressBlock, project.title, 'info', {expires: 0});
+      CRM.alert(description + campaignBlock + addressBlock, project.title, 'info', {expires: 0});
     };
 
     $scope.showRoleDescription = function (need) {
