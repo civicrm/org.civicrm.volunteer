@@ -46,7 +46,9 @@
         <th id="role_id">{ts domain='org.civicrm.volunteer'}Role{/ts}</th>
         <th id="quantity">{ts domain='org.civicrm.volunteer'}Volunteers Needed{/ts}</th>
         <th id="start_date">{ts domain='org.civicrm.volunteer'}Start Date/Time{/ts}</th>
-        <th id="end_date">{ts domain='org.civicrm.volunteer'}End Date/Time{/ts}</th>
+        <th id="end_date">
+          {ts domain='org.civicrm.volunteer'}End Date/Time{/ts} {help id="volunteer-define-end_time" file="CRM/Volunteer/Form/Manage/Define.hlp"}
+        </th>
         <th id="duration">{ts domain='org.civicrm.volunteer'}Minutes{/ts}</th>
         <th id="visibility">{ts domain='org.civicrm.volunteer'}Public?{/ts}</th>
         <th>Enabled?</th>

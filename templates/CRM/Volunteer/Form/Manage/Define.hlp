@@ -51,3 +51,11 @@
       from <a href=%1>Administer > Administration Console > Volunteer Roles</a>.{/ts}
     </p>
 {/htxt}
+
+{htxt id="volunteer-define-end_time-title"}
+  {ts domain='org.civicrm.volunteer'}End Date/Time{/ts}
+{/htxt}
+{htxt id="volunteer-define-end_time"}
+  <p>{ts domain='org.civicrm.volunteer'}Many volunteer programs do not work on fixed dates. For instance, a teacher may have a window of several months to schedule a guest lecturer for the fall semester. For these applications, the use of fuzzy dates is helpful.{/ts}</p>
+  <p>{ts domain='org.civicrm.volunteer'}The End Date/Time field can be used to specify fuzzy dates, or a window during which the volunteer is sought. This field can be used in conjunction with the Start Date/Time and Duration fields to declare a need for three hours of volunteering sometime in December, for instance.{/ts}</p>
+{/htxt}
