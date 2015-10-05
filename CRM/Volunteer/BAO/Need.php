@@ -121,36 +121,40 @@ class CRM_Volunteer_BAO_Need extends CRM_Volunteer_DAO_Need {
 
   /**
    * Returns a string representing the times of a shift. Times will be formatted
-   * according to the user's defined time display settings. If no duration is
-   * given, only the formatted start time will be returned.
+   * according to the user's defined time display settings. If no duration/end
+   * date is given, only the formatted start time will be returned.
    *
-   * @param string $start Should be a parseable time string
-   * @param mixed $duration An int or a string, in minutes, or NULL for no end time
-   * @return mixed Returns a string on success, boolean FALSE if $start is not
-   * a parseable time.
+   * @param string $start
+   *   Should be a parseable time string
+   * @param mixed $duration
+   *   An int or a string, in minutes, or NULL for none
+   * @param mixed $end
+   *   Should be a parseable time string, or NULL for none
+   * @return mixed
+   *   Returns a string on success, boolean FALSE if $start is not
+   *   a parseable time.
    */
-  static function getTimes($start, $duration = NULL) {
-    $result = FALSE;
+  static function getTimes($start, $duration = NULL, $end = NULL) {
+    if (!strtotime($start)) {
+      return FALSE;
+    }
 
-    if (strtotime($start)) {
-      $config = CRM_Core_Config::singleton();
-      $timeFormat = $config->dateformatDatetime;
-      $result = CRM_Utils_Date::customFormat($start, $timeFormat);
+    $config = CRM_Core_Config::singleton();
+    $timeFormat = $config->dateformatDatetime;
+    $result = CRM_Utils_Date::customFormat($start, $timeFormat);
 
-      if (
-        $duration
-        && (is_int($duration) || ctype_digit($duration))
-      ) {
-        $date = new DateTime($start);
-        $startDay = $date->format('Y-m-d');
-        $date->add(new DateInterval("PT{$duration}M"));
-        $end = $date->format('Y-m-d H:i:s');
-        // If days are the same, only show time
-        if ($date->format('Y-m-d') == $startDay) {
-          $timeFormat = $config->dateformatTime;
-        }
-        $result .= ' - ' . CRM_Utils_Date::customFormat($end, $timeFormat);
+    if (strtotime($end)) {
+      $result .= ' - ' . CRM_Utils_Date::customFormat($end, $timeFormat);
+    } elseif (CRM_Utils_Type::validate($duration, 'Positive', FALSE)) {
+      $date = new DateTime($start);
+      $startDay = $date->format('Y-m-d');
+      $date->add(new DateInterval("PT{$duration}M"));
+      $end = $date->format('Y-m-d H:i:s');
+      // If days are the same, only show time
+      if ($date->format('Y-m-d') == $startDay) {
+        $timeFormat = $config->dateformatTime;
       }
+      $result .= ' - ' . CRM_Utils_Date::customFormat($end, $timeFormat);
     }
 
     return $result;
