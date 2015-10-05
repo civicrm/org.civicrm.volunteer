@@ -46,6 +46,7 @@
         <th id="role_id">{ts domain='org.civicrm.volunteer'}Role{/ts}</th>
         <th id="quantity">{ts domain='org.civicrm.volunteer'}Volunteers Needed{/ts}</th>
         <th id="start_date">{ts domain='org.civicrm.volunteer'}Start Date/Time{/ts}</th>
+        <th id="end_date">{ts domain='org.civicrm.volunteer'}End Date/Time{/ts}</th>
         <th id="duration">{ts domain='org.civicrm.volunteer'}Minutes{/ts}</th>
         <th id="visibility">{ts domain='org.civicrm.volunteer'}Public?{/ts}</th>
         <th>Enabled?</th>
@@ -69,6 +70,10 @@
   <td>
     <input type="text" class="crm-form-text dateplugin" name="display_start_date"  value="<%= display_start_date %>" size="20">
     <input type="text" class="crm-form-text" name="display_start_time" size="10">
+  </td>
+  <td>
+    <input type="text" class="crm-form-text dateplugin" name="display_end_date"  value="<%= display_end_date %>" size="20">
+    <input type="text" class="crm-form-text" name="display_end_time" size="10">
   </td>
   <td><input type="text" class="crm-form-text" name="duration" value="<%= duration %>" size="6"></td>
   <td><input type="checkbox" name="visibility_id" value="<%= visibilityValue %>"></td>
