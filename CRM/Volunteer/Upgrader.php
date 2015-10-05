@@ -57,6 +57,7 @@ class CRM_Volunteer_Upgrader extends CRM_Volunteer_Upgrader_Base {
 
     $this->schemaUpgrade20();
     $this->addNeedEndDate();
+    $this->installVolMsgWorkflowTpls();
 
     // uncomment the next line to insert sample data
     // $this->executeSqlFile('sql/volunteer_sample.mysql');
@@ -116,6 +117,52 @@ class CRM_Volunteer_Upgrader extends CRM_Volunteer_Upgrader_Base {
 
     foreach ($options as $opt) {
       civicrm_api3('OptionValue', 'create', $optionDefaults + $opt);
+    }
+  }
+
+  public function installVolMsgWorkflowTpls() {
+    try {
+      $optionGroup = civicrm_api3('OptionGroup', 'create', array(
+        'name' => 'msg_tpl_workflow_volunteer',
+        'title' => ts("Message Template Workflow for Volunteers", array('domain' => 'org.civicrm.volunteer')),
+        'description' => ts("Message Template Workflow for Volunteers", array('domain' => 'org.civicrm.volunteer')),
+        'is_reserved' => 1,
+        'is_active' => 1,
+      ));
+      $optionGroupId = $optionGroup['id'];
+    } catch (Exception $e) {
+      // if an exception is thrown, most likely the option group already exists,
+      // in which case we'll just use that one
+      $optionGroupId = civicrm_api3('OptionGroup', 'getvalue', array(
+        'name' => 'msg_tpl_workflow_volunteer',
+        'return' => 'id',
+      ));
+    }
+
+    $optionDefaults = array(
+      'is_active' => 1,
+      'is_reserved' => 1,
+      'option_group_id' => $optionGroupId,
+    );
+
+    $options = array(
+      array(
+        'name' => 'volunteer_registration',
+        'label' => ts('Volunteer - Registration (on-line)', array('domain' => 'org.civicrm.volunteer')),
+        'description' => ts('Email sent to volunteers who sign themselves up for volunteer opportunities.', array('domain' => 'org.civicrm.volunteer')),
+        'value' => 1,
+        'weight' => 1,
+      ),
+    );
+
+    $baseDir = CRM_Extension_System::singleton()->getMapper()->keyToBasePath('org.civicrm.volunteer') . '/';
+    foreach ($options as $opt) {
+      civicrm_api3('OptionValue', 'create', $optionDefaults + $opt);
+
+      $txt = $baseDir . 'CRM/Volunteer/Upgrader/2.0.alpha1.msg_template/' . $opt['name'] . '_text.tpl';
+      $html = $baseDir . 'CRM/Volunteer/Upgrader/2.0.alpha1.msg_template/' . $opt['name'] . '_html.tpl';
+
+      // do something to import these into the DB...
     }
   }
 
@@ -290,6 +337,12 @@ class CRM_Volunteer_Upgrader extends CRM_Volunteer_Upgrader_Base {
   public function upgrade_2002() {
     $this->ctx->log->info('Applying update 2002 - Adding end_date to civicrm_volunteer_need');
     $this->addNeedEndDate();
+    return TRUE;
+  }
+
+  public function upgrade_2003() {
+    $this->ctx->log->info('Applying update 2003 - Installing Volunteer message workflow templates');
+    $this->installVolMsgWorkflowTpls();
     return TRUE;
   }
 
