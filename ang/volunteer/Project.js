@@ -76,6 +76,7 @@
     var relationships = {};
     if(project.id == 0) {
       relationships = relationship_data['values'];
+      var originalRelationships = {};
     } else {
       $(relationship_data.values).each(function (index, relationship) {
         if (!relationships.hasOwnProperty(relationship.relationship_type_id)) {
@@ -83,8 +84,9 @@
         }
         relationships[relationship.relationship_type_id].push(relationship.contact_id);
       });
+      var originalRelationships = _.clone(relationships);
     }
-    var originalRelationships = _.clone(relationships);
+
 
     $scope.countries = countries;
     $scope.locationBlocks = location_blocks.values;
