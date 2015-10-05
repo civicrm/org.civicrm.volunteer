@@ -249,13 +249,6 @@ class CRM_Volunteer_Upgrader extends CRM_Volunteer_Upgrader_Base {
     return TRUE;
   }
 
-  public function upgrade_2001() {
-    $this->ctx->log->info('Applying update 2001 - Upgrading schema to 2.0');
-    $this->schemaUpgrade20();
-    $this->migrateProjectTitles();
-    return TRUE;
-  }
-
   /**
    * Fix for VOL-89.
    *
@@ -275,6 +268,13 @@ class CRM_Volunteer_Upgrader extends CRM_Volunteer_Upgrader_Base {
     $query = CRM_Core_DAO::executeQuery('UPDATE civicrm_volunteer_project SET target_contact_id = %1 WHERE target_contact_id IS NULL', $placeholders);
 
     return !is_a($query, 'DB_Error');
+  }
+
+  public function upgrade_2001() {
+    $this->ctx->log->info('Applying update 2001 - Upgrading schema to 2.0');
+    $this->schemaUpgrade20();
+    $this->migrateProjectTitles();
+    return TRUE;
   }
 
   /**
