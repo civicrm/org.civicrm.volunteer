@@ -75,6 +75,6 @@
     <path>civicrm/volunteer/backbonetemplates</path>
     <title>Load Backbone Templates</title>
     <page_callback>CRM_Volunteer_Page_Backbone</page_callback>
-    <access_arguments>access CiviEvent,edit all events</access_arguments>
+    <access_arguments>create volunteer projects</access_arguments>
   </item>
 </menu>

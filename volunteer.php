@@ -470,9 +470,15 @@ function _volunteer_civicrm_check_resource_url() {
  */
 function volunteer_civicrm_alterAPIPermissions($entity, $action, &$params, &$permissions) {
 // note: unsetting the below would require the default 'administer CiviCRM' permission
-  $permissions['volunteer_need']['default'] = array('access CiviEvent', 'edit all events');
-  $permissions['volunteer_assignment']['default'] = array('access CiviEvent', 'edit all events');
-  $permissions['volunteer_commendation']['default'] = array('access CiviEvent', 'edit all events');
+  $permissions['volunteer_need']['default'] = array('access CiviCRM', 'create volunteer projects');
+  $permissions['volunteer_assignment']['default'] = array('access CiviCRM', 'create volunteer projects');
+  $permissions['volunteer_commendation']['default'] = array('access CiviCRM', 'create volunteer projects');
+  $permissions['volunteer_project']['default'] = array('create volunteer projects');
+
+  //Initial Hacks
+  $permissions['uf_join']['create'] = array('access CiviCRM', 'create volunteer projects');
+  $permissions['uf_join']['update'] = array('access CiviCRM', 'create volunteer projects');
+
 
   // allow fairly liberal access to the volunteer opp listing UI, which uses lots of API calls
   if (_isVolListingApiCall($entity, $action) && CRM_Volunteer_Permission::checkProjectPerms(CRM_Core_Action::VIEW)) {
@@ -495,8 +501,16 @@ function volunteer_civicrm_alterAPIPermissions($entity, $action, &$params, &$per
  *   True if the API call is of the type that the vol opps UI depends on.
  */
 function _isVolListingApiCall($entity, $action) {
-  $actions = array('get', 'getsingle');
-  $entities = array('loc_block', 'volunteer_project_contact', 'volunteer_need', 'volunteer_project');
+  $actions = array(
+    'get',
+    'getsingle',
+    'locations',
+    'getperms',
+    //These should be removed wen permissions are refactored
+    'loadbackbone',
+    //'create'
+  );
+  $entities = array('loc_block', 'volunteer_project_contact', 'volunteer_need', 'volunteer_project', 'volunteer_util');
 
   return (in_array($entity, $entities) && in_array($action, $actions));
 }
