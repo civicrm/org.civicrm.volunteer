@@ -641,7 +641,7 @@ class CRM_Volunteer_BAO_Project extends CRM_Volunteer_DAO_Project {
           && (strtotime($need['start_time']) > time())
         ) {
           $this->open_needs[$id] = array(
-            'label' => CRM_Volunteer_BAO_Need::getTimes($need['start_time'], CRM_Utils_Array::value('duration', $need)),
+            'label' => CRM_Volunteer_BAO_Need::getTimes($need['start_time'], CRM_Utils_Array::value('duration', $need), $need['end_time']),
             'role_id' => $need['role_id'],
           );
         }

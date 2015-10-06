@@ -33,15 +33,18 @@
       },
 
       onRender: function() {
-        this.$("[name='display_start_date']").addClass('dateplugin').datepicker();
+        this.$("[name='display_start_date'], [name='display_end_date']").addClass('dateplugin').datepicker();
 
-        this.$("[name='display_start_time']").addClass('timeplugin').timeEntry({
+        this.$("[name='display_start_time'], [name='display_end_time']").addClass('timeplugin').timeEntry({
           show24Hours: CRM.config.timeInputFormat == 2
         });
 
         // populate and format time
         if (this.model.get('display_start_time')) {
           this.$("[name='display_start_time']").timeEntry('setTime', this.model.get('display_start_time'));
+        }
+        if (this.model.get('display_end_time')) {
+          this.$("[name='display_end_time']").timeEntry('setTime', this.model.get('display_end_time'));
         }
 
         if (this.model.get('visibility_id') == visibility.public) {
@@ -54,7 +57,6 @@
       },
 
       updateNeed: function(e) {
-        var thisView = this;
         var field_name = e.currentTarget.name;
         var value = e.currentTarget.value;
 
@@ -67,10 +69,28 @@
         switch (field_name) {
           case 'display_start_date':
           case 'display_start_time':
-            field_name = 'start_time';
-            var date =  this.$("[name='display_start_date']").datepicker('getDate');
-            var time = this.$("[name='display_start_time']").timeEntry('getTime').toTimeString().split(' ')[0];
-            value = '' + date.getFullYear() + '-' + pad(1 + date.getMonth()) + '-' + pad(date.getDate()) + ' ' + time;
+          case 'display_end_date':
+          case 'display_end_time':
+            var when = field_name.substring(0, 11) === 'display_end' ? 'end' : 'start';
+            field_name = when + '_time';
+            var date = this.$("[name='display_" + when + "_date']").datepicker('getDate');
+            var time = this.$("[name='display_" + when + "_time']").timeEntry('getTime');
+
+            if (!date) {
+              // don't save a datetime field unless the date is set
+              value = this.model.get(field_name);
+            } else {
+              // format the time; if not set, use the last second of the day for
+              // the end of a window, and the first second of the day for the
+              // beginning of a window
+              if (!time) {
+                time = (when === 'end' ? '23:59:00' : '00:00:00');
+              } else {
+                time = time.toTimeString().split(' ')[0];
+              }
+
+              value = '' + date.getFullYear() + '-' + pad(1 + date.getMonth()) + '-' + pad(date.getDate()) + ' ' + time;
+            }
             break;
           case 'visibility_id':
             value = e.currentTarget.checked ? e.currentTarget.value : visibility.admin;

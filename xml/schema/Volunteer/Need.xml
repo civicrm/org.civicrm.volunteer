@@ -40,6 +40,13 @@
     <add>4.4</add>
   </field>
   <field>
+    <name>end_time</name>
+    <title>End Date and Time</title>
+    <type>datetime</type>
+    <add>4.4</add>
+    <comment>Used for specifying fuzzy dates, e.g., I have a need for 3 hours of volunteer work to be completed between 12/01/2015 and 12/31/2015.</comment>
+  </field>
+  <field>
     <name>duration</name>
     <title>Duration</title>
     <type>int</type>

@@ -98,6 +98,12 @@ class CRM_Volunteer_DAO_Need extends CRM_Core_DAO
    */
   public $start_time;
   /**
+   * Used for specifying fuzzy dates, e.g., I have a need for 3 hours of volunteer work to be completed between 12/01/2015 and 12/31/2015.
+   *
+   * @var datetime
+   */
+  public $end_time;
+  /**
    * Length in minutes of this volunteer time slot.
    *
    * @var int
@@ -185,6 +191,12 @@ class CRM_Volunteer_DAO_Need extends CRM_Core_DAO
           'type' => CRM_Utils_Type::T_DATE + CRM_Utils_Type::T_TIME,
           'title' => ts('Start Date and Time', array('domain' => 'org.civicrm.volunteer')) ,
         ) ,
+        'end_time' => array(
+          'name' => 'end_time',
+          'type' => CRM_Utils_Type::T_DATE + CRM_Utils_Type::T_TIME,
+          'title' => ts('End Date and Time', array('domain' => 'org.civicrm.volunteer')) ,
+          'description' => 'Used for specifying fuzzy dates, e.g., I have a need for 3 hours of volunteer work to be completed between 12/01/2015 and 12/31/2015.',
+        ) ,
         'duration' => array(
           'name' => 'duration',
           'type' => CRM_Utils_Type::T_INT,
@@ -252,6 +264,7 @@ class CRM_Volunteer_DAO_Need extends CRM_Core_DAO
         'id' => 'volunteer_need_id',
         'project_id' => 'volunteer_need_project_id',
         'start_time' => 'start_time',
+        'end_time' => 'end_time',
         'duration' => 'duration',
         'is_flexible' => 'is_flexible',
         'quantity' => 'quantity',
