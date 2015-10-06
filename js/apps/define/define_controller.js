@@ -11,6 +11,12 @@ CRM.volunteerApp.module('Define', function(Define, volunteerApp, Backbone, Mario
 
   // Initialize entities and views
   Define.on('start', function() {
+    // As needs are updated, their IDs are added to an array on the body
+    // element. Reopening the dialog resets the data. This is intended to be
+    // an extension point; external code can listen for the dialogclose event
+    // then access the list of updated needs.
+    $('body').data('updatedNeeds', []);
+
     volunteerApp.Entities.getNeeds({'api.volunteer_assignment.getcount': {}})
       .done(function(arrData) {
         Define.collectionView = new Define.needsCompositeView({
