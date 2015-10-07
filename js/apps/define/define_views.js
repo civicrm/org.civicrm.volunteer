@@ -106,7 +106,15 @@
 
           var params = {'id': this.model.get('id')};
           params[field_name] = value;
-          CRM.api3('VolunteerNeed', 'create', params, true);
+          CRM.api3('VolunteerNeed', 'create', params, true).done(function() {
+            // As needs are updated, their IDs are added to an array on the body
+            // element. This is intended to be an extension point; external code
+            // can listen for the dialogclose event then access the list of
+            // updated needs.
+            var updatedNeeds = $('body').data('updatedNeeds') || [];
+            updatedNeeds.push(params.id);
+            $('body').data('updatedNeeds', updatedNeeds);
+          });
         }
       },
 
