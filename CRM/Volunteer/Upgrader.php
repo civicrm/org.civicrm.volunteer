@@ -141,7 +141,7 @@ class CRM_Volunteer_Upgrader extends CRM_Volunteer_Upgrader_Base {
 
     $optionDefaults = array(
       'is_active' => 1,
-      'is_reserved' => 1,
+      'is_reserved' => 0,
       'option_group_id' => $optionGroupId,
     );
 
