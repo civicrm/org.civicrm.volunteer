@@ -150,6 +150,7 @@ class CRM_Volunteer_Upgrader extends CRM_Volunteer_Upgrader_Base {
         'name' => 'volunteer_registration',
         'label' => ts('Volunteer - Registration (on-line)', array('domain' => 'org.civicrm.volunteer')),
         'description' => ts('Email sent to volunteers who sign themselves up for volunteer opportunities.', array('domain' => 'org.civicrm.volunteer')),
+        'subject' => ts("Volunteer Confirmation"),
         'value' => 1,
         'weight' => 1,
       ),
@@ -157,12 +158,20 @@ class CRM_Volunteer_Upgrader extends CRM_Volunteer_Upgrader_Base {
 
     $baseDir = CRM_Extension_System::singleton()->getMapper()->keyToBasePath('org.civicrm.volunteer') . '/';
     foreach ($options as $opt) {
-      civicrm_api3('OptionValue', 'create', $optionDefaults + $opt);
+      $optionValue = civicrm_api3('OptionValue', 'create', $optionDefaults + $opt);
 
-      $txt = $baseDir . 'CRM/Volunteer/Upgrader/2.0.alpha1.msg_template/' . $opt['name'] . '_text.tpl';
-      $html = $baseDir . 'CRM/Volunteer/Upgrader/2.0.alpha1.msg_template/' . $opt['name'] . '_html.tpl';
+      $txt = file_get_contents($baseDir . 'CRM/Volunteer/Upgrader/2.0.alpha1.msg_template/' . $opt['name'] . '_text.tpl');
+      $html = file_get_contents($baseDir . 'CRM/Volunteer/Upgrader/2.0.alpha1.msg_template/' . $opt['name'] . '_html.tpl');
 
       // do something to import these into the DB...
+      $params = array_merge($optionDefaults, array(
+        'msg_title' => $opt['label'],
+        'msg_subject' => $opt['subject'],
+        'msg_text' => $txt,
+        'msg_html' => $html,
+        'workflow_id' => $optionValue['id']
+      ));
+      CRM_Core_BAO_MessageTemplate::add($params);
     }
   }
 
