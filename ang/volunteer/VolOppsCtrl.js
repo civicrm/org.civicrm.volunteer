@@ -7,25 +7,9 @@
       reloadOnSearch: false,
       templateUrl: '~/volunteer/VolOppsCtrl.html',
       resolve: {
-        // TODO: this code is reusable; where should it live?
         countries: function(crmApi) {
-          var settings = crmApi('Setting', 'get', {
-            "return": ["countryLimit", "defaultContactCountry"],
-            sequential: 1
-          });
-
-          return settings.then(function (settingsData) {
-            var countries = crmApi('Country', 'get', {
-              id: {IN: settingsData.values[0].countryLimit}
-            });
-
-            return countries.then(function (countriesData) {
-              angular.forEach(countriesData.values, function(c) {
-                // since we are wrapping CiviCRM's API, and it provides even boolean data as quoted strings, we'll do the same
-                countriesData.values[c.id].is_default = (c.id === settingsData.values[0].defaultContactCountry) ? "1" : "0";
-              });
-              return countriesData.values;
-            });
+          return crmApi('VolunteerUtil', 'getcountries', {}).then(function(result) {
+            return result.values;
           });
         }
       }
