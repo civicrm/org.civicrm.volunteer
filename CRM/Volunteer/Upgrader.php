@@ -139,39 +139,44 @@ class CRM_Volunteer_Upgrader extends CRM_Volunteer_Upgrader_Base {
       ));
     }
 
-    $optionDefaults = array(
+    $msgTplDefaults = array(
       'is_active' => 1,
+      'is_default' => 1,
       'is_reserved' => 0,
-      'option_group_id' => $optionGroupId,
     );
 
-    $options = array(
+    $msgTpls = array(
       array(
-        'name' => 'volunteer_registration',
-        'label' => ts('Volunteer - Registration (on-line)', array('domain' => 'org.civicrm.volunteer')),
         'description' => ts('Email sent to volunteers who sign themselves up for volunteer opportunities.', array('domain' => 'org.civicrm.volunteer')),
-        'subject' => ts("Volunteer Confirmation"),
-        'value' => 1,
-        'weight' => 1,
+        'label' => ts('Volunteer - Registration (on-line)', array('domain' => 'org.civicrm.volunteer')),
+        'name' => 'volunteer_registration',
+        'subject' => ts("Volunteer Confirmation", array('domain' => 'org.civicrm.volunteer')),
       ),
     );
 
     $baseDir = CRM_Extension_System::singleton()->getMapper()->keyToBasePath('org.civicrm.volunteer') . '/';
-    foreach ($options as $opt) {
-      $optionValue = civicrm_api3('OptionValue', 'create', $optionDefaults + $opt);
+    foreach ($msgTpls as $i => $msgTpl) {
+      $optionValue = civicrm_api3('OptionValue', 'create', array(
+        'description' => $msgTpl['description'],
+        'is_active' => 1,
+        'is_reserved' => 1,
+        'label' => $msgTpl['label'],
+        'name' => $msgTpl['name'],
+        'option_group_id' => $optionGroupId,
+        'value' => ++$i,
+        'weight' => $i,
+      ));
+      $txt = file_get_contents($baseDir . 'CRM/Volunteer/Upgrader/2.0.alpha1.msg_template/' . $msgTpl['name'] . '_text.tpl');
+      $html = file_get_contents($baseDir . 'CRM/Volunteer/Upgrader/2.0.alpha1.msg_template/' . $msgTpl['name'] . '_html.tpl');
 
-      $txt = file_get_contents($baseDir . 'CRM/Volunteer/Upgrader/2.0.alpha1.msg_template/' . $opt['name'] . '_text.tpl');
-      $html = file_get_contents($baseDir . 'CRM/Volunteer/Upgrader/2.0.alpha1.msg_template/' . $opt['name'] . '_html.tpl');
-
-      // do something to import these into the DB...
-      $params = array_merge($optionDefaults, array(
-        'msg_title' => $opt['label'],
-        'msg_subject' => $opt['subject'],
+      $params = array_merge($msgTplDefaults, array(
+        'msg_title' => $msgTpl['label'],
+        'msg_subject' => $msgTpl['subject'],
         'msg_text' => $txt,
         'msg_html' => $html,
-        'workflow_id' => $optionValue['id']
+        'workflow_id' => $optionValue['id'],
       ));
-      CRM_Core_BAO_MessageTemplate::add($params);
+      civicrm_api3('MessageTemplate', 'create', $params);
     }
   }
 
