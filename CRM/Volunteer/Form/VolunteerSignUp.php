@@ -267,8 +267,10 @@ class CRM_Volunteer_Form_VolunteerSignUp extends CRM_Core_Form {
       );
 
       $bcc = array();
-      foreach ($tplParams['contacts'] as $manager) {
-        $bcc[] = "{$manager['display_name']} <{$manager['email']}>";
+      foreach ($tplParams as $data) {
+        foreach ($data['contacts'] as $manager) {
+          $bcc[$manager['contact_id']] = "{$manager['display_name']} <{$manager['email']}>";
+        }
       }
 
       if (count($bcc)) {
@@ -295,7 +297,7 @@ class CRM_Volunteer_Form_VolunteerSignUp extends CRM_Core_Form {
 
     // The foreach loop is a workaround for api.volunteer_project.get's inability to
     // handle advanced operators, i.e., 'id' => array('IN' => array(1,2,3)).
-    foreach(array_keys($projectNeeds) as $projectId => $needs) {
+    foreach($projectNeeds as $projectId => $needs) {
       $result = civicrm_api3('VolunteerProject', 'get', array(
         'return' => "title,description",
         'sequential' => 1,
