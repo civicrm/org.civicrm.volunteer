@@ -266,7 +266,14 @@ class CRM_Volunteer_Form_VolunteerSignUp extends CRM_Core_Form {
         'valueName' => 'volunteer_registration',
       );
 
-      //$sendTemplateParams['cc'] = "$domainEmailName <".$domainEmailAddress.">";
+      $bcc = array();
+      foreach ($tplParams['contacts'] as $manager) {
+        $bcc[] = "{$manager['display_name']} <{$manager['email']}>";
+      }
+
+      if (count($bcc)) {
+        $sendTemplateParams['bcc'] = implode(', ', $bcc);
+      }
 
       CRM_Core_BAO_MessageTemplate::sendTemplate($sendTemplateParams);
     }
