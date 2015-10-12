@@ -218,7 +218,7 @@ class CRM_Volunteer_Form_VolunteerSignUp extends CRM_Core_Form {
     );
 
     $activity_statuses = CRM_Activity_BAO_Activity::buildOptions('status_id', 'create');
-
+    $projectNeeds = array();
     foreach($this->_needs as $need) {
       $activityValues['volunteer_need_id'] = $need['id'];
       $activityValues['activity_date_time'] = CRM_Utils_Array::value('start_time', $need);
@@ -237,11 +237,103 @@ class CRM_Volunteer_Form_VolunteerSignUp extends CRM_Core_Form {
 
       $activityValues['time_scheduled_minutes'] = CRM_Utils_Array::value('duration', $need);
       CRM_Volunteer_BAO_Assignment::createVolunteerActivity($activityValues);
+
+      if(!array_key_exists($need['project_id'], $projectNeeds)) {
+        $projectNeeds[$need['project_id']] = array();
+      }
+
+      $need['role'] = $need['role_label'];
+      $need['description'] = $need['role_description'];
+      $need['duration'] = CRM_Utils_Array::value('duration', $need);
+      $projectNeeds[$need['project_id']][$need['id']] = $need;
+    }
+
+    // Send confirmation email to volunteer
+    list($displayName, $email) = CRM_Contact_BAO_Contact_Location::getEmailDetails($cid);
+    list($domainEmailName, $domainEmailAddress) = CRM_Core_BAO_Domain::getNameAndEmail();
+
+    if ($email) {
+      $tplParams = $this->prepareTplParams($projectNeeds);
+
+      $sendTemplateParams = array(
+        'contactId' => $cid,
+        'from' => "$domainEmailName <".$domainEmailAddress.">",
+        'groupName' => 'msg_tpl_workflow_volunteer',
+        'isTest' => ($this->_mode === 'test'),
+        'toName' => $displayName,
+        'toEmail' => $email,
+        'tplParams' => array("volunteer_projects" => $tplParams),
+        'valueName' => 'volunteer_registration',
+      );
+
+      $bcc = array();
+      foreach ($tplParams as $data) {
+        foreach ($data['contacts'] as $manager) {
+          $bcc[$manager['contact_id']] = "{$manager['display_name']} <{$manager['email']}>";
+        }
+      }
+
+      if (count($bcc)) {
+        $sendTemplateParams['bcc'] = implode(', ', $bcc);
+      }
+
+      CRM_Core_BAO_MessageTemplate::sendTemplate($sendTemplateParams);
     }
 
     $statusMsg = ts('You are scheduled to volunteer. Thank you!', array('domain' => 'org.civicrm.volunteer'));
     CRM_Core_Session::setStatus($statusMsg, '', 'success');
     CRM_Utils_System::redirect($this->_destination);
+  }
+
+  /**
+   * Fetches project data and formats it, along with need data, for the message template.
+   *
+   * @param array $projectNeeds
+   *   The needs the volunteer is signing up for, in this format: $projectId => array($needId => $needDetails, ...)
+   * @return array
+   */
+  function prepareTplParams(array $projectNeeds) {
+    $tplParams = array();
+
+    // The foreach loop is a workaround for api.volunteer_project.get's inability to
+    // handle advanced operators, i.e., 'id' => array('IN' => array(1,2,3)).
+    foreach($projectNeeds as $projectId => $needs) {
+      $result = civicrm_api3('VolunteerProject', 'get', array(
+        'return' => "title,description",
+        'sequential' => 1,
+        'api.VolunteerProjectContact.get' => array(
+          'relationship_type_id' => "volunteer_manager",
+          'return' => "contact_id",
+          'api.contact.get' => array(
+            'return' => "display_name,email,phone"
+          )
+        ),
+        'api.LocBlock.get' => array('return' => "all"),
+        'id' => $projectId
+      ));
+
+      if ($result['count'] > 0) {
+        $project = $result['values'][0];
+
+        // Move the data around so it makes sense for template use
+        if ($project['api.LocBlock.get']['count'] == 1) {
+          $project['location'] = $project['api.LocBlock.get']['values'][0];
+          $project['location']['email'] = (array_key_exists("email", $project['location'])) ? $project['location']['email']['email'] : "";
+          $project['location']['email2'] = (array_key_exists("email2", $project['location'])) ? $project['location']['email2']['email'] : "";
+          $project['location']['phone'] = (array_key_exists("phone", $project['location'])) ? $project['location']['phone']['phone'] : "";
+          $project['location']['phone2'] = (array_key_exists("phone2", $project['location'])) ? $project['location']['phone2']['phone'] : "";
+        }
+        $project['contacts'] = array();
+        foreach ($project['api.VolunteerProjectContact.get']['values'] as $contact) {
+          $project['contacts'][] = $contact['api.contact.get']['values'][0];
+        }
+
+        $project['opportunities'] = $needs;
+      }
+      $tplParams[] = $project;
+    }
+
+    return $tplParams;
   }
 
   /**
