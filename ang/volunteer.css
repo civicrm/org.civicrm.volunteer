@@ -1,3 +1,11 @@
+/*
+ * Gives the wrapper a minimum height so that, when empty, the progress spinner
+ * is visible. (See the related run block in the Angular module.)
+ */
+#crm-main-content-wrapper {
+  min-height: 3em;
+}
+
 .crm-vol-half-responsive {
   box-sizing: border-box;
   width: 49%;
