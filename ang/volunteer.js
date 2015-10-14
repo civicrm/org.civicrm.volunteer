@@ -17,7 +17,6 @@
       });
 
       $rootScope.$on('$routeChangeSuccess', function() {
-        console.log('route change');
         CRM.$('#crm-main-content-wrapper').unblock();
       });
 
