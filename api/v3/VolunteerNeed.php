@@ -110,6 +110,68 @@ function _civicrm_api3_volunteer_need_get_spec(&$params) {
   $params['volunteer_need_project_id']['api.aliases'] = array('volunteer_project_id');
 }
 
+function _civicrm_api3_volunteer_need_getsearchresult_spec(&$params) {
+  $params['beneficiary'] = array(
+    'title' => 'Project Beneficiary',
+    'description' => 'Contacts which benefit from a Volunteer Project. (An
+      int-like string, a comma-separated list thereof, or an array representing
+      one or more contact IDs who benefit from the Needs.)',
+    'type' => CRM_Utils_Type::T_INT,
+  );
+  $params['project'] = array(
+    'title' => 'Volunteer Project',
+    'description' => 'Volunteer Project ID',
+    'type' => CRM_Utils_Type::T_INT,
+  );
+  $params['proximity'] = array(
+    'title' => 'Proximity',
+    'description' => 'Array of parameters (lat, lon, radius, unit) by which to
+      geographically limit results. See CRM_Volunteer_BAO_Project::retrieve().
+      This parameter is used for filtering only; project contacts are not returned.',
+    'type' => CRM_Utils_Type::T_STRING,
+  );
+  $params['role'] = array(
+    'title' => 'Role',
+    'description' => 'The role the volunteer will perform in the project. (An
+      int-like string, a comma-separated list thereof, or an array representing
+      one or more contact IDs who benefit from the Needs.)',
+    'type' => CRM_Utils_Type::T_STRING,
+  );
+  $params['date_start'] = array(
+    'title' => 'Start Date',
+    'description' => 'Used to filter Needs. Needs before this date won\'t be returned.',
+    'type' => CRM_Utils_Type::T_DATE,
+  );
+  $params['date_end'] = array(
+    'title' => 'End Date',
+    'description' => 'Used to filter Needs. Needs after this date won\'t be returned.',
+    'type' => CRM_Utils_Type::T_DATE,
+  );
+}
+
+/**
+ * Returns the results of a search.
+ *
+ * This API is used with the volunteer opportunities search UI. Some
+ * peculiarities:
+ *
+ *   - The result is an array wrapping an associative array keyed with "needs"
+ *       and "projects." The reason for the wrapper is that
+ *       civicrm_api3_create_success does not allow associative keys in
+ *       $apiResult['values']. The results are instead found in
+ *       $apiResult['values'][0] to support the associative keys.
+*   - The count on the result will never be more than 1.
+ *
+ * @param array $params
+ *   See CRM_Volunteer_BAO_NeedSearch::doSearch().
+ *
+ * @return array
+ */
+function civicrm_api3_volunteer_need_getsearchresult($params) {
+  $result = array(CRM_Volunteer_BAO_NeedSearch::doSearch($params));
+  return civicrm_api3_create_success($result, $params, 'VolunteerNeed', 'getsearchresult');
+}
+
 /**
  * delete an existing need
  *

@@ -513,6 +513,7 @@ function _volunteer_civicrm_check_resource_url() {
 function volunteer_civicrm_alterAPIPermissions($entity, $action, &$params, &$permissions) {
 // note: unsetting the below would require the default 'administer CiviCRM' permission
   $permissions['volunteer_need']['default'] = array('create volunteer projects');
+  $permissions['volunteer_need']['getsearchresult'] = array('register to volunteer');
   $permissions['volunteer_assignment']['default'] = array('edit own volunteer projects');
   $permissions['volunteer_commendation']['default'] = array('edit own volunteer projects');
   $permissions['volunteer_project']['default'] = array('create volunteer projects');
