@@ -188,6 +188,10 @@ Required vars: volOppData, searchParams
   </div>
   <div class="crm-vol-opp-results" ng-show="_.size(volOppData().needs) > 0">
     <h2>{{ts('Available Volunteer Opportunities')}}</h2>
+    <p class="description">
+      {{ts('For additional project or role detail, click the corresponding detail icon in the table below.')}}
+      <span class="icon ui-icon-comment"></span>
+    </p>
     <table class="display dataTable no-footer" role="grid">
       <thead>
       <tr role="row">
