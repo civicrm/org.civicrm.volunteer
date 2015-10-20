@@ -184,10 +184,14 @@ Required vars: volOppData, searchParams
   <!-- Results -->
   <div class="crm-vol-opp-results messages status no-popup" ng-show="_.size(volOppData().needs) === 0">
     <div class="icon inform-icon"></div>
-    No results found. Please try different search criteria.
+    {{ts('No results found. Please try different search criteria.')}}
   </div>
   <div class="crm-vol-opp-results" ng-show="_.size(volOppData().needs) > 0">
     <h2>{{ts('Available Volunteer Opportunities')}}</h2>
+    <p class="description">
+      {{ts('For additional project or role detail, click the corresponding detail icon in the table below.')}}
+      <span class="icon ui-icon-comment"></span>
+    </p>
     <table class="display dataTable no-footer" role="grid">
       <thead>
       <tr role="row">
