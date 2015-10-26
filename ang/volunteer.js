@@ -32,20 +32,14 @@
 
     .factory('volOppSearch', ['crmApi', '$location', '$route', function(crmApi, $location, $route) {
       // search result is stored here
-      var result = {
-        projects: {},
-        needs: {}
-      };
+      var result = {};
 
       var getResult = function() {
         return result;
       };
 
       var clearResult = function() {
-        result = {
-          projects: {},
-          needs: {}
-        };
+        result = {};
       };
 
       var userSpecifiedSearchParams = {};
@@ -68,7 +62,7 @@
         $location.search(userSpecifiedSearchParams);
 
         return crmApi('VolunteerNeed', 'getsearchresult', userSpecifiedSearchParams).then(function(data) {
-          result = data.values[0];
+          result = data.values;
           return getResult();
         });
       };

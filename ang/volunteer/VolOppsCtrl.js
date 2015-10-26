@@ -88,14 +88,14 @@
       }
 
       if (project.hasOwnProperty('location')) {
-        if (!_.isEmpty(project.location.streetAddress)) {
-          addressBlock += project.location.streetAddress + '<br />';
+        if (!_.isEmpty(project.location.street_address)) {
+          addressBlock += project.location.street_address + '<br />';
         }
         if (!_.isEmpty(project.location.city)) {
           addressBlock += project.location.city + '<br />';
         }
-        if (!_.isEmpty(project.location.postalCode)) {
-          addressBlock += project.location.postalCode;
+        if (!_.isEmpty(project.location.postal_code)) {
+          addressBlock += project.location.postal_code;
         }
       }
       if (!_.isEmpty(addressBlock)) {

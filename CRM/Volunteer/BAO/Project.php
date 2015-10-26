@@ -261,7 +261,7 @@ class CRM_Volunteer_BAO_Project extends CRM_Volunteer_DAO_Project {
    * API layer. Special params include:
    * <ol>
    *   <li>project_contacts (@see CRM_Volunteer_BAO_Project::create() and
-   *     CRM_Volunteer_BAO_Project::Join)</li>
+   *     CRM_Volunteer_BAO_Project::buildContactJoin)</li>
    *   <li>proximity (@see CRM_Volunteer_BAO_Project::buildProximityWhere)</li>
    * </ol>
    *
@@ -667,10 +667,7 @@ class CRM_Volunteer_BAO_Project extends CRM_Volunteer_DAO_Project {
           && ($need['quantity'] > $need['quantity_assigned'])
           && (strtotime($need['start_time']) > time())
         ) {
-          $this->open_needs[$id] = array(
-            'label' => CRM_Volunteer_BAO_Need::getTimes($need['start_time'], CRM_Utils_Array::value('duration', $need), $need['end_time']),
-            'role_id' => $need['role_id'],
-          );
+          $this->open_needs[$id] = $need;
         }
       }
     }

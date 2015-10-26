@@ -4,19 +4,21 @@ class CRM_Volunteer_BAO_NeedSearch {
 
   /**
    * @var array
-   *   Parameters that will be passed to api.VolunteerProject.get. (Chaining
-   *   is supported.)
+   *   Holds project data for the Needs matched by the search. Keyed by project ID.
+   */
+  private $projects = array();
+
+  /**
+   * @var array
+   *   See  getDefaultSearchParams() for format.
    */
   private $searchParams = array();
 
   /**
    * @var array
-   *   The results of the search, which will ultimately be returned.
+   *   An array of needs. The results of the search, which will ultimately be returned.
    */
-  private $searchResults = array(
-    'needs' => array(),
-    'projects' => array(),
-  );
+  private $searchResults = array();
 
   /**
    * @param array $userSearchParams
@@ -29,6 +31,8 @@ class CRM_Volunteer_BAO_NeedSearch {
 
   /**
    * Convenience static method for searching without instantiating the class.
+   *
+   * Invoked from the API layer.
    *
    * @param array $userSearchParams
    *   See setSearchParams();
@@ -45,23 +49,11 @@ class CRM_Volunteer_BAO_NeedSearch {
    */
   private function getDefaultSearchParams() {
     return array(
-      "is_active" => 1,
-      "sequential" => 0,
-      "options" => array("limit" => 0),
-      "api.Campaign.getsingle" => array(),
-      "api.LocBlock.getsingle" => array(
-        "api.Address.getsingle" => array(),
+      'project' => array(
+        'is_active' => 1,
       ),
-      "api.VolunteerNeed.get" => array(
-        "is_active" => 1,
-        "options" => array("limit" => 0),
-        "sequential" => 0,
-        "visibility_id" => "public",
-      ),
-      "api.VolunteerProjectContact.get" => array(
-        "options" => array("limit" => 0),
-        "relationship_type_id" => "volunteer_beneficiary",
-        "api.Contact.get" => array(),
+      'need' => array(
+        'role_id' => array(),
       ),
     );
   }
@@ -69,27 +61,98 @@ class CRM_Volunteer_BAO_NeedSearch {
   /**
    * Performs the search.
    *
-   * Stashes the results in $this->searchResults. Delegates formatting the
-   * results to formatSearchResults().
+   * Stashes the results in $this->searchResults.
    *
    * @return array $this->searchResults
    */
   public function search() {
-    $apiResult = civicrm_api3('VolunteerProject', 'get', $this->searchParams);
-    foreach($apiResult['values'] as $project) {
-      if ($project['api.VolunteerNeed.get']['count'] > 0) {
-        $projectId = $project['id'];
-        $this->searchResults['projects'][$projectId] = $project;
+    $projects = CRM_Volunteer_BAO_Project::retrieve($this->searchParams['project']);
+    foreach ($projects as $project) {
+      if (empty($project->open_needs)) {
+        continue;
       }
+
+      $openNeeds = $project->open_needs;
+      foreach ($openNeeds as $key => $need) {
+        if (!$this->needFitsSearchCriteria($need)) {
+          unset($openNeeds[$key]);
+        } elseif (!array_key_exists($project->id, $this->projects)) {
+          $this->projects[$project->id] = array();
+        }
+      }
+
+      $this->searchResults += $openNeeds;
     }
 
-    $this->formatSearchResuts();
+    $this->getSearchResultsProjectData();
     return $this->searchResults;
   }
 
   /**
-   * Sets the parameters for api.VolunteerProject.get, plus chained calls.
+   * Returns TRUE if the need matches the dates in the search criteria, else FALSE.
    *
+   * Assumptions:
+   *   - Need start_time is never empty. (Only in exceptional cases should this
+   *     assumption be false for non-flexible needs. Flexible needs are excluded
+   *     from $project->open_needs.)
+   *
+   * @param array $need
+   * @return boolean
+   */
+  private function needFitsDateCriteria(array $need) {
+    $needStartTime = strtotime($need['start_time']);
+    $needEndTime = strtotime($need['end_time']);
+    $searchStartTime = strtotime($this->searchParams['date_start']);
+    $searchEndTime = strtotime($this->searchParams['date_end']);
+
+    // There are no date-related search criteria, so we're done here.
+    if ($searchStartTime === FALSE && $searchEndTime === FALSE) {
+      return TRUE;
+    }
+
+    // The search window has no end time. We need to verify only that the need
+    // has dates after the start time.
+    if ($searchEndTime === FALSE) {
+      return $needStartTime > $searchStartTime || $needEndTime > $searchStartTime;
+    }
+
+    // The search window has no start time. We need to verify only that the need
+    // starts before the end of the window.
+    if ($searchStartTime === FALSE) {
+      return $needStartTime < $searchEndTime;
+    }
+
+    // The need does not have fuzzy dates, and both ends of the search
+    // window have been specified. We need to verify only that the need
+    // starts in the search window.
+    if ($needEndTime === FALSE) {
+      return $needStartTime > $searchStartTime && $needStartTime < $searchEndTime;
+    }
+
+    // The need has fuzzy dates, and both endpoints of the search window were
+    // specified:
+    return
+      // Does the need start in the provided window...
+      ($needStartTime > $searchStartTime && $needStartTime < $searchEndTime)
+      // or does the need end in the provided window...
+      || ($needEndTime > $searchStartTime && $needEndTime < $searchEndTime)
+      // or are the endpoints of the need outside the provided window?
+      || ($needStartTime < $searchStartTime && $needEndTime > $searchEndTime);
+  }
+
+  /**
+   * @param array $need
+   * @return boolean
+   */
+  private function needFitsSearchCriteria(array $need) {
+    return
+      $this->needFitsDateCriteria($need)
+      && (empty($this->searchParams['need']['role_id'])
+        || in_array($need['id'], $this->searchParams['need']['role_id'])
+      );
+  }
+
+  /**
    * @param array $userSearchParams
    *   Supported parameters:
    *     - beneficiary: mixed - an int-like string, a comma-separated list
@@ -106,37 +169,30 @@ class CRM_Volunteer_BAO_NeedSearch {
 
     $projectId = CRM_Utils_Array::value('project', $userSearchParams);
     if (CRM_Utils_Type::validate($projectId, 'Positive', FALSE)) {
-      $this->searchParams['id'] = $projectId;
+      $this->searchParams['project']['id'] = $projectId;
     }
 
     $proximity = CRM_Utils_Array::value('proximity', $userSearchParams);
     if (is_array($proximity)) {
-      $this->searchParams['proximity'] = $proximity;
+      $this->searchParams['project']['proximity'] = $proximity;
     }
 
     $beneficiary = CRM_Utils_Array::value('beneficiary', $userSearchParams);
     if ($beneficiary) {
-      if (!array_key_exists('project_contacts', $this->searchParams)) {
-        $this->searchParams['project_contacts'] = array();
+      if (!array_key_exists('project_contacts', $this->searchParams['project'])) {
+        $this->searchParams['project']['project_contacts'] = array();
       }
       $beneficiary = is_array($beneficiary) ? $beneficiary : explode(',', $beneficiary);
-      $this->searchParams['project_contacts']['volunteer_beneficiary'] = $beneficiary;
+      $this->searchParams['project']['project_contacts']['volunteer_beneficiary'] = $beneficiary;
     }
 
     $role = CRM_Utils_Array::value('role', $userSearchParams);
     if ($role) {
-      $role = is_array($role) ? $role : explode(',', $role);
-      $this->searchParams['api.VolunteerNeed.get']['role_id'] = array("IN" => $role);
+      $this->searchParams['need']['role_id'] = is_array($role) ? $role : explode(',', $role);
     }
   }
 
   /**
-   * Sets the date-related parameters for api.VolunteerProject.get.
-   *
-   * The dates actually apply to the Need entity, which is chained to
-   * api.VolunteerProject.get. Used to filter needs by time, e.g., needs
-   * between October 1 and October 31
-   *
    * @param array $userSearchParams
    *   Supported parameters:
    *     - date_start: date
@@ -147,60 +203,80 @@ class CRM_Volunteer_BAO_NeedSearch {
     if (!$projectDateStart || !CRM_Utils_Type::validate($projectDateStart, 'Date', FALSE)) {
       $projectDateStart = NULL;
     }
+    $this->searchParams['need']['date_start'] = $projectDateStart;
 
     $projectDateEnd = CRM_Utils_Array::value('date_end', $userSearchParams);
     if (!$projectDateEnd || !CRM_Utils_Type::validate($projectDateEnd, 'Date', FALSE)) {
       $projectDateEnd = NULL;
     }
-
-    if ($projectDateStart && $projectDateEnd) {
-      $this->searchParams['api.VolunteerNeed.get']['start_time'] = array("BETWEEN" => array($projectDateStart, $projectDateEnd));
-    } else if ($projectDateStart) {
-      $this->searchParams['api.VolunteerNeed.get']['start_time'] = array(">" => $projectDateStart);
-    } else if ($projectDateEnd) {
-      $this->searchParams['api.VolunteerNeed.get']['start_time'] = array("<" => $projectDateEnd);
-    }
+    $this->searchParams['need']['date_end'] = $projectDateEnd;
   }
 
   /**
-   * Formats search results for ease of use on the client side.
-   *
-   * Manipulates $this->searchResults.
+   * Adds 'project' key to each need in $this->searchResults, containing data
+   * related to the project, campaign, location, and project contacts.
    */
-  private function formatSearchResuts() {
-    foreach ($this->searchResults['projects'] as $projectId => $project) {
-      if (!empty($project['api.Campaign.getsingle']['title'])) {
-        $this->searchResults['projects'][$projectId]['campaign_title'] = $project['api.Campaign.getsingle']['title'];
-      }
-      unset($this->searchResults['projects'][$projectId]['api.Campaign.getsingle']);
+  private function getSearchResultsProjectData() {
+    // api.VolunteerProject.get does not support the 'IN' operator, so we loop
+    foreach ($this->projects as $id => &$project) {
+      $api = civicrm_api3('VolunteerProject', 'getsingle', array(
+        'id' => $id,
+        'api.Campaign.getvalue' => array(
+          'return' => 'title',
+        ),
+        'api.LocBlock.getsingle' => array(
+          'api.Address.getsingle' => array(),
+        ),
+        'api.VolunteerProjectContact.get' => array(
+          'options' => array('limit' => 0),
+          'relationship_type_id' => 'volunteer_beneficiary',
+          'api.Contact.get' => array(
+            'options' => array('limit' => 0),
+          ),
+        ),
+      ));
 
-      if (!empty($project['api.LocBlock.getsingle']['api.Address.getsingle'])) {
-        // TODO: support state and country, which we get back as unfriendly IDs
-        $this->searchResults['projects'][$projectId]['location'] = array(
-          'city' => $project['api.LocBlock.getsingle']['api.Address.getsingle']['city'],
-          'postalCode' => $project['api.LocBlock.getsingle']['api.Address.getsingle']['postal_code'],
-          'streetAddress' => $project['api.LocBlock.getsingle']['api.Address.getsingle']['street_address'],
+      $project['description'] = $api['description'];
+      $project['id'] = $api['id'];
+      $project['title'] = $api['title'];
+
+      // Because of CRM-17327, the chained "get" may improperly report its result,
+      // so we check the value we're chaining off of to decide whether or not
+      // to trust the result.
+      $project['campaign_title'] = empty($api['campaign_id']) ? NULL : $api['api.Campaign.getvalue'];
+
+      // CRM-17327
+      if (empty($api['loc_block_id']) || empty($api['api.LocBlock.getsingle']['address_id'])) {
+        $project['location'] = array(
+          // TODO: support state and country, which we get back as unfriendly IDs
+          'city' => NULL,
+          'postal_code' => NULL,
+          'street_address' => NULL,
+        );
+      } else {
+        $project['location'] = array(
+          // TODO: support state and country, which we get back as unfriendly IDs
+          'city' => $api['api.LocBlock.getsingle']['api.Address.getsingle']['city'],
+          'postal_code' => $api['api.LocBlock.getsingle']['api.Address.getsingle']['postal_code'],
+          'street_address' => $api['api.LocBlock.getsingle']['api.Address.getsingle']['street_address'],
         );
       }
-      unset($this->searchResults['projects'][$projectId]['api.LocBlock.getsingle']);
 
-      foreach ($project['api.VolunteerNeed.get']['values'] as $need) {
-        $needId = $need['id'];
-        $this->searchResults['needs'][$needId] = $need;
-      }
-      unset($this->searchResults['projects'][$projectId]['api.VolunteerNeed.get']);
-
-      foreach ($project['api.VolunteerProjectContact.get']['values'] as $projectContact) {
-        if (!array_key_exists('beneficiaries', $this->searchResults['projects'][$projectId])) {
-          $this->searchResults['projects'][$projectId]['beneficiaries'] = array();
+      foreach ($api['api.VolunteerProjectContact.get']['values'] as $projectContact) {
+        if (!array_key_exists('beneficiaries', $project)) {
+          $project['beneficiaries'] = array();
         }
 
-        $this->searchResults['projects'][$projectId]['beneficiaries'][] = array(
+        $project['beneficiaries'][] = array(
           'id' => $projectContact['contact_id'],
           'display_name' => $projectContact['api.Contact.get']['values'][0]['display_name'],
         );
-        unset($this->searchResults['projects'][$projectId]['api.VolunteerProjectContact.get']);
       }
+    }
+
+    foreach ($this->searchResults as &$need) {
+      $projectId = (int) $need['project_id'];
+      $need['project'] = $this->projects[$projectId];
     }
   }
 

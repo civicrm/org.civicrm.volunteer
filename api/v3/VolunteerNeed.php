@@ -152,15 +152,7 @@ function _civicrm_api3_volunteer_need_getsearchresult_spec(&$params) {
 /**
  * Returns the results of a search.
  *
- * This API is used with the volunteer opportunities search UI. Some
- * peculiarities:
- *
- *   - The result is an array wrapping an associative array keyed with "needs"
- *       and "projects." The reason for the wrapper is that
- *       civicrm_api3_create_success does not allow associative keys in
- *       $apiResult['values']. The results are instead found in
- *       $apiResult['values'][0] to support the associative keys.
-*   - The count on the result will never be more than 1.
+ * This API is used with the volunteer opportunities search UI.
  *
  * @param array $params
  *   See CRM_Volunteer_BAO_NeedSearch::doSearch().
@@ -168,7 +160,7 @@ function _civicrm_api3_volunteer_need_getsearchresult_spec(&$params) {
  * @return array
  */
 function civicrm_api3_volunteer_need_getsearchresult($params) {
-  $result = array(CRM_Volunteer_BAO_NeedSearch::doSearch($params));
+  $result = CRM_Volunteer_BAO_NeedSearch::doSearch($params);
   return civicrm_api3_create_success($result, $params, 'VolunteerNeed', 'getsearchresult');
 }
 
