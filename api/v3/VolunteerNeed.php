@@ -132,7 +132,7 @@ function _civicrm_api3_volunteer_need_getsearchresult_spec(&$params) {
       This parameter is used for filtering only; project contacts are not returned.',
     'type' => CRM_Utils_Type::T_STRING,
   );
-  $params['role'] = array(
+  $params['role_id'] = array(
     'title' => 'Role',
     'description' => 'The role the volunteer will perform in the project. (An
       int-like string, a comma-separated list thereof, or an array representing

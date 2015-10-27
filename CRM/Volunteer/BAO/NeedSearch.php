@@ -145,8 +145,11 @@ class CRM_Volunteer_BAO_NeedSearch {
   private function needFitsSearchCriteria(array $need) {
     return
       $this->needFitsDateCriteria($need)
-      && (empty($this->searchParams['need']['role_id'])
-        || in_array($need['id'], $this->searchParams['need']['role_id'])
+      && (
+        // Either no role was specified in the search...
+        empty($this->searchParams['need']['role_id'])
+        // or the need role is in the list of searched-by roles.
+        || in_array($need['role_id'], $this->searchParams['need']['role_id'])
       );
   }
 
@@ -157,7 +160,7 @@ class CRM_Volunteer_BAO_NeedSearch {
    *         thereof, or an array representing one or more contact IDs
    *     - project: int-like string representing project ID
    *     - proximity: array - see CRM_Volunteer_BAO_Project::buildProximityWhere
-   *     - role: mixed - an int-like string, a comma-separated list thereof, or
+   *     - role_id: mixed - an int-like string, a comma-separated list thereof, or
    *         an array representing one or more role IDs
    *     - date_start: See setSearchDateParams()
    *     - date_end: See setSearchDateParams()
@@ -184,7 +187,7 @@ class CRM_Volunteer_BAO_NeedSearch {
       $this->searchParams['project']['project_contacts']['volunteer_beneficiary'] = $beneficiary;
     }
 
-    $role = CRM_Utils_Array::value('role', $userSearchParams);
+    $role = CRM_Utils_Array::value('role_id', $userSearchParams);
     if ($role) {
       $this->searchParams['need']['role_id'] = is_array($role) ? $role : explode(',', $role);
     }
