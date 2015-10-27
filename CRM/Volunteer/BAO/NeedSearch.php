@@ -68,11 +68,11 @@ class CRM_Volunteer_BAO_NeedSearch {
   public function search() {
     $projects = CRM_Volunteer_BAO_Project::retrieve($this->searchParams['project']);
     foreach ($projects as $project) {
-      if (empty($project->open_needs)) {
+      $openNeeds = $project->open_needs;
+      if (empty($openNeeds)) {
         continue;
       }
 
-      $openNeeds = $project->open_needs;
       foreach ($openNeeds as $key => $need) {
         if (!$this->needFitsSearchCriteria($need)) {
           unset($openNeeds[$key]);
