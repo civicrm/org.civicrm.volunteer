@@ -100,44 +100,42 @@ class CRM_Volunteer_BAO_NeedSearch {
    * @return boolean
    */
   private function needFitsDateCriteria(array $need) {
-    $needStartTime = strtotime($need['start_time']);
-    $needEndTime = strtotime($need['end_time']);
-    $searchStartTime = strtotime($this->searchParams['date_start']);
-    $searchEndTime = strtotime($this->searchParams['date_end']);
+    $needStartTime = strtotime(CRM_Utils_Array::value('start_time', $need));
+    $needEndTime = strtotime(CRM_Utils_Array::value('end_time', $need));
 
     // There are no date-related search criteria, so we're done here.
-    if ($searchStartTime === FALSE && $searchEndTime === FALSE) {
+    if ($this->searchParams['need']['date_start'] === FALSE && $this->searchParams['need']['date_end'] === FALSE) {
       return TRUE;
     }
 
     // The search window has no end time. We need to verify only that the need
     // has dates after the start time.
-    if ($searchEndTime === FALSE) {
-      return $needStartTime > $searchStartTime || $needEndTime > $searchStartTime;
+    if ($this->searchParams['need']['date_end'] === FALSE) {
+      return $needStartTime > $this->searchParams['need']['date_start'] || $needEndTime > $this->searchParams['need']['date_start'];
     }
 
     // The search window has no start time. We need to verify only that the need
     // starts before the end of the window.
-    if ($searchStartTime === FALSE) {
-      return $needStartTime < $searchEndTime;
+    if ($this->searchParams['need']['date_start'] === FALSE) {
+      return $needStartTime < $this->searchParams['need']['date_end'];
     }
 
     // The need does not have fuzzy dates, and both ends of the search
     // window have been specified. We need to verify only that the need
     // starts in the search window.
     if ($needEndTime === FALSE) {
-      return $needStartTime > $searchStartTime && $needStartTime < $searchEndTime;
+      return $needStartTime > $this->searchParams['need']['date_start'] && $needStartTime < $this->searchParams['need']['date_end'];
     }
 
     // The need has fuzzy dates, and both endpoints of the search window were
     // specified:
     return
       // Does the need start in the provided window...
-      ($needStartTime > $searchStartTime && $needStartTime < $searchEndTime)
+      ($needStartTime > $this->searchParams['need']['date_start'] && $needStartTime < $this->searchParams['need']['date_end'])
       // or does the need end in the provided window...
-      || ($needEndTime > $searchStartTime && $needEndTime < $searchEndTime)
+      || ($needEndTime > $this->searchParams['need']['date_start'] && $needEndTime < $this->searchParams['need']['date_end'])
       // or are the endpoints of the need outside the provided window?
-      || ($needStartTime < $searchStartTime && $needEndTime > $searchEndTime);
+      || ($needStartTime < $this->searchParams['need']['date_start'] && $needEndTime > $this->searchParams['need']['date_end']);
   }
 
   /**
@@ -193,23 +191,17 @@ class CRM_Volunteer_BAO_NeedSearch {
   }
 
   /**
+   * Sets date_start and date_need in $this->searchParams to a timestamp or to
+   * boolean FALSE if invalid values were supplied.
+   *
    * @param array $userSearchParams
    *   Supported parameters:
    *     - date_start: date
    *     - date_end: date
    */
   private function setSearchDateParams($userSearchParams) {
-    $projectDateStart = CRM_Utils_Array::value('date_start', $userSearchParams);
-    if (!$projectDateStart || !CRM_Utils_Type::validate($projectDateStart, 'Date', FALSE)) {
-      $projectDateStart = NULL;
-    }
-    $this->searchParams['need']['date_start'] = $projectDateStart;
-
-    $projectDateEnd = CRM_Utils_Array::value('date_end', $userSearchParams);
-    if (!$projectDateEnd || !CRM_Utils_Type::validate($projectDateEnd, 'Date', FALSE)) {
-      $projectDateEnd = NULL;
-    }
-    $this->searchParams['need']['date_end'] = $projectDateEnd;
+    $this->searchParams['need']['date_start'] = strtotime(CRM_Utils_Array::value('date_start', $userSearchParams));
+    $this->searchParams['need']['date_end'] = strtotime(CRM_Utils_Array::value('date_end', $userSearchParams));
   }
 
   /**
