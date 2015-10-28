@@ -179,7 +179,6 @@ class CRM_Volunteer_BAO_ProjectTest extends VolunteerTestAbstract {
     $this->assertArrayKeyExists($need->id, $test);
     $this->assertArrayKeyExists('role_id', $test[$need->id]);
     $this->assertEquals($role_id, $test[$need->id]['role_id']);
-    $this->assertArrayKeyExists('label', $test[$need->id]);
   }
 
   /**

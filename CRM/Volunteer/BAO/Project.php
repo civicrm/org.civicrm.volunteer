@@ -81,7 +81,7 @@ class CRM_Volunteer_BAO_Project extends CRM_Volunteer_DAO_Project {
    * <ol>
    *   <li>that the number of volunteer assignments associated with the need is
    *    fewer than quantity specified for the need</li>
-   *   <li>that the need does not start in the past</li>
+   *   <li>that the need's start time or end time is in the future</li>
    *   <li>that the need is active</li>
    *   <li>that the need is visible</li>
    *   <li>that the need has a start_time (i.e., is not flexible)</li>
@@ -661,11 +661,15 @@ class CRM_Volunteer_BAO_Project extends CRM_Volunteer_DAO_Project {
         $this->_get_needs();
       }
 
+      $now = time();
       foreach ($this->needs as $id => $need) {
         if (
           !empty($need['start_time'])
           && ($need['quantity'] > $need['quantity_assigned'])
-          && (strtotime($need['start_time']) > time())
+          && (
+            strtotime($need['start_time']) >= $now
+            || strtotime($need['end_time']) >= $now
+          )
         ) {
           $this->open_needs[$id] = $need;
         }
