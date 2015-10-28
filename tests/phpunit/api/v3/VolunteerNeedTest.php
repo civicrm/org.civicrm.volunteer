@@ -138,53 +138,53 @@ class api_v3_VolunteerNeedTest extends VolunteerTestAbstract {
 
     // Check search window with start date only; need starts after window opens
     $api = $this->callAPISuccess('VolunteerNeed', 'getsearchresult', array(
-      'date_start' => date("Y-m-d H:i:s", strtotime("today noon")),
+      'date_start' => date("Y-m-d H:i:s", strtotime("tomorrow")),
     ));
     // Expected: $openNeedProject1, $singleDateNeedProject1, $openNeedProject2
     $this->assertCount(3, $api['values']);
 
     // Check search window with start date only; need starts before window, but continues into window
     $api = $this->callAPISuccess('VolunteerNeed', 'getsearchresult', array(
-      'date_start' => date("Y-m-d H:i:s", strtotime("+3 weeks noon")),
+      'date_start' => date("Y-m-d H:i:s", strtotime("+3 weeks")),
     ));
     // Expected: $openNeedProject1, $openNeedProject2
     $this->assertCount(2, $api['values']);
 
     // Check search window with end date only
     $api = $this->callAPISuccess('VolunteerNeed', 'getsearchresult', array(
-      'date_end' => date("Y-m-d H:i:s", strtotime("+5 weeks noon")),
+      'date_end' => date("Y-m-d H:i:s", strtotime("+5 weeks")),
     ));
     // Expected: $openNeedProject1, $singleDateNeedProject1, $openNeedProject2
-    $this->assertCount(3, $api['values']);
+    $this->assertCount(4, $api['values']);
 
     // Check search window with both ends specified for needs with only a start date
     $api = $this->callAPISuccess('VolunteerNeed', 'getsearchresult', array(
-      'date_start' => date("Y-m-d H:i:s", strtotime("today noon")),
-      'date_end' => date("Y-m-d H:i:s", strtotime("+3 days noon")),
+      'date_start' => date("Y-m-d H:i:s", strtotime("today")),
+      'date_end' => date("Y-m-d H:i:s", strtotime("+3 days")),
     ));
     // Expected: $singleDateNeedProject1
     $this->assertCount(1, $api['values']);
 
     // Check search window with both ends specified for needs with start date in window
     $api = $this->callAPISuccess('VolunteerNeed', 'getsearchresult', array(
-      'date_start' => date("Y-m-d H:i:s", strtotime("+6 days noon")),
-      'date_end' => date("Y-m-d H:i:s", strtotime("+8 days noon")),
+      'date_start' => date("Y-m-d H:i:s", strtotime("+6 days")),
+      'date_end' => date("Y-m-d H:i:s", strtotime("+8 days")),
     ));
     // Expected: $openNeedProject1, $openNeedProject2
     $this->assertCount(2, $api['values']);
 
     // Check search window with both ends specified for needs with end date in window
     $api = $this->callAPISuccess('VolunteerNeed', 'getsearchresult', array(
-      'date_start' => date("Y-m-d H:i:s", strtotime("+3 weeks noon")),
-      'date_end' => date("Y-m-d H:i:s", strtotime("+5 weeks noon")),
+      'date_start' => date("Y-m-d H:i:s", strtotime("+3 weeks")),
+      'date_end' => date("Y-m-d H:i:s", strtotime("+5 weeks")),
     ));
     // Expected: $openNeedProject1, $openNeedProject2
     $this->assertCount(2, $api['values']);
 
     // Check search window with both ends specified for needs with dates on either end of the window
     $api = $this->callAPISuccess('VolunteerNeed', 'getsearchresult', array(
-      'date_start' => date("Y-m-d H:i:s", strtotime("+2 weeks noon")),
-      'date_end' => date("Y-m-d H:i:s", strtotime("+3 weeks noon")),
+      'date_start' => date("Y-m-d H:i:s", strtotime("+2 weeks")),
+      'date_end' => date("Y-m-d H:i:s", strtotime("+3 weeks")),
     ));
     // Expected: $openNeedProject1, $openNeedProject2
     $this->assertCount(2, $api['values']);
