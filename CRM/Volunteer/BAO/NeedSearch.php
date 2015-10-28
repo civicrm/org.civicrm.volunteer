@@ -111,31 +111,31 @@ class CRM_Volunteer_BAO_NeedSearch {
     // The search window has no end time. We need to verify only that the need
     // has dates after the start time.
     if ($this->searchParams['need']['date_end'] === FALSE) {
-      return $needStartTime > $this->searchParams['need']['date_start'] || $needEndTime > $this->searchParams['need']['date_start'];
+      return $needStartTime >= $this->searchParams['need']['date_start'] || $needEndTime >= $this->searchParams['need']['date_start'];
     }
 
     // The search window has no start time. We need to verify only that the need
     // starts before the end of the window.
     if ($this->searchParams['need']['date_start'] === FALSE) {
-      return $needStartTime < $this->searchParams['need']['date_end'];
+      return $needStartTime <= $this->searchParams['need']['date_end'];
     }
 
     // The need does not have fuzzy dates, and both ends of the search
     // window have been specified. We need to verify only that the need
     // starts in the search window.
     if ($needEndTime === FALSE) {
-      return $needStartTime > $this->searchParams['need']['date_start'] && $needStartTime < $this->searchParams['need']['date_end'];
+      return $needStartTime >= $this->searchParams['need']['date_start'] && $needStartTime <= $this->searchParams['need']['date_end'];
     }
 
     // The need has fuzzy dates, and both endpoints of the search window were
     // specified:
     return
       // Does the need start in the provided window...
-      ($needStartTime > $this->searchParams['need']['date_start'] && $needStartTime < $this->searchParams['need']['date_end'])
+      ($needStartTime >= $this->searchParams['need']['date_start'] && $needStartTime <= $this->searchParams['need']['date_end'])
       // or does the need end in the provided window...
-      || ($needEndTime > $this->searchParams['need']['date_start'] && $needEndTime < $this->searchParams['need']['date_end'])
+      || ($needEndTime >= $this->searchParams['need']['date_start'] && $needEndTime <= $this->searchParams['need']['date_end'])
       // or are the endpoints of the need outside the provided window?
-      || ($needStartTime < $this->searchParams['need']['date_start'] && $needEndTime > $this->searchParams['need']['date_end']);
+      || ($needStartTime <= $this->searchParams['need']['date_start'] && $needEndTime >= $this->searchParams['need']['date_end']);
   }
 
   /**
