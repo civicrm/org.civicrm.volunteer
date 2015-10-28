@@ -85,6 +85,21 @@ class api_v3_VolunteerNeedTest extends VolunteerTestAbstract {
       'project_id' => $project1['id'],
       'visibility_id' => 0,
     ) + $defaultNeedParams);
+    $needStartsInPastProject1 = $this->callAPISuccess('VolunteerNeed', 'create', array(
+      'start_time' => date("Y-m-d H:i:s", strtotime("yesterday noon")),
+      'end_time' => date("Y-m-d H:i:s", strtotime("tomorrow midnight -1 second")),
+      'project_id' => $project1['id'],
+    ) + $defaultNeedParams);
+    $needEndsInPastProject1 = $this->callAPISuccess('VolunteerNeed', 'create', array(
+      'start_time' => date("Y-m-d H:i:s", strtotime("yesterday noon")),
+      'end_time' => date("Y-m-d H:i:s", strtotime("yesterday 13:00")),
+      'project_id' => $project1['id'],
+    ) + $defaultNeedParams);
+    $needStartsInPastNoEndDateProject1 = $this->callAPISuccess('VolunteerNeed', 'create', array(
+      'start_time' => date("Y-m-d H:i:s", strtotime("yesterday noon")),
+      'project_id' => $project1['id'],
+      'visibility_id' => 0,
+    ) + $defaultNeedParams);
     $filledNeedProject1 = $this->callAPISuccess('VolunteerNeed', 'create', array(
       'project_id' => $project1['id'],
     ) + $defaultNeedParams);
@@ -126,6 +141,19 @@ class api_v3_VolunteerNeedTest extends VolunteerTestAbstract {
       'Error: Disabled need is present in search results.');
     $this->assertArrayNotHasKey($invisibleNeedProject1['id'], $api['values'],
       'Error: Invisible need is present in search results.');
+
+    // Check that needs that start in the past are returned only if their end date is in the future.
+    $api = $this->callAPISuccess('VolunteerNeed', 'getsearchresult', array(
+      'date_start' => date("Y-m-d H:i:s", strtotime("today")),
+      'date_end' => date("Y-m-d H:i:s", strtotime("today")),
+      'sequential' => 0,
+    ));
+    $this->assertArrayHasKey($needStartsInPastProject1['id'], $api['values'],
+      'Error: Failed to retrieve need with start date in the past but end date in the future.');
+    $this->assertArrayNotHasKey($needStartsInPastNoEndDateProject1['id'], $api['values'],
+      'Error: Past need (with no end-date) is present in search results.');
+    $this->assertArrayNotHasKey($needEndsInPastProject1['id'], $api['values'],
+      'Error: Past need (with end-date) is present in search results.');
 
     // Check search by role
     $api = $this->callAPISuccess('VolunteerNeed', 'getsearchresult', array(
