@@ -187,7 +187,7 @@ class api_v3_VolunteerNeedTest extends VolunteerTestAbstract {
 
     // Check search window with both ends specified for needs with only a start date
     $api = $this->callAPISuccess('VolunteerNeed', 'getsearchresult', array(
-      'date_start' => date("Y-m-d H:i:s", strtotime("today")),
+      'date_start' => date("Y-m-d H:i:s", strtotime("tomorrow")),
       'date_end' => date("Y-m-d H:i:s", strtotime("+3 days")),
     ));
     // Expected: $singleDateNeedProject1
