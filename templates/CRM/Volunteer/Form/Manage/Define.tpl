@@ -62,7 +62,10 @@
   <td>
     {literal}
       <%= RenderUtil.select({
+      apiEntity: 'volunteer_need',
+      apiField: 'role_id',
       name: 'role_id',
+      optionEditPath: 'civicrm/admin/options/volunteer_role',
       options: pseudoConstant.volunteer_role,
       selected: role_id
       }) %>
