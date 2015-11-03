@@ -77,4 +77,11 @@
     <page_callback>CRM_Volunteer_Page_Backbone</page_callback>
     <access_arguments>create volunteer projects</access_arguments>
   </item>
+  <item>
+    <path>civicrm/vol</path>
+    <page_callback>CRM_Volunteer_Page_Angular</page_callback>
+    <title>Angular</title>
+    <access_callback>1</access_callback>
+    <is_public>true</is_public>
+  </item>
 </menu>
