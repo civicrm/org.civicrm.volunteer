@@ -27,10 +27,10 @@ class VolunteerManager extends Manager {
   }
 
   public function getModules() {
-    parent::getModules();
-
-    //Filter out the ones we don't want.
     if (!$this->modules) {
+      parent::getModules();
+
+      //Filter out the ones we don't want.
       foreach ($this->modules as $name => $module) {
         if (!in_array($name, $this->REQUIRED_MODULES)) {
           unset($this->modules[$name]);
