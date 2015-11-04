@@ -10,9 +10,7 @@ class CRM_Volunteer_Page_Angular extends Civi\Angular\Page\Main {
     //Use the VolunteerManager instead of the core Angular Manger
     $this->angular = new Civi\Angular\VolunteerManager(\CRM_Core_Resources::singleton());
   }
-  public function run() {
-    parent::run();
-  }
+  
   /**
    * Register resources required by Angular.
    */
