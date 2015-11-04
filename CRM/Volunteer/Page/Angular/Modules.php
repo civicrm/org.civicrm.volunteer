@@ -9,6 +9,7 @@ class CRM_Volunteer_Page_Angular_Modules extends Civi\Angular\Page\Modules {
     /**
      * @var \Civi\Angular\Manager $angular
      */
+    //Use our manager instead of the one provided by core
     $angular = new Civi\Angular\VolunteerManager(\CRM_Core_Resources::singleton());
     $moduleNames = $this->parseModuleNames(\CRM_Utils_Request::retrieve('modules', 'String'), $angular);
 
