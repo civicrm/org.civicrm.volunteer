@@ -527,7 +527,8 @@ function volunteer_civicrm_angularModules(&$angularModule) {
           ),
       'css' => array (0 => 'ang/volunteer.css'),
       'partials' => array (0 => 'ang/volunteer'),
-      'settings' => array ()
+      'settings' => array (),
+      'volunteer' => true
   );
 
   // Perhaps the placement of this code is a little hackish; unless/until we
