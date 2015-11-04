@@ -83,6 +83,16 @@ class VolunteerManager extends Manager {
 
       \CRM_Utils_Hook::angularModules($angularModules);
 
+      //Lets filter out unneeded modules
+      foreach ($angularModules as $name => $module) {
+        //If the module doesn't request to be part of our page, and isn't a core module
+        // that we have included, remove it
+        if ((!array_key_exists("volunteer", $module) || !$module['volunteer']) && $module['ext'] != 'civicrm') {
+          error_log("Removing module: ".$name);
+          unset($angularModules[$name]);
+        }
+      }
+
       $this->modules = $this->resolvePatterns($angularModules);
     }
 
