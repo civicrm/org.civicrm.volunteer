@@ -17,18 +17,8 @@
               });
             }
           },
-          relationship_types: function(crmApi) {
-            return crmApi('OptionValue', 'get', {
-              "sequential": 1,
-              "option_group_id": "volunteer_project_relationship"
-            });
-          },
-          phone_types: function(crmApi) {
-            return crmApi('OptionValue', 'get', {
-              "sequential": 1,
-              "option_group_id": "phone_type",
-              "return": "value,label"
-            });
+          supporting_data: function(crmApi) {
+            return crmApi('VolunteerUtil', 'getsupportingdata');
           },
           relationship_data: function(crmApi, $route) {
             if ($route.current.params.projectId == 0) {
@@ -77,7 +67,7 @@
   );
 
 
-  angular.module('volunteer').controller('VolunteerProject', function($scope, $location, $q, crmApi, crmStatus, crmUiAlert, crmUiHelp, crmProfiles, project, is_entity, profile_status, relationship_types, relationship_data, profiles, location_blocks, phone_types, volBackbone) {
+  angular.module('volunteer').controller('VolunteerProject', function($scope, $location, $q, crmApi, crmStatus, crmUiAlert, crmUiHelp, crmProfiles, project, is_entity, profile_status, supporting_data, relationship_data, profiles, location_blocks, volBackbone) {
     // The ts() and hs() functions help load strings for this module.
     var ts = $scope.ts = CRM.ts('org.civicrm.volunteer');
     var hs = $scope.hs = crmUiHelp({file: 'CRM/Volunteer/Form/Volunteer'}); // See: templates/CRM/volunteer/Project.hlp
@@ -97,8 +87,8 @@
     $scope.locBlock = {};
     $scope.profiles = profiles;
     $scope.relationships = relationships;
-    $scope.relationship_types = relationship_types.values;
-    $scope.phone_types = phone_types.values;
+    $scope.relationship_types = supporting_data.values.relationship_types;
+    $scope.phone_types = supporting_data.values.phone_types;
     $scope.profile_status = profile_status;
     $scope.is_entity = is_entity;
     project.is_active = (project.is_active === "1");
