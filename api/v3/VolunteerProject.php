@@ -255,6 +255,26 @@ ORDER BY sp.name, ca.city, ca.street_address ASC
   return civicrm_api3_create_success($locations, $params, 'VolunteerProject', 'locations');
 }
 
+/**
+ * This method provides all data for a selected LocBlock
+ *
+ * @param $params
+ * @return array
+ *
+ */
+function civicrm_api3_volunteer_project_getlocblockdata($params) {
+  //todo: Check permissions
+  unset($params['check_permissions']);
+
+  $result = civicrm_api3("LocBlock", "get", $params);
+  
+  return $result;
+}
+
+function civicrm_api3_volunteer_project_getlocblockdata_spec($params) {
+  $params['id']['api.required'] = 1;
+}
+
 
 /**
  * Saves/creates an entire location block with a single call instead of
