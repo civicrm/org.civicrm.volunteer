@@ -77,4 +77,17 @@
     <page_callback>CRM_Volunteer_Page_Backbone</page_callback>
     <access_arguments>create volunteer projects</access_arguments>
   </item>
+  <item>
+    <path>civicrm/vol</path>
+    <page_callback>CRM_Volunteer_Page_Angular</page_callback>
+    <title>CiviVolunteer</title>
+    <access_callback>1</access_callback>
+    <is_public>true</is_public>
+  </item>
+  <item>
+    <path>civicrm/ajax/volunteer-angular-modules</path>
+    <page_callback>CRM_Volunteer_Page_Angular_Modules</page_callback>
+    <access_callback>1</access_callback>
+    <is_public>true</is_public>
+  </item>
 </menu>
