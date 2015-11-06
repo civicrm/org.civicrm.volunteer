@@ -98,7 +98,7 @@ class CRM_Volunteer_Permission extends CRM_Core_Permission {
           && in_array($contactId, $projectOwners)) {
           return TRUE;
         }
-
+        break;
       case CRM_Core_Action::DELETE:
         if (self::check('delete all volunteer projects')) {
           return TRUE;
@@ -109,15 +109,17 @@ class CRM_Volunteer_Permission extends CRM_Core_Permission {
           && in_array($contactId, $projectOwners)) {
           return TRUE;
         }
-
+        break;
       case CRM_Core_Action::VIEW:
-        if (self::check('register to volunteer')) {
+        if (self::check('register to volunteer') || self::check('edit all volunteer projects')) {
           return TRUE;
         }
-
+        break;
       default:
         return FALSE;
     }
+
+    return false;
   }
 
 }
