@@ -126,5 +126,7 @@ function civicrm_api3_volunteer_util_getsupportingdata($params) {
 
   $results['phone_types'] = CRM_Core_OptionGroup::values("phone_type", FALSE, FALSE, TRUE);
 
+  $results['default_profile'] = civicrm_api3('UFGroup', 'getvalue', array("name" =>"volunteer_sign_up", "return" => "id"));
+
   return civicrm_api3_create_success($results, "VolunteerUtil", "getsupportingdata", $params);
 }
