@@ -82,7 +82,12 @@ function civicrm_api3_volunteer_project_get($params) {
   //If we are in an editing context only show projects they can edit.
   $context = CRM_Utils_Array::value('context', $params);
   if ($context === 'edit' && !CRM_Volunteer_Permission::check('edit all volunteer projects')) {
-    $params['project_contacts'] = array("volunteer_owner" => array(CRM_Core_Session::getLoggedInContactID()));
+
+    if (!isset($params['project_contacts'])) {
+      $params['project_contacts'] = array();
+    }
+
+    $params['project_contacts']['volunteer_owner'] = array(CRM_Core_Session::getLoggedInContactID());
     unset($params['context']);
   }
 
