@@ -62,7 +62,10 @@
   <td>
     {literal}
       <%= RenderUtil.select({
+      apiEntity: 'volunteer_need',
+      apiField: 'role_id',
       name: 'role_id',
+      optionEditPath: 'civicrm/admin/options/volunteer_role',
       options: pseudoConstant.volunteer_role,
       selected: role_id
       }) %>
@@ -90,8 +93,8 @@
 
 <script type="text/template" id="crm-vol-define-add-row-tpl">
   <tr id="crm-vol-define-add-row">
-    <td colspan="7">
-      <select class="crm-form-select crm-action-menu action-icon-plus" id="crm-vol-define-add-need" style="width: 20em;">
+    <td colspan="8">
+      <select class="crm-form-select crm-action-menu action-icon-plus" id="crm-vol-define-add-need">
         <option value="">{ts domain='org.civicrm.volunteer'}Create new{/ts}</option>
         {crmAPI var='result' entity='VolunteerNeed' action='getoptions' field='role_id' sequential=0}
         {foreach from=$result.values item=VolunteerNeed key=id}

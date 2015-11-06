@@ -33,6 +33,8 @@
       },
 
       onRender: function() {
+        this.$('.crm-select2').crmSelect2();
+
         this.$("[name='display_start_date'], [name='display_end_date']").addClass('dateplugin').datepicker();
 
         this.$("[name='display_start_time'], [name='display_end_time']").addClass('timeplugin').timeEntry({
