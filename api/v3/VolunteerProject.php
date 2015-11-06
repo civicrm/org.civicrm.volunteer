@@ -46,7 +46,55 @@
  * @access public
  */
 function civicrm_api3_volunteer_project_create($params) {
-  return _civicrm_api3_basic_create(_civicrm_api3_get_BAO(__FUNCTION__), $params);
+
+  $project = CRM_Volunteer_BAO_Project::create($params);
+
+
+  //Save the Profiles
+  /*
+   * var savedProfileIds = [];
+            var pPromises = [];
+            $($scope.profiles).each(function(index, profile) {
+              profile.entity_id = projectId;
+              pPromises.push(
+                crmApi("UFJoin", "create", profile).then(function(data) {
+                  savedProfileIds.push(data.values[0].id);
+                })
+              );
+            });
+
+            //remove profiles no longer needed
+            $q.all(pPromises).then(function() {
+              crmApi('UFJoin', 'get', {
+                "sequential": 1,
+                "module": "CiviVolunteer",
+                entity_id: projectId,
+                entity_table: 'civicrm_volunteer_project',
+                id: {"NOT IN": savedProfileIds}
+              }).then(function(result) {
+                $.each(result.values, function(index, profile) {
+                  //todo: This is implemented in civiVol but should be added to core.
+                  crmApi("VolunteerProject", "removeprofile", {id: profile.id});
+                });
+              });
+            });
+   */
+
+  $profiles = civicrm_api3("UFJoin", "get",
+    array(
+      "entity_id" => $project->id,
+      "entity_table" => "civicrm_volunteer_project"
+    ));
+
+  foreach($profiles['values'] as $profile) {
+    if(!in_array($profile['id'], $project->profiles)) {
+      //$result = civicrm_api3("UFJoin", "delete", array("id" => $profile['id']));
+      $result = civicrm_api3("VolunteerProject", "removeprofile", array("id" => $profile['id']));
+    }
+  }
+
+
+  return civicrm_api3_create_success($project, $params, 'VolunteerProject', 'create');
 }
 
 /**
@@ -142,7 +190,6 @@ function civicrm_api3_volunteer_project_getwithall($params) {
       $projects[$k] = $dao->toArray();
 
       //Get the associated Profiles
-
      $results = civicrm_api3("UFJoin", "get",
         array("entity_id" => $dao->id,
               "entity_table" => "civicrm_volunteer_project",
@@ -151,7 +198,7 @@ function civicrm_api3_volunteer_project_getwithall($params) {
       $projects[$k]['profiles'] = $results['values'];
 
 
-      //Get the Associated Contacts
+      //todo: Get the Associated Contacts
 
 
     } else {
