@@ -31,6 +31,11 @@
           supporting_data: function(crmApi) {
             return crmApi('VolunteerUtil', 'getsupportingdata');
           },
+          campaigns: function(crmApi) {
+            return crmApi('VolunteerUtil', 'getcampaigns').then(function(data) {
+              return data.values;
+            });
+          },
           relationship_data: function(crmApi, $route) {
             if ($route.current.params.projectId == 0) {
               return {"values": []};
@@ -53,7 +58,7 @@
   );
 
 
-  angular.module('volunteer').controller('VolunteerProject', function($scope, $location, $q, crmApi, crmStatus, crmUiAlert, crmUiHelp, crmProfiles, project, profile_status, supporting_data, relationship_data, location_blocks, volBackbone) {
+  angular.module('volunteer').controller('VolunteerProject', function($scope, $location, $q, crmApi, crmStatus, crmUiAlert, crmUiHelp, crmProfiles, project, profile_status, campaigns, supporting_data, relationship_data, location_blocks, volBackbone) {
     // The ts() and hs() functions help load strings for this module.
     var ts = $scope.ts = CRM.ts('org.civicrm.volunteer');
     var hs = $scope.hs = crmUiHelp({file: 'CRM/Volunteer/Form/Volunteer'}); // See: templates/CRM/volunteer/Project.hlp
@@ -83,6 +88,7 @@
       $scope.profiles = project.profiles;
     }
     $scope.relationships = relationships;
+    $scope.campaigns = campaigns;
     $scope.relationship_types = supporting_data.values.relationship_types;
     $scope.phone_types = supporting_data.values.phone_types;
     $scope.profile_status = profile_status;
