@@ -109,3 +109,22 @@ function civicrm_api3_volunteer_util_getperms($params) {
 
   return civicrm_api3_create_success($results, "VolunteerUtil", "getperms", $params);
 }
+
+/**
+ * This function returns supporting data for editing a volunteer project.
+ *
+ * @param array $params
+ *   Not presently used.
+ * @return array
+ */
+function civicrm_api3_volunteer_util_getsupportingdata($params) {
+  $results = array();
+
+  $results['relationship_types'] = CRM_Core_OptionGroup::values(
+    CRM_Volunteer_BAO_ProjectContact::RELATIONSHIP_OPTION_GROUP,
+    FALSE, FALSE, TRUE);
+
+  $results['phone_types'] = CRM_Core_OptionGroup::values("phone_type", FALSE, FALSE, TRUE);
+
+  return civicrm_api3_create_success($results, "VolunteerUtil", "getsupportingdata", $params);
+}
