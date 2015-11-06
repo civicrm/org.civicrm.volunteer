@@ -12,8 +12,11 @@
                 is_active: "1"
               };
             } else {
-              return crmApi('VolunteerProject', 'getsingle', {
-                id: $route.current.params.projectId
+              return crmApi('VolunteerProject', 'getwithall', {
+                id: $route.current.params.projectId,
+                sequential: 1
+              }).then(function(data) {
+                return data.values[0];
               });
             }
           },
@@ -33,31 +36,6 @@
           location_blocks: function(crmApi) {
             return crmApi('VolunteerProject', 'locations', {});
           },
-          profiles: function(crmApi, $route) {
-            return crmApi('UFJoin', 'get', {
-              entity_id: $route.current.params.projectId,
-              entity_table: "civicrm_volunteer_project",
-              sequential: 1
-            }).then(function(data) {
-              if (data.count > 0) {
-                return data.values;
-              } else {
-                return crmApi('UFGroup', 'getvalue', {
-                  name: "volunteer_sign_up",
-                  "return": "id"
-                }).then(function(data) {
-                  return [{
-                    "is_active": "1",
-                    "module": "CiviVolunteer",
-                    "entity_table": "civicrm_volunteer_project",
-                    "weight": "1",
-                    "uf_group_id": data.result
-                  }];
-                });
-              }
-            });
-          },
-          is_entity: function() { return false; },
           profile_status: function(crmProfiles) {
             return crmProfiles.load();
           }
@@ -67,7 +45,7 @@
   );
 
 
-  angular.module('volunteer').controller('VolunteerProject', function($scope, $location, $q, crmApi, crmStatus, crmUiAlert, crmUiHelp, crmProfiles, project, is_entity, profile_status, supporting_data, relationship_data, profiles, location_blocks, volBackbone) {
+  angular.module('volunteer').controller('VolunteerProject', function($scope, $location, $q, crmApi, crmStatus, crmUiAlert, crmUiHelp, crmProfiles, project, profile_status, supporting_data, relationship_data, location_blocks, volBackbone) {
     // The ts() and hs() functions help load strings for this module.
     var ts = $scope.ts = CRM.ts('org.civicrm.volunteer');
     var hs = $scope.hs = crmUiHelp({file: 'CRM/Volunteer/Form/Volunteer'}); // See: templates/CRM/volunteer/Project.hlp
@@ -85,12 +63,21 @@
     $scope.locationBlocks = location_blocks.values;
     $scope.locationBlocks[0] = "Create a new Location";
     $scope.locBlock = {};
-    $scope.profiles = profiles;
+    if (!project.profiles || project.profiles.length === 0) {
+      $scope.profiles = [{
+        "is_active": "1",
+        "module": "CiviVolunteer",
+        "entity_table": "civicrm_volunteer_project",
+        "weight": "1",
+        "uf_group_id": supporting_data.values.default_profile
+      }];
+    } else {
+      $scope.profiles = project.profiles;
+    }
     $scope.relationships = relationships;
     $scope.relationship_types = supporting_data.values.relationship_types;
     $scope.phone_types = supporting_data.values.phone_types;
     $scope.profile_status = profile_status;
-    $scope.is_entity = is_entity;
     project.is_active = (project.is_active === "1");
     $scope.project = project;
 
