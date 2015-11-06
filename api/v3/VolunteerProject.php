@@ -171,7 +171,15 @@ function _civicrm_api3_volunteer_project_get_spec(&$params) {
  * @access public
  */
 function civicrm_api3_volunteer_project_delete($params) {
-  return _civicrm_api3_basic_delete(_civicrm_api3_get_BAO(__FUNCTION__), $params);
+  if (CRM_Volunteer_Permission::checkProjectPerms(CRM_Core_Action::DELETE, $params['id'])) {
+    return _civicrm_api3_basic_delete(_civicrm_api3_get_BAO(__FUNCTION__), $params);
+  } else {
+    return civicrm_api3_create_error(ts('You do not have permission to delete this event'));
+  }
+}
+
+function civicrm_api3_volunteer_project_delete_spec(&$params) {
+  $params['id']['api.required'] = 1;
 }
 
 
@@ -228,7 +236,7 @@ ORDER BY sp.name, ca.city, ca.street_address ASC
  *
  */
 function civicrm_api3_volunteer_project_getlocblockdata($params) {
-  //todo: Check permissions
+  //todo VOL-159: Check Permissions
   unset($params['check_permissions']);
 
   $result = civicrm_api3("LocBlock", "get", $params);
@@ -236,7 +244,7 @@ function civicrm_api3_volunteer_project_getlocblockdata($params) {
   return $result;
 }
 
-function civicrm_api3_volunteer_project_getlocblockdata_spec($params) {
+function civicrm_api3_volunteer_project_getlocblockdata_spec(&$params) {
   $params['id']['api.required'] = 1;
 }
 
