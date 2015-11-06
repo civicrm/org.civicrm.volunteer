@@ -62,7 +62,7 @@
               {{ts("ext.")}} <input size="5" ng-change="locBlockDirty()" ng-model="locBlock.phone.phone_ext" />
               <select crm-ui-select="{width: '100', allowClear: true}" ng-change="locBlockDirty()" ng-model="locBlock.phone.phone_type_id">
                 <option />
-                <option ng-repeat="pType in phone_types" value="{{pType.value}}">{{pType.label}}</option>
+                <option ng-repeat="(pTypeId, pType) in phone_types" value="{{pTypeId}}">{{pType}}</option>
               </select>
             </div>
             <div class="crm-vol-location-phone2" crm-ui-field='{name: "projectForm.locBlock.phone2", title: ts("Phone 2")}'>
@@ -70,7 +70,7 @@
               {{ts("ext.")}} <input size="5" ng-change="locBlockDirty()" ng-model="locBlock.phone_2.phone_ext" />
               <select crm-ui-select="{width: '100', allowClear: true}" ng-change="locBlockDirty()" ng-model="locBlock.phone_2.phone_type_id">
                 <option />
-                <option ng-repeat="pType in phone_types" value="{{pType.value}}">{{pType.label}}</option>
+                <option ng-repeat="(pTypeId, pType) in phone_types" value="{{pTypeId}}">{{pType}}</option>
               </select>
             </div>
           </fieldset>
@@ -95,8 +95,8 @@
     <fieldset class="crm-vol-relationships">
       <legend>{{ts("Relationships")}}</legend>
 
-      <div ng-repeat="rType in relationship_types" crm-ui-field="{name: projectForm[rType.name], title: ts(rType.label)}" ng-class="'crm-vol-rel-' + rType.name">
-        <input crm-ui-id="projectForm[rType.name]" crm-entityref="{entity: 'Contact', select: {allowClear:true, multiple: true}}" ng-model="relationships[rType.value]" />
+      <div ng-repeat="(rTypeId, rType) in relationship_types" crm-ui-field="{name: projectForm[relationships][rTypeId], title: ts(rType)}" ng-class="'crm-vol-rel-' + rType.name">
+        <input crm-ui-id="projectForm[relationships][rTypeId]" crm-entityref="{entity: 'Contact', select: {allowClear:true, multiple: true}}" ng-model="relationships[rTypeId]" />
         <div class="description" ng-show="rType.description">{{rType.description}}</div>
       </div>
 
