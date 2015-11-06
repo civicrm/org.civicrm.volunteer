@@ -254,6 +254,12 @@ class CRM_Volunteer_BAO_Project extends CRM_Volunteer_DAO_Project {
   public static function retrieve(array $params) {
     $result = array();
 
+    $checkPerms = CRM_Utils_Array::value('check_permissions', $params);
+    if($checkPerms && !CRM_Volunteer_Permission::checkProjectPerms(CRM_Core_Action::VIEW)) {
+      CRM_Utils_System::permissionDenied();
+      return;
+    }
+
     $query = CRM_Utils_SQL_Select::from('`civicrm_volunteer_project` vp')
       ->select('DISTINCT vp.*');
 
@@ -294,15 +300,6 @@ class CRM_Volunteer_BAO_Project extends CRM_Volunteer_DAO_Project {
       $result[(int) $dao->id] = $fetchedProject;
     }
     $dao->free();
-
-    //todo: Throw an error instead?
-    if(array_key_exists("check_permissions", $params) && $params['check_permissions']) {
-      foreach($result as $k => $project) {
-        if (!CRM_Volunteer_Permission::checkProjectPerms(CRM_Core_Action::VIEW, $dao->id)) {
-          unset($result[$k]);
-        }
-      }
-    }
 
     return $result;
   }

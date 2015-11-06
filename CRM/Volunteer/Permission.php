@@ -72,7 +72,7 @@ class CRM_Volunteer_Permission extends CRM_Core_Permission {
    * @param int $op
    *   See the constants in CRM_Core_Action.
    * @param int $projectId
-   *   Required except if the operation is an add.
+   *   Required for some but not all operations.
    * @return boolean
    *   TRUE is the action is allowed; else FALSE.
    */
