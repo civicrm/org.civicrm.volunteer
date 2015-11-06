@@ -86,7 +86,7 @@
     $scope.relationship_types = supporting_data.values.relationship_types;
     $scope.phone_types = supporting_data.values.phone_types;
     $scope.profile_status = profile_status;
-    project.is_active = (project.is_active === "1");
+    project.is_active = (project.is_active == "1");
     $scope.project = project;
 
 
