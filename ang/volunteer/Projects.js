@@ -11,6 +11,11 @@
           projectData: function(crmApi) {
             return crmApi('VolunteerProject', 'get', {"sequential": 1, "context": 'edit'});
           },
+          campaigns: function(crmApi) {
+            return crmApi('VolunteerUtil', 'getcampaigns').then(function(data) {
+              return data.values;
+            });
+          },
           volunteerBackbone: function(volBackbone) {
             return volBackbone.load();
           }
@@ -23,7 +28,7 @@
   //   $scope -- This is the set of variables shared between JS and HTML.
   //   crmApi, crmStatus, crmUiHelp -- These are services provided by civicrm-core.
   //   myContact -- The current contact, defined above in config().
-  angular.module('volunteer').controller('VolunteerProjects', function($scope, crmApi, crmStatus, crmUiHelp, projectData, $location, volunteerBackbone) {
+  angular.module('volunteer').controller('VolunteerProjects', function($scope, crmApi, crmStatus, crmUiHelp, projectData, $location, volunteerBackbone, campaigns) {
     // The ts() and hs() functions help load strings for this module.
     var ts = $scope.ts = CRM.ts('volunteer');
     var hs = $scope.hs = crmUiHelp({file: 'CRM/volunteer/Projects'}); // See: templates/CRM/volunteer/Projects.hlp
@@ -36,6 +41,7 @@
     $scope.projects = projectData.values;
     $scope.batchAction = "";
     $scope.allSelected = false;
+    $scope.campaigns = campaigns;
     $scope.needBase = CRM.url("civicrm/volunteer/need");
     $scope.assignBase = CRM.url("civicrm/volunteer/assign");
 
@@ -47,6 +53,12 @@
 
     $scope.backbonePopup = function(title, tab, projectId) {
       CRM.volunteerPopup(title, tab, projectId);
+    };
+
+    $scope.clearCampaign = function() {
+      if ($scope.searchParams.campaign == "") {
+        delete $scope.searchParams.campaign;
+      }
     };
 
     $scope.batchActions = {
