@@ -5,6 +5,7 @@
   <div crm-ui-debug="locBlock"></div>
   <div crm-ui-debug="campaigns"></div>
   <div crm-ui-debug="countries"></div>
+  <div crm-ui-debug="supporting_data"></div>
   <div id="backboneIncludes"></div>
 
   <form class="crm-form-block" name="projectForm" crm-ui-id-scope>
@@ -126,7 +127,13 @@
             <span class="icon ui-icon-circle-close"></span>
           </a>
 
-          <input crm-profile-selector="{}" ng-model="profile.uf_group_id" />
+          <input ng-if="supporting_data.use_profile_editor" crm-profile-selector="{}" ng-model="profile.uf_group_id" />
+
+          <select ng-if="!supporting_data.use_profile_editor" class="big crm-form-select crm-vol-simple-profile-selector" crm-ui-select="{placeholder: '', allowClear:true}"
+                  ng-options="item as item.title for item in supporting_data.profile_list track by item.id" ng-model="profile.uf_group_id">
+            <option />
+          </select>
+
         </div>
       </div>
       <a ng-click="addProfile()" class="crm-hover-button crm-button-add-profile" style="display: inline-block;">
