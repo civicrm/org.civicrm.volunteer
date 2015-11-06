@@ -78,15 +78,31 @@ function _civicrm_api3_volunteer_project_create_spec(&$params) {
  * @access public
  */
 function civicrm_api3_volunteer_project_get($params) {
+  
+  //If we are in an editing context only show projects they can edit.
+  if (array_key_exists("context", $params) && $params['context'] == 'edit' &&
+    !CRM_Volunteer_Permission::check('edit all volunteer projects')) {
+    $params['project_contacts'] = array("volunteer_owner" => array(CRM_Core_Session::getLoggedInContactID()));
+    unset($params['context']);
+  }
+
+
   $result = CRM_Volunteer_BAO_Project::retrieve($params);
   foreach ($result as $k => $dao) {
     $result[$k] = $dao->toArray();
   }
+
   return civicrm_api3_create_success($result, $params, 'VolunteerProject', 'get');
 }
 
 function _civicrm_api3_volunteer_project_get_spec(&$params) {
   $params['id']['api.aliases'] = array('project_id');
+  $params['context'] = array(
+    'title' => 'Action Context',
+    'description' => 'String representing the context in which permissions
+    are evaluated. E.g You may have the right to view projects, but not edit them. This is for filtering only',
+    'type' => CRM_Utils_Type::T_STRING,
+  );
   $params['project_contacts'] = array(
     'title' => 'Project Contacts',
     'description' => 'Array of [volunteer relationship type] => [contact IDs].
