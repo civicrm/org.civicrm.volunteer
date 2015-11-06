@@ -123,6 +123,50 @@ function _civicrm_api3_volunteer_project_get_spec(&$params) {
     'type' => CRM_Utils_Type::T_STRING,
   );
 }
+
+/**
+ * This method returns a Project AND it's related data
+ *
+ * @param $params
+ * @return array
+ *
+ */
+function civicrm_api3_volunteer_project_getwithall($params) {
+  $projects = CRM_Volunteer_BAO_Project::retrieve($params);
+
+  foreach ($projects as $k => $dao) {
+    if (!array_key_exists("check_permissions", $params) ||
+      !$params["check_permissions"] ||
+      CRM_Volunteer_Permission::checkProjectPerms(CRM_Core_Action::UPDATE, $dao->id)) {
+
+      $projects[$k] = $dao->toArray();
+
+      //Get the associated Profiles
+
+     $results = civicrm_api3("UFJoin", "get",
+        array("entity_id" => $dao->id,
+              "entity_table" => "civicrm_volunteer_project",
+              "sequential" => 1));
+
+      $projects[$k]['profiles'] = $results['values'];
+
+
+      //Get the Associated Contacts
+
+
+    } else {
+      unset($projects[$k]);
+    }
+  }
+
+  return civicrm_api3_create_success($projects, $params, 'VolunteerProject', 'getwithall');
+}
+
+function civicrm_api3_volunteer_project_getwithall_spec(&$params) {
+  $params['id']['api.aliases'] = array('project_id');
+  $params['id']['api.required'] = 1;
+}
+
 /**
  * delete an existing project
  *
@@ -180,6 +224,7 @@ ORDER BY sp.name, ca.city, ca.street_address ASC
 
   $dao = CRM_Core_DAO::executeQuery($query);
   while ($dao->fetch()) {
+    //todo: Some sort of per-location permission check
     $locations[$dao->id] = $dao->title;
   }
 
@@ -252,6 +297,8 @@ function civicrm_api3_volunteer_project_savelocblock($params) {
 
   $locBlockData['entity_table'] = 'civicrm_volunteer_project';
   $locBlockData['entity_id'] = $params['entity_id'];
+
+  //Todo: Check Permissions
   $location = CRM_Core_BAO_Location::create($locBlockData, TRUE, 'VolunteerProject');
 
   return civicrm_api3_create_success($location['id'], "VolunteerProject", "SaveLocBlock", $params);
