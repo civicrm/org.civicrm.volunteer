@@ -114,12 +114,9 @@ class CRM_Volunteer_Permission extends CRM_Core_Permission {
         if (self::check('register to volunteer') || self::check('edit all volunteer projects')) {
           return TRUE;
         }
-        break;
-      default:
-        return FALSE;
     }
 
-    return false;
+    return FALSE;
   }
 
 }
