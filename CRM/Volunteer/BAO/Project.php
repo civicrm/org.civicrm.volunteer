@@ -295,6 +295,15 @@ class CRM_Volunteer_BAO_Project extends CRM_Volunteer_DAO_Project {
     }
     $dao->free();
 
+    //todo: Throw an error instead?
+    if(array_key_exists("check_permissions", $params) && $params['check_permissions']) {
+      foreach($result as $k => $project) {
+        if (!CRM_Volunteer_Permission::checkProjectPerms(CRM_Core_Action::VIEW, $dao->id)) {
+          unset($result[$k]);
+        }
+      }
+    }
+
     return $result;
   }
 
