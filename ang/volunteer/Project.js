@@ -12,12 +12,20 @@
                 is_active: "1"
               };
             } else {
-              return crmApi('VolunteerProject', 'getwithall', {
-                id: $route.current.params.projectId,
-                sequential: 1
-              }).then(function(data) {
-                return data.values[0];
-              });
+              return crmApi('VolunteerProject', 'getsingle', {
+                id: $route.current.params.projectId
+              }).then(
+                // success
+                null,
+                // error
+                function () {
+                  CRM.alert(
+                    ts('No volunteer project exists with an ID of %1', {1: $route.current.params.projectId}),
+                    ts('Not Found'),
+                    'error'
+                  );
+                }
+              );
             }
           },
           supporting_data: function(crmApi) {

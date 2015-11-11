@@ -120,6 +120,13 @@ function civicrm_api3_volunteer_project_get($params) {
   $result = CRM_Volunteer_BAO_Project::retrieve($params);
   foreach ($result as $k => $dao) {
     $result[$k] = $dao->toArray();
+
+    $profiles = civicrm_api3("UFJoin", "get", array(
+      "entity_id" => $dao->id,
+      "entity_table" => "civicrm_volunteer_project",
+      "sequential" => 1
+    ));
+    $result[$k]['profiles'] = $profiles['values'];
   }
 
   return civicrm_api3_create_success($result, $params, 'VolunteerProject', 'get');
@@ -147,48 +154,6 @@ function _civicrm_api3_volunteer_project_get_spec(&$params) {
       This parameter is used for filtering only; project contacts are not returned.',
     'type' => CRM_Utils_Type::T_STRING,
   );
-}
-
-/**
- * This method returns a Project AND it's related data
- *
- * @param $params
- * @return array
- *
- */
-function civicrm_api3_volunteer_project_getwithall($params) {
-  $projects = CRM_Volunteer_BAO_Project::retrieve($params);
-
-  foreach ($projects as $k => $dao) {
-    if (!array_key_exists("check_permissions", $params) ||
-      !$params["check_permissions"] ||
-      CRM_Volunteer_Permission::checkProjectPerms(CRM_Core_Action::UPDATE, $dao->id)) {
-
-      $projects[$k] = $dao->toArray();
-
-      //Get the associated Profiles
-     $results = civicrm_api3("UFJoin", "get",
-        array("entity_id" => $dao->id,
-              "entity_table" => "civicrm_volunteer_project",
-              "sequential" => 1));
-
-      $projects[$k]['profiles'] = $results['values'];
-
-
-      //todo: Get the Associated Contacts
-
-
-    } else {
-      unset($projects[$k]);
-    }
-  }
-
-  return civicrm_api3_create_success($projects, $params, 'VolunteerProject', 'getwithall');
-}
-
-function civicrm_api3_volunteer_project_getwithall_spec(&$params) {
-  $params['id']['api.aliases'] = array('project_id');
-  $params['id']['api.required'] = 1;
 }
 
 /**
@@ -267,7 +232,7 @@ function civicrm_api3_volunteer_project_getlocblockdata($params) {
   unset($params['check_permissions']);
 
   $result = civicrm_api3("LocBlock", "get", $params);
-  
+
   return $result;
 }
 
