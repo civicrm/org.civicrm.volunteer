@@ -67,7 +67,7 @@ function volunteer_civicrm_navigationMenu(&$params) {
           'attributes' => array(
             'label' => ts('New Volunteer Project', array('domain' => 'org.civicrm.volunteer')),
             'name' => 'volunteer_new_project',
-            'url' => 'civicrm/a/#/volunteer/manage/0',
+            'url' => 'civicrm/vol/#/volunteer/manage/0',
             'permission' => NULL,
             'operator' => NULL,
             'separator' => 0,
@@ -81,7 +81,7 @@ function volunteer_civicrm_navigationMenu(&$params) {
           'attributes' => array(
             'label' => ts('Manage Volunteer Projects', array('domain' => 'org.civicrm.volunteer')),
             'name' => 'volunteer_manage_projects',
-            'url' => 'civicrm/a/#/volunteer/manage',
+            'url' => 'civicrm/vol/#/volunteer/manage',
             'permission' => NULL,
             'operator' => NULL,
             'separator' => 1,
@@ -137,7 +137,7 @@ function volunteer_civicrm_navigationMenu(&$params) {
           'attributes' => array(
             'label' => ts('Search for Volunteer Opportunities', array('domain' => 'org.civicrm.volunteer')),
             'name' => 'volunteer_opp_search',
-            'url' => 'civicrm/a/#/volunteer/opportunities',
+            'url' => 'civicrm/vol/#/volunteer/opportunities',
             'permission' => NULL,
             'operator' => NULL,
             'separator' => 0,
@@ -366,7 +366,7 @@ function _volunteer_civicrm_pageRun_CRM_Event_Page_EventInfo(&$page) {
   // show volunteer button only if user has CiviVolunteer: register to volunteer AND this event has an active project
   if (CRM_Volunteer_Permission::check('register to volunteer') && count($projects)) {
     $project = current($projects);
-    $url = CRM_Utils_System::url('civicrm/a/',
+    $url = CRM_Utils_System::url('civicrm/vol/',
       NULL, // query string
       FALSE, // absolute?
       "/volunteer/opportunities?project={$project->id}&dest=event", // fragment

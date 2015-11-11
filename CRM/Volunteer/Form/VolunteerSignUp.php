@@ -390,7 +390,7 @@ class CRM_Volunteer_Form_VolunteerSignUp extends CRM_Core_Form {
         }
       case 'list':
       default:
-        $path = 'civicrm/a/';
+        $path = 'civicrm/vol/';
         $fragment = '/volunteer/opportunities';
     }
 
