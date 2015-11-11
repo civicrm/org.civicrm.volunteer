@@ -71,7 +71,7 @@
     $scope.locationBlocks = location_blocks.values;
     $scope.locationBlocks[0] = "Create a new Location";
     $scope.locBlock = {};
-    if (!project.profiles || project.profiles.length === 0) {
+    if (_.isEmpty(project.profiles)) {
       $scope.profiles = [{
         "is_active": "1",
         "module": "CiviVolunteer",
