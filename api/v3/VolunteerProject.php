@@ -53,9 +53,7 @@ function civicrm_api3_volunteer_project_create($params) {
     $params['loc_block_id'] = $locBlock['id'];
   }
 
-
   $project = CRM_Volunteer_BAO_Project::create($params);
-
 
   $profiles = civicrm_api3("UFJoin", "get",
     array(
@@ -71,8 +69,7 @@ function civicrm_api3_volunteer_project_create($params) {
     }
   }
 
-
-  return civicrm_api3_create_success($project, $params, 'VolunteerProject', 'create');
+  return civicrm_api3_create_success($project->toArray(), $params, 'VolunteerProject', 'create');
 }
 
 /**

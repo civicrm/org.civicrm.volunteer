@@ -188,8 +188,8 @@
         }
 
         return crmApi('VolunteerProject', 'create', $scope.project).then(function(result) {
-          var projectId = result.values.id;
-          console.log(result);
+          var projectId = result.id;
+
           //Save the LocBlock
           if($scope.locBlockIsDirty) {
             $scope.locBlock.entity_id = projectId;
@@ -245,7 +245,6 @@
 
     $scope.saveAndDone = function() {
       saveProject().then(function(projectId) {
-        console.log(projectId);
         if (projectId) {
           crmUiAlert({text: ts('Changes saved successfully'), title: ts('Saved'), type: 'success'});
           $location.path( "/volunteer/manage" );
