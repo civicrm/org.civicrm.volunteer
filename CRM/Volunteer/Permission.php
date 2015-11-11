@@ -72,7 +72,7 @@ class CRM_Volunteer_Permission extends CRM_Core_Permission {
    * @param int $op
    *   See the constants in CRM_Core_Action.
    * @param int $projectId
-   *   Required except if the operation is an add.
+   *   Required for some but not all operations.
    * @return boolean
    *   TRUE is the action is allowed; else FALSE.
    */
@@ -98,7 +98,7 @@ class CRM_Volunteer_Permission extends CRM_Core_Permission {
           && in_array($contactId, $projectOwners)) {
           return TRUE;
         }
-
+        break;
       case CRM_Core_Action::DELETE:
         if (self::check('delete all volunteer projects')) {
           return TRUE;
@@ -109,15 +109,14 @@ class CRM_Volunteer_Permission extends CRM_Core_Permission {
           && in_array($contactId, $projectOwners)) {
           return TRUE;
         }
-
+        break;
       case CRM_Core_Action::VIEW:
-        if (self::check('register to volunteer')) {
+        if (self::check('register to volunteer') || self::check('edit all volunteer projects')) {
           return TRUE;
         }
-
-      default:
-        return FALSE;
     }
+
+    return FALSE;
   }
 
 }

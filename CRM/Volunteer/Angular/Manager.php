@@ -87,8 +87,7 @@ class VolunteerManager extends Manager {
       foreach ($angularModules as $name => $module) {
         //If the module doesn't request to be part of our page, and isn't a core module
         // that we have included, remove it
-        if ((!array_key_exists("volunteer", $module) || !$module['volunteer']) && $module['ext'] != 'civicrm') {
-          error_log("Removing module: ".$name);
+        if ((!array_key_exists("volunteer", $module) || !$module['volunteer']) && $module['ext'] != 'civicrm' && $module['ext'] != 'org.civicrm.angularprofiles') {
           unset($angularModules[$name]);
         }
       }

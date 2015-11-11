@@ -9,7 +9,7 @@
         // under "resolve".
         resolve: {
           projectData: function(crmApi) {
-            return crmApi('VolunteerProject', 'get', {"sequential": 1});
+            return crmApi('VolunteerProject', 'get', {"sequential": 1, "context": 'edit'});
           },
           volunteerBackbone: function(volBackbone) {
             return volBackbone.load();
