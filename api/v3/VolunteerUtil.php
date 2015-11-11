@@ -120,9 +120,10 @@ function civicrm_api3_volunteer_util_getperms($params) {
 function civicrm_api3_volunteer_util_getsupportingdata($params) {
   $results = array();
 
-  $results['relationship_types'] = CRM_Core_OptionGroup::values(
-    CRM_Volunteer_BAO_ProjectContact::RELATIONSHIP_OPTION_GROUP,
-    FALSE, FALSE, TRUE);
+  $relTypes = civicrm_api3('OptionValue', 'get', array(
+    'option_group_id' => CRM_Volunteer_BAO_ProjectContact::RELATIONSHIP_OPTION_GROUP,
+  ));
+  $results['relationship_types'] = $relTypes['values'];
 
   $results['phone_types'] = CRM_Core_OptionGroup::values("phone_type", FALSE, FALSE, TRUE);
 
