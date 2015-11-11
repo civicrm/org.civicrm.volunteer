@@ -64,7 +64,7 @@ function civicrm_api3_volunteer_project_create($params) {
     ));
 
   foreach($profiles['values'] as $profile) {
-    if(!in_array($profile['id'], $project->profiles)) {
+    if(!in_array($profile['id'], $project->profileIds)) {
       //$result = civicrm_api3("UFJoin", "delete", array("id" => $profile['id']));
       $result = civicrm_api3("VolunteerProject", "removeprofile", array("id" => $profile['id']));
     }

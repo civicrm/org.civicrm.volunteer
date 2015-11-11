@@ -61,6 +61,15 @@ class CRM_Volunteer_BAO_Project extends CRM_Volunteer_DAO_Project {
   private $needs = array();
 
   /**
+   * Array of profile IDs associated with the project.
+   *
+   * TODO: Should this property really be public?
+   *
+   * @var array
+   */
+  public $profileIds = array();
+
+  /**
    * Array of associated Roles. Accessible via __get method.
    *
    * @var array Role labels keyed by IDs
@@ -212,8 +221,6 @@ class CRM_Volunteer_BAO_Project extends CRM_Volunteer_DAO_Project {
     }
 
     $profiles = CRM_Utils_Array::value('profiles', $params, array());
-    $projectProfiles = array();
-
     foreach ($profiles as $profile) {
       $profile['is_active'] = 1;
       $profile['module'] = "CiviVolunteer";
@@ -221,11 +228,9 @@ class CRM_Volunteer_BAO_Project extends CRM_Volunteer_DAO_Project {
       $profile['entity_id'] = $project->id;
       $result = civicrm_api3('UFJoin', 'create', $profile);
       if ($result['is_error'] == 0) {
-        $projectProfiles[] = $result['values'][0]['id'];
+        $project->profileIds[] = $result['values'][0]['id'];
       }
     }
-
-    $project->profiles = $projectProfiles;
 
     return $project;
   }
