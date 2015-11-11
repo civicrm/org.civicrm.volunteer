@@ -14,21 +14,22 @@
             } else {
               return crmApi('VolunteerProject', 'getsingle', {
                 id: $route.current.params.projectId
-              });
+              }).then(
+                // success
+                null,
+                // error
+                function () {
+                  CRM.alert(
+                    ts('No volunteer project exists with an ID of %1', {1: $route.current.params.projectId}),
+                    ts('Not Found'),
+                    'error'
+                  );
+                }
+              );
             }
           },
-          relationship_types: function(crmApi) {
-            return crmApi('OptionValue', 'get', {
-              "sequential": 1,
-              "option_group_id": "volunteer_project_relationship"
-            });
-          },
-          phone_types: function(crmApi) {
-            return crmApi('OptionValue', 'get', {
-              "sequential": 1,
-              "option_group_id": "phone_type",
-              "return": "value,label"
-            });
+          supporting_data: function(crmApi) {
+            return crmApi('VolunteerUtil', 'getsupportingdata');
           },
           relationship_data: function(crmApi, $route) {
             if ($route.current.params.projectId == 0) {
@@ -43,31 +44,6 @@
           location_blocks: function(crmApi) {
             return crmApi('VolunteerProject', 'locations', {});
           },
-          profiles: function(crmApi, $route) {
-            return crmApi('UFJoin', 'get', {
-              entity_id: $route.current.params.projectId,
-              entity_table: "civicrm_volunteer_project",
-              sequential: 1
-            }).then(function(data) {
-              if (data.count > 0) {
-                return data.values;
-              } else {
-                return crmApi('UFGroup', 'getvalue', {
-                  name: "volunteer_sign_up",
-                  "return": "id"
-                }).then(function(data) {
-                  return [{
-                    "is_active": "1",
-                    "module": "CiviVolunteer",
-                    "entity_table": "civicrm_volunteer_project",
-                    "weight": "1",
-                    "uf_group_id": data.result
-                  }];
-                });
-              }
-            });
-          },
-          is_entity: function() { return false; },
           profile_status: function(crmProfiles) {
             return crmProfiles.load();
           }
@@ -77,7 +53,7 @@
   );
 
 
-  angular.module('volunteer').controller('VolunteerProject', function($scope, $location, $q, crmApi, crmStatus, crmUiAlert, crmUiHelp, crmProfiles, project, is_entity, profile_status, relationship_types, relationship_data, profiles, location_blocks, phone_types, volBackbone) {
+  angular.module('volunteer').controller('VolunteerProject', function($scope, $location, $q, crmApi, crmStatus, crmUiAlert, crmUiHelp, crmProfiles, project, profile_status, supporting_data, relationship_data, location_blocks, volBackbone) {
     // The ts() and hs() functions help load strings for this module.
     var ts = $scope.ts = CRM.ts('org.civicrm.volunteer');
     var hs = $scope.hs = crmUiHelp({file: 'CRM/Volunteer/Form/Volunteer'}); // See: templates/CRM/volunteer/Project.hlp
@@ -95,26 +71,34 @@
     $scope.locationBlocks = location_blocks.values;
     $scope.locationBlocks[0] = "Create a new Location";
     $scope.locBlock = {};
-    $scope.profiles = profiles;
+    if (_.isEmpty(project.profiles)) {
+      $scope.profiles = [{
+        "is_active": "1",
+        "module": "CiviVolunteer",
+        "entity_table": "civicrm_volunteer_project",
+        "weight": "1",
+        "uf_group_id": supporting_data.values.default_profile
+      }];
+    } else {
+      $scope.profiles = project.profiles;
+    }
     $scope.relationships = relationships;
-    $scope.relationship_types = relationship_types.values;
-    $scope.phone_types = phone_types.values;
+    $scope.relationship_types = supporting_data.values.relationship_types;
+    $scope.phone_types = supporting_data.values.phone_types;
     $scope.profile_status = profile_status;
-    $scope.is_entity = is_entity;
     project.is_active = (project.is_active === "1");
     $scope.project = project;
 
 
     $scope.refreshLocBlock = function() {
       if (!!$scope.project.loc_block_id) {
-        crmApi("LocBlock", "get", {
+        crmApi("VolunteerProject", "getlocblockdata", {
           "return": "all",
           "sequential": 1,
           "id": $scope.project.loc_block_id
         }).then(function(result) {
           if(!result.is_error) {
             $scope.locBlock = result.values[0];
-
           } else {
             CRM.alert(result.error);
           }
@@ -193,100 +177,60 @@
     saveProject = function() {
       if ($scope.validateProject()) {
 
-        var pReqs = {};
-
         if($scope.project.loc_block_id == 0) {
           $scope.locBlockIsDirty = true;
-          pReqs.locBlock = crmApi('LocBlock', 'create');
         }
 
-        return $q.all(pReqs).then(function(pReqResults) {
+        return crmApi('VolunteerProject', 'create', $scope.project).then(function(result) {
+          var projectId = result.id;
 
-          if($scope.project.loc_block_id == 0) {
-            $scope.project.loc_block_id = pReqResults.locBlock.id;
+          //Save the LocBlock
+          if($scope.locBlockIsDirty) {
+            $scope.locBlock.entity_id = projectId;
+            $scope.locBlock.id = result.values.loc_block_id;
+            crmApi('VolunteerProject', 'savelocblock', $scope.locBlock);
           }
 
-          return crmApi('VolunteerProject', 'create', $scope.project).then(function(result) {
-            var projectId = result.id;
 
-
-            //Save the LocBlock
-            if($scope.locBlockIsDirty) {
-              $scope.locBlock.entity_id = projectId;
-              $scope.locBlock.id = $scope.project.loc_block_id;
-              crmApi('VolunteerProject', 'savelocblock', $scope.locBlock);
+          //save the relationships
+          var rPromises = [];
+          $.each($scope.relationships, function(rType, rData) {
+            if(typeof(rData) === "string") {
+              rData = rData.split(",");
             }
-
-
-            //save the relationships
-            var rPromises = [];
-            $.each($scope.relationships, function(rType, rData) {
-              if(typeof(rData) === "string") {
-                rData = rData.split(",");
+            $.each(rData, function (index, contactId) {
+              if(contactId && (!originalRelationships.hasOwnProperty(rType) || originalRelationships[rType].indexOf(contactId) === -1)) {
+                rPromises.push(crmApi("VolunteerProjectContact", "create", {project_id: projectId, relationship_type_id: rType, contact_id: contactId}));
               }
-              $.each(rData, function (index, contactId) {
-                if(contactId && (!originalRelationships.hasOwnProperty(rType) || originalRelationships[rType].indexOf(contactId) === -1)) {
-                  rPromises.push(crmApi("VolunteerProjectContact", "create", {project_id: projectId, relationship_type_id: rType, contact_id: contactId}));
-                }
-              });
             });
-
-            $q.all(rPromises).then(function(x) {
-              //Remove the extraneous relationships
-              crmApi('VolunteerProjectContact', 'get', {
-                "project_id": projectId
-              }).then(function(result) {
-                if (result.count > 0) {
-
-                  var rels = {};
-                  $.each($scope.relationships, function (rType, rTypeData) {
-                    if(typeof(rTypeData) === "string") {
-                      rels[rType] = rTypeData.split(",");
-                    } else {
-                      rels[rType] = rTypeData;
-                    }
-                  });
-
-                  $.each(result.values, function (index, relation) {
-                    if (!rels.hasOwnProperty(relation.relationship_type_id) || rels[relation.relationship_type_id].indexOf(relation.contact_id) === -1) {
-                      crmApi("VolunteerProjectContact", "delete", {"id": relation.id});
-                    }
-                  });
-                }
-              });
-            });
-
-
-            //save the profiles
-            var savedProfileIds = [];
-            var pPromises = [];
-            $($scope.profiles).each(function(index, profile) {
-              profile.entity_id = projectId;
-              pPromises.push(
-                crmApi("UFJoin", "create", profile).then(function(data) {
-                  savedProfileIds.push(data.values[0].id);
-                })
-              );
-            });
-
-            //remove profiles no longer needed
-            $q.all(pPromises).then(function() {
-              crmApi('UFJoin', 'get', {
-                "sequential": 1,
-                "module": "CiviVolunteer",
-                entity_id: projectId,
-                entity_table: 'civicrm_volunteer_project',
-                id: {"NOT IN": savedProfileIds}
-              }).then(function(result) {
-                $.each(result.values, function(index, profile) {
-                  //todo: This is implemented in civiVol but should be added to core.
-                  crmApi("VolunteerProject", "removeprofile", {id: profile.id});
-                });
-              });
-            });
-
-            return projectId;
           });
+
+          $q.all(rPromises).then(function(x) {
+            //Remove the extraneous relationships
+            crmApi('VolunteerProjectContact', 'get', {
+              "project_id": projectId
+            }).then(function(result) {
+              if (result.count > 0) {
+
+                var rels = {};
+                $.each($scope.relationships, function (rType, rTypeData) {
+                  if(typeof(rTypeData) === "string") {
+                    rels[rType] = rTypeData.split(",");
+                  } else {
+                    rels[rType] = rTypeData;
+                  }
+                });
+
+                $.each(result.values, function (index, relation) {
+                  if (!rels.hasOwnProperty(relation.relationship_type_id) || rels[relation.relationship_type_id].indexOf(relation.contact_id) === -1) {
+                    crmApi("VolunteerProjectContact", "delete", {"id": relation.id});
+                  }
+                });
+              }
+            });
+          });
+
+          return projectId;
         });
       } else {
         return false;

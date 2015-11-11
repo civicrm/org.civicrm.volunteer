@@ -46,7 +46,32 @@
  * @access public
  */
 function civicrm_api3_volunteer_project_create($params) {
-  return _civicrm_api3_basic_create(_civicrm_api3_get_BAO(__FUNCTION__), $params);
+
+  //Create a locBlock if we need to
+  if(array_key_exists("loc_block_id", $params) && $params['loc_block_id'] == 0) {
+    $locBlock = civicrm_api3("LocBlock", "create");
+    $params['loc_block_id'] = $locBlock['id'];
+  }
+
+
+  $project = CRM_Volunteer_BAO_Project::create($params);
+
+
+  $profiles = civicrm_api3("UFJoin", "get",
+    array(
+      "entity_id" => $project->id,
+      "entity_table" => "civicrm_volunteer_project"
+    ));
+
+  foreach($profiles['values'] as $profile) {
+    if(!in_array($profile['id'], $project->profileIds)) {
+      //$result = civicrm_api3("UFJoin", "delete", array("id" => $profile['id']));
+      $result = civicrm_api3("VolunteerProject", "removeprofile", array("id" => $profile['id']));
+    }
+  }
+
+
+  return civicrm_api3_create_success($project, $params, 'VolunteerProject', 'create');
 }
 
 /**
@@ -95,6 +120,13 @@ function civicrm_api3_volunteer_project_get($params) {
   $result = CRM_Volunteer_BAO_Project::retrieve($params);
   foreach ($result as $k => $dao) {
     $result[$k] = $dao->toArray();
+
+    $profiles = civicrm_api3("UFJoin", "get", array(
+      "entity_id" => $dao->id,
+      "entity_table" => "civicrm_volunteer_project",
+      "sequential" => 1
+    ));
+    $result[$k]['profiles'] = $profiles['values'];
   }
 
   return civicrm_api3_create_success($result, $params, 'VolunteerProject', 'get');
@@ -123,6 +155,7 @@ function _civicrm_api3_volunteer_project_get_spec(&$params) {
     'type' => CRM_Utils_Type::T_STRING,
   );
 }
+
 /**
  * delete an existing project
  *
@@ -180,10 +213,31 @@ ORDER BY sp.name, ca.city, ca.street_address ASC
 
   $dao = CRM_Core_DAO::executeQuery($query);
   while ($dao->fetch()) {
+    //todo: Some sort of per-location permission check
     $locations[$dao->id] = $dao->title;
   }
 
   return civicrm_api3_create_success($locations, $params, 'VolunteerProject', 'locations');
+}
+
+/**
+ * This method provides all data for a selected LocBlock
+ *
+ * @param $params
+ * @return array
+ *
+ */
+function civicrm_api3_volunteer_project_getlocblockdata($params) {
+  //todo: Check permissions
+  unset($params['check_permissions']);
+
+  $result = civicrm_api3("LocBlock", "get", $params);
+
+  return $result;
+}
+
+function civicrm_api3_volunteer_project_getlocblockdata_spec($params) {
+  $params['id']['api.required'] = 1;
 }
 
 
@@ -252,6 +306,8 @@ function civicrm_api3_volunteer_project_savelocblock($params) {
 
   $locBlockData['entity_table'] = 'civicrm_volunteer_project';
   $locBlockData['entity_id'] = $params['entity_id'];
+
+  //Todo: Check Permissions
   $location = CRM_Core_BAO_Location::create($locBlockData, TRUE, 'VolunteerProject');
 
   return civicrm_api3_create_success($location['id'], "VolunteerProject", "SaveLocBlock", $params);
