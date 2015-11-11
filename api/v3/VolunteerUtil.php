@@ -131,3 +131,14 @@ function civicrm_api3_volunteer_util_getsupportingdata($params) {
 
   return civicrm_api3_create_success($results, "VolunteerUtil", "getsupportingdata", $params);
 }
+
+/**
+ * This method returns a list of active campaigns
+ *
+ * @param array $params
+ *   Not presently used.
+ * @return array
+ */
+function civicrm_api3_volunteer_util_getcampaigns($params) {
+  return civicrm_api3('Campaign', 'get', array("return" =>"title,id", "is_active" => 1));
+}

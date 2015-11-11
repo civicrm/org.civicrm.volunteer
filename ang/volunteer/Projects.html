@@ -24,20 +24,11 @@
               <input crm-ui-id="volProjectSearchForm.title" ng-model="searchParams.title" />
             </div>
             <div crm-ui-field="{name: 'volProjectSearchForm.campaign', title: ts('Campaign')}">
-              <input
-                crm-entityref="{
-              entity: 'Campaign',
-              select: {
-                minimumInputLength: 0,
-                placeholder: ts('Search for a Campaign')
-              }
-            }"
-                crm-ui-id="volProjectSearchForm.campaign"
-                type="text"
-                name="campaign"
-                ng-model="searchParams.campaign"
-                class="big crm-form-text"
-                />
+              <select class="big crm-form-select crm-vol-campaign" crm-ui-select="{placeholder: ts('Search for a Campaign'), allowClear:true}"
+                      ng-change="clearCampaign()"
+                      ng-options="key as value.title for (key , value) in campaigns" ng-model="searchParams.campaign">
+                <option />
+              </select>
             </div>
           </div>
         </fieldset>

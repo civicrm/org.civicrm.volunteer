@@ -3,6 +3,7 @@
   <div crm-ui-debug="relationships"></div>
   <div crm-ui-debug="profiles"></div>
   <div crm-ui-debug="locBlock"></div>
+  <div crm-ui-debug="campaigns"></div>
   <div id="backboneIncludes"></div>
 
   <form class="crm-form-block" name="projectForm" crm-ui-id-scope>
@@ -21,10 +22,10 @@
       </div>
 
       <div class="crm-vol-campaign" crm-ui-field='{name: "projectForm.campaign_id", title: ts("Campaign")}'>
-        <input
-          class="big crm-form-text" crm-ui-id="projectForm.campaign_id"
-          crm-entityref="{entity: 'Campaign', select: {allowClear:true, minimumInputLength: 0}}"
-          ng-model="project.campaign_id" />
+        <select class="big crm-form-select crm-vol-campaign" crm-ui-select="{placeholder: '', allowClear:true}"
+                ng-options="key as value.title for (key , value) in campaigns" ng-model="project.campaign_id">
+          <option />
+        </select>
       </div>
 
       <div class="crm-vol-location" crm-ui-field='{name: "projectForm.locBlock", title: ts("Location")}'>
