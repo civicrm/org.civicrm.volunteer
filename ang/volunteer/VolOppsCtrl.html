@@ -21,14 +21,14 @@ Required vars: volOppData, searchParams
             <input crm-ui-id="volOppSearchForm.date_end" crm-ui-datepicker="{time: false}" ng-model="searchParams().date_end" />
           </div>
 
-          <div crm-ui-field="{name: 'volOppSearchForm.role', title: ts('Role')}" class="crm-vol-opp-role">
+          <div crm-ui-field="{name: 'volOppSearchForm.role_id', title: ts('Role')}" class="crm-vol-opp-role">
             <select
-              crm-ui-id="volOppSearchForm.role"
+              crm-ui-id="volOppSearchForm.role_id"
               crm-ui-select="{minimumInputLength: 0, placeholder: ts('Select Volunteer Roles')}"
               type="text"
               multiple="multiple"
-              name="role"
-              ng-model="searchParams().role"
+              name="role_id"
+              ng-model="searchParams().role_id"
               ng-options="key as value for (key , value) in  roles"
               class="big crm-form-text">
             <option />
