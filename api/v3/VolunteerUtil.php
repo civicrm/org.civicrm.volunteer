@@ -1,4 +1,5 @@
 <?php
+
 /**
  * This file is used to collect util API functions not related to any particular
  * CiviCRM entity. Since so much of the interface has moved to the client side,
@@ -7,7 +8,6 @@
  * @package CiviVolunteer_APIv3
  * @subpackage API_Volunteer_Project
  */
-
 
 /**
  * This function will return the needed pieces to load up the backbone/
@@ -78,8 +78,8 @@ function civicrm_api3_volunteer_util_loadbackbone($params) {
         'RENEW' => 32768,
         'DETACH' => 65536,
         'REVERT' => 131072,
-        'CLOSE' =>  262144,
-        'REOPEN' =>  524288,
+        'CLOSE' => 262144,
+        'REOPEN' => 524288,
         'MAX_ACTION' => 1048575,
       ),
     ),
@@ -98,7 +98,7 @@ function civicrm_api3_volunteer_util_loadbackbone($params) {
 function civicrm_api3_volunteer_util_getperms($params) {
   $results = array();
 
-  foreach(CRM_Volunteer_Permission::getVolunteerPermissions() as $k => $v) {
+  foreach (CRM_Volunteer_Permission::getVolunteerPermissions() as $k => $v) {
     $results[] = array(
       'description' => $v[1],
       'label' => $v[0],
@@ -135,14 +135,17 @@ function civicrm_api3_volunteer_util_getsupportingdata($params) {
 
   $controller = CRM_Utils_Array::value('controller', $params);
   if ($controller === 'VolunteerProject') {
-  $relTypes = civicrm_api3('OptionValue', 'get', array(
-    'option_group_id' => CRM_Volunteer_BAO_ProjectContact::RELATIONSHIP_OPTION_GROUP,
-  ));
-  $results['relationship_types'] = $relTypes['values'];
+    $relTypes = civicrm_api3('OptionValue', 'get', array(
+      'option_group_id' => CRM_Volunteer_BAO_ProjectContact::RELATIONSHIP_OPTION_GROUP,
+    ));
+    $results['relationship_types'] = $relTypes['values'];
 
-  $results['phone_types'] = CRM_Core_OptionGroup::values("phone_type", FALSE, FALSE, TRUE);
+    $results['phone_types'] = CRM_Core_OptionGroup::values("phone_type", FALSE, FALSE, TRUE);
 
-  $results['default_profile'] = civicrm_api3('UFGroup', 'getvalue', array("name" =>"volunteer_sign_up", "return" => "id"));
+    $results['default_profile'] = civicrm_api3('UFGroup', 'getvalue', array(
+      "name" => "volunteer_sign_up",
+      "return" => "id"
+    ));
   }
 
   return civicrm_api3_create_success($results, "VolunteerUtil", "getsupportingdata", $params);
@@ -156,10 +159,13 @@ function civicrm_api3_volunteer_util_getsupportingdata($params) {
  * @return array
  */
 function civicrm_api3_volunteer_util_getcampaigns($params) {
-  return civicrm_api3('Campaign', 'get', array("return" =>"title,id", "is_active" => 1));
+  return civicrm_api3('Campaign', 'get', array(
+    "return" => "title,id",
+    "is_active" => 1
+  ));
 }
 
-/*
+/**
  * This function returns the enabled countries in CiviCRM.
  *
  * @param array $params
@@ -179,11 +185,10 @@ function civicrm_api3_volunteer_util_getcountries($params) {
   ));
 
   $results = $countries['values'];
-  foreach($results as $k => $country) {
+  foreach ($results as $k => $country) {
     // since we are wrapping CiviCRM's API, and it provides even boolean data
     // as quoted strings, we'll do the same
-    $results[$k]['is_default'] =
-      ($country['id'] === $settings['values'][0]['defaultContactCountry']) ? "1" : "0";
+    $results[$k]['is_default'] = ($country['id'] === $settings['values'][0]['defaultContactCountry']) ? "1" : "0";
   }
 
   return civicrm_api3_create_success($results, "VolunteerUtil", "getcountries", $params);
