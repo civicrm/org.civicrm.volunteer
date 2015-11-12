@@ -77,7 +77,9 @@ function civicrm_api3_volunteer_need_get($params) {
   if (!empty($result['values'])) {
     foreach ($result['values'] as &$need) {
       if (!empty($need['start_time'])) {
-        $need['display_time'] = CRM_Volunteer_BAO_Need::getTimes($need['start_time'], CRM_Utils_Array::value('duration', $need), $need['end_time']);
+        $need['display_time'] = CRM_Volunteer_BAO_Need::getTimes($need['start_time'],
+          CRM_Utils_Array::value('duration', $need),
+          CRM_Utils_Array::value('end_time', $need));
       }
       else {
         $need['display_time'] = ts('Flexible', array('domain' => 'org.civicrm.volunteer'));
@@ -108,6 +110,60 @@ function civicrm_api3_volunteer_need_get($params) {
 function _civicrm_api3_volunteer_need_get_spec(&$params) {
   // this alias facilitates chaining from api.volunteer_project.get
   $params['volunteer_need_project_id']['api.aliases'] = array('volunteer_project_id');
+}
+
+function _civicrm_api3_volunteer_need_getsearchresult_spec(&$params) {
+  $params['beneficiary'] = array(
+    'title' => 'Project Beneficiary',
+    'description' => 'Contacts which benefit from a Volunteer Project. (An
+      int-like string, a comma-separated list thereof, or an array representing
+      one or more contact IDs who benefit from the Needs.)',
+    'type' => CRM_Utils_Type::T_INT,
+  );
+  $params['project'] = array(
+    'title' => 'Volunteer Project',
+    'description' => 'Volunteer Project ID',
+    'type' => CRM_Utils_Type::T_INT,
+  );
+  $params['proximity'] = array(
+    'title' => 'Proximity',
+    'description' => 'Array of parameters (lat, lon, radius, unit) by which to
+      geographically limit results. See CRM_Volunteer_BAO_Project::retrieve().
+      This parameter is used for filtering only; project contacts are not returned.',
+    'type' => CRM_Utils_Type::T_STRING,
+  );
+  $params['role_id'] = array(
+    'title' => 'Role',
+    'description' => 'The role the volunteer will perform in the project. (An
+      int-like string, a comma-separated list thereof, or an array representing
+      one or more contact IDs who benefit from the Needs.)',
+    'type' => CRM_Utils_Type::T_STRING,
+  );
+  $params['date_start'] = array(
+    'title' => 'Start Date',
+    'description' => 'Used to filter Needs. Needs before this date won\'t be returned.',
+    'type' => CRM_Utils_Type::T_DATE,
+  );
+  $params['date_end'] = array(
+    'title' => 'End Date',
+    'description' => 'Used to filter Needs. Needs after this date won\'t be returned.',
+    'type' => CRM_Utils_Type::T_DATE,
+  );
+}
+
+/**
+ * Returns the results of a search.
+ *
+ * This API is used with the volunteer opportunities search UI.
+ *
+ * @param array $params
+ *   See CRM_Volunteer_BAO_NeedSearch::doSearch().
+ *
+ * @return array
+ */
+function civicrm_api3_volunteer_need_getsearchresult($params) {
+  $result = CRM_Volunteer_BAO_NeedSearch::doSearch($params);
+  return civicrm_api3_create_success($result, $params, 'VolunteerNeed', 'getsearchresult');
 }
 
 /**

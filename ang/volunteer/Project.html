@@ -4,6 +4,7 @@
   <div crm-ui-debug="profiles"></div>
   <div crm-ui-debug="locBlock"></div>
   <div crm-ui-debug="campaigns"></div>
+  <div crm-ui-debug="countries"></div>
   <div id="backboneIncludes"></div>
 
   <form class="crm-form-block" name="projectForm" crm-ui-id-scope>
@@ -54,6 +55,15 @@
               <input size="9" crm-ui-id="projectForm.locBlock.postal" ng-change="locBlockDirty()" ng-model="locBlock.address.postal_code" />
               -
               <input size="5" crm-ui-id="projectForm.locBlock.postal_code_suffix" ng-change="locBlockDirty()" ng-model="locBlock.address.postal_code_suffix" />
+            </div>
+            <div class="crm-vol-location-country" crm-ui-field="{name: 'projectForm.locBlock.country', title: ts('Country')}">
+              <select
+                class="big crm-form-select"
+                crm-ui-id="projectForm.locBlock.country"
+                crm-ui-select="{allowClear: false}"
+                ng-model="locBlock.address.country"
+                ng-options="k as v.name for (k, v) in countries">
+              </select>
             </div>
           </fieldset>
           <fieldset class="crm-vol-location-phone">

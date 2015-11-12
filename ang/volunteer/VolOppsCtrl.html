@@ -21,25 +21,18 @@ Required vars: volOppData, searchParams
             <input crm-ui-id="volOppSearchForm.date_end" crm-ui-datepicker="{time: false}" ng-model="searchParams().date_end" />
           </div>
 
-          <div crm-ui-field="{name: 'volOppSearchForm.role', title: ts('Role')}" class="crm-vol-opp-role">
-            <input
-              crm-entityref="{
-                entity: 'OptionValue',
-                select: {
-                  minimumInputLength: 0,
-                  placeholder: ts('Select Volunteer Roles'),
-                  multiple: true
-                },
-                api: {
-                  params: {option_group_id: 'volunteer_role'}
-                }
-              }"
-              crm-ui-id="volOppSearchForm.role"
+          <div crm-ui-field="{name: 'volOppSearchForm.role_id', title: ts('Role')}" class="crm-vol-opp-role">
+            <select
+              crm-ui-id="volOppSearchForm.role_id"
+              crm-ui-select="{minimumInputLength: 0, placeholder: ts('Select Volunteer Roles')}"
               type="text"
-              name="role"
-              ng-model="searchParams().role"
-              class="big crm-form-text"
-            />
+              multiple="multiple"
+              name="role_id"
+              ng-model="searchParams().role_id"
+              ng-options="key as value for (key , value) in  roles"
+              class="big crm-form-text">
+            <option />
+          </select>
           </div>
           <div crm-ui-field="{name: 'volOppSearchForm.beneficiary', title: ts('Beneficiary')}" class="crm-vol-opp-beneficiary">
             <!--
@@ -143,13 +136,13 @@ Required vars: volOppData, searchParams
           </tr>
         </thead>
         <tbody>
-          <tr ng-repeat="need in shoppingCart()" ng-init="project = volOppData().projects[need.project_id]" role="row">
+          <tr ng-repeat="need in shoppingCart()" role="row">
             <td class="crm-vol-opp-project">
-              {{project.title}}
+              {{need.project.title}}
               <span
                 class="icon ui-icon-comment"
-                ng-show="project.description"
-                ng-click="showProjectDescription(project)">
+                ng-show="need.project.description"
+                ng-click="showProjectDescription(need.project)">
               </span>
             </td>
             <td class="crm-vol-opp-role">{{need.role_label}}
@@ -182,11 +175,11 @@ Required vars: volOppData, searchParams
   <div class="clear"></div>
 
   <!-- Results -->
-  <div class="crm-vol-opp-results messages status no-popup" ng-show="_.size(volOppData().needs) === 0">
+  <div class="crm-vol-opp-results messages status no-popup" ng-show="_.size(volOppData()) === 0">
     <div class="icon inform-icon"></div>
     {{ts('No results found. Please try different search criteria.')}}
   </div>
-  <div class="crm-vol-opp-results" ng-show="_.size(volOppData().needs) > 0">
+  <div class="crm-vol-opp-results" ng-show="_.size(volOppData()) > 0">
     <h2>{{ts('Available Volunteer Opportunities')}}</h2>
     <p class="description">
       {{ts('For additional project or role detail, click the corresponding detail icon in the table below.')}}
@@ -203,17 +196,17 @@ Required vars: volOppData, searchParams
       </tr>
       </thead>
       <tbody>
-        <tr ng-repeat="need in volOppData().needs" ng-init="project = volOppData().projects[need.project_id]" role="row">
+        <tr ng-repeat="need in volOppData()" role="row">
           <td class="crm-vol-opp-project">
-            {{project.title}}
+            {{need.project.title}}
             <span
               class="icon ui-icon-comment"
-              ng-show="project.description"
-              ng-click="showProjectDescription(project)">
+              ng-show="need.project.description"
+              ng-click="showProjectDescription(need.project)">
             </span>
         </td>
         <td class="crm-vol-opp-beneficiary">
-          <span class="beneficiary" ng-repeat="ben in project.beneficiaries">{{ben.display_name}}</span>
+          <span class="beneficiary" ng-repeat="ben in need.project.beneficiaries">{{ben.display_name}}</span>
         </td>
         <td class="crm-vol-opp-role">{{need.role_label}}
             <span

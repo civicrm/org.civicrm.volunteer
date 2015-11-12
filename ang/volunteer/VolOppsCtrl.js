@@ -7,32 +7,21 @@
       reloadOnSearch: false,
       templateUrl: '~/volunteer/VolOppsCtrl.html',
       resolve: {
-        // TODO: this code is reusable; where should it live?
         countries: function(crmApi) {
-          var settings = crmApi('Setting', 'get', {
-            "return": ["countryLimit", "defaultContactCountry"],
-            sequential: 1
+          return crmApi('VolunteerUtil', 'getcountries', {}).then(function(result) {
+            return result.values;
           });
-
-          return settings.then(function (settingsData) {
-            var countries = crmApi('Country', 'get', {
-              id: {IN: settingsData.values[0].countryLimit}
-            });
-
-            return countries.then(function (countriesData) {
-              angular.forEach(countriesData.values, function(c) {
-                // since we are wrapping CiviCRM's API, and it provides even boolean data as quoted strings, we'll do the same
-                countriesData.values[c.id].is_default = (c.id === settingsData.values[0].defaultContactCountry) ? "1" : "0";
-              });
-              return countriesData.values;
-            });
+        },
+        supporting_data: function(crmApi) {
+          return crmApi('VolunteerUtil', 'getsupportingdata', {
+            controller: 'VolOppsCtrl'
           });
         }
       }
     });
   });
 
-  angular.module('volunteer').controller('VolOppsCtrl', function ($route, $scope, $window, crmStatus, crmUiHelp, volOppSearch, countries) {
+  angular.module('volunteer').controller('VolOppsCtrl', function ($route, $scope, $window, crmStatus, crmUiHelp, volOppSearch, countries, supporting_data) {
     // The ts() and hs() functions help load strings for this module.
     var ts = $scope.ts = CRM.ts('org.civicrm.volunteer');
     var hs = $scope.hs = crmUiHelp({file: 'ang/VolOppsCtrl'}); // See: templates/ang/VolOppsCtrl.hlp
@@ -43,6 +32,7 @@
     volOppSearch.search();
 
     $scope.countries = countries;
+    $scope.roles = supporting_data.values.roles;
     $scope.searchParams = volOppSearch.getParams;
     $scope.volOppData = volOppSearch.getResult;
 
@@ -104,14 +94,14 @@
       }
 
       if (project.hasOwnProperty('location')) {
-        if (!_.isEmpty(project.location.streetAddress)) {
-          addressBlock += project.location.streetAddress + '<br />';
+        if (!_.isEmpty(project.location.street_address)) {
+          addressBlock += project.location.street_address + '<br />';
         }
         if (!_.isEmpty(project.location.city)) {
           addressBlock += project.location.city + '<br />';
         }
-        if (!_.isEmpty(project.location.postalCode)) {
-          addressBlock += project.location.postalCode;
+        if (!_.isEmpty(project.location.postal_code)) {
+          addressBlock += project.location.postal_code;
         }
       }
       if (!_.isEmpty(addressBlock)) {
