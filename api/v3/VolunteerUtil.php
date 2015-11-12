@@ -110,16 +110,31 @@ function civicrm_api3_volunteer_util_getperms($params) {
   return civicrm_api3_create_success($results, "VolunteerUtil", "getperms", $params);
 }
 
+function _civicrm_api3_volunteer_util_getsupportingdata_spec(&$params) {
+  $params['controller'] = array(
+    'title' => 'Controller',
+    'description' => 'For which Angular controller is supporting data required?',
+    'type' => CRM_Utils_Type::T_STRING,
+    'api.required' => 1,
+  );
+}
+
 /**
- * This function returns supporting data for editing a volunteer project.
+ * This function returns supporting data for various JavaScript-driven interfaces.
+ *
+ * The purpose of this API is to provide limited access to general-use APIs to
+ * facilitate building user interfaces without having to grant users access to
+ * APIs they otherwise shouldn't be able to access.
  *
  * @param array $params
- *   Not presently used.
+ *   @see _civicrm_api3_volunteer_util_getsupportingdata_spec()
  * @return array
  */
 function civicrm_api3_volunteer_util_getsupportingdata($params) {
   $results = array();
 
+  $controller = CRM_Utils_Array::value('controller', $params);
+  if ($controller === 'VolunteerProject') {
   $relTypes = civicrm_api3('OptionValue', 'get', array(
     'option_group_id' => CRM_Volunteer_BAO_ProjectContact::RELATIONSHIP_OPTION_GROUP,
   ));
@@ -128,6 +143,7 @@ function civicrm_api3_volunteer_util_getsupportingdata($params) {
   $results['phone_types'] = CRM_Core_OptionGroup::values("phone_type", FALSE, FALSE, TRUE);
 
   $results['default_profile'] = civicrm_api3('UFGroup', 'getvalue', array("name" =>"volunteer_sign_up", "return" => "id"));
+  }
 
   return civicrm_api3_create_success($results, "VolunteerUtil", "getsupportingdata", $params);
 }

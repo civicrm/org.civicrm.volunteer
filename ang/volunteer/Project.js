@@ -34,7 +34,9 @@
             }
           },
           supporting_data: function(crmApi) {
-            return crmApi('VolunteerUtil', 'getsupportingdata');
+            return crmApi('VolunteerUtil', 'getsupportingdata', {
+              controller: 'VolunteerProject'
+            });
           },
           campaigns: function(crmApi) {
             return crmApi('VolunteerUtil', 'getcampaigns').then(function(data) {
