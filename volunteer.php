@@ -545,6 +545,7 @@ function volunteer_civicrm_alterAPIPermissions($entity, $action, &$params, &$per
 function _isVolListingApiCall($entity, $action) {
   $actions = array(
     'get',
+    'getcountries',
     'getlist',
     'getsingle',
     'getperms'

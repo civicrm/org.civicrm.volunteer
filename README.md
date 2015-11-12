@@ -22,7 +22,8 @@ form as part of your public event. A "Volunteer Now" button will appear on your 
 info page (next to the "Register" button). Volunteers can select a shift or let you
 know that they are available for any shift.
 
-You will need to enable the "CiviVolunteer: register to volunteer permission" if you
+You will need to enable the "CiviVolunteer: register to volunteer" and
+"CiviCRM: access AJAX API" permissions if you
 want to provide self-service signup for anonymous and/or authenticated users.
 (Joomla users should see [Known Issues](#known-issues) for more information about
 permissions.)
