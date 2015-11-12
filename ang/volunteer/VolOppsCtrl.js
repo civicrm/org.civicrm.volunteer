@@ -11,12 +11,17 @@
           return crmApi('VolunteerUtil', 'getcountries', {}).then(function(result) {
             return result.values;
           });
+        },
+        supporting_data: function(crmApi) {
+          return crmApi('VolunteerUtil', 'getsupportingdata', {
+            controller: 'VolOppsCtrl'
+          });
         }
       }
     });
   });
 
-  angular.module('volunteer').controller('VolOppsCtrl', function ($route, $scope, $window, crmStatus, crmUiHelp, volOppSearch, countries) {
+  angular.module('volunteer').controller('VolOppsCtrl', function ($route, $scope, $window, crmStatus, crmUiHelp, volOppSearch, countries, supporting_data) {
     // The ts() and hs() functions help load strings for this module.
     var ts = $scope.ts = CRM.ts('org.civicrm.volunteer');
     var hs = $scope.hs = crmUiHelp({file: 'ang/VolOppsCtrl'}); // See: templates/ang/VolOppsCtrl.hlp
@@ -27,6 +32,7 @@
     volOppSearch.search();
 
     $scope.countries = countries;
+    $scope.roles = supporting_data.values.roles;
     $scope.searchParams = volOppSearch.getParams;
     $scope.volOppData = volOppSearch.getResult;
 

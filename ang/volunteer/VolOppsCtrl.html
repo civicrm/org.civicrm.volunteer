@@ -22,24 +22,17 @@ Required vars: volOppData, searchParams
           </div>
 
           <div crm-ui-field="{name: 'volOppSearchForm.role', title: ts('Role')}" class="crm-vol-opp-role">
-            <input
-              crm-entityref="{
-                entity: 'OptionValue',
-                select: {
-                  minimumInputLength: 0,
-                  placeholder: ts('Select Volunteer Roles'),
-                  multiple: true
-                },
-                api: {
-                  params: {option_group_id: 'volunteer_role'}
-                }
-              }"
+            <select
               crm-ui-id="volOppSearchForm.role"
+              crm-ui-select="{minimumInputLength: 0, placeholder: ts('Select Volunteer Roles')}"
               type="text"
+              multiple="multiple"
               name="role"
               ng-model="searchParams().role"
-              class="big crm-form-text"
-            />
+              ng-options="key as value for (key , value) in  roles"
+              class="big crm-form-text">
+            <option />
+          </select>
           </div>
           <div crm-ui-field="{name: 'volOppSearchForm.beneficiary', title: ts('Beneficiary')}" class="crm-vol-opp-beneficiary">
             <!--

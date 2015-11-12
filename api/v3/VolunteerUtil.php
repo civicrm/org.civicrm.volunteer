@@ -148,6 +148,10 @@ function civicrm_api3_volunteer_util_getsupportingdata($params) {
     ));
   }
 
+  if ($controller === 'VolOppsCtrl') {
+    $results['roles'] = CRM_Core_OptionGroup::values('volunteer_role', FALSE, FALSE, TRUE);
+  }
+
   return civicrm_api3_create_success($results, "VolunteerUtil", "getsupportingdata", $params);
 }
 

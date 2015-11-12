@@ -548,6 +548,7 @@ function _isVolListingApiCall($entity, $action) {
     'getcountries',
     'getlist',
     'getsingle',
+    'getsupportingdata',
     'getperms'
   );
   $entities = array('volunteer_project_contact', 'volunteer_need', 'volunteer_project', 'volunteer_util');
