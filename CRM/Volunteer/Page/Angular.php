@@ -34,6 +34,11 @@ class CRM_Volunteer_Page_Angular extends Civi\Angular\Page\Main {
     // FIXME: crmUi depends on loading ckeditor, but ckeditor doesn't work with this aggregation.
     $this->res->addScriptFile('civicrm', 'packages/ckeditor/ckeditor.js', 100, 'page-header', FALSE);
 
+    //Add jquery Notify
+    $this->res->addScriptFile('civicrm', 'packages/jquery/plugins/jquery.notify.min.js', -9990, 'html-header', FALSE);
+
+
+
     $headOffset = 0;
     $config = \CRM_Core_Config::singleton();
     if ($config->debug) {
