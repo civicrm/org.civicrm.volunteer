@@ -9,6 +9,15 @@
     <div class="content">{$form.details.html}</div>
   </div>
 
+  <table>
+      <tr><th>Role</th><th>Date and Time</th></tr>
+    {foreach from=$volunteerNeeds key=key item=volunteerNeed}
+    <tr>
+        <td>{$volunteerNeed.role_label}</td>
+        <td>{$volunteerNeed.display_time}</td>
+    </tr>
+    {/foreach}
+  </table>
   <div>
     {include file="CRM/common/formButtons.tpl" location="bottom"}
   </div>
