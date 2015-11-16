@@ -520,6 +520,7 @@ function volunteer_civicrm_alterAPIPermissions($entity, $action, &$params, &$per
   $permissions['volunteer_project']['get'] = array('register to volunteer');
   $permissions['volunteer_project']['getlocblockdata'] = array('edit own volunteer projects');
   $permissions['volunteer_util']['default'] = array('edit own volunteer projects');
+  $permissions['volunteer_project_contact']['default'] = array('edit own volunteer projects');
 
 
   // allow fairly liberal access to the volunteer opp listing UI, which uses lots of API calls
