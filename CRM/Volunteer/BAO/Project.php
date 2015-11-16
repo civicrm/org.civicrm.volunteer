@@ -450,7 +450,7 @@ class CRM_Volunteer_BAO_Project extends CRM_Volunteer_DAO_Project {
    * @return boolean
    */
   public static function dataExists($params) {
-    return true; // (CRM_Utils_Array::value('id', $params) || CRM_Utils_Array::value('title', $params));
+    return (CRM_Utils_Array::value('id', $params) || CRM_Utils_Array::value('title', $params));
   }
 
   /**
