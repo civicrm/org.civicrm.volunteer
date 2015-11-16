@@ -176,6 +176,8 @@ class CRM_Volunteer_Form_VolunteerSignUp extends CRM_Core_Form {
     CRM_Utils_System::setTitle(ts('Sign Up to Volunteer'));
 
     $this->buildCustom();
+    
+    $this->assign('volunteerNeeds', $this->_needs);
 
     $this->addButtons(array(
       array(
