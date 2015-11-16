@@ -201,7 +201,7 @@
         }
 
         return crmApi('VolunteerProject', 'create', $scope.project).then(function(result) {
-          var projectId = result.id;
+          var projectId = result.values.id;
 
           //Save the LocBlock
           if($scope.locBlockIsDirty) {
