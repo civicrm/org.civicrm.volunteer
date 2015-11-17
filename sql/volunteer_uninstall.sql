@@ -11,8 +11,9 @@ EXECUTE dq;
 DEALLOCATE PREPARE dq;
 
 /* drop custom tables */
-DROP TABLE `civicrm_volunteer_need`;
-DROP TABLE `civicrm_volunteer_project`;
+DROP TABLE IF EXISTS `civicrm_volunteer_need`;
+DROP TABLE IF EXISTS `civicrm_volunteer_project_contact`;
+DROP TABLE IF EXISTS `civicrm_volunteer_project`;
 
 /* drop report-related records */
 DELETE FROM `civicrm_option_value` WHERE name = 'CRM_Volunteer_Form_VolunteerReport';
