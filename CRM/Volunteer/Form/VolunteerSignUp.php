@@ -197,16 +197,19 @@ class CRM_Volunteer_Form_VolunteerSignUp extends CRM_Core_Form {
 
     $this->buildCustom();
 
-    foreach ($this->_needs as $needsKey => $need){
-      self::populateOtherDetails($needsKey, $need['project_id']);
+    foreach ($this->_needs as $needId => &$need) {
+      $projectId = (int) $need['project_id'];
+      $need['project'] = array();
+      $need['project']['beneficiaries'] = implode('<br />', $this->_projects[$projectId]['beneficiaries']);
+      $need['project']['title'] = $this->_projects[$projectId]['title'];
     }
 
     // Order by project name (alphabetical)
     usort($this->_needs, function ($volunteerNeedA, $volunteerNeedB){
-      if ($volunteerNeedA['project_title'] == $volunteerNeedB['project_title']) {
+      if ($volunteerNeedA['project']['title'] == $volunteerNeedB['project']['title']) {
         return 0;
       }
-      return ($volunteerNeedA['project_title'] < $volunteerNeedB['project_title']) ? -1 : 1;
+      return ($volunteerNeedA['project']['title'] < $volunteerNeedB['project']['title']) ? -1 : 1;
     });
 
     $this->assign('volunteerNeeds', $this->_needs);

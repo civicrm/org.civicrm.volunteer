@@ -16,8 +16,8 @@
       </tr>
       {foreach from=$volunteerNeeds key=key item=volunteerNeed}
         <tr>
-          <td>{$volunteerNeed.project_title}</td>
-          <td>{$volunteerNeed.project_beneficiaries}</td>
+          <td>{$volunteerNeed.project.title}</td>
+          <td>{$volunteerNeed.project.beneficiaries}</td>
           <td>{$volunteerNeed.role_label}</td>
           <td>{$volunteerNeed.display_time}</td>
         </tr>
