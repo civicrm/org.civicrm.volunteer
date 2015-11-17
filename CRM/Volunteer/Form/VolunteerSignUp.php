@@ -172,11 +172,67 @@ class CRM_Volunteer_Form_VolunteerSignUp extends CRM_Core_Form {
     return $this->_profile_ids;
   }
 
+  /**
+   *
+   * @param array $beneficiaryArray
+   */
+  function getBeneficiaryDisplayName($beneficiaryArray){
+    return civicrm_api3('Contact', 'getvalue', array(
+      'sequential' => 1,
+      'id' => $beneficiaryArray['contact_id'],
+      'return' => 'display_name',
+    ));
+  }
+
+  /**
+   *
+   * @param int $projectId
+   */
+  function populateOtherDetails($needsKey, $projectId){
+    $volProjectDetails = civicrm_api3('VolunteerProject', 'getsingle', array(
+      'sequential' => 1,
+      'id' => $projectId,
+    ));
+
+    $this->_needs[$needsKey]['project_title'] = $volProjectDetails['title'];
+
+    try {
+      $volProjectBeneficiaries = civicrm_api3('VolunteerProjectContact', 'get', array(
+        'sequential' => 1,
+        'project_id' => $projectId,
+        'relationship_type_id' => 'volunteer_beneficiary'
+      ));
+    }
+    catch (Exception $e){
+      return;
+    }
+
+    if ($volProjectBeneficiaries['count'] == 0){
+      return;
+    }
+
+    $beneficiariesDisplayNames = array_map(array($this, 'getBeneficiaryDisplayName'), $volProjectBeneficiaries['values']);
+
+    $this->_needs[$needsKey]['project_beneficiaries'] = implode(', ', $beneficiariesDisplayNames);
+  }
+
   function buildQuickForm() {
     CRM_Utils_System::setTitle(ts('Sign Up to Volunteer'));
 
     $this->buildCustom();
-    
+
+    foreach ($this->_needs as $needsKey => $need){
+      self::populateOtherDetails($needsKey, $need['project_id']);
+    }
+
+    // Order by project name (alphabetical)
+    usort($this->_needs, function ($volunteerNeedA, $volunteerNeedB){
+      if ($volunteerNeedA['project_title'] == $volunteerNeedB['project_title']) {
+        return 0;
+      }
+      return ($volunteerNeedA['project_title'] < $volunteerNeedB['project_title']) ? -1 : 1;
+    });
+
     $this->assign('volunteerNeeds', $this->_needs);
 
     $this->addButtons(array(
