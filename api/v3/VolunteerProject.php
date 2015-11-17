@@ -341,6 +341,7 @@ function civicrm_api3_volunteer_project_defaults($params) {
     2 => array("user_contact_id")
   );
 
+  //Set default beneficiary to user's Employer
   $result = civicrm_api3('Relationship', 'get', array(
     'sequential' => 1,
     'return' => "contact_id_b",
