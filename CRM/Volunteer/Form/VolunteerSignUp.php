@@ -135,6 +135,7 @@ class CRM_Volunteer_Form_VolunteerSignUp extends CRM_Core_Form {
     foreach ($this->_needs as $need) {
       $this->_projects[$need['project_id']] = array();
     }
+    $this->fetchProjectDetails();
 
     $this->setDestination();
     $this->_action = CRM_Utils_Request::retrieve('action', 'String', $this, FALSE);
@@ -153,15 +154,9 @@ class CRM_Volunteer_Form_VolunteerSignUp extends CRM_Core_Form {
     if (empty($this->_profile_ids)) {
       $profileIds = array();
 
-      foreach (array_keys($this->_projects) as $projectId) {
-        $dao = new CRM_Core_DAO_UFJoin();
-        $dao->entity_table = CRM_Volunteer_BAO_Project::$_tableName;
-        $dao->entity_id = $projectId;
-        $dao->orderBy('weight asc');
-        $dao->find();
-
-        while ($dao->fetch()) {
-          $profileIds[] = $dao->uf_group_id;
+      foreach ($this->_projects as $project) {
+        foreach ($project['profiles'] as $profile) {
+          $profileIds[] = $profile['uf_group_id'];
         }
       }
 
@@ -172,47 +167,29 @@ class CRM_Volunteer_Form_VolunteerSignUp extends CRM_Core_Form {
   }
 
   /**
-   *
-   * @param array $beneficiaryArray
+   * Retrieves project details and caches them in $this->_projects.
    */
-  function getBeneficiaryDisplayName($beneficiaryArray){
-    return civicrm_api3('Contact', 'getvalue', array(
-      'sequential' => 1,
-      'id' => $beneficiaryArray['contact_id'],
-      'return' => 'display_name',
-    ));
-  }
-
-  /**
-   *
-   * @param int $projectId
-   */
-  function populateOtherDetails($needsKey, $projectId){
-    $volProjectDetails = civicrm_api3('VolunteerProject', 'getsingle', array(
-      'sequential' => 1,
-      'id' => $projectId,
-    ));
-
-    $this->_needs[$needsKey]['project_title'] = $volProjectDetails['title'];
-
-    try {
-      $volProjectBeneficiaries = civicrm_api3('VolunteerProjectContact', 'get', array(
-        'sequential' => 1,
-        'project_id' => $projectId,
-        'relationship_type_id' => 'volunteer_beneficiary'
+  function fetchProjectDetails() {
+    foreach ($this->_projects as $projectId => &$projectDetails) {
+      $volProjectDetails = civicrm_api3('VolunteerProject', 'getsingle', array(
+        'id' => $projectId,
+        'api.VolunteerProjectContact.get' => array(
+          'relationship_type_id' => 'volunteer_beneficiary',
+          'api.Contact.getvalue' => array(
+            'return' => 'display_name',
+          ),
+        ),
       ));
-    }
-    catch (Exception $e){
-      return;
-    }
 
-    if ($volProjectBeneficiaries['count'] == 0){
-      return;
+      $projectDetails['beneficiaries'] = array();
+      $projectDetails['entity_id'] = $volProjectDetails['entity_id'];
+      $projectDetails['profiles'] = $volProjectDetails['profiles'];
+      $projectDetails['title'] = $volProjectDetails['title'];
+
+      foreach ($volProjectDetails['api.VolunteerProjectContact.get']['values'] as $beneficiary) {
+        $projectDetails['beneficiaries'][] = $beneficiary['api.Contact.getvalue'];
+      }
     }
-
-    $beneficiariesDisplayNames = array_map(array($this, 'getBeneficiaryDisplayName'), $volProjectBeneficiaries['values']);
-
-    $this->_needs[$needsKey]['project_beneficiaries'] = implode(', ', $beneficiariesDisplayNames);
   }
 
   function buildQuickForm() {
@@ -440,8 +417,8 @@ class CRM_Volunteer_Form_VolunteerSignUp extends CRM_Core_Form {
         // If only one project is associated with the form, send the user back
         // to that event form; otherwise, default to the vol opps page.
         if (count($this->_projects) === 1) {
-          $projectId = key($this->_projects);
-          $eventId = CRM_Volunteer_BAO_Project::retrieveByID($projectId)->entity_id;
+          $project = current($this->_projects);
+          $eventId = $project['entity_id'];
           $path = 'civicrm/event/info';
           $query = "reset=1&id={$eventId}";
           break;
