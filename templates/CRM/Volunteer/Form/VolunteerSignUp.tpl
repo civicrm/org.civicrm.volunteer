@@ -1,11 +1,12 @@
 <div class="crm-block crm-volunteer-signup-form-block">
 
-  {foreach from=$customProfiles key=ufID item=ufFields }
-    {include file="CRM/UF/Form/Block.tpl" fields=$ufFields}
-  {/foreach}
+  <div class="help">
+    <p>
+      {ts domain='org.civicrm.volunteer'}Thank you for being a volunteer! You are registering for the following volunteer commitments:{/ts}
+    </p>
+  </div>
 
-  {ts domain='org.civicrm.volunteer'}You have signed up to the following roles. Please check and click "submit" to confirm.{/ts}
-  <br/>
+  <div class="crm-volunteer-signup-summary">
   <table>
     <tr>
       <th>{ts domain='org.civicrm.volunteer'}Project Title{/ts}</th>
@@ -22,6 +23,20 @@
       </tr>
     {/foreach}
   </table>
+  </div>
+
+  <div class="help">
+    <p>
+      {ts domain='org.civicrm.volunteer'}Please provide the following information and submit the form to complete your registration.{/ts}
+    </p>
+  </div>
+
+  <div class="crm-volunteer-signup-profiles">
+    {foreach from=$customProfiles key=ufID item=ufFields }
+      {include file="CRM/UF/Form/Block.tpl" fields=$ufFields}
+    {/foreach}
+  </div>
+
   <div>
     {include file="CRM/common/formButtons.tpl" location="bottom"}
   </div>
