@@ -85,15 +85,13 @@
     $scope.locationBlocks[0] = "Create a new Location";
     $scope.locBlock = {};
     if (_.isEmpty(project.profiles)) {
-      $scope.profiles = [{
+      project.profiles = [{
         "is_active": "1",
         "module": "CiviVolunteer",
         "entity_table": "civicrm_volunteer_project",
         "weight": "1",
         "uf_group_id": supporting_data.values.default_profile
       }];
-    } else {
-      $scope.profiles = project.profiles;
     }
     $scope.relationships = relationships;
     $scope.campaigns = campaigns;
@@ -103,6 +101,7 @@
     $scope.profile_status = profile_status;
     project.is_active = (project.is_active == "1");
     $scope.project = project;
+    $scope.profiles = $scope.project.profiles;
 
 
     $scope.refreshLocBlock = function() {
