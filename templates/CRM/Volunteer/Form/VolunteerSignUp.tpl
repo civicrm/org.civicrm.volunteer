@@ -4,14 +4,14 @@
     {include file="CRM/UF/Form/Block.tpl" fields=$ufFields}
   {/foreach}
 
-  You have signed up to the following roles. Please check and click "submit" to confirm.
+  {ts domain='org.civicrm.volunteer'}You have signed up to the following roles. Please check and click "submit" to confirm.{/ts}
   <br/>
   <table>
     <tr>
-      <th>Project Title</th>
-      <th>Project Beneficiaries</th>
-      <th>Role</th>
-      <th>Date and Time</th>
+      <th>{ts domain='org.civicrm.volunteer'}Project Title{/ts}</th>
+      <th>{ts domain='org.civicrm.volunteer'}Project Beneficiaries{/ts}</th>
+      <th>{ts domain='org.civicrm.volunteer'}Role{/ts}</th>
+      <th>{ts domain='org.civicrm.volunteer'}Date and Time{/ts}</th>
     </tr>
     {foreach from=$volunteerNeeds key=key item=volunteerNeed}
       <tr>
