@@ -4,11 +4,6 @@
     {include file="CRM/UF/Form/Block.tpl" fields=$ufFields}
   {/foreach}
 
-  <div class="crm-section volunteer_details-section">
-    <div class="label">{$form.details.label}</div>
-    <div class="content">{$form.details.html}</div>
-  </div>
-
   You have signed up to the following roles. Please check and click "submit" to confirm.
   <br/>
   <table>
