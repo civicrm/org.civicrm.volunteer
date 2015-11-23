@@ -41,8 +41,31 @@ class CRM_Volunteer_Page_Listings extends CRM_Core_Page {
    * @return sortedResults
    */
   private function sortVolunteerAssignments($volunteerAssignments) {
-    $sortedResults = print_r($volunteerAssignments, TRUE);
+    $sortedResults = array();
     
+    foreach($volunteerAssignments as $assignment){
+      $volunteerNeed = civicrm_api3('VolunteerNeed', 'get', array(
+        'sequential' => 1,
+        'id' => $assignment['volunteer_need_id'],
+      ));
+ 
+      $displayTime = $volunteerNeed['values'][0]['display_time']; // getsingle and getvalue don't calculate display time.
+
+      if (!array_key_exists($displayTime, $sortedResults)){
+        $sortedResults[$displayTime] = array();
+      }
+
+      // Assign to array keyed by display time to effect grouping by assignment time.
+      $sortedResults[$displayTime][] = array(
+        'name' => $assignment['target_display_name'],
+        'role' => $assignment['role_label'],
+        'email' => $assignment['target_email'],
+        'phone' => $assignment['target_phone'], 
+      );
+    }
+
+    $sortedResults = print_r($sortedResults, TRUE);
+
     return $sortedResults;
   }
 }
