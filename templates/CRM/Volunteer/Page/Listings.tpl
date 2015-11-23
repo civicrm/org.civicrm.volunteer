@@ -36,6 +36,6 @@
         {/foreach}
     </table>
     {/foreach}
-
-    <a href='{crmURL p='civicrm/vol/#/volunteer/manage'}'}><input type='button' value='Back to Volunteer Project Management.'/></a>
 {/if}
+
+<a href='{crmURL p='civicrm/vol/#/volunteer/manage'}'}><input type='button' value='Back to Manage Volunteer Projects.'/></a>
