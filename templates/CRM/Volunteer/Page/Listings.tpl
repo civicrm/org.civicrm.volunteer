@@ -1,9 +1,9 @@
 {crmStyle ext=org.civicrm.volunteer file=css/listings.css}
-
-<h1>Volunteer Listings</h1>
+<h1>{$projectTitle}</h1>
+<h2>Volunteer Listings</h2>
 
 {foreach from=$sortedResults key=display_date item=assignments}
-<h2>{$display_date}</h2>
+<h3>{$display_date}</h3>
 <table>
     <tr>
         <th>Volunteer Name</th>
@@ -15,21 +15,21 @@
         <td>
             <a href='{crmURL p='civicrm/contact/view' q='cid='}{$assignment.contact_id}'>{$assignment.name}</a>
         </td>
-        <td>{$assignment.role}</td>
+        <td>{$assignment.role_label}</td>
         <td>
             {if $assignment.email}
-                <a href="mailto:{$assignment.email}" title="Send {$assignment.name} an email.">Send email</a> 
+                <a href="mailto:{$assignment.email}" title="Send {$assignment.name} an email."><input type='button' value='Send email'/></a>
             {/if}
             {if $assignment.email && $assignment.phone}
                 |
             {/if}
             {if $assignment.phone}
-                <a href="tel:{$assignment.phone}" title="Telephone {$assignment.name}.">Make phone call</a>  | 
-                <a href="sms:{$assignment.phone}" title="Send {$assignment.name} an SMS message.">Send text message</a> 
+                <a href="tel:{$assignment.phone}" title="Telephone {$assignment.name}."><input type='button' value='Make phone call'/></a>  |
+                <a href="sms:{$assignment.phone}" title="Send {$assignment.name} an SMS message."><input type='button' value='Send text message'/></a>
             {/if}
             </td>
     </tr>
-    {/foreach}    
+    {/foreach}
 </table>
 {/foreach}
 

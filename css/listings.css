@@ -1,3 +1,32 @@
+.crm-container-snippet {
+  text-align: center;
+  font-family: arial;
+}
+
+table {
+    margin-right: auto;
+    margin-left: auto;
+    padding-bottom: 1.5em;
+}
+
+td {
+    text-align: center;
+    padding-right: 0.5em;
+    padding-left: 0.5em;
+}
+
 h1 {
-    background-color: red;
+    font-size: 400%;
+    padding-bottom: 0px;
+    margin-bottom: 0px;
+}
+
+h2 {
+    font-size: 250%;
+    padding: 0px;
+    margin: 0px;
+}
+
+h3 {
+    font-size: 180%;
 }
