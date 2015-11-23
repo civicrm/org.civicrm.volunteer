@@ -16,12 +16,74 @@ class CRM_Volunteer_Page_Listings extends CRM_Core_Page {
       // TODO invalid project id.
     }
 
+    $this->checkPermissions($projectId);
     $this->setProjectDetails($projectId);
     $this->setVolunteerAssignments($projectId);
 
     parent::run();
   }
 
+  /**
+   * 
+   * @param string $errorMessage
+   */
+  private function error ($errorMessage) {
+    $this->assign('errorMessage', $errorMessage);
+    parent::run();
+  }
+  
+  /**
+   * We only allow viewing in the following cases:
+   *   - First case is having the permission 'edit all volunteer projects'.
+   *   - Second case is where the user has Volunteer Coordinator relationship to project.
+   * Our default position is no admittance. 
+   * 
+   * @param int $projectId
+   */
+  private function checkPermissions ($projectId) {
+    $session = CRM_Core_Session::singleton();
+    $userContactId = $session->get('userID');
+    
+    // See if they have the required permission.
+    if ($this->hasPermission($userContactId, 'edit all volunteer projects')) {
+      return true;
+    }
+    
+    // See if they are the volunteer coordinator.
+    if ($this->isVolunteerCoordinator($userContactId, $projectId)) {
+      return true;
+    }
+    
+    $errorMessage = 'You must either have the  \'edit all volunteer projects\' '
+        . 'permission or be the volunteer coordinator for this project. Please '
+        . 'contact your system administrator for assistance.';
+    
+    $this->error($errorMessage);
+  }
+
+  /**
+   * 
+   * @param int $userContactId
+   * @param int $permissionName
+   * @return boolean
+   */
+  private function hasPermission($userContactId, $permissionName) {
+    // TODO flesh out function.
+//    CRM_Volunteer_Permission::checkProjectPerms($op, $projectId = NULL); need to specify a new operation (currently based off crm_core_action) browse/preview/show schedule.
+    return true;  
+  }
+
+  /**
+   * 
+   * @param int $userContactId
+   * @param int $projectId
+   * @return boolean
+   */
+  private function isVolunteerCoordinator($userContactId, $projectId) {
+    // TODO flesh out function.
+    return true;
+  }
+  
   /**
    * Initialises the project data for the template.
    * @param int $projectId
@@ -36,7 +98,7 @@ class CRM_Volunteer_Page_Listings extends CRM_Core_Page {
       ));
     }
     catch (Exception $e){
-      // TODO handle case where it's inactive, see above.
+      // TODO handle case where it's inactive, see api call.
     }
     $this->assign('projectTitle', $projectDetails);
   }
@@ -61,7 +123,7 @@ class CRM_Volunteer_Page_Listings extends CRM_Core_Page {
     }
 
     if ($volunteerAssignments['count'] == 0) {
-      $this->assign('errorMessage', 'No volunteers have been assigned to this project yet!'); // TODO include URL where to assign some.
+      $this->error('No volunteers have been assigned to this project yet!'); // TODO include URL where to assign some.
     }
 
     $needToDetails = array();

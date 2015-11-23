@@ -22,11 +22,18 @@ h1 {
 }
 
 h2 {
-    font-size: 250%;
+    font-size: 200%;
     padding: 0px;
-    margin: 0px;
+    margin-top: 0px;
+    margin-bottom: 0.2em;
 }
 
 h3 {
     font-size: 180%;
+    padding: 0px;
+    margin-bottom: 0.5em;
+}
+
+.errorBlock {
+    margin: 1em;
 }
