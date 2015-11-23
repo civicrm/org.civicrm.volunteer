@@ -1,0 +1,9 @@
+<?xml version="1.0"?>
+<menu>
+  <item>
+    <path>civicrm/volunteer/listings</path>
+    <page_callback>CRM_Volunteer_Page_Listings</page_callback>
+    <title>Listings</title>
+    <access_arguments>access CiviCRM</access_arguments>
+  </item>
+</menu>
