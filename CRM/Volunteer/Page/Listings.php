@@ -13,7 +13,7 @@ class CRM_Volunteer_Page_Listings extends CRM_Core_Page {
 
     if (!$projectId) {
       // Will fail $projectId is empty, invalid, or 0.
-      // TODO invalid project id.
+      $this->error('Invalid project id.');
     }
 
     $this->checkPermissions($projectId);
@@ -26,8 +26,12 @@ class CRM_Volunteer_Page_Listings extends CRM_Core_Page {
   /**
    *
    * @param string $errorMessage
+   * @param bool $contactSysAdmin - a polite note asking the user to contact their sysadmin.
    */
-  private function error ($errorMessage) {
+  private function error ($errorMessage, $contactSysAdmin = TRUE) {
+    if ($contactSysAdmin) {
+      $errorMessage .= ' Please contact your system administrator for assistance.';
+    }
     $this->assign('errorMessage', $errorMessage);
     parent::run();
   }
@@ -51,8 +55,7 @@ class CRM_Volunteer_Page_Listings extends CRM_Core_Page {
     }
 
     $errorMessage = 'You must either have the  \'edit all volunteer projects\' '
-        . 'permission or be the volunteer coordinator for this project. Please '
-        . 'contact your system administrator for assistance.';
+        . 'permission or be the volunteer coordinator for this project.';
 
     $this->error($errorMessage);
   }
@@ -71,7 +74,7 @@ class CRM_Volunteer_Page_Listings extends CRM_Core_Page {
       ));
     }
     catch (Exception $e){
-      // TODO handle case where it's inactive, see api call.
+      $this->error('VolunteerProject getvalue call failed.');
     }
     $this->assign('projectTitle', $projectDetails);
   }
@@ -91,25 +94,30 @@ class CRM_Volunteer_Page_Listings extends CRM_Core_Page {
       ));
     }
     catch (Exception $e){
-      // TODO handle error retrieving assignments.
-
+      $this->error('VolunteerProject getvalue call failed.');
     }
 
     if ($volunteerAssignments['count'] == 0) {
-      $this->error('No volunteers have been assigned to this project yet!'); // TODO include URL where to assign some.
+      $this->error('No volunteers have been assigned to this project yet!', FALSE); // TODO include URL where to assign some.
     }
 
     $needToDetails = array();
 
     foreach($volunteerAssignments['values'] as &$assignment){
       if (!array_key_exists($assignment['volunteer_need_id'], $needToDetails)){
+        
+        // TODO: getsingle and getvalue don't calculate display time, so use 'get' call for now.
+        
         $volunteerNeed = civicrm_api3('VolunteerNeed', 'get', array(
           'sequential' => 1,
           'id' => $assignment['volunteer_need_id'],
         ));
 
-        // TODO handle if need has been deleted?
-        $needToDetails[$assignment['volunteer_need_id']]['display_time'] = $volunteerNeed['values'][0]['display_time']; // getsingle and getvalue don't calculate display time.
+        if (count($volunteerNeed['values']) != 1) {
+          $this->error('Couldn\'t retrieve only one VolunteerNeed, found ' . count($volunteerNeed['values']) . '. ');          
+        }
+
+        $needToDetails[$assignment['volunteer_need_id']]['display_time'] = $volunteerNeed['values'][0]['display_time'];
         $needToDetails[$assignment['volunteer_need_id']]['role_label'] = $volunteerNeed['values'][0]['role_label'];
       }
       $assignment['display_time'] =  $needToDetails[$assignment['volunteer_need_id']]['display_time'];
