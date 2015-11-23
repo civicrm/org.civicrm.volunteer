@@ -25,7 +25,7 @@ class CRM_Volunteer_Page_Listings extends CRM_Core_Page {
       // TODO handle error retrieving assignments.
       
     }
-    
+
     if ($volunteerAssignments['count'] == 0) {
       $this->assign('errorMessage', 'No volunteers have been assigned to this project yet!'); // TODO include URL where to assign some.
     }
@@ -43,28 +43,27 @@ class CRM_Volunteer_Page_Listings extends CRM_Core_Page {
   private function sortVolunteerAssignments($volunteerAssignments) {
     $sortedResults = array();
     
-    foreach($volunteerAssignments as $assignment){
+    foreach($volunteerAssignments as $assignment){      
       $volunteerNeed = civicrm_api3('VolunteerNeed', 'get', array(
         'sequential' => 1,
         'id' => $assignment['volunteer_need_id'],
       ));
  
       $displayTime = $volunteerNeed['values'][0]['display_time']; // getsingle and getvalue don't calculate display time.
-
+      $roleLabel = $volunteerNeed['values'][0]['role_label'];
+      
       if (!array_key_exists($displayTime, $sortedResults)){
         $sortedResults[$displayTime] = array();
       }
 
       // Assign to array keyed by display time to effect grouping by assignment time.
       $sortedResults[$displayTime][] = array(
-        'name' => $assignment['target_display_name'],
-        'role' => $assignment['role_label'],
-        'email' => $assignment['target_email'],
-        'phone' => $assignment['target_phone'], 
+        'name' => $assignment['assignee_display_name'],
+        'role' => $roleLabel,
+        'email' => $assignment['assignee_email'],
+        'phone' => $assignment['assignee_phone'], 
       );
     }
-
-    $sortedResults = print_r($sortedResults, TRUE);
 
     return $sortedResults;
   }
