@@ -58,6 +58,7 @@ class CRM_Volunteer_Page_Listings extends CRM_Core_Page {
 
       // Assign to array keyed by display time to effect grouping by assignment time.
       $sortedResults[$displayTime][] = array(
+        'contact_id' => $assignment['assignee_contact_id'],
         'name' => $assignment['assignee_display_name'],
         'role' => $roleLabel,
         'email' => $assignment['assignee_email'],
