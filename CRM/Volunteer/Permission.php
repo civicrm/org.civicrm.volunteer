@@ -2,6 +2,8 @@
 
 class CRM_Volunteer_Permission extends CRM_Core_Permission {
 
+  const VIEW_LISTINGS = 3; // A number unused by CRM_Core_Action
+  
   /**
    * Returns an array of permissions defined by this extension. Modeled off of
    * CRM_Core_Permission::getCorePermissions().
@@ -45,7 +47,7 @@ class CRM_Volunteer_Permission extends CRM_Core_Permission {
   /**
    * Given a permission string or array, check for access requirements. For
    * VOL-71, if this is a permissions-challenged Joomla instance, don't enforce
-   * CiviVolunteer-defined permissions.
+   * CiviVolunteer-defined permissions.c
    *
    * @param mixed $permissions The permission(s) to check as an array or string.
    *        See parent class for examples.
@@ -77,7 +79,7 @@ class CRM_Volunteer_Permission extends CRM_Core_Permission {
    *   TRUE is the action is allowed; else FALSE.
    */
   public static function checkProjectPerms($op, $projectId = NULL) {
-    $opsRequiringProjectId = array(CRM_Core_Action::UPDATE, CRM_Core_Action::DELETE,);
+    $opsRequiringProjectId = array(CRM_Core_Action::UPDATE, CRM_Core_Action::DELETE, self::VIEW_LISTINGS,);
     if (in_array($op, $opsRequiringProjectId) && empty($projectId)) {
       CRM_Core_Error::fatal('Missing required parameter Project ID');
     }
@@ -114,6 +116,18 @@ class CRM_Volunteer_Permission extends CRM_Core_Permission {
         if (self::check('register to volunteer') || self::check('edit all volunteer projects')) {
           return TRUE;
         }
+        break;
+      case self::VIEW_LISTINGS:
+        if (self::check('edit all volunteer projects')) {
+          return TRUE;
+        }
+        
+        $projectOwners = CRM_Volunteer_BAO_Project::getContactsByRelationship($projectId, 'volunteer_manager');
+        if (in_array($contactId, $projectOwners)) {
+          return TRUE;
+        }
+        
+        break;
     }
 
     return FALSE;
