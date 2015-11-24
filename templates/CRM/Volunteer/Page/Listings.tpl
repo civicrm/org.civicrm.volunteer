@@ -14,7 +14,7 @@
             <th>Role</th>
             <th>Contact</th>
         </tr>
-        {foreach from=$assignments item=assignment}
+        {foreach from=$assignments.values item=assignment}
         <tr>
             <td>
                 <a href='{crmURL p='civicrm/contact/view' q='cid='}{$assignment.contact_id}'>{$assignment.name}</a>
@@ -36,6 +36,10 @@
         {/foreach}
     </table>
     {/foreach}
+    <br/>
+    Entries that end before {$endDate|crmDate} are not shown.
+    <br/>
+    <br/>
 {/if}
 
 <a href='{crmURL p='civicrm/vol/#/volunteer/manage'}'}><input type='button' value='Back to Manage Volunteer Projects.'/></a>
