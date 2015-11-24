@@ -37,9 +37,11 @@
     </table>
     {/foreach}
     <br/>
-    Entries that end before {$endDate|crmDate} are not shown.
+    <div class='dateBlock'>
+        Assignments that end before {$endDate|crmDate} are not shown.
+    </div>
     <br/>
     <br/>
 {/if}
 
-<a href='{crmURL p='civicrm/vol/#/volunteer/manage'}'}><input type='button' value='Back to Manage Volunteer Projects.'/></a>
+<a href='{crmURL p='civicrm/vol/#/volunteer/manage'}'><input type='button' class="backButton" value='Back to Manage Volunteer Projects.'/></a>
