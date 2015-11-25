@@ -685,8 +685,6 @@ class CRM_Volunteer_Upgrader extends CRM_Volunteer_Upgrader_Base {
 //      }
 //    }
 
-    CRM_Core_Error::debug_var('Created custom group id is ', 'answer is ' . print_r($customGroupID, TRUE));
-
     // If the optionGroup already exists this api call will fail - not desired.
     try {
       $create = civicrm_api3('customField', 'create', array(
