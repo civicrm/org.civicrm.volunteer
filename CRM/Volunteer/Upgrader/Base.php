@@ -257,7 +257,25 @@ class CRM_Volunteer_Upgrader_Base {
     if (is_callable(array($this, 'uninstall'))) {
       $this->uninstall();
     }
-    foreach (glob($this->extensionDir . '/sql/*_uninstall.sql') as $file) {
+
+    /* get table name custom activity fields */
+    $getCustomActivityFieldsSql = 'SELECT id as custom_group_id
+      FROM civicrm_custom_group
+      WHERE name = "CiviVolunteer";
+    ';
+
+    $dao = CRM_Core_DAO::executeQuery($getCustomActivityFieldsSql);
+
+    while ($dao->fetch()) {
+      $customGroupId = $dao->custom_group_id;
+      $dropTableSql = "DROP TABLE IF EXISTS civicrm_value_civivolunteer_%1";
+      $dao = CRM_Core_DAO::executeQuery($dropTableSql, array('1' => array ($customGroupId, 'Integer')));
+    }
+    
+    // TODO remove volunteer_commendation  from civicrm_custom_group
+    // TODO remove civicrm_value_volunteer_commendation_6 table
+    
+    foreach (glob($this->extensionDir . '/sql/*_uninstall.sql') as $file) { 
       CRM_Utils_File::sourceSQLFile(CIVICRM_DSN, $file);
     }
     $this->setCurrentRevision(NULL);

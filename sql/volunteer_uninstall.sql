@@ -1,15 +1,3 @@
-/* get table name custom activity fields */
-SELECT @customGroupId := max(id)
-FROM civicrm_custom_group
-WHERE name = 'CiviVolunteer';
-SELECT @volunteerTable := CONCAT('civicrm_value_civivolunteer_', @customGroupId);
-
-/* drop table for custom activity fields */
-SET @drop_query = CONCAT('DROP TABLE ', @volunteerTable);
-PREPARE dq FROM @drop_query;
-EXECUTE dq;
-DEALLOCATE PREPARE dq;
-
 /* drop custom tables */
 DROP TABLE IF EXISTS `civicrm_volunteer_need`;
 DROP TABLE IF EXISTS `civicrm_volunteer_project_contact`;
