@@ -93,7 +93,7 @@ class CRM_Volunteer_Upgrader extends CRM_Volunteer_Upgrader_Base {
       ));
     }
   }
-  
+
   /**
    * Installs option group and options for project relationships.
    */
@@ -147,12 +147,12 @@ class CRM_Volunteer_Upgrader extends CRM_Volunteer_Upgrader_Base {
     );
 
     foreach ($options as $opt) {
-      // Will throw exception if doesn't exist, 
+      // Will throw exception if doesn't exist,
       $getOptionValues = civicrm_api3('OptionValue', 'get', $optionDefaults + $opt);
 
       // In the case of a user reinstalling CiviVolunteer we don't want duplicate options.
       if ($getOptionValues['count'] == 0) {
-        civicrm_api3('OptionValue', 'create', $optionDefaults + $opt);        
+        civicrm_api3('OptionValue', 'create', $optionDefaults + $opt);
       }
     }
   }
@@ -304,7 +304,7 @@ class CRM_Volunteer_Upgrader extends CRM_Volunteer_Upgrader_Base {
       $this->fieldCreateCheckForError($create);
     }
     catch (Exception $e) {
-      
+
     }
   }
 
@@ -684,7 +684,7 @@ class CRM_Volunteer_Upgrader extends CRM_Volunteer_Upgrader_Base {
 //        ));
 //      }
 //    }
-    
+
     CRM_Core_Error::debug_var('Created custom group id is ', 'answer is ' . print_r($customGroupID, TRUE));
 
     // If the optionGroup already exists this api call will fail - not desired.
@@ -730,7 +730,7 @@ class CRM_Volunteer_Upgrader extends CRM_Volunteer_Upgrader_Base {
           ),
         ),
       ));
-      
+
       $optionGroupId = $create['values'][$create['id']]['option_group_id'];
     }
     catch (Exception $ex){
@@ -738,15 +738,15 @@ class CRM_Volunteer_Upgrader extends CRM_Volunteer_Upgrader_Base {
       $getCustomFieldResults = civicrm_api3('customField', 'getsingle', array(
         'name' => 'camera_skill_level',
       ));
-      
+
       $optionGroupId = $getCustomFieldResults['id'];
     }
-    
+
     // hack for CRM-15542 - The custom field create API doesn't allow an existing option
     // group to specified; the options must be created with the field. We want to give
     // this option group a meaningful name and label so it's obvious it's intended to be
     // reused, so we rename it below.
-    
+
     // If the optionGroup already exists this api call will fail - not desired.
     try {
       civicrm_api3('OptionGroup', 'create', array(

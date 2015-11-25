@@ -271,11 +271,11 @@ class CRM_Volunteer_Upgrader_Base {
       $dropTableSql = "DROP TABLE IF EXISTS civicrm_value_civivolunteer_%1";
       $dao = CRM_Core_DAO::executeQuery($dropTableSql, array('1' => array ($customGroupId, 'Integer')));
     }
-    
+
     // TODO remove volunteer_commendation  from civicrm_custom_group
     // TODO remove civicrm_value_volunteer_commendation_6 table
-    
-    foreach (glob($this->extensionDir . '/sql/*_uninstall.sql') as $file) { 
+
+    foreach (glob($this->extensionDir . '/sql/*_uninstall.sql') as $file) {
       CRM_Utils_File::sourceSQLFile(CIVICRM_DSN, $file);
     }
     $this->setCurrentRevision(NULL);
