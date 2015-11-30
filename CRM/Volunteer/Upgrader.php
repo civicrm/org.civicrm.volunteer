@@ -300,11 +300,11 @@ class CRM_Volunteer_Upgrader extends CRM_Volunteer_Upgrader_Base {
         'label' => ts('Volunteer Project ID', array('domain' => 'org.civicrm.volunteer')),
         'name' => CRM_Volunteer_BAO_Commendation::PROJECT_REF_FIELD_NAME,
       ));
- 
+
       $this->fieldCreateCheckForError($create);
     }
     catch (Exception $e) {
-      
+
     }
   }
 
@@ -673,7 +673,7 @@ class CRM_Volunteer_Upgrader extends CRM_Volunteer_Upgrader_Base {
 //        ));
 //      }
 //    }
-    
+
     // If the optionGroup already exists this api call will fail - not desired.
     try {
       $create = civicrm_api3('customField', 'create', array(
@@ -717,7 +717,7 @@ class CRM_Volunteer_Upgrader extends CRM_Volunteer_Upgrader_Base {
           ),
         ),
       ));
-    
+
       $optionGroupId = $create['values'][$create['id']]['option_group_id'];
     }
     catch (Exception $ex){
@@ -725,7 +725,7 @@ class CRM_Volunteer_Upgrader extends CRM_Volunteer_Upgrader_Base {
       $getCustomFieldResults = civicrm_api3('customField', 'getsingle', array(
        'name' => 'camera_skill_level',
       ));
-      
+
       $optionGroupId = $getCustomFieldResults['id'];
     }
     // hack for CRM-15542 - The custom field create API doesn't allow an existing option
@@ -733,7 +733,7 @@ class CRM_Volunteer_Upgrader extends CRM_Volunteer_Upgrader_Base {
     // this option group a meaningful name and label so it's obvious it's intended to be
     // reused, so we rename it below.
 
-    // If the optionGroup already exists this api call will fail - not desired.
+    // If the optionGroup creation above failed because it already exists this api call will fail too - not desired.
     try {
       civicrm_api3('OptionGroup', 'create', array(
         'id' => $optionGroupId,
@@ -741,9 +741,9 @@ class CRM_Volunteer_Upgrader extends CRM_Volunteer_Upgrader_Base {
         'name' => self::skillLevelOptionGroupName,
         'title' => ts('Skill Level', array('domain' => 'org.civicrm.volunteer')),
       ));
- 
+
       _volunteer_update_slider_fields(array(CRM_Core_Action::ADD => $create['id']));
- 
+
       $this->fieldCreateCheckForError($create);
     }
     catch (Exception $ex){
