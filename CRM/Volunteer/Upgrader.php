@@ -673,64 +673,83 @@ class CRM_Volunteer_Upgrader extends CRM_Volunteer_Upgrader_Base {
 //        ));
 //      }
 //    }
-
-    $create = civicrm_api3('customField', 'create', array(
-      'custom_group_id' => $customGroupID,
-      'data_type' => 'String',
-      'html_type' => 'Multi-select',
-      'is_searchable' => 1,
-      'label' => ts('Camera Skill Level', array('domain' => 'org.civicrm.volunteer')),
-      'name' => 'camera_skill_level',
-//      'option_group_id' => $og['id'], // blocked by CRM-15542, so instead use option_values
-      'option_values' => array(
-        5 => array(
-          'is_active' => 1,
-          'label' => ts('Master', array('domain' => 'org.civicrm.volunteer')),
-          'value' => 5,
-          'weight' => 5,
+    
+    // If the optionGroup already exists this api call will fail - not desired.
+    try {
+      $create = civicrm_api3('customField', 'create', array(
+        'custom_group_id' => $customGroupID,
+        'data_type' => 'String',
+        'html_type' => 'Multi-select',
+        'is_searchable' => 1,
+        'label' => ts('Camera Skill Level', array('domain' => 'org.civicrm.volunteer')),
+        'name' => 'camera_skill_level',
+  //      'option_group_id' => $og['id'], // blocked by CRM-15542, so instead use option_values
+        'option_values' => array(
+          5 => array(
+            'is_active' => 1,
+            'label' => ts('Master', array('domain' => 'org.civicrm.volunteer')),
+            'value' => 5,
+            'weight' => 5,
+          ),
+          4 => array(
+            'is_active' => 1,
+            'label' => ts('Journeyman', array('domain' => 'org.civicrm.volunteer')),
+            'value' => 4,
+            'weight' => 4,
+          ),
+          3 => array(
+            'is_active' => 1,
+            'label' => ts('Apprentice', array('domain' => 'org.civicrm.volunteer')),
+            'value' => 3,
+            'weight' => 3,
+          ),
+          2 => array(
+            'is_active' => 1,
+            'label' => ts('Teach me', array('domain' => 'org.civicrm.volunteer')),
+            'value' => 2,
+            'weight' => 2,
+          ),
+          1 => array(
+            'is_active' => 1,
+            'label' => ts('Not interested', array('domain' => 'org.civicrm.volunteer')),
+            'value' => 1,
+            'weight' => 1,
+          ),
         ),
-        4 => array(
-          'is_active' => 1,
-          'label' => ts('Journeyman', array('domain' => 'org.civicrm.volunteer')),
-          'value' => 4,
-          'weight' => 4,
-        ),
-        3 => array(
-          'is_active' => 1,
-          'label' => ts('Apprentice', array('domain' => 'org.civicrm.volunteer')),
-          'value' => 3,
-          'weight' => 3,
-        ),
-        2 => array(
-          'is_active' => 1,
-          'label' => ts('Teach me', array('domain' => 'org.civicrm.volunteer')),
-          'value' => 2,
-          'weight' => 2,
-        ),
-        1 => array(
-          'is_active' => 1,
-          'label' => ts('Not interested', array('domain' => 'org.civicrm.volunteer')),
-          'value' => 1,
-          'weight' => 1,
-        ),
-      ),
-    ));
-
+      ));
+    
+      $optionGroupId = $create['values'][$create['id']]['option_group_id'];
+    }
+    catch (Exception $ex){
+      // If it fails it's probably because it already exists.
+      $getCustomFieldResults = civicrm_api3('customField', 'getsingle', array(
+       'name' => 'camera_skill_level',
+      ));
+      
+      $optionGroupId = $getCustomFieldResults['id'];
+    }
     // hack for CRM-15542 - The custom field create API doesn't allow an existing option
     // group to specified; the options must be created with the field. We want to give
     // this option group a meaningful name and label so it's obvious it's intended to be
     // reused, so we rename it below.
-    civicrm_api3('OptionGroup', 'create', array(
-      'id' => $create['values'][$create['id']]['option_group_id'],
-      'is_active' => 1,
-      'name' => self::skillLevelOptionGroupName,
-      'title' => ts('Skill Level', array('domain' => 'org.civicrm.volunteer')),
-    ));
+
+    // If the optionGroup already exists this api call will fail - not desired.
+    try {
+      civicrm_api3('OptionGroup', 'create', array(
+        'id' => $optionGroupId,
+        'is_active' => 1,
+        'name' => self::skillLevelOptionGroupName,
+        'title' => ts('Skill Level', array('domain' => 'org.civicrm.volunteer')),
+      ));
+ 
+      _volunteer_update_slider_fields(array(CRM_Core_Action::ADD => $create['id']));
+ 
+      $this->fieldCreateCheckForError($create);
+    }
+    catch (Exception $ex){
+      // If it fails it's probably because it already exists.
+    }
     // end hack for CRM-15542
-
-    _volunteer_update_slider_fields(array(CRM_Core_Action::ADD => $create['id']));
-
-    $this->fieldCreateCheckForError($create);
   }
 
   /**
