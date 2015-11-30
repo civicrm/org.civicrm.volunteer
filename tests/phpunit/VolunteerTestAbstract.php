@@ -45,7 +45,11 @@ abstract class VolunteerTestAbstract extends CiviUnitTestCase {
 
     $upgrader->installCommendationActivityType();
 
-    $upgrader->installProjectRelationships();
+    $upgrader->schemaUpgrade20(); // contains installProjectRelationships
+    $upgrader->addNeedEndDate();
+    $upgrader->installVolMsgWorkflowTpls();
+
+    $upgrader->createVolunteerReportOption();
 
     return TRUE;
   }
