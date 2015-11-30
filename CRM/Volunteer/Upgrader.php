@@ -290,16 +290,22 @@ class CRM_Volunteer_Upgrader extends CRM_Volunteer_Upgrader_Base {
       $customGroupID = $create['id'];
     }
 
-    $create = civicrm_api3('customField', 'create', array(
-      'custom_group_id' => $customGroupID,
-      'data_type' => 'Int',
-      'html_type' => 'Text',
-      'is_searchable' => 0,
-      'label' => ts('Volunteer Project ID', array('domain' => 'org.civicrm.volunteer')),
-      'name' => CRM_Volunteer_BAO_Commendation::PROJECT_REF_FIELD_NAME,
-    ));
-
-    $this->fieldCreateCheckForError($create);
+    // Will throw an exception if it already exists.
+    try {
+      $create = civicrm_api3('customField', 'create', array(
+        'custom_group_id' => $customGroupID,
+        'data_type' => 'Int',
+        'html_type' => 'Text',
+        'is_searchable' => 0,
+        'label' => ts('Volunteer Project ID', array('domain' => 'org.civicrm.volunteer')),
+        'name' => CRM_Volunteer_BAO_Commendation::PROJECT_REF_FIELD_NAME,
+      ));
+ 
+      $this->fieldCreateCheckForError($create);
+    }
+    catch (Exception $e) {
+      
+    }
   }
 
   /**
