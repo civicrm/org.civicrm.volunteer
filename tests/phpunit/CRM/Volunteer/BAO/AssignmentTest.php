@@ -85,4 +85,36 @@ class CRM_Volunteer_BAO_AssignmentTest extends VolunteerTestAbstract {
 
   }
 
+  /**
+   * VOL-154: Verifies that an activity created in a project is tagged with the
+   * project's campaign.
+   */
+  function testCampaignInheritance() {
+    // begin setup
+    $campaign = CRM_Core_DAO::createTestObject('CRM_Campaign_BAO_Campaign');
+    $this->assertObjectHasAttribute('id', $campaign, 'Failed to prepopulate Campaign');
+
+    $project = CRM_Core_DAO::createTestObject('CRM_Volunteer_BAO_Project', array(
+      'campaign_id' => $campaign->id,
+    ));
+    $this->assertObjectHasAttribute('id', $project, 'Failed to prepopulate Volunteer Project');
+
+    $need = CRM_Core_DAO::createTestObject('CRM_Volunteer_BAO_Need', array(
+      'project_id' => $project->id,
+    ));
+    $this->assertObjectHasAttribute('id', $need, 'Failed to prepopulate Volunteer Need');
+    // end setup
+
+    $activityId = CRM_Volunteer_BAO_Assignment::createVolunteerActivity(array(
+      'assignee_contact_id' => 1,
+      'source_contact_id' => 1,
+      'volunteer_need_id' => $need->id,
+    ));
+    $this->assertNotSame(FALSE, $activityId, 'Failed to create Volunteer Activity');
+
+    $createdActivity = CRM_Volunteer_BAO_Assignment::findById($activityId);
+    $this->assertEquals($campaign->id, $createdActivity->campaign_id,
+        'Activity did not inherit campaign from volunteer project');
+  }
+
 }
