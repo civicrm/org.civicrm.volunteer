@@ -77,12 +77,12 @@ class CRM_Volunteer_Form_VolunteerSignUp extends CRM_Core_Form {
   protected $_profile_ids = array();
 
   /**
-   * The project IDs associated with this form.
+   * The volunteer projects associated with this form, keyed by project ID.
    *
    * @var array
    * @protected
    */
-  protected $projectIds = array();
+  protected $_projects = array();
 
   /**
    * Set default values for the form.
@@ -133,9 +133,9 @@ class CRM_Volunteer_Form_VolunteerSignUp extends CRM_Core_Form {
     $this->_needs = $api['values'];
 
     foreach ($this->_needs as $need) {
-      $this->projectIds[] = $need['project_id'];
+      $this->_projects[$need['project_id']] = array();
     }
-    $this->projectIds = array_unique($this->projectIds);
+    $this->fetchProjectDetails();
 
     $this->setDestination();
     $this->_action = CRM_Utils_Request::retrieve('action', 'String', $this, FALSE);
@@ -154,15 +154,9 @@ class CRM_Volunteer_Form_VolunteerSignUp extends CRM_Core_Form {
     if (empty($this->_profile_ids)) {
       $profileIds = array();
 
-      foreach ($this->projectIds as $projectId) {
-        $dao = new CRM_Core_DAO_UFJoin();
-        $dao->entity_table = CRM_Volunteer_BAO_Project::$_tableName;
-        $dao->entity_id = $projectId;
-        $dao->orderBy('weight asc');
-        $dao->find();
-
-        while ($dao->fetch()) {
-          $profileIds[] = $dao->uf_group_id;
+      foreach ($this->_projects as $project) {
+        foreach ($project['profiles'] as $profile) {
+          $profileIds[] = $profile['uf_group_id'];
         }
       }
 
@@ -172,10 +166,53 @@ class CRM_Volunteer_Form_VolunteerSignUp extends CRM_Core_Form {
     return $this->_profile_ids;
   }
 
+  /**
+   * Retrieves project details and caches them in $this->_projects.
+   */
+  function fetchProjectDetails() {
+    foreach ($this->_projects as $projectId => &$projectDetails) {
+      $volProjectDetails = civicrm_api3('VolunteerProject', 'getsingle', array(
+        'id' => $projectId,
+        'api.VolunteerProjectContact.get' => array(
+          'relationship_type_id' => 'volunteer_beneficiary',
+          'api.Contact.getvalue' => array(
+            'return' => 'display_name',
+          ),
+        ),
+      ));
+
+      $projectDetails['beneficiaries'] = array();
+      $projectDetails['entity_id'] = $volProjectDetails['entity_id'];
+      $projectDetails['profiles'] = $volProjectDetails['profiles'];
+      $projectDetails['title'] = $volProjectDetails['title'];
+
+      foreach ($volProjectDetails['api.VolunteerProjectContact.get']['values'] as $beneficiary) {
+        $projectDetails['beneficiaries'][] = $beneficiary['api.Contact.getvalue'];
+      }
+    }
+  }
+
   function buildQuickForm() {
     CRM_Utils_System::setTitle(ts('Sign Up to Volunteer'));
 
     $this->buildCustom();
+
+    foreach ($this->_needs as $needId => &$need) {
+      $projectId = (int) $need['project_id'];
+      $need['project'] = array();
+      $need['project']['beneficiaries'] = implode('<br />', $this->_projects[$projectId]['beneficiaries']);
+      $need['project']['title'] = $this->_projects[$projectId]['title'];
+    }
+
+    // Order by project name (alphabetical)
+    usort($this->_needs, function ($volunteerNeedA, $volunteerNeedB){
+      if ($volunteerNeedA['project']['title'] == $volunteerNeedB['project']['title']) {
+        return 0;
+      }
+      return ($volunteerNeedA['project']['title'] < $volunteerNeedB['project']['title']) ? -1 : 1;
+    });
+
+    $this->assign('volunteerNeeds', $this->_needs);
 
     $this->addButtons(array(
       array(
@@ -382,8 +419,9 @@ class CRM_Volunteer_Form_VolunteerSignUp extends CRM_Core_Form {
       case 'event':
         // If only one project is associated with the form, send the user back
         // to that event form; otherwise, default to the vol opps page.
-        if (count($this->projectIds) === 1) {
-          $eventId = CRM_Volunteer_BAO_Project::retrieveByID($this->projectIds[0])->entity_id;
+        if (count($this->_projects) === 1) {
+          $project = current($this->_projects);
+          $eventId = $project['entity_id'];
           $path = 'civicrm/event/info';
           $query = "reset=1&id={$eventId}";
           break;
