@@ -259,7 +259,7 @@ function volunteer_civicrm_uninstall() {
  * Implementation of hook_civicrm_enable
  */
 function volunteer_civicrm_enable() {
-  $doc_url = 'https://github.com/civicrm/org.civicrm.volunteer/blob/v4.5-1.4.0/README.md';
+  $doc_url = 'https://github.com/civicrm/org.civicrm.volunteer/blob/v4.6-2.0.0.beta1/README.md';
   $forum_url = 'http://forum.civicrm.org/index.php/board,84.0.html';
   $role_url = CRM_Utils_System::url('civicrm/admin/options/volunteer_role', 'group=volunteer_role&reset=1');
   $events_url = CRM_Utils_System::url('civicrm/event/manage', 'reset=1');
@@ -520,6 +520,7 @@ function volunteer_civicrm_alterAPIPermissions($entity, $action, &$params, &$per
   $permissions['volunteer_project']['get'] = array('register to volunteer');
   $permissions['volunteer_project']['getlocblockdata'] = array('edit own volunteer projects');
   $permissions['volunteer_util']['default'] = array('edit own volunteer projects');
+  $permissions['volunteer_project_contact']['default'] = array('edit own volunteer projects');
 
 
   // allow fairly liberal access to the volunteer opp listing UI, which uses lots of API calls
