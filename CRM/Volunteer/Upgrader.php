@@ -93,7 +93,7 @@ class CRM_Volunteer_Upgrader extends CRM_Volunteer_Upgrader_Base {
       ));
     }
   }
-  
+
   /**
    * Installs option group and options for project relationships.
    */
@@ -147,7 +147,13 @@ class CRM_Volunteer_Upgrader extends CRM_Volunteer_Upgrader_Base {
     );
 
     foreach ($options as $opt) {
-      civicrm_api3('OptionValue', 'create', $optionDefaults + $opt);
+      // Will throw exception if doesn't exist,
+      $getOptionValues = civicrm_api3('OptionValue', 'get', $optionDefaults + $opt);
+
+      // In the case of a user reinstalling CiviVolunteer we don't want duplicate options.
+      if ($getOptionValues['count'] == 0) {
+        civicrm_api3('OptionValue', 'create', $optionDefaults + $opt);
+      }
     }
   }
 
