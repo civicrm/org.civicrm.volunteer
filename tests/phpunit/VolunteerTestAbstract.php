@@ -25,27 +25,7 @@ abstract class VolunteerTestAbstract extends CiviUnitTestCase {
     // Code adapted from CRM_Volunteer_Upgrader::install().
     $upgrader = new CRM_Volunteer_Upgrader('org.civicrm.volunteer', dirname(__FILE__) . '/../../');
 
-    $activityTypeId = $upgrader->createActivityType(CRM_Volunteer_BAO_Assignment::CUSTOM_ACTIVITY_TYPE);
-    $smarty = CRM_Core_Smarty::singleton();
-    $smarty->assign('volunteer_custom_activity_type_name', CRM_Volunteer_BAO_Assignment::CUSTOM_ACTIVITY_TYPE);
-    $smarty->assign('volunteer_custom_group_name', CRM_Volunteer_BAO_Assignment::CUSTOM_GROUP_NAME);
-    $smarty->assign('volunteer_custom_option_group_name', CRM_Volunteer_BAO_Assignment::ROLE_OPTION_GROUP);
-    $smarty->assign('volunteer_activity_type_id', $activityTypeId);
-
-    $customIDs = $upgrader->findCustomGroupValueIDs();
-    $smarty->assign('customIDs', $customIDs);
-
-    $upgrader->executeCustomDataTemplateFile('volunteer-customdata.xml.tpl');
-
-    $upgrader->createVolunteerActivityStatus();
-
-    $upgrader->createVolunteerContactType();
-    $volContactTypeCustomGroupID = $upgrader->createVolunteerContactCustomGroup();
-    $upgrader->createVolunteerContactCustomFields($volContactTypeCustomGroupID);
-
-    $upgrader->installCommendationActivityType();
-
-    $upgrader->installProjectRelationships();
+    $upgrader->install();
 
     return TRUE;
   }
