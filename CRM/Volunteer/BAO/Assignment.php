@@ -262,6 +262,10 @@ class CRM_Volunteer_BAO_Assignment extends CRM_Volunteer_BAO_Activity {
         if (empty($params['subject']) && empty($params['id'])) {
           $params['subject'] = $project->title;
         }
+
+        if (!empty($project->campaign_id)) {
+          $params['campaign_id'] = $project->campaign_id;
+        }
       }
     }
 
