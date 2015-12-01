@@ -232,9 +232,34 @@ class CRM_Volunteer_BAO_Project extends CRM_Volunteer_DAO_Project {
       }
     }
 
+    if ($op == CRM_Core_Action::UPDATE) {
+      self::updateAssociatedActivities($params['campaign_id']);
+    }
+    
     return $project;
   }
 
+  /**
+   * If our project is updated, we also update the details. 
+   * At the moment this is just campaign ids.
+   * 
+   * @param int campaignId
+   */
+  private static function updateAssociatedActivities ($campaignId) {
+    $retrieveParams = array('campaign_id' => $campaignId);
+    $retrievedActivities = CRM_Volunteer_BAO_Assignment::retrieve($retrieveParams);
+    
+    foreach ($retrievedActivities as $retrievedActivity) {
+      // There is a bug where updating the activity via the Activity API with the params id and campaign_id giving a 'constraint error'.
+      // $updateVolunteerParams = array(
+      //  'id' => $retrievedActivity['id'],
+      //  'campaign_id' => $campaignId,
+      // );
+      // CRM_Volunteer_BAO_Assignment::createVolunteerActivity($updateVolunteerParams);
+      CRM_Core_DAO::executeQuery('UPDATE civicrm_activity SET campaign_id = %1 WHERE id = %2', array(1 => array($campaignId, 'Integer'), 2 => array($retrievedActivity['id'], 'Integer'))); 
+    }
+  }
+  
   /**
    * Find out if a project is active
    *
@@ -688,3 +713,4 @@ class CRM_Volunteer_BAO_Project extends CRM_Volunteer_DAO_Project {
     return self::getFlexibleNeedID($this->id);
   }
 }
+

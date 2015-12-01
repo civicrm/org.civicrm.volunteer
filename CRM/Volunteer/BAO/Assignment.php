@@ -251,7 +251,7 @@ class CRM_Volunteer_BAO_Assignment extends CRM_Volunteer_BAO_Activity {
 
       $project = CRM_Volunteer_BAO_Project::retrieveByID($need['project_id']);
 
-      if (!empty($project->campaign_id)) {
+      if (!array_key_exists('campaign_id', $params)) {
         $params['campaign_id'] = $project->campaign_id;
       }
 
