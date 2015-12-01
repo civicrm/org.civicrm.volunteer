@@ -233,7 +233,7 @@ class CRM_Volunteer_BAO_Project extends CRM_Volunteer_DAO_Project {
     }
 
     if ($op == CRM_Core_Action::UPDATE) {
-      self::updateAssociatedActivities($params['campaign_id']);
+      self::updateAssociatedActivities($project->id, $params['campaign_id']);
     }
     
     return $project;
@@ -245,8 +245,8 @@ class CRM_Volunteer_BAO_Project extends CRM_Volunteer_DAO_Project {
    * 
    * @param int campaignId
    */
-  private static function updateAssociatedActivities ($campaignId) {
-    $retrieveParams = array('campaign_id' => $campaignId);
+  private static function updateAssociatedActivities ($projectId, $campaignId) {
+    $retrieveParams = array('project_id' => $projectId);
     $retrievedActivities = CRM_Volunteer_BAO_Assignment::retrieve($retrieveParams);
     
     foreach ($retrievedActivities as $retrievedActivity) {
