@@ -255,17 +255,14 @@ class CRM_Volunteer_BAO_Assignment extends CRM_Volunteer_BAO_Activity {
         $params['campaign_id'] = $project->campaign_id;
       }
 
-      // Look up details in the base entity (e.g. event) as a fallback default
-      if ((empty($need['start_time']) || empty($params['subject'])) && empty($params['id'])) {
-        if (empty($params['activity_date_time']) && empty($params['id'])) {
-          // if the related entity doesn't provide a good default, use tomorrow
-          $tomorrow = date('Y-m-d H:i:s', strtotime('tomorrow'));
-          $params['activity_date_time'] = CRM_Utils_Array::value('start_time', $project->getEntityAttributes(), $tomorrow);
-        }
+      if (empty($params['activity_date_time']) && empty($params['id'])) {
+        // if the related entity doesn't provide a good default, use tomorrow
+        $tomorrow = date('Y-m-d H:i:s', strtotime('tomorrow'));
+        $params['activity_date_time'] = CRM_Utils_Array::value('start_time', $project->getEntityAttributes(), $tomorrow);
+      }
 
-        if (empty($params['subject']) && empty($params['id'])) {
-          $params['subject'] = $project->title;
-        }
+      if (empty($params['subject']) && empty($params['id'])) {
+        $params['subject'] = $project->title;
       }
     }
 
