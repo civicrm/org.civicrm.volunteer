@@ -319,3 +319,44 @@ function civicrm_api3_volunteer_project_savelocblock($params) {
   return civicrm_api3_create_success($location['id'], "VolunteerProject", "SaveLocBlock", $params);
 
 }
+
+
+
+/**
+ * Gets the default values for a new project. This is used to connect
+ * the angular front-end with the settings page/hook values.
+ *
+ * @param $params
+ * @return array
+ *
+ */
+function civicrm_api3_volunteer_project_defaults($params) {
+  $defaults = array();
+
+
+  $defaults["relationships"] = array(
+    //"volunteer_owner" => "user_contact_id",
+    1 => array("user_contact_id"),
+    //"volunteer_manager" => "user_contact_id"
+    2 => array("user_contact_id")
+  );
+
+  //Set default beneficiary to user's Employer
+  $result = civicrm_api3('Relationship', 'get', array(
+    'sequential' => 1,
+    'return' => "contact_id_b",
+    'contact_id_a' => "user_contact_id",
+    'relationship_type_id' => 5,
+    'is_active' => 1,
+  ));
+
+  $bene = array(1);
+  if ($result['is_error'] == 0 || $result['count'] == 1) {
+    $bene = array($result['values'][0]['contact_id_b']);
+  }
+
+  //$defaults["relationships"]['volunteer_beneficiary'] = $bene;
+  $defaults["relationships"][3] = $bene;
+
+  return civicrm_api3_create_success($defaults["relationships"], "VolunteerProject", "defaults", $params);
+}
