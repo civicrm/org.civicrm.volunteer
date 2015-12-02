@@ -168,6 +168,26 @@ class CRM_Volunteer_BAO_Project extends CRM_Volunteer_DAO_Project {
   }
 
   /**
+   * Gets related contacts of a project nested by relationship type
+   *
+   * @param int $projectId
+   * @return array
+   *   Multidimensional array of contacts relationship_type_id => [contacts]
+   */
+  static function getContactsNestedbyRelationship($projectId) {
+    $tmp = array("project_id" => $projectId);
+    $result = _civicrm_api3_basic_get("CRM_Volunteer_BAO_ProjectContact", $tmp);
+    $values = array();
+    foreach($result['values'] as $relationship) {
+      if(!array_key_exists($relationship['relationship_type_id'], $values)) {
+        $values[$relationship['relationship_type_id']] = array();
+      }
+      $values[$relationship['relationship_type_id']][] = $relationship['contact_id'];
+    }
+    return $values;
+  }
+
+  /**
    * Create a Volunteer Project
    *
    * Takes an associative array and creates a Project object. This function is
@@ -209,16 +229,24 @@ class CRM_Volunteer_BAO_Project extends CRM_Volunteer_DAO_Project {
 
     $project->save();
 
+    $existingContacts = CRM_Volunteer_BAO_Project::getContactsNestedbyRelationship($project->id);
     $projectContacts = CRM_Utils_Array::value('project_contacts', $params, array());
-    foreach ($projectContacts as $relationshipType => $contactIds) {
+    foreach ($projectContacts as $relationshipType => &$contactIds) {
+      if(!is_array($contactIds)) {
+        $contactIds = array($contactIds);
+      }
       foreach ($contactIds as $id) {
-        civicrm_api3('VolunteerProjectContact', 'create', array(
-          'contact_id' => $id,
-          'project_id' => $project->id,
-          'relationship_type_id' => $relationshipType,
-        ));
+        if(!array_key_exists($relationshipType, $existingContacts) || !in_array($id, $existingContacts[$relationshipType])) {
+          civicrm_api3('VolunteerProjectContact', 'create', array(
+            'contact_id' => $id,
+            'project_id' => $project->id,
+            'relationship_type_id' => $relationshipType,
+          ));
+        }
       }
     }
+
+    $project->contacts = $projectContacts;
 
     $profiles = CRM_Utils_Array::value('profiles', $params, array());
     foreach ($profiles as $profile) {
