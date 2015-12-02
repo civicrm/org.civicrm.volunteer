@@ -233,7 +233,7 @@ class CRM_Volunteer_BAO_Project extends CRM_Volunteer_DAO_Project {
     }
 
     if ($op == CRM_Core_Action::UPDATE) {
-      self::updateAssociatedActivities($project->id, $params['campaign_id']);
+      $project->updateAssociatedActivities(array('campaign_id' => $params['campaign_id']));
     }
     
     return $project;
@@ -243,10 +243,10 @@ class CRM_Volunteer_BAO_Project extends CRM_Volunteer_DAO_Project {
    * If our project is updated, we also update the details. 
    * At the moment this is just campaign ids.
    * 
-   * @param int campaignId
+   * @param array paramsToUpdate the activity values to update i.e. array('campaign_id' => 1)
    */
-  private static function updateAssociatedActivities ($projectId, $campaignId) {
-    $retrieveParams = array('project_id' => $projectId);
+  public function updateAssociatedActivities ($paramsToUpdate) {
+    $retrieveParams = array('project_id' => $this->id);
     $retrievedActivities = CRM_Volunteer_BAO_Assignment::retrieve($retrieveParams);
     
     foreach ($retrievedActivities as $retrievedActivity) {
@@ -256,7 +256,7 @@ class CRM_Volunteer_BAO_Project extends CRM_Volunteer_DAO_Project {
       //  'campaign_id' => $campaignId,
       // );
       // CRM_Volunteer_BAO_Assignment::createVolunteerActivity($updateVolunteerParams);
-      CRM_Core_DAO::executeQuery('UPDATE civicrm_activity SET campaign_id = %1 WHERE id = %2', array(1 => array($campaignId, 'Integer'), 2 => array($retrievedActivity['id'], 'Integer'))); 
+      CRM_Core_DAO::executeQuery('UPDATE civicrm_activity SET campaign_id = %1 WHERE id = %2', array(1 => array($paramsToUpdate['campaign_id'], 'Integer'), 2 => array($retrievedActivity['id'], 'Integer'))); 
     }
   }
   
