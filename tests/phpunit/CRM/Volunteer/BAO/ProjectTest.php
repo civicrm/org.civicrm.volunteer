@@ -292,12 +292,13 @@ class CRM_Volunteer_BAO_ProjectTest extends VolunteerTestAbstract {
     $result = civicrm_api3('Activity', 'create', array(
       'sequential' => 1,
       'activity_type_id' => 1,
+      'source_contact_id' => 2,
     ));
     
     $result = civicrm_api3('Activity', 'create', array(
       'sequential' => 1,
       'id' => $result['id'],    
-      'campaign_id' => $campaign['values']['title'],
+      'campaign_id' => $campaign['values'][0]['name'],
     ));
   }
   
