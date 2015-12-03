@@ -254,7 +254,46 @@ class CRM_Volunteer_BAO_ProjectTest extends VolunteerTestAbstract {
    * for each associated activity is as well.
    */
   function testProjectCampaignUpdate() {
-    // begin setup
+    $testObjects = $this->_createTestObjects();
+
+    CRM_Volunteer_BAO_Project::create(array(
+      'campaign_id' => $testObjects['campaign']->id,
+      'id' => $testObjects['project']->id,
+    ));
+
+    $updatedActivity = CRM_Volunteer_BAO_Assignment::findById($testObjects['activity']['id']);
+    $this->assertEquals($testObjects['campaign']->id, $updatedActivity->campaign_id,
+        'Activity campaign was not updated with project campaign');
+  }
+  
+  /**
+   * VOL-154: Verifies that, when a project's campaign is set to null, that associated
+   * activites are also set as not being part of a campaign.
+   */
+  function testProjectCampaignRemove() {
+    $testObjects = $this->_createTestObjects();
+
+    CRM_Volunteer_BAO_Project::create(array(
+      'campaign_id' => '',
+      'id' => $testObjects['project']->id,
+    ));
+
+    $updatedActivity = CRM_Volunteer_BAO_Assignment::findById($activity['id']);
+    $this->assertEquals('', $updatedActivity->campaign_id,
+        'Activity campaign was not updated with project campaign');
+  }
+  
+  /**
+   * Creates test case data for use in the Unit Tests.
+   * 
+   * return $returnObjects array(
+   *   'project' => CRM_Volunteer_BAO_Project, 
+   *   'need' => CRM_Volunteer_BAO_Need, 
+   *   'activity' => VolunteerAssignment, 
+   *   'campaign' => CRM_Campaign_BAO_Campaign
+   * )
+   */
+  function _createTestObjects(){
     $project = CRM_Core_DAO::createTestObject('CRM_Volunteer_BAO_Project');
     $this->assertObjectHasAttribute('id', $project, 'Failed to prepopulate Volunteer Project');
 
@@ -271,16 +310,12 @@ class CRM_Volunteer_BAO_ProjectTest extends VolunteerTestAbstract {
 
     $campaign = CRM_Core_DAO::createTestObject('CRM_Campaign_BAO_Campaign');
     $this->assertObjectHasAttribute('id', $campaign, 'Failed to prepopulate Campaign');
-    // end setup
-
-    CRM_Volunteer_BAO_Project::create(array(
-      'campaign_id' => $campaign->id,
-      'id' => $project->id,
-    ));
-
-    $updatedActivity = CRM_Volunteer_BAO_Assignment::findById($activity['id']);
-    $this->assertEquals($campaign->id, $updatedActivity->campaign_id,
-        'Activity campaign was not updated with project campaign');
+    
+    return array(
+      'project' => $project, 
+      'need' => $need, 
+      'activity' => $activity, 
+      'campaign' => $campaign,
+    );
   }
-
 }
