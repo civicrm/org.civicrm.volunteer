@@ -251,12 +251,12 @@ class CRM_Volunteer_BAO_Project extends CRM_Volunteer_DAO_Project {
     
     foreach ($retrievedActivities as $retrievedActivity) {
       // There is a bug where updating the activity via the Activity API with the params id and campaign_id giving a 'constraint error'.
-      // $updateVolunteerParams = array(
-      //  'id' => $retrievedActivity['id'],
-      //  'campaign_id' => $campaignId,
-      // );
-      // CRM_Volunteer_BAO_Assignment::createVolunteerActivity($updateVolunteerParams);
-      CRM_Core_DAO::executeQuery('UPDATE civicrm_activity SET campaign_id = %1 WHERE id = %2', array(1 => array($paramsToUpdate['campaign_id'], 'Integer'), 2 => array($retrievedActivity['id'], 'Integer'))); 
+      $updateVolunteerParams = array(
+       'id' => $retrievedActivity['id'],
+       'campaign_id' => $paramsToUpdate['campaign_id'],
+      );
+      CRM_Volunteer_BAO_Assignment::createVolunteerActivity($updateVolunteerParams);
+      // CRM_Core_DAO::executeQuery('UPDATE civicrm_activity SET campaign_id = %1 WHERE id = %2', array(1 => array($paramsToUpdate['campaign_id'], 'Integer'), 2 => array($retrievedActivity['id'], 'Integer'))); 
     }
   }
   
