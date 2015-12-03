@@ -265,7 +265,7 @@ class CRM_Volunteer_BAO_ProjectTest extends VolunteerTestAbstract {
     $this->assertEquals($testObjects['campaign']->id, $updatedActivity->campaign_id,
         'Activity campaign was not updated with project campaign');
   }
-  
+
   /**
    * VOL-154: Verifies that, when a project's campaign is set to null, that associated
    * activites are also set as not being part of a campaign.
@@ -278,9 +278,27 @@ class CRM_Volunteer_BAO_ProjectTest extends VolunteerTestAbstract {
       'id' => $testObjects['project']->id,
     ));
 
-    $updatedActivity = CRM_Volunteer_BAO_Assignment::findById($activity['id']);
+    $updatedActivity = CRM_Volunteer_BAO_Assignment::findById($testObjects['activity']['id']);
     $this->assertEquals('', $updatedActivity->campaign_id,
         'Activity campaign was not updated with project campaign');
+  }
+  
+  function testCampaignProcedure() {
+    $campaign = civicrm_api3('Campaign', 'create', array(
+      'sequential' => 1,
+      'title' => "test campaign",
+    ));
+    
+    $result = civicrm_api3('Activity', 'create', array(
+      'sequential' => 1,
+      'activity_type_id' => 1,
+    ));
+    
+    $result = civicrm_api3('Activity', 'create', array(
+      'sequential' => 1,
+      'id' => $result['id'],    
+      'campaign_id' => $campaign['values']['title'],
+    ));
   }
   
   /**

@@ -251,8 +251,15 @@ class CRM_Volunteer_BAO_Assignment extends CRM_Volunteer_BAO_Activity {
 
       $project = CRM_Volunteer_BAO_Project::retrieveByID($need['project_id']);
 
-      if (!array_key_exists('campaign_id', $params)) {
-        $params['campaign_id'] = $project->campaign_id;
+      if (!empty($project->campaign_id)){
+        $result = civicrm_api3('Campaign', 'getsingle', array(
+          'sequential' => 1,
+          'id' => $project->campaign_id,
+        ));
+        $params['campaign_id'] = $result['id']; //['name'];
+      }
+      else {
+        $params['campaign_id'] = '';
       }
 
       if (empty($params['activity_date_time']) && empty($params['id'])) {
