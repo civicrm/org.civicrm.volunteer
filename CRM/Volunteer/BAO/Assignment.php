@@ -221,6 +221,90 @@ class CRM_Volunteer_BAO_Assignment extends CRM_Volunteer_BAO_Activity {
   }
 
   /**
+   * Sets the activity's volunteer_role_id, time_scheduled_minutes, the target contacts,
+   * the campaign_id, activity_date_time, and subject.
+   *
+   * @param array &$params the params for the create api call.
+   */
+  private static function setVolunteerActivityDefaultParamsFromNeed(&$params) {
+    // Creating a new Assignment and have a volunteer need id - look up the need and project entries.
+    $volunteerNeed = civicrm_api3('volunteer_need', 'getsingle', array('id' => $params['volunteer_need_id']));
+    $project = CRM_Volunteer_BAO_Project::retrieveByID($volunteerNeed['project_id']);
+
+    // Set basic defaults.
+    $params['volunteer_role_id'] = CRM_Utils_Array::value('volunteer_role_id', $params, CRM_Utils_Array::value('role_id', $volunteerNeed));
+    $params['time_scheduled_minutes'] = CRM_Utils_Array::value('time_scheduled_minutes', $params, CRM_Utils_Array::value('duration', $volunteerNeed));
+
+    // Set the Target Contacts to be the Project Contacts.
+    $projectContact = civicrm_api3('VolunteerProjectContact', 'get', array(
+      'project_id' => $volunteerNeed['project_id'],
+      'relationship_type_id' => 'volunteer_beneficiary',
+    ));
+    foreach ($projectContact['values'] as $pc) {
+      $params['target_contact_id'][] = $pc['contact_id'];
+    }
+
+    // Set the Campaign Id.
+    $params['campaign_id'] = $project->campaign_id ? $project->campaign_id : '';
+
+    // If the related entity doesn't provide a good default, use tomorrow.
+    if (empty($params['activity_date_time']) && empty($params['id'])) {
+      $tomorrow = date('Y-m-d H:i:s', strtotime('tomorrow'));
+      $params['activity_date_time'] = CRM_Utils_Array::value('start_time', $project->getEntityAttributes(), $tomorrow);
+    }
+
+    if (empty($params['subject']) && empty($params['id'])) {
+      $params['subject'] = $project->title;
+    }
+  }
+
+  /**
+   * Set the activity's create parameters based on default values.
+   *
+   * @param type &$params
+   */
+  public static function setVolunteerActivityDefaultParams(&$params) {
+    if (array_key_exists('volunteer_need_id', $params)) {
+      self::setVolunteerActivityDefaultParamsFromNeed($params);
+    }
+
+    // Might as well sync these, but seems redundant
+    if (!isset($params['duration']) && isset($params['time_completed_minutes'])) {
+      $params['duration'] = $params['time_completed_minutes'];
+    }
+
+    $params['activity_type_id'] = self::getActivityTypeId();
+  }
+
+  /**
+   * When updating an activity that already exists, sets the campaign id from 
+   * either the params array or the stored data.
+   * The assumption is made that the volunteer_need_id won't change after being initialised.
+   *
+   * @param array $params passed into the create api call.
+   * @return int or NULL
+   */
+  public static function volunteerActivitySetCampaignId($params) {
+    if (array_key_exists('campaign_id', $params)){
+      return;
+    }
+
+    try {
+      $needId = civicrm_api3('VolunteerAssignment', 'getvalue', array(
+        'sequential' => 1,
+        'id' => $params['id'],
+        'return' => "volunteer_need_id",
+      ));
+      $need = civicrm_api3('volunteer_need', 'getsingle', array('id' => $needId));
+      $project = CRM_Volunteer_BAO_Project::retrieveByID($need['project_id']);
+      $params['campaign_id'] = $project ? $project->campaign_id : '';
+    }
+    catch (Exception $ex) {
+      return;
+    }
+  }
+
+  /**
    * Creates a volunteer activity
    *
    * Wrapper around activity create API. Volunteer field names are translated
@@ -232,60 +316,31 @@ class CRM_Volunteer_BAO_Assignment extends CRM_Volunteer_BAO_Activity {
    */
   public static function createVolunteerActivity(array $params) {
     if (empty($params['id']) && empty($params['volunteer_need_id'])) {
-      CRM_Core_Error::fatal('Mandatory key missing from params array: volunteer_need_id');
+      CRM_Core_Error::fatal('Mandatory key missing from params array: id or volunteer_need_id');
     }
 
-    // Set default date role & duration if need is specified
-    if (!empty($params['volunteer_need_id'])) {
-      $need = civicrm_api3('volunteer_need', 'getsingle', array('id' => $params['volunteer_need_id']));
-      $params['volunteer_role_id'] = CRM_Utils_Array::value('volunteer_role_id', $params, CRM_Utils_Array::value('role_id', $need));
-      $params['time_scheduled_minutes'] = CRM_Utils_Array::value('time_scheduled_minutes', $params, CRM_Utils_Array::value('duration', $need));
-
-      $projectContact = civicrm_api3('VolunteerProjectContact', 'get', array(
-        'project_id' => $need['project_id'],
-        'relationship_type_id' => 'volunteer_beneficiary',
-      ));
-      foreach ($projectContact['values'] as $pc) {
-        $params['target_contact_id'][] = $pc['contact_id'];
-      }
-
-      $project = CRM_Volunteer_BAO_Project::retrieveByID($need['project_id']);
-
-      if (!empty($project->campaign_id)){
-        $result = civicrm_api3('Campaign', 'getsingle', array(
-          'sequential' => 1,
-          'id' => $project->campaign_id,
-        ));
-        $params['campaign_id'] = $result['id']; //['name'];
-      }
-      else {
-        $params['campaign_id'] = '';
-      }
-
-      if (empty($params['activity_date_time']) && empty($params['id'])) {
-        // if the related entity doesn't provide a good default, use tomorrow
-        $tomorrow = date('Y-m-d H:i:s', strtotime('tomorrow'));
-        $params['activity_date_time'] = CRM_Utils_Array::value('start_time', $project->getEntityAttributes(), $tomorrow);
-      }
-
-      if (empty($params['subject']) && empty($params['id'])) {
-        $params['subject'] = $project->title;
-      }
+    // If we're creating a new Assignment, set additional defaults.
+    if (empty($params['id'])){
+      self::setVolunteerActivityDefaultParams($params);
+    }
+    // If we're updating an Assignment that already exists find set the campaign data.
+    elseif (!empty($params['id'])) {
+      $project = self::volunteerActivitySetCampaignId($params);
     }
 
-    // Might as well sync these, but seems redundant
-    if (!isset($params['duration']) && isset($params['time_completed_minutes'])) {
-      $params['duration'] = $params['time_completed_minutes'];
-    }
-
-    $params['activity_type_id'] = self::getActivityTypeId();
-
+    // Format custom fields to update the api correctly.
     foreach(self::getCustomFields() as $fieldName => $field) {
       if (isset($params[$fieldName])) {
         $params['custom_' . $field['id']] = $params[$fieldName];
         unset($params[$fieldName]);
       }
     }
+
+    // Clear cache as this updates the pseudoconstants list.
+    // If the pseudoconstants are out of date it will throw an exception when
+    // looking up matching campaigns etc.
+    // Removing this will make unit tests fail.
+    $params['cache_clear'] = 1;
 
     $activity = civicrm_api3('Activity', 'create', $params);
 
