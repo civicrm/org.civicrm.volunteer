@@ -46,7 +46,6 @@
           },
           relationship_data: function(crmApi, $route) {
             if ($route.current.params.projectId == 0) {
-              //return {"values": []};
               return crmApi('VolunteerProject', 'defaults', {});
             } else {
               return crmApi('VolunteerProjectContact', 'get', {
@@ -207,9 +206,7 @@
         if($scope.project.loc_block_id == 0) {
           $scope.locBlockIsDirty = true;
         }
-        console.log("saving");
         return crmApi('VolunteerProject', 'create', $scope.project).then(function(result) {
-          console.log("project Saved");
           var projectId = result.values.id;
 
           //Save the LocBlock
@@ -218,7 +215,7 @@
             $scope.locBlock.id = result.values.loc_block_id;
             crmApi('VolunteerProject', 'savelocblock', $scope.locBlock);
           }
-          
+
           return projectId;
         });
       } else {
