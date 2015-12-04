@@ -156,7 +156,9 @@ class CRM_Volunteer_Form_VolunteerSignUp extends CRM_Core_Form {
 
       foreach ($this->_projects as $project) {
         foreach ($project['profiles'] as $profile) {
-          $profileIds[] = $profile['uf_group_id'];
+          if(CRM_Utils_Array::value("module_data", $profile) != "additional") {
+            $profileIds[] = $profile['uf_group_id'];
+          }
         }
       }
 
