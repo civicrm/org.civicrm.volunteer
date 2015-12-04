@@ -235,30 +235,30 @@ class CRM_Volunteer_BAO_Project extends CRM_Volunteer_DAO_Project {
     if ($op == CRM_Core_Action::UPDATE) {
       $project->updateAssociatedActivities(array('campaign_id' => $params['campaign_id']));
     }
-    
+
     return $project;
   }
 
   /**
-   * If our project is updated, we also update the details. 
+   * If our project is updated, we also update the details.
    * At the moment this is just campaign ids.
-   * 
+   *
    * @param array paramsToUpdate the activity values to update i.e. array('campaign_id' => 1)
    */
   public function updateAssociatedActivities ($paramsToUpdate) {
     $retrieveParams = array('project_id' => $this->id);
     $retrievedActivities = CRM_Volunteer_BAO_Assignment::retrieve($retrieveParams);
-    
+
     foreach ($retrievedActivities as $retrievedActivity) {
       $updateVolunteerParams = array(
         'id' => $retrievedActivity['id'],
         'campaign_id' => $paramsToUpdate['campaign_id'],
-        // No need to pass in campaign id as this is looked up from the project internally.
+        // If campaign_id is passed in it is looked up from the project internally.
       );
       CRM_Volunteer_BAO_Assignment::createVolunteerActivity($updateVolunteerParams);
     }
   }
-  
+
   /**
    * Find out if a project is active
    *
