@@ -43,6 +43,10 @@
   margin-top: 2em;
 }
 
+.crm-volunteer-profile-use-type {
+  float: left;
+  margin-right: 10px;
+}
 .crm-container fieldset.crm-vol-ui-fieldset, fieldset.crm-vol-ui-fieldset {
   border: 1px solid #aaa;
 }
@@ -50,6 +54,15 @@
 .crm-button-remove-profile {
   display: inline-block;
   float: left;
+}
+
+#org_civicrm_volunteer-sign-up-profiles .crm-profile-selector-container select {
+  margin-bottom: 10px;
+}
+
+#org_civicrm_volunteer-sign-up-profiles .crm-profile-selector-container hr {
+  margin-top: 10px;
+  margin-bottom: 10px;
 }
 
 #org_civicrm_volunteer-sign-up-profiles .crm-profile-selector-container:only-child .crm-button-remove-profile {

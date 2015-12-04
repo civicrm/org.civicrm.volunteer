@@ -92,6 +92,7 @@
         "module": "CiviVolunteer",
         "entity_table": "civicrm_volunteer_project",
         "weight": "1",
+        "module_data": "primary",
         "uf_group_id": supporting_data.values.defaults.profile
       }];
     }
@@ -149,6 +150,7 @@
         "entity_table": "civicrm_volunteer_project",
         "is_active": "1",
         "module": "CiviVolunteer",
+        "module_data": "primary",
         "weight": getMaxProfileWeight() + 1
       });
     };
@@ -164,6 +166,23 @@
     $scope.removeProfile = function(index) {
       $scope.profiles.splice(index, 1);
     };
+
+    $scope.validateProfileTypes = function() {
+      var hasAdditionalProfileType = false;
+      var valid = true;
+      $.each($scope.profiles, function (index, data) {
+        if(data.module_data == "additional" || data.module_data == "both") {
+          if(hasAdditionalProfileType) {
+            CRM.alert(ts("You may only have one profile that is used for additional volunteers"), ts("Warning"), "error");
+            valid = false;
+          } else {
+            hasAdditionalProfileType = true;
+          }
+        }
+      });
+      return valid;
+    };
+
     $scope.validateProject = function() {
       var valid = true;
 
@@ -184,6 +203,7 @@
         }
       });
 
+      valid = (valid && $scope.validateProfileTypes());
 
       //Do some validation here...
 
@@ -214,7 +234,7 @@
           return projectId;
         });
       } else {
-        return false;
+        return $q.reject(false);
       }
     };
 

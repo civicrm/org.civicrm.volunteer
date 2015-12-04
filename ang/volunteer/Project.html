@@ -128,13 +128,22 @@
             <span class="icon ui-icon-circle-close"></span>
           </a>
 
+          <div class="crm-volunteer-profile-use-type">
+            <label>{{ts("Use For:")}}</label>
+            <select ng-model="profile.module_data" crm-ui-select="{}" ng-change="validateProfileTypes()">
+              <option value="primary">{{ts("Primary Volunteer")}}</option>
+              <option value="additional">{{ts("Additional Volunteers")}}</option>
+              <option value="both">{{ts("All Volunteers")}}</option>
+            </select>
+          </div>
+
           <input ng-if="supporting_data.use_profile_editor" crm-profile-selector="{}" ng-model="profile.uf_group_id" />
 
           <select ng-if="!supporting_data.use_profile_editor" class="big crm-form-select crm-vol-simple-profile-selector" crm-ui-select="{placeholder: '', allowClear:true}"
                   ng-options="item as item.title for item in supporting_data.profile_list track by item.id" ng-model="profile.uf_group_id">
             <option />
           </select>
-
+          <hr />
         </div>
       </div>
       <a ng-click="addProfile()" class="crm-hover-button crm-button-add-profile" style="display: inline-block;">
