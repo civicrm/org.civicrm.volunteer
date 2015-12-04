@@ -70,15 +70,17 @@ function civicrm_api3_volunteer_project_create($params) {
   }
 
   //Cleanup Project Contacts
-  $contacts = civicrm_api3("VolunteerProjectContact", "get",
-    array(
-      'project_id' => $project->id,
-      'sequential' => 1
-    ));
+  if(array_key_exists("project_contacts", $params)) {
+    $contacts = civicrm_api3("VolunteerProjectContact", "get",
+      array(
+        'project_id' => $project->id,
+        'sequential' => 1
+      ));
 
-  foreach($contacts['values'] as $contact) {
-    if( !array_key_exists($contact['relationship_type_id'], $project->contacts) || !in_array($contact['contact_id'], $project->contacts[$contact['relationship_type_id']])) {
-      civicrm_api3("VolunteerProjectContact", "delete", array("id" => $contact['id']));
+    foreach ($contacts['values'] as $contact) {
+      if (!array_key_exists($contact['relationship_type_id'], $project->contacts) || !in_array($contact['contact_id'], $project->contacts[$contact['relationship_type_id']])) {
+        civicrm_api3("VolunteerProjectContact", "delete", array("id" => $contact['id']));
+      }
     }
   }
 
