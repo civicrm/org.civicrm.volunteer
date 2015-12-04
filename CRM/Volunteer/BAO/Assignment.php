@@ -284,7 +284,7 @@ class CRM_Volunteer_BAO_Assignment extends CRM_Volunteer_BAO_Activity {
    * @param array $params passed into the create api call.
    * @return int or NULL
    */
-  public static function volunteerActivitySetCampaignId($params) {
+  public static function volunteerActivitySetCampaignIdParam(&$params) {
     if (array_key_exists('campaign_id', $params)){
       return;
     }
@@ -298,6 +298,10 @@ class CRM_Volunteer_BAO_Assignment extends CRM_Volunteer_BAO_Activity {
       $need = civicrm_api3('volunteer_need', 'getsingle', array('id' => $needId));
       $project = CRM_Volunteer_BAO_Project::retrieveByID($need['project_id']);
       $params['campaign_id'] = $project ? $project->campaign_id : '';
+      // Force it to be empty string, if it's NULL it won't update.
+      if ($params['campaign_id'] == NULL) {
+        $params['campaign_id'] = '';
+      }
     }
     catch (Exception $ex) {
       return;
@@ -325,7 +329,7 @@ class CRM_Volunteer_BAO_Assignment extends CRM_Volunteer_BAO_Activity {
     }
     // If we're updating an Assignment that already exists find set the campaign data.
     elseif (!empty($params['id'])) {
-      $project = self::volunteerActivitySetCampaignId($params);
+      $project = self::volunteerActivitySetCampaignIdParam($params);
     }
 
     // Format custom fields to update the api correctly.

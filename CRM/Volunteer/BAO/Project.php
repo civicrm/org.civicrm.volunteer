@@ -233,7 +233,7 @@ class CRM_Volunteer_BAO_Project extends CRM_Volunteer_DAO_Project {
     }
 
     if ($op == CRM_Core_Action::UPDATE) {
-      $project->updateAssociatedActivities(array('campaign_id' => $params['campaign_id']));
+      $project->updateAssociatedActivities(array()); // No need to pass in campaign id, this is updated from the project.
     }
 
     return $project;
@@ -250,10 +250,9 @@ class CRM_Volunteer_BAO_Project extends CRM_Volunteer_DAO_Project {
     $retrievedActivities = CRM_Volunteer_BAO_Assignment::retrieve($retrieveParams);
 
     foreach ($retrievedActivities as $retrievedActivity) {
+      // No need to pass in campaign_id, this is updated from the project inside createVolunteerActivity.
       $updateVolunteerParams = array(
         'id' => $retrievedActivity['id'],
-        'campaign_id' => $paramsToUpdate['campaign_id'],
-        // If campaign_id is passed in it is looked up from the project internally.
       );
       CRM_Volunteer_BAO_Assignment::createVolunteerActivity($updateVolunteerParams);
     }
