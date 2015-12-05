@@ -232,7 +232,7 @@ class CRM_Volunteer_BAO_Project extends CRM_Volunteer_DAO_Project {
       }
     }
 
-    if ($op == CRM_Core_Action::UPDATE) {
+    if ($op === CRM_Core_Action::UPDATE && array_key_exists('campaign_id', $params)) {
       $project->updateAssociatedActivities();
     }
 
