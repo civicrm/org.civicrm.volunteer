@@ -233,28 +233,29 @@ class CRM_Volunteer_BAO_Project extends CRM_Volunteer_DAO_Project {
     }
 
     if ($op == CRM_Core_Action::UPDATE) {
-      $project->updateAssociatedActivities(array()); // No need to pass in campaign id, this is updated from the project.
+      $project->updateAssociatedActivities();
     }
 
     return $project;
   }
 
   /**
-   * If our project is updated, we also update the details.
-   * At the moment this is just campaign ids.
+   * Facilitates propagatation of changes in a Project to associated Activities.
    *
-   * @param array paramsToUpdate the activity values to update i.e. array('campaign_id' => 1)
+   * This method takes no arguments because the Assignment BAO handles
+   * propagation internally.
+   *
+   * @see CRM_Volunteer_BAO_Assignment::setActivityDefaults()
    */
-  public function updateAssociatedActivities ($paramsToUpdate) {
-    $retrieveParams = array('project_id' => $this->id);
-    $retrievedActivities = CRM_Volunteer_BAO_Assignment::retrieve($retrieveParams);
+  public function updateAssociatedActivities () {
+    $activities = CRM_Volunteer_BAO_Assignment::retrieve(array(
+      'project_id' => $this->id,
+    ));
 
-    foreach ($retrievedActivities as $retrievedActivity) {
-      // No need to pass in campaign_id, this is updated from the project inside createVolunteerActivity.
-      $updateVolunteerParams = array(
-        'id' => $retrievedActivity['id'],
-      );
-      CRM_Volunteer_BAO_Assignment::createVolunteerActivity($updateVolunteerParams);
+    foreach ($activities as $activity) {
+      CRM_Volunteer_BAO_Assignment::createVolunteerActivity(array(
+        'id' => $activity['id'],
+      ));
     }
   }
 
@@ -710,5 +711,5 @@ class CRM_Volunteer_BAO_Project extends CRM_Volunteer_DAO_Project {
   private function _get_flexible_need_id() {
     return self::getFlexibleNeedID($this->id);
   }
-}
 
+}
