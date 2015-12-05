@@ -43,7 +43,7 @@ class CRM_Volunteer_BAO_ProjectTest extends VolunteerTestAbstract {
     $this->assertTrue(CRM_Volunteer_BAO_Project::isOff('0'));
   }
 
-  function testProjectRetrieveByID () {
+  function testProjectRetrieveByID() {
     $project = CRM_Core_DAO::createTestObject('CRM_Volunteer_BAO_Project');
     $this->assertObjectHasAttribute('id', $project, 'Failed to prepopulate Volunteer Project');
 
@@ -264,7 +264,7 @@ class CRM_Volunteer_BAO_ProjectTest extends VolunteerTestAbstract {
     $updatedActivity = CRM_Volunteer_BAO_Assignment::findById($testObjects['activity']['id']);
     $this->assertEquals($testObjects['campaign']->id, $updatedActivity->campaign_id,
         'Activity campaign was not updated with project campaign');
-    
+
     // Test unsetting campaign from a project.
     CRM_Volunteer_BAO_Project::create(array(
       'campaign_id' => '',
@@ -273,20 +273,20 @@ class CRM_Volunteer_BAO_ProjectTest extends VolunteerTestAbstract {
 
     $updatedActivity = CRM_Volunteer_BAO_Assignment::findById($testObjects['activity']['id']);
     $this->assertEquals('', $updatedActivity->campaign_id,
-        'Activity campaign was not updated with empty project campaign');  
+        'Activity campaign was not updated with empty project campaign');
   }
 
   /**
    * Creates test case data for use in the Unit Tests.
-   * 
+   *
    * return $returnObjects array(
-   *   'project' => CRM_Volunteer_BAO_Project, 
-   *   'need' => CRM_Volunteer_BAO_Need, 
-   *   'activity' => VolunteerAssignment, 
+   *   'project' => CRM_Volunteer_BAO_Project,
+   *   'need' => CRM_Volunteer_BAO_Need,
+   *   'activity' => api.VolunteerAssignment.create,
    *   'campaign' => CRM_Campaign_BAO_Campaign
    * )
    */
-  function _createTestObjects(){
+  function _createTestObjects() {
     $project = CRM_Core_DAO::createTestObject('CRM_Volunteer_BAO_Project');
     $this->assertObjectHasAttribute('id', $project, 'Failed to prepopulate Volunteer Project');
 
@@ -303,12 +303,13 @@ class CRM_Volunteer_BAO_ProjectTest extends VolunteerTestAbstract {
 
     $campaign = CRM_Core_DAO::createTestObject('CRM_Campaign_BAO_Campaign');
     $this->assertObjectHasAttribute('id', $campaign, 'Failed to prepopulate Campaign');
-    
+
     return array(
-      'project' => $project, 
-      'need' => $need, 
-      'activity' => $activity, 
+      'project' => $project,
+      'need' => $need,
+      'activity' => $activity,
       'campaign' => $campaign,
     );
   }
+
 }
