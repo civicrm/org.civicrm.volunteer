@@ -232,7 +232,31 @@ class CRM_Volunteer_BAO_Project extends CRM_Volunteer_DAO_Project {
       }
     }
 
+    if ($op === CRM_Core_Action::UPDATE && array_key_exists('campaign_id', $params)) {
+      $project->updateAssociatedActivities();
+    }
+
     return $project;
+  }
+
+  /**
+   * Facilitates propagatation of changes in a Project to associated Activities.
+   *
+   * This method takes no arguments because the Assignment BAO handles
+   * propagation internally.
+   *
+   * @see CRM_Volunteer_BAO_Assignment::setActivityDefaults()
+   */
+  public function updateAssociatedActivities () {
+    $activities = CRM_Volunteer_BAO_Assignment::retrieve(array(
+      'project_id' => $this->id,
+    ));
+
+    foreach ($activities as $activity) {
+      CRM_Volunteer_BAO_Assignment::createVolunteerActivity(array(
+        'id' => $activity['id'],
+      ));
+    }
   }
 
   /**
@@ -687,4 +711,5 @@ class CRM_Volunteer_BAO_Project extends CRM_Volunteer_DAO_Project {
   private function _get_flexible_need_id() {
     return self::getFlexibleNeedID($this->id);
   }
+
 }

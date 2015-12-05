@@ -43,7 +43,7 @@ class CRM_Volunteer_BAO_ProjectTest extends VolunteerTestAbstract {
     $this->assertTrue(CRM_Volunteer_BAO_Project::isOff('0'));
   }
 
-  function testProjectRetrieveByID () {
+  function testProjectRetrieveByID() {
     $project = CRM_Core_DAO::createTestObject('CRM_Volunteer_BAO_Project');
     $this->assertObjectHasAttribute('id', $project, 'Failed to prepopulate Volunteer Project');
 
@@ -247,6 +247,79 @@ class CRM_Volunteer_BAO_ProjectTest extends VolunteerTestAbstract {
 
     $contacts = CRM_Volunteer_BAO_Project::getContactsByRelationship($project->id, $relType);
     $this->assertTrue(in_array($contactId, $contacts));
+  }
+
+  /**
+   * VOL-154: Verifies that, when a project's campaign is updated, the campaign
+   * for each associated activity is as well.
+   */
+  function testProjectCampaignUpdate() {
+    $testObjects = $this->_createTestObjects();
+
+    CRM_Volunteer_BAO_Project::create(array(
+      'campaign_id' => $testObjects['campaign']->id,
+      'id' => $testObjects['project']->id,
+    ));
+
+    $updatedActivity = CRM_Volunteer_BAO_Assignment::findById($testObjects['activity']['id']);
+    $this->assertEquals($testObjects['campaign']->id, $updatedActivity->campaign_id,
+        'Activity campaign was not updated with project campaign');
+
+    // Test unsetting campaign from a project.
+    CRM_Volunteer_BAO_Project::create(array(
+      'campaign_id' => '',
+      'id' => $testObjects['project']->id,
+    ));
+
+    $updatedActivity = CRM_Volunteer_BAO_Assignment::findById($testObjects['activity']['id']);
+    $this->assertEquals('', $updatedActivity->campaign_id,
+        'Activity campaign was not updated with empty project campaign');
+  }
+
+  /**
+   * Creates test case data for use in the Unit Tests.
+   *
+   * return $returnObjects array(
+   *   'project' => CRM_Volunteer_BAO_Project,
+   *   'need' => CRM_Volunteer_BAO_Need,
+   *   'activity' => api.VolunteerAssignment.create,
+   *   'campaign' => CRM_Campaign_BAO_Campaign
+   * )
+   */
+  function _createTestObjects() {
+    $project = CRM_Core_DAO::createTestObject('CRM_Volunteer_BAO_Project');
+    $this->assertObjectHasAttribute('id', $project, 'Failed to prepopulate Volunteer Project');
+
+    $need = CRM_Core_DAO::createTestObject('CRM_Volunteer_BAO_Need', array(
+      'project_id' => $project->id,
+    ));
+    $this->assertObjectHasAttribute('id', $need, 'Failed to prepopulate Volunteer Need');
+
+    $campaign = CRM_Core_DAO::createTestObject('CRM_Campaign_BAO_Campaign');
+    $this->assertObjectHasAttribute('id', $campaign, 'Failed to prepopulate Campaign');
+
+    $activity = $this->callAPISuccess('VolunteerAssignment', 'create', array(
+      'assignee_contact_id' => 1,
+      // Passing the following parameter causes the pseudoconstants list to be
+      // updated. While generally not necessary, this is needed in a testing
+      // scenario because:
+      //   1. Campaigns are fundamentally stored as option group values, which
+      //      are cached rather than looked up directly.
+      //   2. This test creates a new campaign using CRM_Core_DAO::createTestObject()
+      //      instead of a standard function which would rebuild the caches for us.
+      //   3. api.Activity.create checks to make sure that the campaign ID passed
+      //      to it is valid, and throws an exception if it isn't.
+      'cache_clear' => 1,
+      'source_contact_id' => 1,
+      'volunteer_need_id' => $need->id,
+    ));
+
+    return array(
+      'project' => $project,
+      'need' => $need,
+      'activity' => $activity,
+      'campaign' => $campaign,
+    );
   }
 
 }
