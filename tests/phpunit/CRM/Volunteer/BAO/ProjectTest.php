@@ -295,14 +295,24 @@ class CRM_Volunteer_BAO_ProjectTest extends VolunteerTestAbstract {
     ));
     $this->assertObjectHasAttribute('id', $need, 'Failed to prepopulate Volunteer Need');
 
+    $campaign = CRM_Core_DAO::createTestObject('CRM_Campaign_BAO_Campaign');
+    $this->assertObjectHasAttribute('id', $campaign, 'Failed to prepopulate Campaign');
+
     $activity = $this->callAPISuccess('VolunteerAssignment', 'create', array(
       'assignee_contact_id' => 1,
+      // Passing the following parameter causes the pseudoconstants list to be
+      // updated. While generally not necessary, this is needed in a testing
+      // scenario because:
+      //   1. Campaigns are fundamentally stored as option group values, which
+      //      are cached rather than looked up directly.
+      //   2. This test creates a new campaign using CRM_Core_DAO::createTestObject()
+      //      instead of a standard function which would rebuild the caches for us.
+      //   3. api.Activity.create checks to make sure that the campaign ID passed
+      //      to it is valid, and throws an exception if it isn't.
+      'cache_clear' => 1,
       'source_contact_id' => 1,
       'volunteer_need_id' => $need->id,
     ));
-
-    $campaign = CRM_Core_DAO::createTestObject('CRM_Campaign_BAO_Campaign');
-    $this->assertObjectHasAttribute('id', $campaign, 'Failed to prepopulate Campaign');
 
     return array(
       'project' => $project,

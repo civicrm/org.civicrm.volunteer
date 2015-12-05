@@ -311,12 +311,6 @@ class CRM_Volunteer_BAO_Assignment extends CRM_Volunteer_BAO_Activity {
       }
     }
 
-    // Clear cache as this updates the pseudoconstants list.
-    // If the pseudoconstants are out of date it will throw an exception when
-    // looking up matching campaigns etc.
-    // Removing this will make unit tests fail.
-    $params['cache_clear'] = 1;
-
     $activity = civicrm_api3('Activity', 'create', $params);
     return empty($activity['id']) ? FALSE : $activity['id'];
   }
