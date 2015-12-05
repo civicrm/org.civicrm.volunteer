@@ -283,8 +283,8 @@ class CRM_Volunteer_BAO_Assignment extends CRM_Volunteer_BAO_Activity {
       CRM_Core_Error::fatal('Mandatory key missing from params array: id or volunteer_need_id');
     }
 
-    // Campaign ID is always derived from the associated Project.
-    unset($params['campaign_id']);
+    // These values are always derived from the associated Project; @see self::setActivityDefaults()
+    unset($params['campaign_id'], $params['target_contact_id']);
     // Prevent activity type from being changed externally.
     $params['activity_type_id'] = self::getActivityTypeId();
 
