@@ -76,11 +76,11 @@ class CRM_Volunteer_Page_Listings extends CRM_Core_Page {
         'is_active' => 1,
         'return' => 'title',
       ));
+      $this->assign('projectTitle', $projectDetails);
     }
     catch (Exception $e){
-      $this->error('VolunteerProject getvalue call failed.');
+      $this->error('Could not retrieve details for Volunteer Project.');
     }
-    $this->assign('projectTitle', $projectDetails);
   }
 
   /**
@@ -98,7 +98,8 @@ class CRM_Volunteer_Page_Listings extends CRM_Core_Page {
       ));
     }
     catch (Exception $e){
-      $this->error('VolunteerProject getvalue call failed.');
+      $this->error('Unable to retrieve assignments for Volunteer Project.');
+      return;
     }
 
     if ($volunteerAssignments['count'] == 0) {
