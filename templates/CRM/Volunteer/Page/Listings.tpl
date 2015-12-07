@@ -17,7 +17,7 @@
         {foreach from=$assignments.values item=assignment}
         <tr>
             <td>
-                <a href='{crmURL p='civicrm/contact/view' q='cid='}{$assignment.contact_id}'>{$assignment.name}</a>
+                {$assignment.name}
             </td>
             <td>{$assignment.role_label}</td>
             <td>
