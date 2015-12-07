@@ -350,11 +350,10 @@ function civicrm_api3_volunteer_project_defaults($params) {
   $defaults = array();
 
   //Get relationship types
-  $relTypes = CRM_Core_OptionGroup::values("volunteer_project_relationship");
-  $ownerType = $relTypes['Owner'];
-  $managerType = $relTypes['Manager'];
-  $beneficiaryType = $relTypes['Beneficiary'];
-
+  $relTypes = CRM_Core_OptionGroup::values("volunteer_project_relationship", FALSE, FALSE, FALSE, NULL, 'name');
+  $ownerType = $relTypes['volunteer_owner'];
+  $managerType = $relTypes['volunteer_manager'];
+  $beneficiaryType = $relTypes['volunteer_beneficiary'];
 
   //Get User ContactId
   $contactId = CRM_Core_Session::getLoggedInContactID();
