@@ -4,7 +4,7 @@ require_once 'CRM/Core/Page.php';
 
 class CRM_Volunteer_Page_Listings extends CRM_Core_Page {
   private $todaysDate;
-  
+
   /**
    * Builds the page.
    */
@@ -109,7 +109,7 @@ class CRM_Volunteer_Page_Listings extends CRM_Core_Page {
 
     foreach($volunteerAssignments['values'] as $assignmentKey => &$assignment) {
       if (!array_key_exists($assignment['volunteer_need_id'], $needToDetails)){
-        
+
         // TODO: getsingle and getvalue don't calculate display time, so use 'get' call for now.
         $volunteerNeed = civicrm_api3('VolunteerNeed', 'get', array(
           'sequential' => 1,
@@ -117,20 +117,20 @@ class CRM_Volunteer_Page_Listings extends CRM_Core_Page {
         ));
 
         if (count($volunteerNeed['values']) != 1) {
-          $this->error('Couldn\'t retrieve only one VolunteerNeed, found ' . count($volunteerNeed['values']) . '. ');          
+          $this->error('Couldn\'t retrieve only one VolunteerNeed, found ' . count($volunteerNeed['values']) . '. ');
         }
-        
+
         $needToDetails[$assignment['volunteer_need_id']]['display_time'] = $volunteerNeed['values'][0]['display_time'];
         $needToDetails[$assignment['volunteer_need_id']]['end_time'] = new DateTime($volunteerNeed['values'][0]['end_time']);
         $needToDetails[$assignment['volunteer_need_id']]['role_label'] = $volunteerNeed['values'][0]['role_label'];
       }
-      
+
       // If this assignment is in the past - unset it and move onto the next one.
       if ($this->isAssignmentInThePast($assignment)) {
         unset($volunteerAssignments['values'][$assignmentKey]);
         continue;
       }
-      
+
       $assignment['display_time'] =  $needToDetails[$assignment['volunteer_need_id']]['display_time'];
       $assignment['role_label'] =  $needToDetails[$assignment['volunteer_need_id']]['role_label'];
     }
@@ -140,12 +140,12 @@ class CRM_Volunteer_Page_Listings extends CRM_Core_Page {
   /**
    * Determine if a given assignment is in the past.
    * There are two flavors of Volunteer Assignment End Date:
-   * 
+   *
    * Fixed date: Start time and duration are set. Activity is expected to start at start time and last duration minutes.
-   * Fuzzy date: Start time, end time, and duration are set. Activity needs to be completed between start time and end 
+   * Fuzzy date: Start time, end time, and duration are set. Activity needs to be completed between start time and end
    *   time and take duration minutes. Example: I need 5 hours of filing completed between December 1 and December 31.
    * Just start date: If we just have the start date then we'll compare that to today.
-   * 
+   *
    * @param array $assignment
    */
   private function isAssignmentInThePast($assignment){
