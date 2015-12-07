@@ -3,7 +3,9 @@
 require_once 'CRM/Core/Page.php';
 
 class CRM_Volunteer_Page_Listings extends CRM_Core_Page {
+  private $projectId;
   private $todaysDate;
+  private $projectDetails;
 
   /**
    * Builds the page.
@@ -18,17 +20,23 @@ class CRM_Volunteer_Page_Listings extends CRM_Core_Page {
       $this->error('Invalid project id.');
     }
 
-    $this->checkPermissions($projectId);
+    $this->projectId = $projectId;
+
+    $this->checkPermissions();
     $this->todaysDate = new DateTime();
     $this->todaysDate->setTime(0, 0, 0); // just the date.
     $this->assign('endDate', $this->todaysDate->format('Y-m-d'));
-    $this->setProjectDetails($projectId);
-    $this->setVolunteerAssignments($projectId);
+
+    $this->projectDetails = CRM_Volunteer_BAO_Project::retrieveByID($projectId);
+    $this->assign('projectTitle', $this->projectDetails->title);
+    $this->assignTplVolunteerAssignments();
     parent::run();
   }
 
   /**
-   *
+   * Stores an error for the templates and runs the class without any further processing.
+   * This is basically a bail-out method.
+   * 
    * @param string $errorMessage
    * @param bool $contactSysAdmin - a polite note asking the user to contact their sysadmin.
    */
@@ -46,54 +54,31 @@ class CRM_Volunteer_Page_Listings extends CRM_Core_Page {
    *   - Second case is where the user has Volunteer Coordinator relationship to project.
    * Our default position is no admittance.
    *
-   * @param int $projectId
    */
-  private function checkPermissions ($projectId) {
+  private function checkPermissions () {
 
     $session = CRM_Core_Session::singleton();
     $contact_id = $session->get('userID');
 
     // See if they have the required permission, if so bail.
-    if (CRM_Volunteer_Permission::checkProjectPerms(CRM_Volunteer_Permission::VIEW_LISTINGS, $projectId)) {
+    if (CRM_Volunteer_Permission::checkProjectPerms(CRM_Volunteer_Permission::VIEW_LISTINGS, $this->projectId)) {
       return;
     }
 
-    $errorMessage = 'You must either have the  \'edit all volunteer projects\' '
-        . 'permission or be the volunteer coordinator for this project.';
+    $errorMessage = 'You do not have the required permissions to view this page.';
 
     $this->error($errorMessage);
   }
 
   /**
-   * Initialises the project data for the template.
-   * @param int $projectId
-   */
-  private function setProjectDetails ($projectId) {
-    try {
-      $projectDetails = civicrm_api3('VolunteerProject', 'getvalue', array(
-        'sequential' => 1,
-        'id' => $projectId,
-        'is_active' => 1,
-        'return' => 'title',
-      ));
-      $this->assign('projectTitle', $projectDetails);
-    }
-    catch (Exception $e){
-      $this->error('Could not retrieve details for Volunteer Project.');
-    }
-  }
-
-  /**
    * Initialises the volunteer data for the template.
-   *
-   * @param int $projectId
    */
-  private function setVolunteerAssignments($projectId){
+  private function assignTplVolunteerAssignments(){
     // Retrieve data and group it according to assignment time.
     try {
       $volunteerAssignments = civicrm_api3('VolunteerAssignment', 'get', array(
         'sequential' => 1,
-        'project_id' => $projectId,
+        'project_id' => $this->projectId,
         'count' => 0, // will not limit to first 25.
       ));
     }
