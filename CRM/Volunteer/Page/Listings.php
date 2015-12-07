@@ -167,7 +167,8 @@ class CRM_Volunteer_Page_Listings extends CRM_Core_Page {
       if ($a['start_time'] == $b['start_time']) {
           return 0;
       }
-      return ($a['start_time'] > $b['start_time']) ? -1 : 1;
+      // Assignments further in the future at the bottom.
+      return ($a['start_time'] < $b['start_time']) ? -1 : 1;
     });
 
     return $sortedResults;
