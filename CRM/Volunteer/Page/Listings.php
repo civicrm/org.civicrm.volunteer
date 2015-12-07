@@ -91,10 +91,10 @@ class CRM_Volunteer_Page_Listings extends CRM_Core_Page {
       $this->error('No volunteers have been assigned to this project yet!', FALSE); // TODO include URL where to assign some.
     }
 
-    $needToDetails = array();
+    $volunteerNeedsCache = array();
 
     foreach($volunteerAssignments['values'] as $assignmentKey => &$assignment) {
-      if (!array_key_exists($assignment['volunteer_need_id'], $needToDetails)){
+      if (!array_key_exists($assignment['volunteer_need_id'], $volunteerNeedsCache)){
 
         // TODO: getsingle and getvalue don't calculate display time, so use 'get' call for now.
         $volunteerNeed = civicrm_api3('VolunteerNeed', 'get', array(
@@ -106,9 +106,9 @@ class CRM_Volunteer_Page_Listings extends CRM_Core_Page {
           $this->error('Couldn\'t retrieve only one VolunteerNeed, found ' . count($volunteerNeed['values']) . '. ');
         }
 
-        $needToDetails[$assignment['volunteer_need_id']]['display_time'] = $volunteerNeed['values'][0]['display_time'];
-        $needToDetails[$assignment['volunteer_need_id']]['end_time'] = new DateTime($volunteerNeed['values'][0]['end_time']);
-        $needToDetails[$assignment['volunteer_need_id']]['role_label'] = $volunteerNeed['values'][0]['role_label'];
+        $volunteerNeedsCache[$assignment['volunteer_need_id']]['display_time'] = $volunteerNeed['values'][0]['display_time'];
+        $volunteerNeedsCache[$assignment['volunteer_need_id']]['end_time'] = new DateTime($volunteerNeed['values'][0]['end_time']);
+        $volunteerNeedsCache[$assignment['volunteer_need_id']]['role_label'] = $volunteerNeed['values'][0]['role_label'];
       }
 
       // If this assignment is in the past - unset it and move onto the next one.
@@ -117,8 +117,8 @@ class CRM_Volunteer_Page_Listings extends CRM_Core_Page {
         continue;
       }
 
-      $assignment['display_time'] =  $needToDetails[$assignment['volunteer_need_id']]['display_time'];
-      $assignment['role_label'] =  $needToDetails[$assignment['volunteer_need_id']]['role_label'];
+      $assignment['display_time'] =  $volunteerNeedsCache[$assignment['volunteer_need_id']]['display_time'];
+      $assignment['role_label'] =  $volunteerNeedsCache[$assignment['volunteer_need_id']]['role_label'];
     }
     $this->assign('sortedResults', $this->sortVolunteerAssignments($volunteerAssignments['values']));
   }
