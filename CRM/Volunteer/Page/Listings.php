@@ -125,15 +125,50 @@ class CRM_Volunteer_Page_Listings extends CRM_Core_Page {
         $needToDetails[$assignment['volunteer_need_id']]['role_label'] = $volunteerNeed['values'][0]['role_label'];
       }
       
-      // If the end date for this assignment is in the past - unset it and move onto the next one.
-      if ($this->todaysDate > $needToDetails[$assignment['volunteer_need_id']]['end_time']) {
+      // If this assignment is in the past - unset it and move onto the next one.
+      if ($this->isAssignmentInThePast($assignment)) {
         unset($volunteerAssignments['values'][$assignmentKey]);
+        continue;
       }
       
       $assignment['display_time'] =  $needToDetails[$assignment['volunteer_need_id']]['display_time'];
       $assignment['role_label'] =  $needToDetails[$assignment['volunteer_need_id']]['role_label'];
     }
     $this->assign('sortedResults', $this->sortVolunteerAssignments($volunteerAssignments['values']));
+  }
+
+  /**
+   * Determine if a given assignment is in the past.
+   * There are two flavors of Volunteer Assignment End Date:
+   * 
+   * Fixed date: Start time and duration are set. Activity is expected to start at start time and last duration minutes.
+   * Fuzzy date: Start time, end time, and duration are set. Activity needs to be completed between start time and end 
+   *   time and take duration minutes. Example: I need 5 hours of filing completed between December 1 and December 31.
+   * Just start date: If we just have the start date then we'll compare that to today.
+   * 
+   * @param array $assignment
+   */
+  private function isAssignmentInThePast($assignment){
+    // If we don't have the crucial data then we assume that it's not in the future.
+    if (empty($assignment['start_time'])) {
+      return FALSE;
+    }
+
+    // Measure against tomorrow, easier than setting time to 00:00:00 in each case.
+    $tomorrow = date_add($this->todaysDate, new DateInterval('P1D'));
+
+    // If no end date, add the duration to the start time for the end time.
+    if (empty($assignment['end_time']) && empty($assignment['duration'])) {
+      // With no end time or duration, we just work from the start date.
+      return $tomorrow > new DateTime($assignment['start_time']);
+    }
+    elseif (empty($assignment['end_time'])) {
+      $endTime = date_add($assignment['start_time'], new DateInterval('PT' . $assignment['duration'] . 'M'));
+    }
+    else {
+      $endTime = new DateInterval($assignment['end_time']);
+    }
+    return $this->todaysDate > $endTime;
   }
 
   /**
