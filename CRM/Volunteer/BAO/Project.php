@@ -175,7 +175,7 @@ class CRM_Volunteer_BAO_Project extends CRM_Volunteer_DAO_Project {
    *   Multidimensional array of contacts relationship_type_id => [contacts]
    */
   static function getContactsNestedByRelationship($projectId) {
-    $result = civicrm_api3('VolunteerProjectContact', 'create', array("project_id" => $projectId));
+    $result = civicrm_api3('VolunteerProjectContact', 'get', array("project_id" => $projectId));
     $values = array();
     foreach($result['values'] as $relationship) {
       $relationshipTypeId = $relationship['relationship_type_id'];
