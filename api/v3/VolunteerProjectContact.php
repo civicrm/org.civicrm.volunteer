@@ -46,7 +46,11 @@
  * @access public
  */
 function civicrm_api3_volunteer_project_contact_create($params) {
-  return _civicrm_api3_basic_create(_civicrm_api3_get_BAO(__FUNCTION__), $params);
+  if (!$params['check_permissions'] || CRM_Volunteer_Permission::checkProjectPerms(CRM_Core_Action::UPDATE, $params['project_id'])) {
+    return _civicrm_api3_basic_create(_civicrm_api3_get_BAO(__FUNCTION__), $params);
+  } else {
+    return civicrm_api3_create_error(ts('You do not have permission to modify contacts for this project'));
+  }
 }
 
 /**
@@ -115,5 +119,20 @@ function civicrm_api3_volunteer_project_contact_get($params) {
  * @access public
  */
 function civicrm_api3_volunteer_project_contact_delete($params) {
-  return _civicrm_api3_basic_delete(_civicrm_api3_get_BAO(__FUNCTION__), $params);
+  $projectId = CRM_Core_DAO::getFieldValue("CRM_Volunteer_DAO_ProjectContact", $params['id'], "project_id");
+  if (!$params['check_permissions'] || CRM_Volunteer_Permission::checkProjectPerms(CRM_Core_Action::UPDATE, $projectId)) {
+    return _civicrm_api3_basic_delete(_civicrm_api3_get_BAO(__FUNCTION__), $params);
+  } else {
+    return civicrm_api3_create_error(ts('You do not have permission to modify contacts for this project'));
+  }
+}
+
+/**
+ * Adjust Metadata for Delete action
+ *
+ * The metadata is used for setting defaults, documentation & validation
+ * @param array $params array or parameters determined by getfields
+ */
+function _civicrm_api3_volunteer_project_contact_delete_spec(&$params) {
+  $params['id']['api.required'] = 1;
 }

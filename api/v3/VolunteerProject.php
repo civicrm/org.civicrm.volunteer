@@ -65,7 +65,23 @@ function civicrm_api3_volunteer_project_create($params) {
     if(!in_array($profile['id'], $project->profileIds)) {
       // CRM-17222
       //$result = civicrm_api3("UFJoin", "delete", array("id" => $profile['id']));
-      $result = civicrm_api3("VolunteerProject", "removeprofile", array("id" => $profile['id']));
+      civicrm_api3("VolunteerProject", "removeprofile", array("id" => $profile['id']));
+    }
+  }
+
+  //Cleanup Project Contacts
+  if(array_key_exists("project_contacts", $params)) {
+    $allProjectContacts = civicrm_api3("VolunteerProjectContact", "get",
+      array(
+        'project_id' => $project->id,
+        'sequential' => 1
+      ));
+
+    foreach ($allProjectContacts['values'] as $contact) {
+      $relType = $contact['relationship_type_id'];
+      if (!array_key_exists($relType, $project->contacts) || !in_array($contact['contact_id'], $project->contacts[$relType])) {
+        civicrm_api3("VolunteerProjectContact", "delete", array("id" => $contact['id']));
+      }
     }
   }
 
