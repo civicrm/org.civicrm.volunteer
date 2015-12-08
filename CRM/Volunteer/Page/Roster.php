@@ -91,32 +91,12 @@ class CRM_Volunteer_Page_Roster extends CRM_Core_Page {
       $this->error('No volunteers have been assigned to this project yet!', FALSE); // TODO include URL where to assign some.
     }
 
-    $volunteerNeedsCache = array();
+    $volunteerNeedsCache = $this->projectDetails->__get('needs');
 
     foreach($volunteerAssignments['values'] as $assignmentKey => &$assignment) {
-      if (!array_key_exists($assignment['volunteer_need_id'], $volunteerNeedsCache)){
-
-        // TODO: getsingle and getvalue don't calculate display time, so use 'get' call for now.
-        $volunteerNeed = civicrm_api3('VolunteerNeed', 'get', array(
-          'sequential' => 1,
-          'id' => $assignment['volunteer_need_id'],
-        ));
-
-        if (count($volunteerNeed['values']) != 1) {
-          $this->error('Couldn\'t retrieve only one VolunteerNeed, found ' . count($volunteerNeed['values']) . '. ');
-        }
-
-        $volunteerNeedsCache[$assignment['volunteer_need_id']]['display_time'] = $volunteerNeed['values'][0]['display_time'];
-
-        // Make sure there's an end_time we can use.
-        if (array_key_exists('end_time', $volunteerNeed['values'][0])) {
-          $volunteerNeedsCache[$assignment['volunteer_need_id']]['end_time'] = new DateTime($volunteerNeed['values'][0]['end_time']);
-        }
-        else {
-          $volunteerNeedsCache[$assignment['volunteer_need_id']]['end_time'] = NULL;
-        }
-
-        $volunteerNeedsCache[$assignment['volunteer_need_id']]['role_label'] = $volunteerNeed['values'][0]['role_label'];
+      // In each need make sure there's an end_time we can use.
+      if (!array_key_exists('end_time', $volunteerNeedsCache[$assignment['volunteer_need_id']])) {
+        $volunteerNeedsCache[$assignment['volunteer_need_id']]['end_time'] = NULL;
       }
 
       // If this assignment is in the past - unset it and move onto the next one.
@@ -160,7 +140,7 @@ class CRM_Volunteer_Page_Roster extends CRM_Core_Page {
       $endTime = date_add($assignment['start_time'], new DateInterval('PT' . $assignment['duration'] . 'M'));
     }
     else {
-      $endTime = new DateInterval($assignment['end_time']);
+      $endTime = new DateTime($assignment['end_time']);
     }
     return $this->todaysDate > $endTime;
   }
