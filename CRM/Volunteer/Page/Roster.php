@@ -36,7 +36,7 @@ class CRM_Volunteer_Page_Roster extends CRM_Core_Page {
   /**
    * Stores an error for the templates and runs the class without any further processing.
    * This is basically a bail-out method.
-   * 
+   *
    * @param string $errorMessage
    * @param bool $contactSysAdmin - a polite note asking the user to contact their sysadmin.
    */
@@ -107,7 +107,15 @@ class CRM_Volunteer_Page_Roster extends CRM_Core_Page {
         }
 
         $volunteerNeedsCache[$assignment['volunteer_need_id']]['display_time'] = $volunteerNeed['values'][0]['display_time'];
-        $volunteerNeedsCache[$assignment['volunteer_need_id']]['end_time'] = new DateTime($volunteerNeed['values'][0]['end_time']);
+
+        // Make sure there's an end_time we can use.
+        if (array_key_exists('end_time', $volunteerNeed['values'][0])) {
+          $volunteerNeedsCache[$assignment['volunteer_need_id']]['end_time'] = new DateTime($volunteerNeed['values'][0]['end_time']);
+        }
+        else {
+          $volunteerNeedsCache[$assignment['volunteer_need_id']]['end_time'] = NULL;
+        }
+
         $volunteerNeedsCache[$assignment['volunteer_need_id']]['role_label'] = $volunteerNeed['values'][0]['role_label'];
       }
 
