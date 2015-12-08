@@ -2,7 +2,7 @@
 
 class CRM_Volunteer_Permission extends CRM_Core_Permission {
 
-  const VIEW_LISTINGS = 'volunteer_view_listings'; // A number unused by CRM_Core_Action
+  const VIEW_ROSTER = 'volunteer_view_roster'; // A number unused by CRM_Core_Action
 
   /**
    * Returns an array of permissions defined by this extension. Modeled off of
@@ -72,14 +72,14 @@ class CRM_Volunteer_Permission extends CRM_Core_Permission {
    * against a specified project.
    *
    * @param int $op
-   *   See the constants in CRM_Core_Action and CRM_Volunteer_Page_Listings.
+   *   See the constants in CRM_Core_Action and CRM_Volunteer_Page_Roster.
    * @param int $projectId
    *   Required for some but not all operations.
    * @return boolean
    *   TRUE is the action is allowed; else FALSE.
    */
   public static function checkProjectPerms($op, $projectId = NULL) {
-    $opsRequiringProjectId = array(CRM_Core_Action::UPDATE, CRM_Core_Action::DELETE, self::VIEW_LISTINGS,);
+    $opsRequiringProjectId = array(CRM_Core_Action::UPDATE, CRM_Core_Action::DELETE, self::VIEW_ROSTER,);
     if (in_array($op, $opsRequiringProjectId) && empty($projectId)) {
       CRM_Core_Error::fatal('Missing required parameter Project ID');
     }
@@ -117,7 +117,7 @@ class CRM_Volunteer_Permission extends CRM_Core_Permission {
           return TRUE;
         }
         break;
-      case self::VIEW_LISTINGS:
+      case self::VIEW_ROSTER:
         if (self::check('edit all volunteer projects')) {
           return TRUE;
         }

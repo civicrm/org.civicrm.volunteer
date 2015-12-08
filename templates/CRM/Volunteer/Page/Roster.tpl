@@ -1,10 +1,10 @@
-{crmStyle ext=org.civicrm.volunteer file=css/listings.css}
+{crmStyle ext=org.civicrm.volunteer file=css/roster.css}
 
 {if $errorMessage}
     <div class='errorBlock'>Error: {$errorMessage}</div>
 {else}
     <h1>{$projectTitle}</h1>
-    <h2>Volunteer Listings</h2>
+    <h2>Volunteer Roster</h2>
 
     {foreach from=$sortedResults key=display_date item=assignments}
     <h3>{$display_date}</h3>

@@ -90,4 +90,10 @@
     <access_callback>1</access_callback>
     <is_public>true</is_public>
   </item>
+  <item>
+    <path>civicrm/volunteer/roster</path>
+    <page_callback>CRM_Volunteer_Page_Roster</page_callback>
+    <title>Roster</title>
+    <access_arguments>access CiviCRM</access_arguments>
+  </item>
 </menu>
