@@ -69,7 +69,7 @@
 
     var relationships = {};
     if(project.id == 0) {
-      relationships = supporting_data['values']['defaults']['relationships'];
+      relationships = supporting_data.values.defaults.relationships;
       var originalRelationships = {};
     } else {
       $(relationship_data.values).each(function (index, relationship) {
@@ -92,7 +92,7 @@
         "module": "CiviVolunteer",
         "entity_table": "civicrm_volunteer_project",
         "weight": "1",
-        "uf_group_id": supporting_data.values.default_profile
+        "uf_group_id": supporting_data.values.defaults.profile
       }];
     }
     $scope.campaigns = campaigns;
