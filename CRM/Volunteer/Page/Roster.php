@@ -2,7 +2,7 @@
 
 require_once 'CRM/Core/Page.php';
 
-class CRM_Volunteer_Page_Listings extends CRM_Core_Page {
+class CRM_Volunteer_Page_Roster extends CRM_Core_Page {
   private $projectId;
   private $todaysDate;
   private $projectDetails;
@@ -61,7 +61,7 @@ class CRM_Volunteer_Page_Listings extends CRM_Core_Page {
     $contact_id = $session->get('userID');
 
     // See if they have the required permission, if so bail.
-    if (CRM_Volunteer_Permission::checkProjectPerms(CRM_Volunteer_Permission::VIEW_LISTINGS, $this->projectId)) {
+    if (CRM_Volunteer_Permission::checkProjectPerms(CRM_Volunteer_Permission::VIEW_ROSTER, $this->projectId)) {
       return;
     }
 
