@@ -378,9 +378,11 @@ function civicrm_api3_volunteer_project_defaults($params) {
     'is_active' => 1,
   ));
 
-  $defaultBeneficiary = array(1);
-  if ($result['is_error'] == 0 || $result['count'] == 1) {
+  if ($result['is_error'] == 0 && $result['count'] == 1) {
     $defaultBeneficiary = array($result['values'][0]['contact_id_b']);
+  } else {
+    $domain = civicrm_api3('Domain', 'getsingle', array('current_domain' => 1));
+    $defaultBeneficiary = $domain['contact_id'];
   }
 
   $defaults["relationships"][$beneficiaryType] = $defaultBeneficiary;
