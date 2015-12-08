@@ -232,9 +232,8 @@ class CRM_Volunteer_BAO_Project extends CRM_Volunteer_DAO_Project {
     $existingContacts = CRM_Volunteer_BAO_Project::getContactsNestedByRelationship($project->id);
     $projectContacts = CRM_Utils_Array::value('project_contacts', $params, array());
     foreach ($projectContacts as $relationshipType => &$contactIds) {
-      if(!is_array($contactIds)) {
-        $contactIds = array($contactIds);
-      }
+      $contactIds = CRM_Volunteer_BAO_Project::validateContactFormat($contactIds);
+      
       foreach ($contactIds as $id) {
         if(!array_key_exists($relationshipType, $existingContacts) || !in_array($id, $existingContacts[$relationshipType])) {
           civicrm_api3('VolunteerProjectContact', 'create', array(
@@ -571,6 +570,24 @@ class CRM_Volunteer_BAO_Project extends CRM_Volunteer_DAO_Project {
     }
 
     return $result;
+  }
+
+  /**
+   * This function takes a list of contact ids as either a
+   * single string, array of string, comma separated string
+   * array of ints or single int and returns it as an array that
+   * create contacts can accept.
+   *
+   * @param $contacts
+   */
+  public static function validateContactFormat($contacts) {
+    if(is_string($contacts)) {
+      $contacts = explode(",",$contacts);
+    }
+    if(!is_array($contacts)) {
+      $contacts = array($contacts);
+    }
+    return $contacts;
   }
 
   /**
