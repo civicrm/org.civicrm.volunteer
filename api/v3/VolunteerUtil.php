@@ -146,6 +146,10 @@ function civicrm_api3_volunteer_util_getsupportingdata($params) {
       "name" => "volunteer_sign_up",
       "return" => "id"
     ));
+
+    $results['defaults'] = array(
+      'relationships' => _volunteerGetProjectRelationshipDefaults(),
+    );
   }
 
   if ($controller === 'VolOppsCtrl') {
@@ -161,6 +165,46 @@ function civicrm_api3_volunteer_util_getsupportingdata($params) {
 
 
   return civicrm_api3_create_success($results, "VolunteerUtil", "getsupportingdata", $params);
+}
+
+/**
+ * Helper function to get the default project relationships for a new project.
+ *
+ * @return array
+ */
+function _volunteerGetProjectRelationshipDefaults() {
+  $defaults = array();
+
+  $relTypes = CRM_Core_OptionGroup::values("volunteer_project_relationship", true, FALSE, FALSE, NULL, 'name');
+  $ownerType = $relTypes['volunteer_owner'];
+  $managerType = $relTypes['volunteer_manager'];
+  $beneficiaryType = $relTypes['volunteer_beneficiary'];
+
+  $contactId = CRM_Core_Session::getLoggedInContactID();
+
+  $defaults[$ownerType] = array($contactId);
+  $defaults[$managerType] = array($contactId);
+
+  $employerRelationshipTypeId = civicrm_api3('RelationshipType', 'getvalue', array(
+    'return' => "id",
+    'name_b_a' => "Employer of",
+  ));
+
+  try {
+    $result = civicrm_api3('Relationship', 'getvalue', array(
+      'return' => "contact_id_b",
+      'contact_id_a' => $contactId,
+      'relationship_type_id' => $employerRelationshipTypeId,
+      'is_active' => 1,
+    ));
+    $defaultBeneficiary = array($result);
+  } catch(Exception $e) {
+    $domain = civicrm_api3('Domain', 'getsingle', array('current_domain' => 1));
+    $defaultBeneficiary = array($domain['contact_id']);
+  }
+  $defaults[$beneficiaryType] = $defaultBeneficiary;
+
+  return $defaults;
 }
 
 /**

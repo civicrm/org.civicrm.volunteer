@@ -45,14 +45,10 @@
             });
           },
           relationship_data: function(crmApi, $route) {
-            if ($route.current.params.projectId == 0) {
-              return crmApi('VolunteerProject', 'defaults', {});
-            } else {
-              return crmApi('VolunteerProjectContact', 'get', {
-                "sequential": 1,
-                "project_id": $route.current.params.projectId
-              });
-            }
+            return crmApi('VolunteerProjectContact', 'get', {
+              "sequential": 1,
+              "project_id": $route.current.params.projectId
+            });
           },
           location_blocks: function(crmApi) {
             return crmApi('VolunteerProject', 'locations', {});
@@ -71,10 +67,9 @@
     var ts = $scope.ts = CRM.ts('org.civicrm.volunteer');
     var hs = $scope.hs = crmUiHelp({file: 'CRM/Volunteer/Form/Volunteer'}); // See: templates/CRM/volunteer/Project.hlp
 
-
     var relationships = {};
     if(project.id == 0) {
-      relationships = relationship_data['values'];
+      relationships = supporting_data['values']['defaults']['relationships'];
       var originalRelationships = {};
     } else {
       $(relationship_data.values).each(function (index, relationship) {
