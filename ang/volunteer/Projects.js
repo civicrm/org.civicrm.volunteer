@@ -51,6 +51,12 @@
       CRM.loadForm(url, settings);
     };
 
+    $scope.showRoster = function() {
+      var url = CRM.url("civicrm/volunteer/roster", "project_id=" + this.project.id);
+      var settings = {"dialog":{"width":"85%", "height":"80%"}};
+      CRM.loadPage(url, settings);
+    };
+
     $scope.backbonePopup = function(title, tab, projectId) {
       CRM.volunteerPopup(title, tab, projectId);
     };

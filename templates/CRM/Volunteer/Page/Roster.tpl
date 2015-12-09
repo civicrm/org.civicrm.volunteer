@@ -1,5 +1,3 @@
-{crmStyle ext=org.civicrm.volunteer file=css/roster.css}
-
 {if $errorMessage}
     <div class='errorBlock'>Error: {$errorMessage}</div>
 {else}
