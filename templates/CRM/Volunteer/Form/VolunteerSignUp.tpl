@@ -37,6 +37,31 @@
     {/foreach}
   </div>
 
+  {if $allowAdditionalVolunteers}
+
+    <fieldset class="crm-volunteer-additional-volunteers-section">
+      <legend>{ts domain='org.civicrm.volunteer'}Additional Volunteers{/ts}</legend>
+      <div class="crm-section">
+        <div class="label">{$form.additionalVolunteerQuantity.label}</div>
+        <div class="content">{$form.additionalVolunteerQuantity.html}</div>
+        <div class="clear"></div>
+      </div>
+
+    <div class="crm-volunteer-additional-volunteers" id="additionalVolunteers">
+
+    </div>
+    </fieldset>
+
+    <div class="crm-volunteer-additional-volunteers-template">
+      <div class='additional-volunteer-profile'>
+        {foreach from=$additionalVolunteerProfiles key=ufID item=ufFields }
+          {include file="CRM/UF/Form/Block.tpl" fields=$ufFields}
+        {/foreach}
+        <div class="clear"></div>
+      </div>
+    </div>
+  {/if}
+
   <div>
     {include file="CRM/common/formButtons.tpl" location="bottom"}
   </div>
