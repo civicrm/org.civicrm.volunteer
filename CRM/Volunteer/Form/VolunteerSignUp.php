@@ -290,43 +290,17 @@ class CRM_Volunteer_Form_VolunteerSignUp extends CRM_Core_Form {
     $activityValues = array_diff_key($values, $profileValues);
 
     $cid = $this->processProfileData($profileValues, $profileFields, $cid);
-
-    $additionalVolunteers = $this->processAdditionalVolunteers(CRM_Utils_Array::value('additionalVolunteerQuantity', $values, 0));
-
-
     $activity_statuses = CRM_Activity_BAO_Activity::buildOptions('status_id', 'create');
-    $projectNeeds = array();
-    foreach($this->_needs as $need) {
-      $activityValues['volunteer_need_id'] = $need['id'];
-      $activityValues['activity_date_time'] = CRM_Utils_Array::value('start_time', $need);
-      $activityValues['assignee_contact_id'] = $cid;
-      $activityValues['is_test'] = ($this->_mode === 'test' ? 1 : 0);
-      // below we assume that volunteers are always signing up only themselves;
-      // for now this is a safe assumption, but we may need to revisit this.
-      $activityValues['source_contact_id'] = $cid;
+    $projectNeeds = $this->createVolunteerActivity($cid);
+    $this->sendVolunteerConfirmationEmail($cid, $projectNeeds);
 
-      // Set status to Available if user selected Flexible Need, else set to Scheduled.
-      if (CRM_Utils_Array::value('is_flexible', $need)) {
-        $activityValues['status_id'] = CRM_Utils_Array::key('Available', $activity_statuses);
-      } else {
-        $activityValues['status_id'] = CRM_Utils_Array::key('Scheduled', $activity_statuses);
-      }
-
-      $activityValues['time_scheduled_minutes'] = CRM_Utils_Array::value('duration', $need);
-      CRM_Volunteer_BAO_Assignment::createVolunteerActivity($activityValues);
-
-      if(!array_key_exists($need['project_id'], $projectNeeds)) {
-        $projectNeeds[$need['project_id']] = array();
-      }
-
-      $need['role'] = $need['role_label'];
-      $need['description'] = $need['role_description'];
-      $need['duration'] = CRM_Utils_Array::value('duration', $need);
-      $projectNeeds[$need['project_id']][$need['id']] = $need;
+    //Process Additional Volunteers
+    $additionalVolunteers = $this->processAdditionalVolunteers(CRM_Utils_Array::value('additionalVolunteerQuantity', $values, 0));
+    foreach($additionalVolunteers as $additionalVolunteerCID) {
+      $projectNeeds = $this->createVolunteerActivity($additionalVolunteerCID);
+      $this->sendVolunteerConfirmationEmail($additionalVolunteerCID, $projectNeeds);
     }
 
-    // Send confirmation email to volunteer(s)
-    $this->sendVolunteerConfirmationEmail($cid, $projectNeeds);
 
     $statusMsg = ts('You are scheduled to volunteer. Thank you!', array('domain' => 'org.civicrm.volunteer'));
     CRM_Core_Session::setStatus($statusMsg, '', 'success');
@@ -371,6 +345,39 @@ class CRM_Volunteer_Form_VolunteerSignUp extends CRM_Core_Form {
 
       CRM_Core_BAO_MessageTemplate::sendTemplate($sendTemplateParams);
     }
+  }
+
+  function createVolunteerActivity($cid) {
+    $projectNeeds = array();
+    foreach($this->_needs as $need) {
+      $activityValues['volunteer_need_id'] = $need['id'];
+      $activityValues['activity_date_time'] = CRM_Utils_Array::value('start_time', $need);
+      $activityValues['assignee_contact_id'] = $cid;
+      $activityValues['is_test'] = ($this->_mode === 'test' ? 1 : 0);
+      // below we assume that volunteers are always signing up only themselves;
+      // for now this is a safe assumption, but we may need to revisit this.
+      $activityValues['source_contact_id'] = $cid;
+
+      // Set status to Available if user selected Flexible Need, else set to Scheduled.
+      if (CRM_Utils_Array::value('is_flexible', $need)) {
+        $activityValues['status_id'] = CRM_Utils_Array::key('Available', $activity_statuses);
+      } else {
+        $activityValues['status_id'] = CRM_Utils_Array::key('Scheduled', $activity_statuses);
+      }
+
+      $activityValues['time_scheduled_minutes'] = CRM_Utils_Array::value('duration', $need);
+      CRM_Volunteer_BAO_Assignment::createVolunteerActivity($activityValues);
+
+      if(!array_key_exists($need['project_id'], $projectNeeds)) {
+        $projectNeeds[$need['project_id']] = array();
+      }
+
+      $need['role'] = $need['role_label'];
+      $need['description'] = $need['role_description'];
+      $need['duration'] = CRM_Utils_Array::value('duration', $need);
+      $projectNeeds[$need['project_id']][$need['id']] = $need;
+    }
+    return $projectNeeds;
   }
 
   /**
