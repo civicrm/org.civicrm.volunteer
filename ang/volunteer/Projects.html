@@ -40,20 +40,20 @@
     <table id="crm-vol-project-list" class="display dataTable no-footer" role="grid">
       <thead>
         <tr role="row">
-          <th class="ui-state-default"><input type="checkbox" ng-model="allSelected" ng-change="selectAll()" /></th>
-          <th class="ui-state-default">{{ ts('Volunteer Project') }}</th>
-          <th class="ui-state-default">{{ ts('Active') }}</th>
-          <th class="ui-state-default">{{ ts('Associated Entity') }}</th>
-          <th class="ui-state-default"></th>
+          <th class="ui-state-default crm-vol-manage-toggle"><input type="checkbox" ng-model="allSelected" ng-change="selectAll()" /></th>
+          <th class="ui-state-default crm-vol-manage-project">{{ ts('Volunteer Project') }}</th>
+          <th class="ui-state-default crm-vol-manage-active">{{ ts('Active') }}</th>
+          <th class="ui-state-default crm-vol-manage-entity">{{ ts('Associated Entity') }}</th>
+          <th class="ui-state-default crm-vol-manage-actionlinks"></th>
         </tr>
       </thead>
       <tbody>
       <tr ng-repeat="project in projects | filter:searchParams" role="row">
-        <td><input type="checkbox" ng-model="project.selected" ng-change="watchSelected()" /></td>
-        <td>{{ project.title }} (ID: {{ project.id }})</td>
-        <td>{{ project.is_active == 1 ? ts("yes") : ts("no") }}</td>
-        <td>{{ project.entity_table }}</td>
-        <td class="right nowrap">
+        <td class="crm-vol-manage-toggle"><input type="checkbox" ng-model="project.selected" ng-change="watchSelected()" /></td>
+        <td class="crm-vol-manage-project">{{ project.title }} (ID: {{ project.id }})</td>
+        <td class="crm-vol-manage-active">{{ project.is_active == 1 ? ts("yes") : ts("no") }}</td>
+        <td class="crm-vol-manage-entity">{{ project.entity_table }}</td>
+        <td class="crm-vol-manage-actionlinks right nowrap">
           <div><a href="#/volunteer/manage/{{project.id}}">{{ ts('Edit') }}</a></div>
           <div><a ng-click="backbonePopup(ts('Define Needs'), 'Define', project.id)">{{ ts('Define Needs') }}</a></div>
           <div><a ng-click="backbonePopup(ts('Assign Volunteers'), 'Assign', project.id)">{{ ts('Assign Volunteers') }}</a></div>
