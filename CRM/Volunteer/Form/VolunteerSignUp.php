@@ -77,6 +77,16 @@ class CRM_Volunteer_Form_VolunteerSignUp extends CRM_Core_Form {
   protected $_profile_ids = array();
 
   /**
+   * The profile IDs associated with this form and marked
+   * for use with additional volunteers
+   *
+   * @var array
+   * @protected
+   */
+  protected $_additional_volunteer_profile_ids = array();
+
+
+  /**
    * The volunteer projects associated with this form, keyed by project ID.
    *
    * @var array
@@ -169,6 +179,30 @@ class CRM_Volunteer_Form_VolunteerSignUp extends CRM_Core_Form {
   }
 
   /**
+   * Return profiles used for Additional Volunteers
+   *
+   * @return array
+   *   UFGroup (Profile) Ids
+   */
+  function getAdditionalVolunteerProfileIDs() {
+    if (empty($this->_additional_volunteer_profile_ids)) {
+      $profileIds = array();
+
+      foreach ($this->_projects as $project) {
+        foreach ($project['profiles'] as $profile) {
+          if(CRM_Utils_Array::value("module_data", $profile) != "primary") {
+            $profileIds[] = $profile['uf_group_id'];
+          }
+        }
+      }
+
+      $this->_additional_volunteer_profile_ids = array_unique($profileIds);
+    }
+
+    return $this->_additional_volunteer_profile_ids;
+  }
+
+  /**
    * Retrieves project details and caches them in $this->_projects.
    */
   function fetchProjectDetails() {
@@ -197,7 +231,9 @@ class CRM_Volunteer_Form_VolunteerSignUp extends CRM_Core_Form {
   function buildQuickForm() {
     CRM_Utils_System::setTitle(ts('Sign Up to Volunteer'));
 
-    $this->buildCustom();
+    $contactID = CRM_Utils_Array::value('userID', $_SESSION['CiviCRM']);
+    $profiles = $this->buildCustom($this->getProfileIDs(), $contactID);
+    $this->assign('customProfiles', $profiles);
 
     foreach ($this->_needs as $needId => &$need) {
       $projectId = (int) $need['project_id'];
@@ -223,6 +259,19 @@ class CRM_Volunteer_Form_VolunteerSignUp extends CRM_Core_Form {
         'isDefault' => TRUE,
       ),
     ));
+
+    $hasAdditional = $this->buildAdditionalVolunteerTemplate();
+
+    if($hasAdditional) {
+      //Give the volunteer a box to select how many friends they are bringing
+      $this->add("text", "additionalVolunteerQuantity", ts("Number of Additional Volunteers"), array("size" => 3));
+    }
+
+    $this->assign('allowAdditionalVolunteers', $hasAdditional);
+
+    //styling for additional volunteers form
+    CRM_Core_Resources::singleton()->addStyleFile('org.civicrm.volunteer', 'css/additional_volunteers.css');
+    CRM_Core_Resources::singleton()->addScriptFile('org.civicrm.volunteer', 'js/VolunteerSignUp.js', 12);
   }
 
   /**
@@ -240,21 +289,7 @@ class CRM_Volunteer_Form_VolunteerSignUp extends CRM_Core_Form {
     $profileValues = array_intersect_key($values, $profileFields);
     $activityValues = array_diff_key($values, $profileValues);
 
-    // Search for duplicate
-    if (!$cid) {
-      $dedupeParams = CRM_Dedupe_Finder::formatParams($profileValues, 'Individual');
-      $dedupeParams['check_permission'] = FALSE;
-      $ids = CRM_Dedupe_Finder::dupesByParams($dedupeParams, 'Individual');
-      if ($ids) {
-        $cid = $ids[0];
-      }
-    }
-
-    $cid = CRM_Contact_BAO_Contact::createProfileContact(
-      $profileValues,
-      $profileFields,
-      $cid
-    );
+    $cid = $this->processProfileData($profileValues, $profileFields, $cid);
 
     $activity_statuses = CRM_Activity_BAO_Activity::buildOptions('status_id', 'create');
     $projectNeeds = array();
@@ -325,6 +360,31 @@ class CRM_Volunteer_Form_VolunteerSignUp extends CRM_Core_Form {
   }
 
   /**
+   * Process the data returned by a completed profile
+   *
+   * @param $profileValues; Data
+   * @param $profileFields; Field definitions
+   * @param null $cid; Contact ID
+   */
+  function processProfileData($profileValues, $profileFields, $cid = null) {
+    // Search for duplicate
+    if (!$cid) {
+      $dedupeParams = CRM_Dedupe_Finder::formatParams($profileValues, 'Individual');
+      $dedupeParams['check_permission'] = FALSE;
+      $ids = CRM_Dedupe_Finder::dupesByParams($dedupeParams, 'Individual');
+      if ($ids) {
+        $cid = $ids[0];
+      }
+    }
+
+    return CRM_Contact_BAO_Contact::createProfileContact(
+      $profileValues,
+      $profileFields,
+      $cid
+    );
+  }
+
+  /**
    * Fetches project data and formats it, along with need data, for the message template.
    *
    * @param array $projectNeeds
@@ -381,12 +441,11 @@ class CRM_Volunteer_Form_VolunteerSignUp extends CRM_Core_Form {
    * @param string $name The name to give the Smarty variable
    * @access public
    */
-  function buildCustom() {
-    $contactID = CRM_Utils_Array::value('userID', $_SESSION['CiviCRM']);
+  function buildCustom($profileIds = array(), $contactID = null) {
     $profiles = array();
     $fieldList = array(); // master field list
 
-    foreach($this->getProfileIDs() as $profileID) {
+    foreach($profileIds as $profileID) {
       $fields = CRM_Core_BAO_UFGroup::getFields($profileID, FALSE, CRM_Core_Action::ADD,
         NULL, NULL, FALSE, NULL,
         FALSE, NULL, CRM_Core_Permission::CREATE,
@@ -406,7 +465,22 @@ class CRM_Volunteer_Form_VolunteerSignUp extends CRM_Core_Form {
         $profiles[$profileID][$key] = $fieldList[$key] = $field;
       }
     }
-    $this->assign('customProfiles', $profiles);
+    return $profiles;
+  }
+
+
+  /**
+   * This function compiles the Additional Volunteer Profile to variable
+   *
+   * @return bool
+   */
+  function buildAdditionalVolunteerTemplate() {
+    $profileIds = $this->getAdditionalVolunteerProfileIDs();
+    if ($profileIds) {
+      $profiles = $this->buildCustom($profileIds, 0);
+      $this->assign('additionalVolunteerProfiles', $profiles);
+    }
+    return (!empty($profileIds));
   }
 
   /**
