@@ -274,6 +274,46 @@ class CRM_Volunteer_Form_VolunteerSignUp extends CRM_Core_Form {
     CRM_Core_Resources::singleton()->addScriptFile('org.civicrm.volunteer', 'js/VolunteerSignUp.js', 12);
   }
 
+
+  function validate($nothing = null) {
+    $valid = true;
+    $errors = array();
+    $additionalQty = CRM_Utils_Array::value('additionalVolunteerQuantity', $this->_submitValues, 0);
+
+    if(is_numeric($additionalQty) && $additionalQty > 0) {
+
+      //Do some validation of the Additional Volunteer Fields
+      $profileFields = array();
+      foreach ($this->getAdditionalVolunteerProfileIDs() as $profileID) {
+        $profileFields += CRM_Core_BAO_UFGroup::getFields($profileID);
+      }
+
+      $additionalVolunteers = CRM_Utils_Array::value('additionalVolunteers', $_REQUEST, array());
+
+      foreach($additionalVolunteers as $index => $profileData) {
+        if($index >= $additionalQty) {
+          break;
+        }
+
+        foreach($profileFields as $key => $field) {
+
+          if($field['is_required']) {
+            $value = CRM_Utils_Array::value($key, $profileData, null);
+            if(is_null($value) || empty($value)) {
+              $valid = false;
+              //Set an error message.
+              $errors[$index][$key] = ts( $field['title'] . ' is a required field' );
+            }
+          }
+        }
+      }
+    }
+    if(!$valid) {
+      CRM_Core_Resources::singleton()->addSetting(array('additionalVolunteers' => array('errors' => $errors)));
+    }
+    return $valid && parent::validate();
+  }
+
   /**
    * @todo per totten's suggestion, wrap all these writes in a transaction;
    * see http://wiki.civicrm.org/confluence/display/CRMDOC43/Transaction+Reference
@@ -347,6 +387,13 @@ class CRM_Volunteer_Form_VolunteerSignUp extends CRM_Core_Form {
     }
   }
 
+  /**
+   * This function Loops through the needs the user is signing up for
+   * and creates activity records for them.
+   *
+   * @param $cid: Contact ID
+   * @return array: Project needs data for use in sending confirmation email.
+   */
   function createVolunteerActivity($cid) {
     $projectNeeds = array();
     foreach($this->_needs as $need) {
