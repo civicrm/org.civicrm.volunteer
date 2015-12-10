@@ -291,6 +291,9 @@ class CRM_Volunteer_Form_VolunteerSignUp extends CRM_Core_Form {
 
     $cid = $this->processProfileData($profileValues, $profileFields, $cid);
 
+    $additionalVolunteers = $this->processAdditionalVolunteers(CRM_Utils_Array::value('additionalVolunteerQuantity', $values, 0));
+
+
     $activity_statuses = CRM_Activity_BAO_Activity::buildOptions('status_id', 'create');
     $projectNeeds = array();
     foreach($this->_needs as $need) {
@@ -322,16 +325,31 @@ class CRM_Volunteer_Form_VolunteerSignUp extends CRM_Core_Form {
       $projectNeeds[$need['project_id']][$need['id']] = $need;
     }
 
-    // Send confirmation email to volunteer
+    // Send confirmation email to volunteer(s)
+    $this->sendVolunteerConfirmationEmail($cid, $projectNeeds);
+
+    $statusMsg = ts('You are scheduled to volunteer. Thank you!', array('domain' => 'org.civicrm.volunteer'));
+    CRM_Core_Session::setStatus($statusMsg, '', 'success');
+    CRM_Utils_System::redirect($this->_destination);
+  }
+
+
+  /**
+   * This function sends a confirmation email to a signed up volunteer
+   *
+   * @param $cid - ContactID of volunteer
+   * @param $projectNeeds - The project needs this person has been signed up for.
+   */
+  function sendVolunteerConfirmationEmail($cid, $projectNeeds) {
+
     list($displayName, $email) = CRM_Contact_BAO_Contact_Location::getEmailDetails($cid);
     list($domainEmailName, $domainEmailAddress) = CRM_Core_BAO_Domain::getNameAndEmail();
 
     if ($email) {
       $tplParams = $this->prepareTplParams($projectNeeds);
-
       $sendTemplateParams = array(
         'contactId' => $cid,
-        'from' => "$domainEmailName <".$domainEmailAddress.">",
+        'from' => "$domainEmailName <" . $domainEmailAddress . ">",
         'groupName' => 'msg_tpl_workflow_volunteer',
         'isTest' => ($this->_mode === 'test'),
         'toName' => $displayName,
@@ -353,10 +371,6 @@ class CRM_Volunteer_Form_VolunteerSignUp extends CRM_Core_Form {
 
       CRM_Core_BAO_MessageTemplate::sendTemplate($sendTemplateParams);
     }
-
-    $statusMsg = ts('You are scheduled to volunteer. Thank you!', array('domain' => 'org.civicrm.volunteer'));
-    CRM_Core_Session::setStatus($statusMsg, '', 'success');
-    CRM_Utils_System::redirect($this->_destination);
   }
 
   /**
@@ -382,6 +396,43 @@ class CRM_Volunteer_Form_VolunteerSignUp extends CRM_Core_Form {
       $profileFields,
       $cid
     );
+  }
+
+
+  /**
+   * This function takes the profile data submitted by the user, loops
+   * and delegates the data to processProfileData.
+   *
+   * @param $data
+   */
+  function processAdditionalVolunteers($qty) {
+    $cids = array();
+
+    if(!is_numeric($qty)) {
+      return $cids;
+    }
+
+    if(!is_int($qty)) {
+      $qty = intval($qty);
+    }
+
+    $additionalVolunteers = CRM_Utils_Array::value('additionalVolunteers', $_POST, array());
+
+    //Get the profile Fields
+    $profileFields = array();
+    foreach ($this->getAdditionalVolunteerProfileIDs() as $profileID) {
+      $profileFields += CRM_Core_BAO_UFGroup::getFields($profileID);
+    }
+
+    foreach($additionalVolunteers as $index => $profileData) {
+      if($index >= $qty) {
+        break;
+      }
+
+      $cids[] = $this->processProfileData($profileData, $profileFields);
+    }
+
+    return $cids;
   }
 
   /**
