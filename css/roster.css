@@ -1,0 +1,55 @@
+.crm-container-snippet {
+  text-align: center;
+  font-family: arial;
+}
+
+table {
+    margin-right: auto;
+    margin-left: auto;
+    padding-bottom: 1.5em;
+    padding-right: 8%;
+    padding-left: 8%;
+    font-size: 1.8rem;
+}
+
+td {
+    text-align: center;
+    padding-right: 0.5em;
+    padding-left: 0.5em;
+}
+
+td input {
+    font-size: 100%;
+}
+
+h1 {
+    font-size: 3.5rem;
+    padding-bottom: 0px;
+    margin-bottom: 0px;
+}
+
+h2 {
+    font-size: 2.0rem;
+    padding: 0px;
+    margin-top: 0px;
+    margin-bottom: 0.2em;
+}
+
+h3 {
+    font-size: 2.2rem;
+    padding: 0px;
+    margin-bottom: 0.5em;
+}
+
+.errorBlock {
+    margin: 1em;
+}
+
+.dateBlock {
+   display: block;
+   font-size: 120%;
+}
+
+.backButton {
+   font-size: 1.65rem;
+}
