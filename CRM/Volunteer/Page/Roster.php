@@ -91,7 +91,7 @@ class CRM_Volunteer_Page_Roster extends CRM_Core_Page {
   private function isAssignmentInThePast($assignment){
     // If we don't have the crucial data then we assume that it's not in the future.
     if (empty($assignment['start_time'])) {
-      return FALSE;
+      return TRUE;
     }
 
     // Measure against tomorrow, easier than setting time to 00:00:00 in each case.
