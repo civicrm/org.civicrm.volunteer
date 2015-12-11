@@ -1,9 +1,3 @@
-{if $errorMessage}
-    <div class='errorBlock'>Error: {$errorMessage}</div>
-{else}
-    <h1>{$projectTitle}</h1>
-    <h2>Volunteer Roster</h2>
-
     {foreach from=$sortedResults key=display_date item=assignments}
     <h3>{$display_date}</h3>
     <table>
@@ -40,6 +34,5 @@
     </div>
     <br/>
     <br/>
-{/if}
 
 <a href='{crmURL p='civicrm/vol/#/volunteer/manage'}'><input type='button' class="backButton" value='Back to Manage Volunteer Projects.'/></a>

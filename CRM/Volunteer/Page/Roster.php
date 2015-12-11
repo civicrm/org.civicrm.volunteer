@@ -28,10 +28,18 @@ class CRM_Volunteer_Page_Roster extends CRM_Core_Page {
   public function run() {
     $this->projectId = CRM_Utils_Request::retrieve('project_id', 'Positive', CRM_Core_DAO::$_nullObject, TRUE);
     $this->project = CRM_Volunteer_BAO_Project::retrieveByID($this->projectId);
-    $this->assign('projectTitle', $this->project->title);
+    CRM_Utils_System::setTitle(ts('Volunteer Roster for %1', array(
+      1 => $this->project->title,
+     'domain' => 'org.civicrm.volunteer'
+    )));
 
     $this->fetchAssignments();
-    $this->assign('sortedResults', $this->getAssignmentsGroupedByTime());
+    $sortedAssignments = $this->getAssignmentsGroupedByTime();
+    $this->assign('sortedResults', $sortedAssignments);
+    if (!count($sortedAssignments)) {
+     CRM_Core_Session::setStatus(ts('No volunteers have been assigned to this project yet!', array(
+         'domain' => 'org.civicrm.volunteer')), '', 'no-popup');
+    }
 
     $this->todaysDate = new DateTime();
     $this->todaysDate->setTime(0, 0, 0); // just the date.
