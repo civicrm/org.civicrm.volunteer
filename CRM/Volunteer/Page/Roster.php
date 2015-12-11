@@ -41,21 +41,6 @@ class CRM_Volunteer_Page_Roster extends CRM_Core_Page {
   }
 
   /**
-   * Stores an error for the templates and runs the class without any further processing.
-   * This is basically a bail-out method.
-   *
-   * @param string $errorMessage
-   * @param bool $contactSysAdmin - a polite note asking the user to contact their sysadmin.
-   */
-  private function error ($errorMessage, $contactSysAdmin = TRUE) {
-    if ($contactSysAdmin) {
-      $errorMessage .= ' Please contact your system administrator for assistance.';
-    }
-    $this->assign('errorMessage', $errorMessage);
-    parent::run();
-  }
-
-  /**
    * Retrieves the volunteer assignments for this project's roster.
    */
   private function fetchAssignments(){
