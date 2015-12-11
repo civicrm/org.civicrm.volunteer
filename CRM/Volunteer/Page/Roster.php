@@ -79,6 +79,7 @@ class CRM_Volunteer_Page_Roster extends CRM_Core_Page {
 
   /**
    * Determine if a given assignment is in the past.
+   *
    * There are two flavors of Volunteer Assignment End Date:
    *
    * Fixed date: Start time and duration are set. Activity is expected to start at start time and last duration minutes.
@@ -88,26 +89,21 @@ class CRM_Volunteer_Page_Roster extends CRM_Core_Page {
    *
    * @param array $assignment
    */
-  private function isAssignmentInThePast($assignment){
+  private function isAssignmentInThePast(array $assignment){
     // If we don't have the crucial data then we assume that it's not in the future.
     if (empty($assignment['start_time'])) {
       return TRUE;
     }
 
-    // Measure against tomorrow, easier than setting time to 00:00:00 in each case.
-    $tomorrow = date_add($this->todaysDate, new DateInterval('P1D'));
-
-    // If no end date, add the duration to the start time for the end time.
-    if (empty($assignment['end_time']) && empty($assignment['duration'])) {
-      // With no end time or duration, we just work from the start date.
-      return $tomorrow > new DateTime($assignment['start_time']);
-    }
-    elseif (empty($assignment['end_time'])) {
+    // In case there is no end time and no duration, we use the start date as
+    // our default end date.
+    $endTime = new DateTime($assignment['start_time']);
+    if (!empty($assignment['end_time'])) {
+      $endTime = new DateTime($assignment['end_time']);
+    } elseif (!empty($assignment['duration'])) {
       $endTime = date_add($assignment['start_time'], new DateInterval('PT' . $assignment['duration'] . 'M'));
     }
-    else {
-      $endTime = new DateTime($assignment['end_time']);
-    }
+
     return $this->todaysDate > $endTime;
   }
 
