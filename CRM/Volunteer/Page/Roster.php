@@ -11,23 +11,14 @@ class CRM_Volunteer_Page_Roster extends CRM_Core_Page {
    * Builds the page.
    */
   function run() {
-
-    // Retrieve project id or bail.
-    $projectId = filter_input (INPUT_GET, 'project_id', FILTER_VALIDATE_INT);
-
-    if (!$projectId) {
-      // Will fail $projectId is empty, invalid, or 0.
-      $this->error('Invalid project id.');
-    }
-
-    $this->projectId = $projectId;
+    $this->projectId = CRM_Utils_Request::retrieve('project_id', 'Positive', CRM_Core_DAO::$_nullObject, TRUE);
 
     $this->checkPermissions();
     $this->todaysDate = new DateTime();
     $this->todaysDate->setTime(0, 0, 0); // just the date.
     $this->assign('endDate', $this->todaysDate->format('Y-m-d'));
 
-    $this->projectDetails = CRM_Volunteer_BAO_Project::retrieveByID($projectId);
+    $this->projectDetails = CRM_Volunteer_BAO_Project::retrieveByID($this->projectId);
     $this->assign('projectTitle', $this->projectDetails->title);
     $this->assignTplVolunteerAssignments();
     parent::run();
