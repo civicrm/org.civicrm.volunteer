@@ -277,21 +277,18 @@ class CRM_Volunteer_Form_VolunteerSignUp extends CRM_Core_Form {
             $i++;
           }
           $this->assign('additionalVolunteerProfiles', $additionalVolunteerProfiles);
-
-          $profileFields = array();
-          foreach ($this->getAdditionalVolunteerProfileIDs() as $profileID) {
-            $profileFields += CRM_Core_BAO_UFGroup::getFields($profileID);
-          }
-          CRM_Core_Resources::singleton()->addSetting(array('additionalVolunteers' => array('fields' => $profileFields)));
         }
       }
+      $profileFields = array();
+      foreach ($this->getAdditionalVolunteerProfileIDs() as $profileID) {
+        $profileFields += CRM_Core_BAO_UFGroup::getFields($profileID);
+      }
+      //styling for additional volunteers form
+      CRM_Core_Resources::singleton()->addSetting(array('additionalVolunteers' => array('fields' => $profileFields)));
+      CRM_Core_Resources::singleton()->addScriptFile('org.civicrm.volunteer', 'js/VolunteerSignUp.js', 12);
+      CRM_Core_Resources::singleton()->addStyleFile('org.civicrm.volunteer', 'css/additional_volunteers.css');
     }
-
     $this->assign('allowAdditionalVolunteers', $hasAdditional);
-
-    //styling for additional volunteers form
-    CRM_Core_Resources::singleton()->addStyleFile('org.civicrm.volunteer', 'css/additional_volunteers.css');
-    CRM_Core_Resources::singleton()->addScriptFile('org.civicrm.volunteer', 'js/VolunteerSignUp.js', 12);
   }
 
 
