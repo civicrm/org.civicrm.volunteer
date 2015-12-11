@@ -47,22 +47,35 @@
         <div class="clear"></div>
       </div>
 
-    <div class="crm-volunteer-additional-volunteers" id="additionalVolunteers">
-
-    </div>
-    </fieldset>
-
-    <div class="crm-volunteer-additional-volunteers-template">
-      <div class='additional-volunteer-profile'>
-        {foreach from=$additionalVolunteerProfiles key=ufID item=ufFields }
-          {include file="CRM/UF/Form/Block.tpl" fields=$ufFields}
-        {/foreach}
-        <div class="clear"></div>
+      <div class="crm-volunteer-additional-volunteers" id="additionalVolunteers">
+        {if $additionalVolunteerProfiles}
+          {foreach from=$additionalVolunteerProfiles item=additionalVolunteer }
+            <div class='additional-volunteer-profile'>
+              {foreach from=$additionalVolunteer.profiles key=ufID item=ufFields }
+                {include file="CRM/UF/Form/Block.tpl" fields=$ufFields prefix=$additionalVolunteer.prefix}
+              {/foreach}
+              <div class="clear"></div>
+            </div>
+          {/foreach}
+        {/if}
       </div>
-    </div>
+    </fieldset>
   {/if}
 
   <div>
     {include file="CRM/common/formButtons.tpl" location="bottom"}
   </div>
 </div>
+
+{if $allowAdditionalVolunteers}
+</form>
+<form>
+  <div class="crm-volunteer-additional-volunteers-template">
+    <div class='additional-volunteer-profile'>
+      {foreach from=$additionalVolunteersTemplate key=ufID item=ufFields }
+        {include file="CRM/UF/Form/Block.tpl" fields=$ufFields prefix='additionalVolunteersTemplate'}
+      {/foreach}
+      <div class="clear"></div>
+    </div>
+  </div>
+{/if}

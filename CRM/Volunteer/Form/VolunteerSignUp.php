@@ -261,10 +261,24 @@ class CRM_Volunteer_Form_VolunteerSignUp extends CRM_Core_Form {
     ));
 
     $hasAdditional = $this->buildAdditionalVolunteerTemplate();
-
     if($hasAdditional) {
       //Give the volunteer a box to select how many friends they are bringing
       $this->add("text", "additionalVolunteerQuantity", ts("Number of Additional Volunteers"), array("size" => 3));
+      if(!empty($this->_submitValues)) {
+
+        $additionalVolunteerQuantity = CRM_Utils_Array::value("additionalVolunteerQuantity", $this->_submitValues, 0);
+        if ($additionalVolunteerQuantity > 0) {
+          $i = 0;
+          $additionalVolunteerProfiles = array();
+          while ($i < $additionalVolunteerQuantity) {
+            $additionalVolunteerProfiles[$i] = array();
+            $additionalVolunteerProfiles[$i]['prefix'] = "additionalVolunteers_$i";
+            $additionalVolunteerProfiles[$i]['profiles'] = $this->buildAdditionalVolunteerTemplate($additionalVolunteerProfiles[$i]['prefix'], false);
+            $i++;
+          }
+          $this->assign('additionalVolunteerProfiles', $additionalVolunteerProfiles);
+        }
+      }
     }
 
     $this->assign('allowAdditionalVolunteers', $hasAdditional);
@@ -276,42 +290,15 @@ class CRM_Volunteer_Form_VolunteerSignUp extends CRM_Core_Form {
 
 
   function validate($nothing = null) {
-    $valid = true;
-    $errors = array();
-    $additionalQty = CRM_Utils_Array::value('additionalVolunteerQuantity', $this->_submitValues, 0);
+    parent::validate();
 
-    if(is_numeric($additionalQty) && $additionalQty > 0) {
-
-      //Do some validation of the Additional Volunteer Fields
-      $profileFields = array();
-      foreach ($this->getAdditionalVolunteerProfileIDs() as $profileID) {
-        $profileFields += CRM_Core_BAO_UFGroup::getFields($profileID);
-      }
-
-      $additionalVolunteers = CRM_Utils_Array::value('additionalVolunteers', $_REQUEST, array());
-
-      foreach($additionalVolunteers as $index => $profileData) {
-        if($index >= $additionalQty) {
-          break;
-        }
-
-        foreach($profileFields as $key => $field) {
-
-          if($field['is_required']) {
-            $value = CRM_Utils_Array::value($key, $profileData, null);
-            if(is_null($value) || empty($value)) {
-              $valid = false;
-              //Set an error message.
-              $errors[$index][$key] = ts( $field['title'] . ' is a required field' );
-            }
-          }
-        }
+    foreach($this->_errors as $name => $msg) {
+      if(substr($name, 0, strlen("additionalVolunteersTemplate")) == "additionalVolunteersTemplate") {
+        unset($this->_errors[$name]);
       }
     }
-    if(!$valid) {
-      CRM_Core_Resources::singleton()->addSetting(array('additionalVolunteers' => array('errors' => $errors)));
-    }
-    return $valid && parent::validate();
+
+    return (0 == count($this->_errors));
   }
 
   /**
@@ -335,7 +322,7 @@ class CRM_Volunteer_Form_VolunteerSignUp extends CRM_Core_Form {
     $this->sendVolunteerConfirmationEmail($cid, $projectNeeds);
 
     //Process Additional Volunteers
-    $additionalVolunteers = $this->processAdditionalVolunteers(CRM_Utils_Array::value('additionalVolunteerQuantity', $values, 0));
+    $additionalVolunteers = $this->processAdditionalVolunteers($values);
     foreach($additionalVolunteers as $additionalVolunteerCID) {
       $projectNeeds = $this->createVolunteerActivity($additionalVolunteerCID);
       $this->sendVolunteerConfirmationEmail($additionalVolunteerCID, $projectNeeds);
@@ -459,8 +446,10 @@ class CRM_Volunteer_Form_VolunteerSignUp extends CRM_Core_Form {
    *
    * @param $data
    */
-  function processAdditionalVolunteers($qty) {
+  function processAdditionalVolunteers($data) {
     $cids = array();
+
+    $qty = CRM_Utils_Array::value('additionalVolunteerQuantity', $data, 0);
 
     if(!is_numeric($qty)) {
       return $cids;
@@ -470,20 +459,17 @@ class CRM_Volunteer_Form_VolunteerSignUp extends CRM_Core_Form {
       $qty = intval($qty);
     }
 
-    $additionalVolunteers = CRM_Utils_Array::value('additionalVolunteers', $_POST, array());
-
     //Get the profile Fields
     $profileFields = array();
     foreach ($this->getAdditionalVolunteerProfileIDs() as $profileID) {
       $profileFields += CRM_Core_BAO_UFGroup::getFields($profileID);
     }
 
-    foreach($additionalVolunteers as $index => $profileData) {
-      if($index >= $qty) {
-        break;
-      }
-
+    $index = 0;
+    while($index < $qty) {
+      $profileData = CRM_Utils_Array::value('additionalVolunteers_'.$index, $data, array());
       $cids[] = $this->processProfileData($profileData, $profileFields);
+      $index++;
     }
 
     return $cids;
@@ -546,7 +532,7 @@ class CRM_Volunteer_Form_VolunteerSignUp extends CRM_Core_Form {
    * @param string $name The name to give the Smarty variable
    * @access public
    */
-  function buildCustom($profileIds = array(), $contactID = null) {
+  function buildCustom($profileIds = array(), $contactID = null, $prefix = '') {
     $profiles = array();
     $fieldList = array(); // master field list
 
@@ -565,7 +551,10 @@ class CRM_Volunteer_Form_VolunteerSignUp extends CRM_Core_Form {
           $field,
           CRM_Profile_Form::MODE_CREATE,
           $contactID,
-          TRUE
+          TRUE,
+          null,
+          null,
+          $prefix
         );
         $profiles[$profileID][$key] = $fieldList[$key] = $field;
       }
@@ -579,12 +568,17 @@ class CRM_Volunteer_Form_VolunteerSignUp extends CRM_Core_Form {
    *
    * @return bool
    */
-  function buildAdditionalVolunteerTemplate() {
+  function buildAdditionalVolunteerTemplate($prefix = "additionalVolunteersTemplate", $assign = true) {
     $profileIds = $this->getAdditionalVolunteerProfileIDs();
     if ($profileIds) {
-      $profiles = $this->buildCustom($profileIds, 0);
-      $this->assign('additionalVolunteerProfiles', $profiles);
+      $profiles = $this->buildCustom($profileIds, 0, $prefix);
+      if($assign) {
+        $this->assign($prefix, $profiles);
+      } else {
+        return $profiles;
+      }
     }
+
     return (!empty($profileIds));
   }
 

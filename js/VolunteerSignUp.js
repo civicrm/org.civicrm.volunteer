@@ -4,8 +4,30 @@ CRM.$(function($) {
     var newRowIndex = $("#additionalVolunteers .additional-volunteer-profile").length;
     var container = $(".crm-volunteer-additional-volunteers-template .additional-volunteer-profile").clone(true);
     container.find("input,select").each(function() {
-      $(this).attr("name", $(this).attr("name").replace("additionalVolunteersTemplate", "additionalVolunteers[" + newRowIndex + "]"));
+
+      if($(this).attr("name")) {
+
+        $(this).attr("name", $(this).attr("name").replace("additionalVolunteersTemplate", "additionalVolunteers_" + newRowIndex));
+
+        if($(this).data("name")) {
+          //Because of how we are cloning, you have to use both of these.
+          //It is strange but it works.
+          $(this).data("name", $(this).data("name").replace("additionalVolunteersTemplate", "additionalVolunteers_" + newRowIndex ));
+          $(this).attr("data-name", $(this).data("name").replace("additionalVolunteersTemplate", "additionalVolunteers_" + newRowIndex));
+        }
+
+        if($(this).data("target")) {
+          //Because of how we are cloning, you have to use both of these.
+          //It is strange but it works.
+          $(this).data("target", $(this).data("target").replace("additionalVolunteersTemplate", "additionalVolunteers_" + newRowIndex));
+          $(this).attr("data-target", $(this).data("target").replace("additionalVolunteersTemplate", "additionalVolunteers_" + newRowIndex));
+        }
+      }
     });
+
+    //Handle Select2s
+    container.find(".crm-select2").crmSelect2();
+
 
     if(newRowIndex === 0) {
       container.find("input").attr("placeholder", "");
@@ -19,10 +41,12 @@ CRM.$(function($) {
 
 
 
-  //Change the number of additional volunteers
+
+  /*****[ Change the number of additional volunteers ]*****/
+
   $("#additionalVolunteerQuantity").change(function(event) {
 
-    if(!$.isNumeric($(this).val())) {
+    if(!$.isNumeric($(this).val()) && $(this).val() !== '') {
       CRM.alert(ts("Please supply a number"));
       return;
     }
@@ -47,20 +71,30 @@ CRM.$(function($) {
 
 
 
-  //Setup the Template
-  $(".crm-volunteer-additional-volunteers-template .additional-volunteer-profile input").each(function() {
-    //Set the placeholder text
-    $(this).attr("placeholder", $(this).closest(".crm-section").find(".label").text().replace("*", ""));
-    //change the name so it ends up in a nested array
-    if($(this).attr("name").indexOf("[") === -1) {
-      $(this).attr("name", "additionalVolunteersTemplate[" + $(this).attr("name") + "]");
-    } else {
-      $(this).attr("name", "additionalVolunteersTemplate[" + $(this).attr("name").replace("[", "]["));
-    }
+  /*****[ Setup the Template ]*****/
+   $(".crm-volunteer-additional-volunteers-template .additional-volunteer-profile input, .crm-volunteer-additional-volunteers-template .additional-volunteer-profile select").each(function() {
+
+     if($(this).is("input")) {
+       //Set the placeholder text
+       $(this).attr("placeholder", $(this).closest(".crm-section").find(".label").text().replace("*", ""))
+         //Clear the value
+         .val('');
+     } else {
+       $(this).find("option").removeAttr('checked').removeAttr('selected');
+       if($(this).hasClass("crm-select2")) {
+         $(this).select2('destroy');
+       }
+     }
+
     //remove conflicting dom ids
-    $(this).removeAttr("id").val('');
+    $(this).removeAttr("id");
   });
-  $('.crm-volunteer-additional-volunteers-template .additional-volunteer-profile select').removeAttr('checked').removeAttr('selected')
+
+
+
+  /*****[ Handle Return to Form ]****/
+  //This will create the forms so we can populate them.
+  $("#additionalVolunteerQuantity").change();
 
 
 });

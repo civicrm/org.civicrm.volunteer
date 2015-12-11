@@ -23,6 +23,9 @@
   float: left;
   padding-top: 0px;
 }
+.crm-volunteer-additional-volunteers .additional-volunteer-profile .crm-option-edit-link {
+  display: none;
+}
 
 .additional-volunteer-profile {
   border-bottom: 1px solid #9a9b9a;
