@@ -43,10 +43,6 @@
   margin-top: 2em;
 }
 
-#tabs-wrapper {
-  display: none;
-}
-
 .crm-container fieldset.crm-vol-ui-fieldset, fieldset.crm-vol-ui-fieldset {
   border: 1px solid #aaa;
 }
