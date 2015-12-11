@@ -277,6 +277,12 @@ class CRM_Volunteer_Form_VolunteerSignUp extends CRM_Core_Form {
             $i++;
           }
           $this->assign('additionalVolunteerProfiles', $additionalVolunteerProfiles);
+
+          $profileFields = array();
+          foreach ($this->getAdditionalVolunteerProfileIDs() as $profileID) {
+            $profileFields += CRM_Core_BAO_UFGroup::getFields($profileID);
+          }
+          CRM_Core_Resources::singleton()->addSetting(array('additionalVolunteers' => array('fields' => $profileFields)));
         }
       }
     }
