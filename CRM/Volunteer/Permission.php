@@ -2,6 +2,8 @@
 
 class CRM_Volunteer_Permission extends CRM_Core_Permission {
 
+  const VIEW_ROSTER = 'volunteer_view_roster'; // A number unused by CRM_Core_Action
+
   /**
    * Returns an array of permissions defined by this extension. Modeled off of
    * CRM_Core_Permission::getCorePermissions().
@@ -70,14 +72,14 @@ class CRM_Volunteer_Permission extends CRM_Core_Permission {
    * against a specified project.
    *
    * @param int $op
-   *   See the constants in CRM_Core_Action.
+   *   See the constants in CRM_Core_Action and CRM_Volunteer_Page_Roster.
    * @param int $projectId
    *   Required for some but not all operations.
    * @return boolean
    *   TRUE is the action is allowed; else FALSE.
    */
   public static function checkProjectPerms($op, $projectId = NULL) {
-    $opsRequiringProjectId = array(CRM_Core_Action::UPDATE, CRM_Core_Action::DELETE,);
+    $opsRequiringProjectId = array(CRM_Core_Action::UPDATE, CRM_Core_Action::DELETE, self::VIEW_ROSTER,);
     if (in_array($op, $opsRequiringProjectId) && empty($projectId)) {
       CRM_Core_Error::fatal('Missing required parameter Project ID');
     }
@@ -114,6 +116,17 @@ class CRM_Volunteer_Permission extends CRM_Core_Permission {
         if (self::check('register to volunteer') || self::check('edit all volunteer projects')) {
           return TRUE;
         }
+        break;
+      case self::VIEW_ROSTER:
+        if (self::check('edit all volunteer projects')) {
+          return TRUE;
+        }
+
+        $projectManagers = CRM_Volunteer_BAO_Project::getContactsByRelationship($projectId, 'volunteer_manager');
+        if (in_array($contactId, $projectManagers)) {
+          return TRUE;
+        }
+        break;
     }
 
     return FALSE;
