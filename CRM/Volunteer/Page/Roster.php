@@ -1,7 +1,5 @@
 <?php
 
-require_once 'CRM/Core/Page.php';
-
 class CRM_Volunteer_Page_Roster extends CRM_Core_Page {
   private $projectId;
   private $todaysDate;
@@ -13,7 +11,6 @@ class CRM_Volunteer_Page_Roster extends CRM_Core_Page {
   function run() {
     $this->projectId = CRM_Utils_Request::retrieve('project_id', 'Positive', CRM_Core_DAO::$_nullObject, TRUE);
 
-    $this->checkPermissions();
     $this->todaysDate = new DateTime();
     $this->todaysDate->setTime(0, 0, 0); // just the date.
     $this->assign('endDate', $this->todaysDate->format('Y-m-d'));
@@ -37,28 +34,6 @@ class CRM_Volunteer_Page_Roster extends CRM_Core_Page {
     }
     $this->assign('errorMessage', $errorMessage);
     parent::run();
-  }
-
-  /**
-   * We only allow viewing in the following cases:
-   *   - First case is having the permission 'edit all volunteer projects'.
-   *   - Second case is where the user has Volunteer Coordinator relationship to project.
-   * Our default position is no admittance.
-   *
-   */
-  private function checkPermissions () {
-
-    $session = CRM_Core_Session::singleton();
-    $contact_id = $session->get('userID');
-
-    // See if they have the required permission, if so bail.
-    if (CRM_Volunteer_Permission::checkProjectPerms(CRM_Volunteer_Permission::VIEW_ROSTER, $this->projectId)) {
-      return;
-    }
-
-    $errorMessage = 'You do not have the required permissions to view this page.';
-
-    $this->error($errorMessage);
   }
 
   /**

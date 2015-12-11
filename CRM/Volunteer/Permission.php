@@ -122,8 +122,8 @@ class CRM_Volunteer_Permission extends CRM_Core_Permission {
           return TRUE;
         }
 
-        $projectOwners = CRM_Volunteer_BAO_Project::getContactsByRelationship($projectId, 'volunteer_manager');
-        if (in_array($contactId, $projectOwners)) {
+        $projectManagers = CRM_Volunteer_BAO_Project::getContactsByRelationship($projectId, 'volunteer_manager');
+        if (in_array($contactId, $projectManagers)) {
           return TRUE;
         }
         break;

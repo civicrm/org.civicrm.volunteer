@@ -306,6 +306,24 @@ class CRM_Volunteer_BAO_Project extends CRM_Volunteer_DAO_Project {
   }
 
   /**
+   * Helper function to determine whether the current user should be allowed
+   * to retrieve a project.
+   *
+   * @param int $projectId
+   * @return boolean
+   */
+  private static function allowedToRetrieve($projectId = NULL) {
+    $userCanView = CRM_Volunteer_Permission::checkProjectPerms(CRM_Core_Action::VIEW);
+
+    $userCanViewRoster = FALSE;
+    if (!$userCanView && !empty($projectId)) {
+      $userCanViewRoster = CRM_Volunteer_Permission::checkProjectPerms(CRM_Volunteer_Permission::VIEW_ROSTER, $projectId);
+    }
+
+    return ($userCanView || $userCanViewRoster);
+  }
+
+  /**
    * Get a list of Projects matching the params.
    *
    * This function is invoked from within the web form layer and also from the
@@ -326,8 +344,9 @@ class CRM_Volunteer_BAO_Project extends CRM_Volunteer_DAO_Project {
   public static function retrieve(array $params) {
     $result = array();
 
+    $projectId = CRM_Utils_Array::value('id', $params);
     $checkPerms = CRM_Utils_Array::value('check_permissions', $params);
-    if($checkPerms && !CRM_Volunteer_Permission::checkProjectPerms(CRM_Core_Action::VIEW)) {
+    if ($checkPerms && !self::allowedToRetrieve($projectId)) {
       CRM_Utils_System::permissionDenied();
       return;
     }
