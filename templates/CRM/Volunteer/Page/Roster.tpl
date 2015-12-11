@@ -36,10 +36,8 @@
 {/foreach}
 <br/>
 <div class='dateBlock'>
-  {ts 1=$endDate|crmDate domain='org.civicrm.volunteer'}Assignments that end before %1 are not shown.{/ts}
+  <p>{ts 1=$endDate|crmDate domain='org.civicrm.volunteer'}Assignments that end before %1 are not shown.{/ts}</p>
 </div>
-<br/>
-<br/>
 
 <a href='{crmURL p='civicrm/vol/#/volunteer/manage'}'>
   <input type='button' class="backButton" value='{ts domain='org.civicrm.volunteer'}Back to Manage Volunteer Projects.{/ts}'/>
