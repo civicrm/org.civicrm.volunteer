@@ -45,6 +45,8 @@ class CRM_Volunteer_Page_Roster extends CRM_Core_Page {
     $this->todaysDate->setTime(0, 0, 0); // just the date.
     $this->assign('endDate', $this->todaysDate->format('Y-m-d'));
 
+    CRM_Core_Resources::singleton()->addScriptFile('org.civicrm.volunteer', 'js/roster.js', 0, 'html-header');
+
     parent::run();
   }
 
