@@ -40,5 +40,5 @@
 </div>
 
 <a href='{crmURL p='civicrm/vol/#/volunteer/manage'}'>
-  <input type='button' class="backButton" value='{ts domain='org.civicrm.volunteer'}Back to Manage Volunteer Projects.{/ts}'/>
+  <input type='button' class="crm-vol-modal-closer" value='{ts domain='org.civicrm.volunteer'}Back to Manage Volunteer Projects.{/ts}'/>
 </a>
