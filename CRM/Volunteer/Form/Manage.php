@@ -51,7 +51,7 @@ class CRM_Volunteer_Form_Manage {
     $weight = 0;
     $baseDir = CRM_Extension_System::singleton()->getMapper()->keyToBasePath('org.civicrm.volunteer') . '/';
     // This glob pattern will recurse the js directory up to 4 levels deep
-    foreach (glob($baseDir . 'js/{*,*/*,*/*/*,*/*/*/*}.js', GLOB_BRACE) as $file) {
+    foreach (glob($baseDir . 'js/backbone/{*,*/*,*/*/*,*/*/*/*}.js', GLOB_BRACE) as $file) {
       $fileName = substr($file, strlen($baseDir));
       $ccr->addScriptFile('org.civicrm.volunteer', $fileName, $weight++);
     }
