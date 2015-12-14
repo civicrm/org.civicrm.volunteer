@@ -43,10 +43,16 @@
   margin-top: 2em;
 }
 
+/* wrap label and select together on smaller screens */
 .crm-volunteer-profile-use-type {
+  display: inline-block;
+}
+
+.crm-profile-selector-wrapper {
   float: left;
   margin-right: 10px;
 }
+
 .crm-container fieldset.crm-vol-ui-fieldset, fieldset.crm-vol-ui-fieldset {
   border: 1px solid #aaa;
 }
@@ -61,6 +67,7 @@
 }
 
 #org_civicrm_volunteer-sign-up-profiles .crm-profile-selector-container hr {
+  clear: both;
   margin-top: 10px;
   margin-bottom: 10px;
 }
