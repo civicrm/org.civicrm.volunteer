@@ -296,8 +296,16 @@ class CRM_Volunteer_Form_VolunteerSignUp extends CRM_Core_Form {
     $this->assign('allowAdditionalVolunteers', $hasAdditional);
   }
 
-
-  function validate($nothing = null) {
+  /**
+   * Validates the user submission.
+   *
+   * Overrides the default validation, ignoring validation errors on additional
+   * volunteers.
+   *
+   * @return boolean
+   *   Returns TRUE if no errors found.
+   */
+  function validate() {
     parent::validate();
 
     foreach($this->_errors as $name => $msg) {
