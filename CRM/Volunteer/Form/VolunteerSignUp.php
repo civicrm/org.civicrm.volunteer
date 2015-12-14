@@ -458,13 +458,10 @@ class CRM_Volunteer_Form_VolunteerSignUp extends CRM_Core_Form {
     $cids = array();
 
     $qty = CRM_Utils_Array::value('additionalVolunteerQuantity', $data, 0);
+    $qty = CRM_Utils_Type::validate($qty, 'Integer', FALSE);
 
-    if(!is_numeric($qty)) {
+    if ($qty === NULL) {
       return $cids;
-    }
-
-    if(!is_int($qty)) {
-      $qty = intval($qty);
     }
 
     //Get the profile Fields
