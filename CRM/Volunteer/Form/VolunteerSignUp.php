@@ -268,7 +268,7 @@ class CRM_Volunteer_Form_VolunteerSignUp extends CRM_Core_Form {
     $hasAdditional = $this->buildAdditionalVolunteerTemplate();
     if($hasAdditional) {
       //Give the volunteer a box to select how many friends they are bringing
-      $this->add("text", "additionalVolunteerQuantity", ts("Number of Additional Volunteers"), array("size" => 3));
+      $this->add("text", "additionalVolunteerQuantity", ts("Number of Additional Volunteers", array('domain' => 'org.civicrm.volunteer')), array("size" => 3));
       if(!empty($this->_submitValues)) {
 
         $additionalVolunteerQuantity = CRM_Utils_Array::value("additionalVolunteerQuantity", $this->_submitValues, 0);
