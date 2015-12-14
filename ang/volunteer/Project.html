@@ -116,10 +116,13 @@
     </fieldset>
 
     <fieldset class="crm-vol-profiles">
-      <legend>{{ts("Profiles")}}</legend>
+      <legend>{{ts("Volunteer Registration")}}</legend>
       <div class="help">
         <p>
-          {{ts("What questions would you like to ask your volunteers? Select one or more Profiles below to tailor the registration form to this project.")}}
+          {{ts("What questions would you like to ask your volunteers? Select one or more Profiles below to tailor the registration forms for this project.")}}
+        </p>
+        <p>
+          {{ts('You may create up to two sign up forms for a volunteer project: one for individual registrations and another for group registrations. The "Use For" field specifies whether the Profile should be used for individual registrations, group registrations, or both. For group registrations, it is recommended that a single, short Profile be used.')}}
         </p>
       </div>
       <div id="org_civicrm_volunteer-sign-up-profiles">
@@ -140,9 +143,9 @@
           <div class="crm-volunteer-profile-use-type">
             <label>{{ts("Use For:")}}</label>
             <select ng-model="profile.module_data" crm-ui-select="{}" ng-change="validateProfileTypes()">
-              <option value="primary">{{ts("Primary Volunteer")}}</option>
-              <option value="additional">{{ts("Additional Volunteers")}}</option>
-              <option value="both">{{ts("All Volunteers")}}</option>
+              <option value="primary">{{ts("Individual Registration")}}</option>
+              <option value="additional">{{ts("Group Registration")}}</option>
+              <option value="both">{{ts("Both")}}</option>
             </select>
           </div>
 
