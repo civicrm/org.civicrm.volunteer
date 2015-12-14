@@ -69,16 +69,21 @@ class CRM_Volunteer_Form_VolunteerSignUp extends CRM_Core_Form {
   protected $_needs = array();
 
   /**
-   * The profile IDs associated with this form.
+   * The profile IDs associated with this form and marked
+   * for use with the primary contact.
+   *
+   * Do not use directly; access via $this->getPrimaryVolunteerProfileIDs().
    *
    * @var array
    * @protected
    */
-  protected $_profile_ids = array();
+  protected $_primary_volunteer_profile_ids = array();
 
   /**
    * The profile IDs associated with this form and marked
-   * for use with additional volunteers
+   * for use with additional volunteers.
+   *
+   * Do not use directly; access via $this->getAdditionalVolunteerProfileIDs().
    *
    * @var array
    * @protected
@@ -103,7 +108,7 @@ class CRM_Volunteer_Form_VolunteerSignUp extends CRM_Core_Form {
     $defaults = array();
 
     if (key_exists('userID', $_SESSION['CiviCRM'])) {
-      foreach($this->getProfileIDs() as $profileID) {
+      foreach($this->getPrimaryVolunteerProfileIDs() as $profileID) {
         $fields = array_flip(array_keys(CRM_Core_BAO_UFGroup::getFields($profileID)));
         CRM_Core_BAO_UFGroup::setProfileDefaults($_SESSION['CiviCRM']['userID'], $fields, $defaults);
       }
@@ -155,13 +160,13 @@ class CRM_Volunteer_Form_VolunteerSignUp extends CRM_Core_Form {
   }
 
   /**
-   * Search for profiles
+   * Return profiles used for Primary Volunteers
    *
    * @return array
    *   UFGroup (Profile) Ids
    */
-  function getProfileIDs() {
-    if (empty($this->_profile_ids)) {
+  function getPrimaryVolunteerProfileIDs() {
+    if (empty($this->_primary_volunteer_profile_ids)) {
       $profileIds = array();
 
       foreach ($this->_projects as $project) {
@@ -172,10 +177,10 @@ class CRM_Volunteer_Form_VolunteerSignUp extends CRM_Core_Form {
         }
       }
 
-      $this->_profile_ids = array_unique($profileIds);
+      $this->_primary_volunteer_profile_ids = array_unique($profileIds);
     }
 
-    return $this->_profile_ids;
+    return $this->_primary_volunteer_profile_ids;
   }
 
   /**
@@ -232,7 +237,7 @@ class CRM_Volunteer_Form_VolunteerSignUp extends CRM_Core_Form {
     CRM_Utils_System::setTitle(ts('Sign Up to Volunteer'));
 
     $contactID = CRM_Utils_Array::value('userID', $_SESSION['CiviCRM']);
-    $profiles = $this->buildCustom($this->getProfileIDs(), $contactID);
+    $profiles = $this->buildCustom($this->getPrimaryVolunteerProfileIDs(), $contactID);
     $this->assign('customProfiles', $profiles);
 
     foreach ($this->_needs as $needId => &$need) {
@@ -313,7 +318,7 @@ class CRM_Volunteer_Form_VolunteerSignUp extends CRM_Core_Form {
     $values = $this->controller->exportValues();
 
     $profileFields = array();
-    foreach ($this->getProfileIDs() as $profileID) {
+    foreach ($this->getPrimaryVolunteerProfileIDs() as $profileID) {
       $profileFields += CRM_Core_BAO_UFGroup::getFields($profileID);
     }
     $profileValues = array_intersect_key($values, $profileFields);
