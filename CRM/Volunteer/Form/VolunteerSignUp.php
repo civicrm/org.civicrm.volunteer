@@ -272,7 +272,16 @@ class CRM_Volunteer_Form_VolunteerSignUp extends CRM_Core_Form {
     ));
 
     $additionalVolunteerProfiles = $this->buildAdditionalVolunteerTemplate();
-    if (!empty($additionalVolunteerProfiles)) {
+
+    // Only display profiles for additional volunteers (also referred to as
+    // group registrations) if such profiles exist and if exactly one project is
+    // in play. The reason for the restriction by project quantity is that some
+    // projects may opt to disable group registration; allowing group sign-ups
+    // when multiple projects are in play creates some ambiguity about which
+    // projects the additional volunteers should be assigned to.
+    $allowAdditionalVolunteers = (!empty($additionalVolunteerProfiles) && count($this->_projects) === 1);
+    $this->assign('allowAdditionalVolunteers', $allowAdditionalVolunteers);
+    if ($allowAdditionalVolunteers) {
       //Give the volunteer a box to select how many friends they are bringing
       $this->add("text", "additionalVolunteerQuantity", ts("Number of Additional Volunteers", array('domain' => 'org.civicrm.volunteer')), array("size" => 3));
       if(!empty($this->_submitValues)) {
@@ -298,7 +307,6 @@ class CRM_Volunteer_Form_VolunteerSignUp extends CRM_Core_Form {
       CRM_Core_Resources::singleton()->addScriptFile('org.civicrm.volunteer', 'js/VolunteerSignUp.js', 12);
       CRM_Core_Resources::singleton()->addStyleFile('org.civicrm.volunteer', 'css/additional_volunteers.css');
     }
-    $this->assign('allowAdditionalVolunteers', !empty($additionalVolunteerProfiles));
   }
 
   /**
