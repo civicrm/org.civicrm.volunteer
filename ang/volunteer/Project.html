@@ -132,9 +132,11 @@
           </a>
 
           <div class="crm-profile-selector-wrapper">
-            <input ng-if="supporting_data.use_profile_editor" crm-profile-selector="{}" ng-model="profile.uf_group_id" />
+            <input ng-if="supporting_data.use_profile_editor" crm-profile-selector="{}"
+                    ng-model="profile.uf_group_id" ng-change="validateProfileSelections()"/>
 
-            <select ng-if="!supporting_data.use_profile_editor" class="big crm-form-select crm-vol-simple-profile-selector" crm-ui-select="{placeholder: '', allowClear:true}"
+            <select ng-if="!supporting_data.use_profile_editor" class="big crm-form-select crm-vol-simple-profile-selector"
+                    crm-ui-select="{placeholder: '', allowClear:true}" ng-change="validateProfileSelections()"
                     ng-options="item as item.title for item in supporting_data.profile_list track by item.id" ng-model="profile.uf_group_id">
               <option />
             </select>
@@ -142,7 +144,7 @@
 
           <div class="crm-volunteer-profile-use-type">
             <label>{{ts("Use For:")}}</label>
-            <select ng-model="profile.module_data.audience" crm-ui-select="{}" ng-change="validateProfileTypes()">
+            <select ng-model="profile.module_data.audience" crm-ui-select="{}" ng-change="validateProfileSelections()">
               <option value="primary">{{ts("Individual Registration")}}</option>
               <option value="additional">{{ts("Group Registration")}}</option>
               <option value="both">{{ts("Both")}}</option>

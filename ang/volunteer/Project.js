@@ -171,19 +171,36 @@
       $scope.profiles.splice(index, 1);
     };
 
-    $scope.validateProfileTypes = function() {
+    $scope.validateProfileSelections = function() {
       var hasAdditionalProfileType = false;
+      var hasPrimaryProfileType = false;
       var valid = true;
+
       $.each($scope.profiles, function (index, data) {
+        if(!data.uf_group_id) {
+          CRM.alert(ts("Please select at least one profile, and remove empty selections"), "Required", 'error');
+          valid = false;
+        }
+
         if(data.module_data.audience == "additional" || data.module_data.audience == "both") {
           if(hasAdditionalProfileType) {
-            CRM.alert(ts("You may only have one profile that is used for additional volunteers"), ts("Warning"), "error");
+            CRM.alert(ts("You may only have one profile that is used for group registrations"), ts("Warning"), 'error');
             valid = false;
           } else {
             hasAdditionalProfileType = true;
           }
         }
+
+        if (data.module_data.audience == "primary" || data.module_data.audience == "both") {
+          hasPrimaryProfileType = true;
+        }
       });
+
+      if (!hasPrimaryProfileType) {
+        CRM.alert(ts("Please select at least one profile that is used for individual registrations"), ts("Warning"), 'error');
+        valid = false;
+      }
+
       return valid;
     };
 
@@ -200,16 +217,8 @@
         CRM.alert(ts("You must select at least one Profile"), "Required");
         valid = false;
       }
-      $.each($scope.profiles, function(index, profile) {
-        if(!profile.uf_group_id) {
-          CRM.alert(ts("Please select at least one profile, and remove empty selections"), "Required");
-          valid = false;
-        }
-      });
 
-      valid = (valid && $scope.validateProfileTypes());
-
-      //Do some validation here...
+      valid = (valid && $scope.validateProfileSelections());
 
       return valid;
     };
