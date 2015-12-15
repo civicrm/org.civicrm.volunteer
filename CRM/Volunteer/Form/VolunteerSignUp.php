@@ -289,7 +289,6 @@ class CRM_Volunteer_Form_VolunteerSignUp extends CRM_Core_Form {
         $profileFields += CRM_Core_BAO_UFGroup::getFields($profileID);
       }
       //styling for additional volunteers form
-      CRM_Core_Resources::singleton()->addSetting(array('additionalVolunteers' => array('fields' => $profileFields)));
       CRM_Core_Resources::singleton()->addScriptFile('org.civicrm.volunteer', 'js/VolunteerSignUp.js', 12);
       CRM_Core_Resources::singleton()->addStyleFile('org.civicrm.volunteer', 'css/additional_volunteers.css');
     }
