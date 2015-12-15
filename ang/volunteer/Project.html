@@ -142,7 +142,7 @@
 
           <div class="crm-volunteer-profile-use-type">
             <label>{{ts("Use For:")}}</label>
-            <select ng-model="profile.module_data" crm-ui-select="{}" ng-change="validateProfileTypes()">
+            <select ng-model="profile.module_data.audience" crm-ui-select="{}" ng-change="validateProfileTypes()">
               <option value="primary">{{ts("Individual Registration")}}</option>
               <option value="additional">{{ts("Group Registration")}}</option>
               <option value="both">{{ts("Both")}}</option>

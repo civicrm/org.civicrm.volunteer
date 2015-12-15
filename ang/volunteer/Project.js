@@ -92,9 +92,13 @@
         "module": "CiviVolunteer",
         "entity_table": "civicrm_volunteer_project",
         "weight": "1",
-        "module_data": "primary",
+        "module_data": {audience: "primary"},
         "uf_group_id": supporting_data.values.defaults.profile
       }];
+    } else {
+      $.each(project.profiles, function (key, data) {
+        data.module_data = JSON.parse(data.module_data);
+      });
     }
     $scope.campaigns = campaigns;
     $scope.relationship_types = supporting_data.values.relationship_types;
@@ -150,7 +154,7 @@
         "entity_table": "civicrm_volunteer_project",
         "is_active": "1",
         "module": "CiviVolunteer",
-        "module_data": "primary",
+        "module_data": {audience: "primary"},
         "weight": getMaxProfileWeight() + 1
       });
     };
@@ -171,7 +175,7 @@
       var hasAdditionalProfileType = false;
       var valid = true;
       $.each($scope.profiles, function (index, data) {
-        if(data.module_data == "additional" || data.module_data == "both") {
+        if(data.module_data.audience == "additional" || data.module_data.audience == "both") {
           if(hasAdditionalProfileType) {
             CRM.alert(ts("You may only have one profile that is used for additional volunteers"), ts("Warning"), "error");
             valid = false;
@@ -217,6 +221,10 @@
      */
     saveProject = function() {
       if ($scope.validateProject()) {
+
+        $.each($scope.project.profiles, function (index, data) {
+           data.module_data = JSON.stringify(data.module_data);
+        });
 
         if($scope.project.loc_block_id == 0) {
           $scope.locBlockIsDirty = true;
