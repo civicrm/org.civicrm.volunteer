@@ -265,8 +265,8 @@ class CRM_Volunteer_Form_VolunteerSignUp extends CRM_Core_Form {
       ),
     ));
 
-    $hasAdditional = $this->buildAdditionalVolunteerTemplate();
-    if($hasAdditional) {
+    $additionalVolunteerProfiles = $this->buildAdditionalVolunteerTemplate();
+    if (!empty($additionalVolunteerProfiles)) {
       //Give the volunteer a box to select how many friends they are bringing
       $this->add("text", "additionalVolunteerQuantity", ts("Number of Additional Volunteers", array('domain' => 'org.civicrm.volunteer')), array("size" => 3));
       if(!empty($this->_submitValues)) {
@@ -292,7 +292,7 @@ class CRM_Volunteer_Form_VolunteerSignUp extends CRM_Core_Form {
       CRM_Core_Resources::singleton()->addScriptFile('org.civicrm.volunteer', 'js/VolunteerSignUp.js', 12);
       CRM_Core_Resources::singleton()->addStyleFile('org.civicrm.volunteer', 'css/additional_volunteers.css');
     }
-    $this->assign('allowAdditionalVolunteers', $hasAdditional);
+    $this->assign('allowAdditionalVolunteers', !empty($additionalVolunteerProfiles));
   }
 
   /**
@@ -576,22 +576,25 @@ class CRM_Volunteer_Form_VolunteerSignUp extends CRM_Core_Form {
 
 
   /**
-   * This function compiles the Additional Volunteer Profile to variable
+   * Compiles the Additional Volunteer Profiles.
    *
-   * @return bool
+   * @param string $prefix
+   *   The prefix for the form elements as well as the name of the Smarty
+   *   array which contains them all.
+   * @param boolean $assign
+   *   If TRUE, a Smarty variable named $prefix is added to the form.
+   * @return array
+   *   An array of the additional volunteer profiles. The array is empty if
+   *   there are none.
    */
   function buildAdditionalVolunteerTemplate($prefix = "additionalVolunteersTemplate", $assign = true) {
-    $profileIds = $this->getAdditionalVolunteerProfileIDs();
-    if ($profileIds) {
-      $profiles = $this->buildCustom($profileIds, 0, $prefix);
-      if($assign) {
-        $this->assign($prefix, $profiles);
-      } else {
-        return $profiles;
-      }
+    $profiles = $this->buildCustom($this->getAdditionalVolunteerProfileIDs(), 0, $prefix);
+
+    if($assign) {
+      $this->assign($prefix, $profiles);
     }
 
-    return (!empty($profileIds));
+    return $profiles;
   }
 
   /**
