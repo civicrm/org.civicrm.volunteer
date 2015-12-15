@@ -90,6 +90,12 @@ class CRM_Volunteer_Form_VolunteerSignUp extends CRM_Core_Form {
    */
   protected $_additional_volunteer_profile_ids = array();
 
+  /**
+   * The contact ID of the primary volunteer.
+   *
+   * @var int
+   */
+  private $_primary_volunteer_id;
 
   /**
    * The volunteer projects associated with this form, keyed by project ID.
@@ -331,10 +337,10 @@ class CRM_Volunteer_Form_VolunteerSignUp extends CRM_Core_Form {
     $profileValues = array_intersect_key($values, $profileFields);
     $activityValues = array_diff_key($values, $profileValues);
 
-    $cid = $this->processProfileData($profileValues, $profileFields, $cid);
+    $this->_primary_volunteer_id = $this->processProfileData($profileValues, $profileFields, $cid);
     $activity_statuses = CRM_Activity_BAO_Activity::buildOptions('status_id', 'create');
-    $projectNeeds = $this->createVolunteerActivity($cid);
-    $this->sendVolunteerConfirmationEmail($cid, $projectNeeds);
+    $projectNeeds = $this->createVolunteerActivity($this->_primary_volunteer_id);
+    $this->sendVolunteerConfirmationEmail($this->_primary_volunteer_id, $projectNeeds);
 
     //Process Additional Volunteers
     $additionalVolunteers = $this->processAdditionalVolunteers($values);
@@ -342,7 +348,6 @@ class CRM_Volunteer_Form_VolunteerSignUp extends CRM_Core_Form {
       $projectNeeds = $this->createVolunteerActivity($additionalVolunteerCID);
       $this->sendVolunteerConfirmationEmail($additionalVolunteerCID, $projectNeeds);
     }
-
 
     $statusMsg = ts('You are scheduled to volunteer. Thank you!', array('domain' => 'org.civicrm.volunteer'));
     CRM_Core_Session::setStatus($statusMsg, '', 'success');
@@ -396,16 +401,14 @@ class CRM_Volunteer_Form_VolunteerSignUp extends CRM_Core_Form {
    * @param $cid: Contact ID
    * @return array: Project needs data for use in sending confirmation email.
    */
-  function createVolunteerActivity($cid) {
+  private function createVolunteerActivity($cid) {
     $projectNeeds = array();
     foreach($this->_needs as $need) {
       $activityValues['volunteer_need_id'] = $need['id'];
       $activityValues['activity_date_time'] = CRM_Utils_Array::value('start_time', $need);
       $activityValues['assignee_contact_id'] = $cid;
       $activityValues['is_test'] = ($this->_mode === 'test' ? 1 : 0);
-      // below we assume that volunteers are always signing up only themselves;
-      // for now this is a safe assumption, but we may need to revisit this.
-      $activityValues['source_contact_id'] = $cid;
+      $activityValues['source_contact_id'] = $this->_primary_volunteer_id;
 
       // Set status to Available if user selected Flexible Need, else set to Scheduled.
       if (CRM_Utils_Array::value('is_flexible', $need)) {
