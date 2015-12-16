@@ -31,7 +31,7 @@ function civicrm_api3_volunteer_util_loadbackbone($params) {
 
   $baseDir = CRM_Extension_System::singleton()->getMapper()->keyToBasePath('org.civicrm.volunteer') . '/';
   // This glob pattern will recurse the js directory up to 4 levels deep
-  foreach (glob($baseDir . 'js/{*,*/*,*/*/*,*/*/*/*}.js', GLOB_BRACE) as $file) {
+  foreach (glob($baseDir . 'js/backbone/{*,*/*,*/*/*,*/*/*/*}.js', GLOB_BRACE) as $file) {
     $fileName = substr($file, strlen($baseDir));
     $results['scripts'][] = $ccr->getUrl('org.civicrm.volunteer', $fileName);
   }

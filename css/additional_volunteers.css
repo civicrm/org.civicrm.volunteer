@@ -1,0 +1,40 @@
+.crm-volunteer-additional-volunteers .additional-volunteer-profile div.crm-section div.label {
+  text-align: left;
+  float: none;
+  width: 100%;
+}
+.crm-volunteer-additional-volunteers .additional-volunteer-profile div.crm-section div.label label {
+  display: block;
+  width: 100%;
+}
+.crm-volunteer-additional-volunteers .additional-volunteer-profile fieldset.crm-profile {
+  border: none;
+  margin: 0px;
+}
+.crm-volunteer-additional-volunteers .additional-volunteer-profile fieldset.crm-profile legend {
+  display: none;
+}
+.crm-volunteer-additional-volunteers .additional-volunteer-profile div.crm-section div.content {
+  margin: 0px;
+}
+.crm-volunteer-additional-volunteers .additional-volunteer-profile div.crm-section {
+  margin: 5px;
+  margin-top: 0px;
+  float: left;
+  padding-top: 0px;
+}
+.crm-volunteer-additional-volunteers .additional-volunteer-profile .crm-option-edit-link {
+  display: none;
+}
+
+.additional-volunteer-profile {
+  border-bottom: 1px solid #9a9b9a;
+}
+
+.additional-volunteer-profile:nth-child(n+2) div.crm-section div.label {
+  display: none;
+}
+
+.crm-volunteer-additional-volunteers-template {
+  display: none;
+}

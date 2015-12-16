@@ -360,6 +360,17 @@ class CRM_Volunteer_Upgrader extends CRM_Volunteer_Upgrader_Base {
     return TRUE;
   }
 
+  public function upgrade_2004() {
+    $this->ctx->log->info('Applying update 2004 - Setting module_data for volunteer profiles');
+    $query = CRM_Core_DAO::executeQuery('UPDATE civicrm_uf_join SET module_data = %1
+          WHERE module_data IS NULL AND entity_table = %2 AND module = %3', array(
+            1 => array(json_encode(array('audience' => 'primary')), 'String'),
+            2 => array('civicrm_volunteer_project', 'String'),
+            3 => array('CiviVolunteer', 'String'),
+          ));
+    return !is_a($query, 'DB_Error');
+  }
+
   /**
    * Example: Run an external SQL script when the module is uninstalled
    *

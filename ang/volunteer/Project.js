@@ -92,8 +92,13 @@
         "module": "CiviVolunteer",
         "entity_table": "civicrm_volunteer_project",
         "weight": "1",
+        "module_data": {audience: "primary"},
         "uf_group_id": supporting_data.values.defaults.profile
       }];
+    } else {
+      $.each(project.profiles, function (key, data) {
+        data.module_data = JSON.parse(data.module_data);
+      });
     }
     $scope.campaigns = campaigns;
     $scope.relationship_types = supporting_data.values.relationship_types;
@@ -149,6 +154,7 @@
         "entity_table": "civicrm_volunteer_project",
         "is_active": "1",
         "module": "CiviVolunteer",
+        "module_data": {audience: "primary"},
         "weight": getMaxProfileWeight() + 1
       });
     };
@@ -164,6 +170,40 @@
     $scope.removeProfile = function(index) {
       $scope.profiles.splice(index, 1);
     };
+
+    $scope.validateProfileSelections = function() {
+      var hasAdditionalProfileType = false;
+      var hasPrimaryProfileType = false;
+      var valid = true;
+
+      $.each($scope.profiles, function (index, data) {
+        if(!data.uf_group_id) {
+          CRM.alert(ts("Please select at least one profile, and remove empty selections"), "Required", 'error');
+          valid = false;
+        }
+
+        if(data.module_data.audience == "additional" || data.module_data.audience == "both") {
+          if(hasAdditionalProfileType) {
+            CRM.alert(ts("You may only have one profile that is used for group registrations"), ts("Warning"), 'error');
+            valid = false;
+          } else {
+            hasAdditionalProfileType = true;
+          }
+        }
+
+        if (data.module_data.audience == "primary" || data.module_data.audience == "both") {
+          hasPrimaryProfileType = true;
+        }
+      });
+
+      if (!hasPrimaryProfileType) {
+        CRM.alert(ts("Please select at least one profile that is used for individual registrations"), ts("Warning"), 'error');
+        valid = false;
+      }
+
+      return valid;
+    };
+
     $scope.validateProject = function() {
       var valid = true;
 
@@ -177,15 +217,8 @@
         CRM.alert(ts("You must select at least one Profile"), "Required");
         valid = false;
       }
-      $.each($scope.profiles, function(index, profile) {
-        if(!profile.uf_group_id) {
-          CRM.alert(ts("Please select at least one profile, and remove empty selections"), "Required");
-          valid = false;
-        }
-      });
 
-
-      //Do some validation here...
+      valid = (valid && $scope.validateProfileSelections());
 
       return valid;
     };
@@ -197,6 +230,10 @@
      */
     saveProject = function() {
       if ($scope.validateProject()) {
+
+        $.each($scope.project.profiles, function (index, data) {
+           data.module_data = JSON.stringify(data.module_data);
+        });
 
         if($scope.project.loc_block_id == 0) {
           $scope.locBlockIsDirty = true;
@@ -214,7 +251,7 @@
           return projectId;
         });
       } else {
-        return false;
+        return $q.reject(false);
       }
     };
 
