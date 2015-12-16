@@ -347,7 +347,7 @@ class CRM_Volunteer_Form_VolunteerSignUp extends CRM_Core_Form {
 
     $this->_primary_volunteer_id = $this->processProfileData($profileValues, $profileFields, $cid);
     $activity_statuses = CRM_Activity_BAO_Activity::buildOptions('status_id', 'create');
-    $projectNeeds = $this->createVolunteerActivity($this->_primary_volunteer_id);
+    $projectNeeds = $this->createVolunteerActivity($this->_primary_volunteer_id, $activityValues, $activity_statuses);
     $this->sendVolunteerConfirmationEmail($this->_primary_volunteer_id, $projectNeeds);
 
     //Process Additional Volunteers
@@ -406,10 +406,16 @@ class CRM_Volunteer_Form_VolunteerSignUp extends CRM_Core_Form {
    * This function Loops through the needs the user is signing up for
    * and creates activity records for them.
    *
-   * @param $cid: Contact ID
-   * @return array: Project needs data for use in sending confirmation email.
+   * @param $cid
+   *    The contact ID for whom this activity is to be created
+   * @param $activityValues
+   *    An array of values corresponding to the data the user submitted minus the profile fields
+   * @param $activity_statuses
+   *    An array of possible statuses for this activity
+   * @return array
+   *    Project needs data for use in sending confirmation email.
    */
-  private function createVolunteerActivity($cid) {
+  private function createVolunteerActivity($cid, $activityValues, $activity_statuses) {
     $projectNeeds = array();
     foreach($this->_needs as $need) {
       $activityValues['volunteer_need_id'] = $need['id'];
@@ -443,9 +449,15 @@ class CRM_Volunteer_Form_VolunteerSignUp extends CRM_Core_Form {
   /**
    * Process the data returned by a completed profile
    *
-   * @param $profileValues; Data
-   * @param $profileFields; Field definitions
-   * @param null $cid; Contact ID
+   * @param $profileValues
+   *  The data the user submitted to the Signup page for a given profile
+   * @param $profileFields
+   *  A list of field definitions for this profile
+   * @param null $cid
+   *  The Contact ID of the user for whom this profile is being processed
+   *
+   * @return int
+   *  The contact id of the user for whom this data was saved (This can be a new contact)
    */
   function processProfileData($profileValues, $profileFields, $cid = null) {
     // Search for duplicate
@@ -471,6 +483,10 @@ class CRM_Volunteer_Form_VolunteerSignUp extends CRM_Core_Form {
    * and delegates the data to processProfileData.
    *
    * @param $data
+   *  The form data that was submitted
+   *
+   * @return array
+   *  An array of the contact ID's created by processing the list of contact IDs
    */
   function processAdditionalVolunteers($data) {
     $cids = array();
@@ -554,6 +570,9 @@ class CRM_Volunteer_Form_VolunteerSignUp extends CRM_Core_Form {
    *
    * @param string $name The name to give the Smarty variable
    * @access public
+   *
+   * @return array
+   *  Returns an array of field definitions that have been added to the form
    */
   function buildCustom($profileIds = array(), $contactID = null, $prefix = '') {
     $profiles = array();
