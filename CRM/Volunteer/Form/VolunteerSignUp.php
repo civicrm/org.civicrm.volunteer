@@ -346,8 +346,7 @@ class CRM_Volunteer_Form_VolunteerSignUp extends CRM_Core_Form {
     $activityValues = array_diff_key($values, $profileValues);
 
     $this->_primary_volunteer_id = $this->processProfileData($profileValues, $profileFields, $cid);
-    $activity_statuses = CRM_Activity_BAO_Activity::buildOptions('status_id', 'create');
-    $projectNeeds = $this->createVolunteerActivity($this->_primary_volunteer_id, $activityValues, $activity_statuses);
+    $projectNeeds = $this->createVolunteerActivity($this->_primary_volunteer_id, $activityValues);
     $this->sendVolunteerConfirmationEmail($this->_primary_volunteer_id, $projectNeeds);
 
     //Process Additional Volunteers
@@ -406,17 +405,17 @@ class CRM_Volunteer_Form_VolunteerSignUp extends CRM_Core_Form {
    * This function Loops through the needs the user is signing up for
    * and creates activity records for them.
    *
-   * @param $cid
-   *    The contact ID for whom this activity is to be created
-   * @param $activityValues
-   *    An array of values corresponding to the data the user submitted minus the profile fields
-   * @param $activity_statuses
-   *    An array of possible statuses for this activity
+   * @param int $cid
+   *   The contact ID for whom this activity is to be created
+   * @param array $activityValues
+   *   An array of values corresponding to the data the user submitted minus the profile fields
    * @return array
-   *    Project needs data for use in sending confirmation email.
+   *   Project needs data for use in sending confirmation email.
    */
-  private function createVolunteerActivity($cid, $activityValues, $activity_statuses) {
+  private function createVolunteerActivity($cid, array $activityValues) {
     $projectNeeds = array();
+    $activity_statuses = CRM_Activity_BAO_Activity::buildOptions('status_id', 'create');
+
     foreach($this->_needs as $need) {
       $activityValues['volunteer_need_id'] = $need['id'];
       $activityValues['activity_date_time'] = CRM_Utils_Array::value('start_time', $need);
@@ -449,17 +448,17 @@ class CRM_Volunteer_Form_VolunteerSignUp extends CRM_Core_Form {
   /**
    * Process the data returned by a completed profile
    *
-   * @param $profileValues
-   *  The data the user submitted to the Signup page for a given profile
-   * @param $profileFields
-   *  A list of field definitions for this profile
-   * @param null $cid
-   *  The Contact ID of the user for whom this profile is being processed
+   * @param array $profileValues
+   *   The data the user submitted to the Signup page for a given profile
+   * @param array $profileFields
+   *   A list of field definitions for this profile
+   * @param int $cid
+   *   The Contact ID of the user for whom this profile is being processed
    *
    * @return int
-   *  The contact id of the user for whom this data was saved (This can be a new contact)
+   *   The contact id of the user for whom this data was saved (This can be a new contact)
    */
-  function processProfileData($profileValues, $profileFields, $cid = null) {
+  function processProfileData(array $profileValues, array $profileFields, $cid = null) {
     // Search for duplicate
     if (!$cid) {
       $dedupeParams = CRM_Dedupe_Finder::formatParams($profileValues, 'Individual');
@@ -482,13 +481,13 @@ class CRM_Volunteer_Form_VolunteerSignUp extends CRM_Core_Form {
    * This function takes the profile data submitted by the user, loops
    * and delegates the data to processProfileData.
    *
-   * @param $data
-   *  The form data that was submitted
+   * @param array $data
+   *   The form data that was submitted
    *
    * @return array
-   *  An array of the contact ID's created by processing the list of contact IDs
+   *   An array of the contact IDs created by processing the list of contact IDs
    */
-  function processAdditionalVolunteers($data) {
+  function processAdditionalVolunteers(array $data) {
     $cids = array();
 
     $qty = CRM_Utils_Array::value('additionalVolunteerQuantity', $data, 0);
@@ -566,15 +565,19 @@ class CRM_Volunteer_Form_VolunteerSignUp extends CRM_Core_Form {
   }
 
   /**
-   * assign profiles to a Smarty template
+   * Adds profiles to the form.
    *
-   * @param string $name The name to give the Smarty variable
-   * @access public
-   *
+   * @param array $profileIds
+   *   The profiles to prepare for the template.
+   * @param int $contactID
+   *   The contact whose information will be input into/displayed in the profiles.
+   * @param type $prefix
+   *   The prefix to give to the field names in the profiles.
    * @return array
-   *  Returns an array of field definitions that have been added to the form
+   *   Returns an array of field definitions that have been added to the form.
+   *   This result can be passed to a Smarty template as a variable.
    */
-  function buildCustom($profileIds = array(), $contactID = null, $prefix = '') {
+  function buildCustom(array $profileIds = array(), $contactID = null, $prefix = '') {
     $profiles = array();
     $fieldList = array(); // master field list
 
@@ -654,4 +657,5 @@ class CRM_Volunteer_Form_VolunteerSignUp extends CRM_Core_Form {
 
     $this->_destination = CRM_Utils_System::url($path, $query, FALSE, $fragment);
   }
+
 }
