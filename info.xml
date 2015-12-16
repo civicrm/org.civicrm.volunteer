@@ -8,8 +8,8 @@
     <author>Yashodha Chaku, Michael Z. Daryabeygi, Frank J. G&#xF3;mez, Dave Greenberg, and Coleman Watts</author>
     <email>info@civicrm.org</email>
   </maintainer>
-  <releaseDate>2015-11-17</releaseDate>
-  <version>4.6-2.0.0.beta1</version>
+  <releaseDate>2015-12-16</releaseDate>
+  <version>4.6-2.0.beta2</version>
   <develStage>beta</develStage>
   <compatibility>
     <ver>4.6</ver>
@@ -21,6 +21,6 @@
     <namespace>CRM/Volunteer</namespace>
   </civix>
   <urls>
-    <url desc="Documentation">https://github.com/civicrm/org.civicrm.volunteer/blob/v4.6-2.0.0.beta1/README.md</url>
+    <url desc="Documentation">https://github.com/civicrm/org.civicrm.volunteer/blob/v4.6-2.0.beta2/README.md</url>
   </urls>
 </extension>

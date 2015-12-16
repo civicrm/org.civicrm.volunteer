@@ -43,7 +43,7 @@ you want to keep track of your organization's cumulative volunteering totals.
 
 Dependencies
 ============
-- CiviCRM version 4.5.x or 4.6.x
+- CiviCRM version 4.6.x
 
 Known Issues
 ============
