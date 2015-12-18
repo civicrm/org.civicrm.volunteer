@@ -1,0 +1,25 @@
+---
+layout: default
+---
+
+<section id="main-content">
+  <h3>Installation and Setup</h3>
+  <ul>
+    {% for p in site.pages %}
+      {% if p.categories contains 'installation-and-setup' %}
+        <li>
+          <a href="{{p.url}}">{{p.title}}</a>
+        </li>
+      {% endif %}
+    {% endfor %}
+  </ul>
+
+  <h3>Quick-Start Orientation</h3>
+
+  <h3>Working with Permissions</h3>
+
+  <h3>Interface Walkthrough</h3>
+
+  <h3>How to...</h3>
+
+  <h3>Get Involved and Contribute</h3>
