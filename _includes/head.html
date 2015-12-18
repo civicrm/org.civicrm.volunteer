@@ -5,9 +5,9 @@
   <meta name="description" content="{% if page.excerpt %}{{ page.excerpt | strip_html | strip_newlines | truncate: 160 }}{% else %}{{ site.description }}{% endif %}">
 
   <link href='https://fonts.googleapis.com/css?family=Architects+Daughter' rel='stylesheet' type='text/css'>
-  <link rel="stylesheet" type="text/css" href="/stylesheets/stylesheet.css" media="screen">
-  <link rel="stylesheet" type="text/css" href="/stylesheets/github-light.css" media="screen">
-  <link rel="stylesheet" type="text/css" href="/stylesheets/print.css" media="print">
+  <link rel="stylesheet" type="text/css" href="{{ site.baseurl }}/stylesheets/stylesheet.css" media="screen">
+  <link rel="stylesheet" type="text/css" href="{{ site.baseurl }}/stylesheets/github-light.css" media="screen">
+  <link rel="stylesheet" type="text/css" href="{{ site.baseurl }}/stylesheets/print.css" media="print">
   <link rel="canonical" href="{{ page.url | replace:'index.html','' | prepend: site.baseurl | prepend: site.url }}">
 
 
