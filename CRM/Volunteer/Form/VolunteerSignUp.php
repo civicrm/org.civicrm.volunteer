@@ -177,7 +177,8 @@ class CRM_Volunteer_Form_VolunteerSignUp extends CRM_Core_Form {
 
       foreach ($this->_projects as $project) {
         foreach ($project['profiles'] as $profile) {
-          if(CRM_Utils_Array::value("module_data", $profile) != "additional") {
+          $module_data = json_decode(CRM_Utils_Array::value("module_data", $profile));
+          if (property_exists($module_data, 'audience') && $module_data->audience !== "additional") {
             $profileIds[] = $profile['uf_group_id'];
           }
         }
@@ -201,7 +202,8 @@ class CRM_Volunteer_Form_VolunteerSignUp extends CRM_Core_Form {
 
       foreach ($this->_projects as $project) {
         foreach ($project['profiles'] as $profile) {
-          if(CRM_Utils_Array::value("module_data", $profile) != "primary") {
+          $module_data = json_decode(CRM_Utils_Array::value("module_data", $profile));
+          if (property_exists($module_data, 'audience') && $module_data->audience !== "primary") {
             $profileIds[] = $profile['uf_group_id'];
           }
         }
