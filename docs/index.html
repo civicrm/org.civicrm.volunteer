@@ -19,6 +19,15 @@ layout: default
   <h3>Working with Permissions</h3>
 
   <h3>Interface Walkthrough</h3>
+  <ul>
+    {% for p in site.pages %}
+      {% if p.categories contains 'interface-walkthrough' %}
+        <li>
+          <a href="{{ p.url | prepend: site.baseurl }}">{{p.title}}</a>
+        </li>
+      {% endif %}
+    {% endfor %}
+  </ul>
 
   <h3>How to...</h3>
 
