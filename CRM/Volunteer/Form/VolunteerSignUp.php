@@ -166,6 +166,26 @@ class CRM_Volunteer_Form_VolunteerSignUp extends CRM_Core_Form {
   }
 
   /**
+   * Returns the audience for a given profile.
+   *
+   * @param array $profile
+   *   In the format of api.UFJoin.get.values.
+   * @return string
+   *   One of 'primary' (the default), 'additional', or 'both.'
+   */
+  private function getProfileAudience(array $profile) {
+    $allowedValues = array('primary', 'additional', 'both');
+    $audience = 'primary';
+
+    $moduleData = json_decode(CRM_Utils_Array::value("module_data", $profile));
+    if (property_exists($moduleData, 'audience') && in_array($moduleData->audience, $allowedValues)) {
+      $audience = $moduleData->audience;
+    }
+
+    return $audience;
+  }
+
+  /**
    * Return profiles used for Primary Volunteers
    *
    * @return array
@@ -177,8 +197,7 @@ class CRM_Volunteer_Form_VolunteerSignUp extends CRM_Core_Form {
 
       foreach ($this->_projects as $project) {
         foreach ($project['profiles'] as $profile) {
-          $module_data = json_decode(CRM_Utils_Array::value("module_data", $profile));
-          if (property_exists($module_data, 'audience') && $module_data->audience !== "additional") {
+          if ($this->getProfileAudience($profile) !== "additional") {
             $profileIds[] = $profile['uf_group_id'];
           }
         }
@@ -202,8 +221,7 @@ class CRM_Volunteer_Form_VolunteerSignUp extends CRM_Core_Form {
 
       foreach ($this->_projects as $project) {
         foreach ($project['profiles'] as $profile) {
-          $module_data = json_decode(CRM_Utils_Array::value("module_data", $profile));
-          if (property_exists($module_data, 'audience') && $module_data->audience !== "primary") {
+          if ($this->getProfileAudience($profile) !== "primary") {
             $profileIds[] = $profile['uf_group_id'];
           }
         }
