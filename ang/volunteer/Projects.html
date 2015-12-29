@@ -50,7 +50,10 @@
       <tbody>
       <tr ng-repeat="project in projects | filter:searchParams" role="row">
         <td class="crm-vol-manage-toggle"><input type="checkbox" ng-model="project.selected" ng-change="watchSelected()" /></td>
-        <td class="crm-vol-manage-project">{{ project.title }} {{ ts('(ID: %1)', {1: project.id}) }}</td>
+        <td class="crm-vol-manage-project">
+          <span class="crm-vol-manage-project-title">{{ project.title }}</span>
+          <span class="crm-vol-manage-project-id">{{ ts('(ID: %1)', {1: project.id}) }}</span>
+        </td>
         <td class="crm-vol-manage-active">{{ project.is_active == 1 ? ts("yes") : ts("no") }}</td>
         <td class="crm-vol-manage-entity">{{ project.entity_table }}</td>
         <td class="crm-vol-manage-actionlinks right nowrap">
