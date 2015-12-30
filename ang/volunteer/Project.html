@@ -105,12 +105,17 @@
       </div>
     </fieldset>
 
-    <fieldset class="crm-vol-relationships">
+    <fieldset class="crm-vol-relationships" ng-show="userCanGetContactList">
       <legend>{{ts("Relationships")}}</legend>
 
       <div ng-repeat="relType in relationship_types" crm-ui-field="{name: projectForm[relType.name], title: ts(relType.label)}" ng-class="'crm-vol-rel-' + relType.name">
-        <input crm-ui-id="projectForm[relType.name]" crm-entityref="{entity: 'Contact', select: {allowClear:true, multiple: true}}" ng-model="relationships[relType.value]" />
-        <div class="description" ng-show="relType.description">{{relType.description}}</div>
+        <div ng-if="userCanGetContactList">
+          <input crm-ui-id="projectForm[relType.name]" crm-entityref="{entity: 'Contact', select: {allowClear:true, multiple: true}}" ng-model="relationships[relType.value]" />
+          <div class="description" ng-show="relType.description">{{relType.description}}</div>
+        </div>
+        <div ng-if="!userCanGetContactList">
+          <input crm-ui-id="projectForm[relType.name]" type="hidden" ng-model="relationships[relType.value]" />
+        </div>
       </div>
 
     </fieldset>
