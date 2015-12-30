@@ -239,30 +239,18 @@
     validateRelationships = function() {
       var isValid = true;
 
-      var beneficiary = _.find(supporting_data.values.relationship_types, function(relType) {
-        return (relType.name === 'volunteer_beneficiary');
-      });
-      var manager = _.find(supporting_data.values.relationship_types, function(relType) {
-        return (relType.name === 'volunteer_manager');
-      });
-      var owner = _.find(supporting_data.values.relationship_types, function(relType) {
-        return (relType.name === 'volunteer_owner');
-      });
+      var requiredRelationshipTypes = ['volunteer_beneficiary', 'volunteer_manager', 'volunteer_owner'];
 
-      if (!_.isArray(relationships[beneficiary.value]) || _.isEmpty(relationships[beneficiary.value])) {
-        CRM.alert(ts("The beneficiary relationship must not be blank."), "Required");
-        isValid = false;
-      }
+      _.each(requiredRelationshipTypes, function(value) {
+        var thisRelType = _.find(supporting_data.values.relationship_types, function(relType) {
+          return (relType.name === value);
+        });
 
-      if (!_.isArray(relationships[manager.value]) || _.isEmpty(relationships[manager.value])) {
-        CRM.alert(ts("The volunteer manager relationship must not be blank."), "Required");
-        isValid = false;
-      }
-
-      if (!_.isArray(relationships[owner.value]) || _.isEmpty(relationships[owner.value])) {
-        CRM.alert(ts("The project owner relationship must not be blank."), "Required");
-        isValid = false;
-      }
+        if (!_.isArray(relationships[thisRelType.value]) || _.isEmpty(relationships[thisRelType.value])) {
+          CRM.alert(ts("The %1 relationship must not be blank.", {1: thisRelType.label}), ts("Required"));
+          isValid = false;
+        }
+      });
 
       return isValid;
     };
