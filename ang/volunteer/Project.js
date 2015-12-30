@@ -55,6 +55,12 @@
           },
           profile_status: function(crmProfiles) {
             return crmProfiles.load();
+          },
+          // VOL-174
+          userCanGetContactList: function (crmApi) {
+            return crmApi('Contact', 'getlist').then(function(result) {
+              return (result.count > 1);
+            });
           }
         }
       });
@@ -62,7 +68,7 @@
   );
 
 
-  angular.module('volunteer').controller('VolunteerProject', function($scope, $location, $q, crmApi, crmUiAlert, crmUiHelp, countries, project, profile_status, campaigns, relationship_data, supporting_data, location_blocks, volBackbone) {
+  angular.module('volunteer').controller('VolunteerProject', function($scope, $location, $q, crmApi, crmUiAlert, crmUiHelp, countries, project, profile_status, campaigns, relationship_data, supporting_data, location_blocks, volBackbone, userCanGetContactList) {
     // The ts() and hs() functions help load strings for this module.
     var ts = $scope.ts = CRM.ts('org.civicrm.volunteer');
     var hs = $scope.hs = crmUiHelp({file: 'CRM/Volunteer/Form/Volunteer'}); // See: templates/CRM/volunteer/Project.hlp
@@ -109,7 +115,7 @@
     $scope.project = project;
     $scope.profiles = $scope.project.profiles;
     $scope.relationships = $scope.project.project_contacts;
-
+    $scope.userCanGetContactList = userCanGetContactList;
 
     $scope.refreshLocBlock = function() {
       if (!!$scope.project.loc_block_id) {
