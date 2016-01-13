@@ -460,6 +460,15 @@ class CRM_Volunteer_BAO_Project extends CRM_Volunteer_DAO_Project {
     }
 
     if (!CRM_Utils_Rule::numeric($lat) || !CRM_Utils_Rule::numeric($lon)) {
+      // try to supply a default country if none provided
+      if (empty($country)) {
+        $settings = civicrm_api3('Setting', 'get', array(
+          "return" => array("defaultContactCountry"),
+          "sequential" => 1,
+        ));
+        $country = $settings['values'][0]['defaultContactCountry'];
+      }
+
       if (empty($country)) {
         throw new Exception(ts('Either Country or both Latitude and Longitude are required'));
       }
