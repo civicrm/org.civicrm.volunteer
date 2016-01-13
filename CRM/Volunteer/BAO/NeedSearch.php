@@ -85,7 +85,7 @@ class CRM_Volunteer_BAO_NeedSearch {
     }
 
     $this->getSearchResultsProjectData();
-    $this->sortSearchResults();
+    usort($this->searchResults, array($this, "usortDateAscending"));
     return $this->searchResults;
   }
 
@@ -277,18 +277,16 @@ class CRM_Volunteer_BAO_NeedSearch {
   }
 
   /**
-   * Sorts search results by start time, putting near-future items before far-future items.
+   * Callback for usort.
    */
-  private function sortSearchResults() {
-    usort($this->searchResults, function($a, $b) {
-      $startTimeA = strtotime($a['start_time']);
-      $startTimeB = strtotime($b['start_time']);
+  private static function usortDateAscending($a, $b) {
+    $startTimeA = strtotime($a['start_time']);
+    $startTimeB = strtotime($b['start_time']);
 
-      if ($startTimeA === $startTimeB) {
-        return 0;
-      }
-      return ($startTimeA < $startTimeB) ? -1 : 1;
-    });
+    if ($startTimeA === $startTimeB) {
+      return 0;
+    }
+    return ($startTimeA < $startTimeB) ? -1 : 1;
   }
 
 }
