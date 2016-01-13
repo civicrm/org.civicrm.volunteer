@@ -4,3 +4,162 @@ layout: page
 title: Manage Volunteer Projects
 ---
 
+<p>
+  From the <b>Volunteers</b> menu, clicking on <b>Manage Volunteer Projects</b> yields:
+</p>
+
+<p>
+  <img src="{{ site.baseurl }}/docs/screenshots/manage-volunteer-projects-screen.png" alt="Manage Volunteer Projects Screen" />
+</p>
+
+<p>Any existing projects will be listed on this screen with the information:
+  <ul>
+    <li>Volunteer Project Name and ID</li>
+    <li>Active (yes/no)</li>
+    <li>Associated Entity</li>
+    <li>List of Actions for the Project</li>
+  </ul>
+</p>
+
+<p>
+  A new project can be created by clicking on the <b>+Add Project</b> button. This will display the New Volunteer Project Screen, the same as when choosing Volunteer > New Volunteer Project.
+</p>
+
+<p>
+  Using the checkboxes to the left of each project (or the checkbox at the top header), 
+  any number of existing projects may be selected for <b>Bulk Actions:</b>.
+  <ul>
+    <li>Delete</li>
+    <li>Enable</li>
+    <li>Disable</li>
+  </ul>
+<p>
+  Using the search box at the top right, existing projects in the list can be filtered by 
+  their <b>Title</b> or by their associated <b>Campaign</b>. 
+  The <b>Campaign</b> dropdown conveniently displays existing Campaigns.
+</p>
+
+<p>
+  For each individual project in the list, there are the following additional actions that may be taken:
+  <ul>
+    <li>Edit</li>
+    <li>Define Needs</li>
+    <li>Assign Volunteers</li>
+    <li>View Volunteer Roster</li>
+    <li>Log Hours</li>
+  </ul>
+</p>
+
+<h2>Edit</h2>
+<p>
+   <b>Edit</b> takes the user to the same screen as <b>New Volunteer Project</b>, but with the current project information filled in and available for modification.
+</p>
+
+<h2>Define Needs</h2>
+<p>
+  <b>Define Needs</b> takes the user to a new screen to define the volunteers needed for the project. 
+</p>
+
+<p>
+  <img src="{{ site.baseurl }}/docs/screenshots/manage-project-define-needs-screen.png" alt="Define Needs Screen" />
+</p>
+
+<p>
+  Use this form to define the number of volunteers needed for each role and time slot. 
+  For each slot, you will select a role, set the number of volunteers needed, set a start date and time, and indicate the duration in minutes.
+</p>
+
+<p>
+  If you want to include a Sign Up button on the event information page, check the 'Public' column for at least one of the slots, 
+  or check the box to allow users to sign up without specifying a shift. 
+  'Public' slots will be visible on the public signup form. 
+  You will also need to ensure that the 'CiviVolunteer: register to volunteer' permission has been enabled.
+</p>
+
+<p>
+  If this is a new type of volunteer project, you may need to create additional volunteer roles first from:<br/>
+  <b>Administer > Administration Console > Volunteer Roles</b> OR <br/>
+  <b>Volunteers > Configure Roles</b>
+</p>
+
+<p>
+  Many volunteer programs do not work on fixed dates. 
+  For instance, a teacher may have a window of several months to schedule a guest lecturer for the fall semester. 
+  For these applications, the use of fuzzy dates is helpful.
+</p>
+
+<p>
+  The <b>End Date/Time</b> field can be used to specify fuzzy dates, or a window during which the volunteer is sought. 
+  This field can be used in conjunction with the Start Date/Time and Duration fields 
+  to declare a need for three hours of volunteering sometime in December, for instance.
+</p>
+
+<h2>Assign Volunteers</h2>
+<p>
+  <b>Assign Volunteers</b> takes the user to a new screen to view roles currently assigned volunteers, copy volunteers between roles, or remove volunteers from roles. 
+</p>
+
+<p>
+  <img src="{{ site.baseurl }}/docs/screenshots/manage-project-assign-volunteers-screen.png" alt="Assign Volunteers Screen" />
+</p>
+
+<p>
+  This screen can be used to view which Volunteers are assigned to their respective Volunteer Events, and which Role(s) they intend to fulfill.
+  Basic contact information, such as Email and Phone Number are conveniently displayed next to each Volunteer entry.
+  Clicking on a Volunteer's name will take the user to the associated Contact, where more complete information may be displayed.
+</p>
+
+<p>
+  This screen can also be used to move a Volunteer to a different Role/Event by doing one of the following:
+  <ul>
+    <li>Drag and drop the the Volunteer via the crosshairs to the left of their name (to an available empty slot).</li>
+    <li>Click the Action arrow (dropdown menu) to the right of the Volunteer's name and choose <b>Move To</b> > <em>Desired-Event-Role</em>.</li>
+  </ul>
+</p>
+
+<p>
+  In a similar fashion, using the Action arrow (dropdown menu), a Volunteer can be removed from a Role/Event or copied to another Role/Event by choosing:<br/>
+  <b>Delete</b> <br/>
+  <b>Copy To</b> > <em>Desired-Event-Role</em> <br/>
+  respectively.
+</p>
+
+<h2>View Volunteer Roster</h2>
+<p>
+  <b>View Volunteer Roster</b> takes the user to a new screen to view roles currently assigned volunteers, and provides convenient one-click options for contacting those volunteers, via Email, Call, or SMS, based upon the Contact information available.
+</p>
+
+<p>
+  <img src="{{ site.baseurl }}/docs/screenshots/manage-projects-volunteer-roster.png" alt="Volunteer Roster Screen" />
+</p>
+
+<p>
+  Note that any volunteer assignments that <em>end before</em> the <em>current date</em> will not be shown on this screen.
+  In this manner, only current and future assignments are shown.
+</p>
+
+<h2>Log Hours</h2>
+<p>
+  <b>Log Hours</b> takes the user to a new screen to record the actual time spent by each Volunteer in a specific Role.
+</p>
+
+<p>
+  <img src="{{ site.baseurl }}/docs/screenshots/manage-project-log-hours.png" alt="Log Volunteer Hours Screen" />
+</p>
+
+<p>
+  By clicking the <b>+ Add Volunteer</b> button on the lower left, a new entry can be recorded with the following fields:
+  <ul>
+    <li><b>Star Icon (Commendation)</b>: "gold star" to give merit to a volunteer (the user will be asked to write text to explain the merit).</li>
+    <li><b>Contact</b>: any CiviCRM Contact, entered using a convenient searchable dropdown interface, or the option to create a new Contact.</li>
+    <li><b>Role</b>: one of the defined Roles for the current Volunteer Project, selectable in the dropdown.</li>
+    <li><b>Start Date</b>: the time at which the Volunteer began their volunteer work.</li>
+    <li><b>Scheduled Duration</b>: the amount of time (in minutes) reserved for volunteering.</li>
+    <li><b>Actual Duration</b>: the actual amount of time (in minutes) spent volunteering.</li>
+    <li><b>Status </b>: a variety of options, from Completed to No-Show to Available.</li>
+  </ul>
+<p>
+
+<p>
+  This screen is designed to be flexible and meet the needs of various organizations when it comes to tracking their volunteers' time. The only required fields are <b>Contact</b> and <b>Actual Duration</b>, and the rest are optional. Scheduled vs Actual Duration of volunteering can be compared. Status can be reported upon, and the popularity of particular Roles can be reported upon as well. These are just a few options made possible by having the data from this screen.
+</p>
