@@ -85,6 +85,7 @@ class CRM_Volunteer_BAO_NeedSearch {
     }
 
     $this->getSearchResultsProjectData();
+    usort($this->searchResults, array($this, "usortDateAscending"));
     return $this->searchResults;
   }
 
@@ -273,6 +274,19 @@ class CRM_Volunteer_BAO_NeedSearch {
       $projectId = (int) $need['project_id'];
       $need['project'] = $this->projects[$projectId];
     }
+  }
+
+  /**
+   * Callback for usort.
+   */
+  private static function usortDateAscending($a, $b) {
+    $startTimeA = strtotime($a['start_time']);
+    $startTimeB = strtotime($b['start_time']);
+
+    if ($startTimeA === $startTimeB) {
+      return 0;
+    }
+    return ($startTimeA < $startTimeB) ? -1 : 1;
   }
 
 }
