@@ -9,6 +9,12 @@ Required vars: volOppData, searchParams
   <div crm-ui-debug="proximityUnits"></div>
   <div crm-ui-debug="countries"></div>
 
+  <div class="help">
+    <p>
+      {{ts("Use this search form to find the volunteer opportunity near you that best matches with your personal skill set, interests, and time availability.")}}
+    </p>
+  </div>
+
   <!-- Search Form -->
   <div class="crm-vol-half-responsive crm-vol-opp-search">
     <h2>{{ts('Find Volunteer Opportunities')}}</h2>
@@ -24,7 +30,7 @@ Required vars: volOppData, searchParams
           <div crm-ui-field="{name: 'volOppSearchForm.role_id', title: ts('Role')}" class="crm-vol-opp-role">
             <select
               crm-ui-id="volOppSearchForm.role_id"
-              crm-ui-select="{minimumInputLength: 0, placeholder: ts('Select Volunteer Roles')}"
+              crm-ui-select="{minimumInputLength: 0, placeholder: ts('Select Volunteer Role(s)')}"
               type="text"
               multiple="multiple"
               name="role_id"
@@ -34,7 +40,7 @@ Required vars: volOppData, searchParams
             <option />
           </select>
           </div>
-          <div crm-ui-field="{name: 'volOppSearchForm.beneficiary', title: ts('Beneficiary')}" class="crm-vol-opp-beneficiary">
+          <div crm-ui-field="{name: 'volOppSearchForm.beneficiary', title: ts('With')}" class="crm-vol-opp-beneficiary">
             <!--
             TODO: CiviVolunteer perhaps needs to provide a group which beneficiaries
             can be added to so we don't expose the whole database. Actually, the
@@ -44,7 +50,7 @@ Required vars: volOppData, searchParams
               crm-entityref="{
                 select: {
                   minimumInputLength: 0,
-                  placeholder: ts('Select Beneficiary'),
+                  placeholder: ts('Select Organizer(s)'),
                   multiple: true
                 },
                 api: {
