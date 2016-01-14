@@ -11,10 +11,10 @@
   width: 49%;
   display: inline-block;
 }
-.crm-vol-half-responsive:nth-child(odd) {
+.crm-vol-half-responsive.crm-vol-opp-search {
   float: left;
 }
-.crm-vol-half-responsive:nth-child(even) {
+.crm-vol-half-responsive.crm-vol-opp-cart {
   float: right;
 }
 
