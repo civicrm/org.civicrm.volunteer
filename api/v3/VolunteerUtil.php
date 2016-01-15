@@ -273,40 +273,25 @@ function civicrm_api3_volunteer_util_getcustomfields($params) {
   ));
   $customFields = $customGroupAPI['api.customField.get']['values'];
 
-  // get options for select lists
-  $optionListIDs = array();
-  foreach ($customFields as $field) {
-    if (!empty($field['option_group_id'])) {
-      $optionListIDs[] = $field['option_group_id'];
-    }
-  }
-
+  $optionListIDs = _volunteer_util_getOptionGroupIds($customFields);
   $optionValueAPI = civicrm_api3('OptionValue', 'get', array(
     'is_active' => 1,
-    'opt_group_id' => array('IN' => array_unique($optionListIDs)),
+    'opt_group_id' => array('IN' => $optionListIDs),
     'options' => array(
       'limit' => 0,
       'sort' => 'weight',
     )
   ));
 
-  $optionData = array();
-  foreach ($optionValueAPI['values'] as $opt) {
-    $key = $opt['option_group_id'];
-    if (!array_key_exists($key, $optionData)) {
-      $optionData[$key] = array();
-    }
-    $optionData[$key][] = $opt;
-  }
-
-  foreach($customFields as &$cField) {
-    $optionGroupId = CRM_Utils_Array::value('option_group_id', $cField);
+  $optionData = _volunteer_util_groupBy($optionValueAPI['values'], 'option_group_id');
+  foreach($customFields as &$field) {
+    $optionGroupId = CRM_Utils_Array::value('option_group_id', $field);
     if ($optionGroupId) {
-      $cField['options'] = $optionData[$optionGroupId];
+      $field['options'] = $optionData[$optionGroupId];
 
     // Boolean fields don't use option groups, so we supply one
-    } elseif ($cField['data_type'] === 'Boolean' && $cField['html_type'] === 'Radio') {
-      $cField['options'] = array(
+    } elseif ($field['data_type'] === 'Boolean' && $field['html_type'] === 'Radio') {
+      $field['options'] = array(
         array (
           'is_active' => 1,
           'is_default' => 1,
@@ -326,4 +311,41 @@ function civicrm_api3_volunteer_util_getcustomfields($params) {
   }
 
   return civicrm_api3_create_success($customFields, "VolunteerUtil", "getcountries", $params);
+}
+
+/**
+ * @param array $customFields
+ *   api.customField.get.values
+ * @return array
+ */
+function _volunteer_util_getOptionGroupIds(array $customFields) {
+  $optionListIDs = array();
+  foreach ($customFields as $field) {
+    if (!empty($field['option_group_id'])) {
+      $optionListIDs[] = $field['option_group_id'];
+    }
+  }
+  return array_unique($optionListIDs);
+}
+
+/**
+ * Splits an array into sets based on the $property.
+ *
+ * Inspired by underscorejs's _.groupBy function.
+ *
+ * @param array $collection
+ * @param type $property
+ * @return array
+ */
+function _volunteer_util_groupBy(array $collection, $property) {
+  $result = array();
+  foreach ($collection as $item) {
+    $key = CRM_Utils_Array::value($property, $item);
+    if (!array_key_exists($key, $result)) {
+      $result[$key] = array();
+    }
+    $result[$key][] = $item;
+  }
+
+  return $result;
 }
