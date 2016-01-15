@@ -246,7 +246,7 @@
           return (relType.name === value);
         });
 
-        if (!_.isArray(relationships[thisRelType.value]) || _.isEmpty(relationships[thisRelType.value])) {
+        if (_.isEmpty(relationships[thisRelType.value])) {
           CRM.alert(ts("The %1 relationship must not be blank.", {1: thisRelType.label}), ts("Required"));
           isValid = false;
         }
