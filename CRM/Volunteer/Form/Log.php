@@ -57,6 +57,11 @@ class CRM_Volunteer_Form_Log extends CRM_Core_Form {
    */
   function preProcess() {
     $this->_vid = CRM_Utils_Request::retrieve('vid', 'Positive', $this, TRUE);
+
+    if (!CRM_Volunteer_Permission::checkProjectPerms(CRM_Core_Action::UPDATE, $this->_vid)) {
+      CRM_Utils_System::permissionDenied();
+    }
+
     $this->_batchInfo['item_count'] = 50;
 
     $params = array('project_id' => $this->_vid);

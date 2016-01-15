@@ -37,6 +37,10 @@ class CRM_Volunteer_Form_Commendation extends CRM_Core_Form {
     $this->_cid = CRM_Utils_Request::retrieve('cid', 'Positive', $this, FALSE);
     $this->_vid = CRM_Utils_Request::retrieve('vid', 'Positive', $this, FALSE);
 
+    if (!CRM_Volunteer_Permission::checkProjectPerms(CRM_Core_Action::UPDATE, $this->_vid)) {
+      CRM_Utils_System::permissionDenied();
+    }
+
     if (!$this->_aid && !($this->_cid && $this->_vid)) {
       CRM_Core_Error::fatal("Form expects an activity ID or both a contact and a volunteer project ID.");
     }
