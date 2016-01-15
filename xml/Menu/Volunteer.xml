@@ -6,7 +6,7 @@
      <title>Batch Data Entry for Logging Volunteer</title>
      <page_callback>CRM_Volunteer_Form_Log</page_callback>
      <path_arguments>action=add</path_arguments>
-     <access_arguments>access CiviEvent,edit all events</access_arguments>
+     <access_arguments>edit own volunteer projects</access_arguments>
      <component>CiviEvent</component>
   </item>
   <item>
