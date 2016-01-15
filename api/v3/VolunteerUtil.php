@@ -248,3 +248,82 @@ function civicrm_api3_volunteer_util_getcountries($params) {
 
   return civicrm_api3_create_success($results, "VolunteerUtil", "getcountries", $params);
 }
+
+/**
+ * This function returns the active, searchable custom fields in the
+ * Volunteer_Information custom field group.
+ *
+ * @param array $params
+ *   Not presently used.
+ * @return array
+ */
+function civicrm_api3_volunteer_util_getcustomfields($params) {
+  $allowedCustomFieldTypes = array('AdvMulti-Select', 'Autocomplete-Select',
+    'CheckBox', 'Multi-Select', 'Radio', 'Select', 'Text');
+
+  $customGroupAPI = civicrm_api3('CustomGroup', 'getsingle', array(
+    'extends' => 'Individual',
+    'name' => 'Volunteer_Information',
+    'api.customField.get' => array(
+      'html_type' => array('IN' => $allowedCustomFieldTypes),
+      'is_active' => 1,
+      'is_searchable' => 1
+    ),
+    'options' => array('limit' => 0),
+  ));
+  $customFields = $customGroupAPI['api.customField.get']['values'];
+
+  // get options for select lists
+  $optionListIDs = array();
+  foreach ($customFields as $field) {
+    if (!empty($field['option_group_id'])) {
+      $optionListIDs[] = $field['option_group_id'];
+    }
+  }
+
+  $optionValueAPI = civicrm_api3('OptionValue', 'get', array(
+    'is_active' => 1,
+    'opt_group_id' => array('IN' => array_unique($optionListIDs)),
+    'options' => array(
+      'limit' => 0,
+      'sort' => 'weight',
+    )
+  ));
+
+  $optionData = array();
+  foreach ($optionValueAPI['values'] as $opt) {
+    $key = $opt['option_group_id'];
+    if (!array_key_exists($key, $optionData)) {
+      $optionData[$key] = array();
+    }
+    $optionData[$key][] = $opt;
+  }
+
+  foreach($customFields as &$cField) {
+    $optionGroupId = CRM_Utils_Array::value('option_group_id', $cField);
+    if ($optionGroupId) {
+      $cField['options'] = $optionData[$optionGroupId];
+
+    // Boolean fields don't use option groups, so we supply one
+    } elseif ($cField['data_type'] === 'Boolean' && $cField['html_type'] === 'Radio') {
+      $cField['options'] = array(
+        array (
+          'is_active' => 1,
+          'is_default' => 1,
+          'label' => ts("Yes", array('domain' => 'org.civicrm.volunteer')),
+          'value' => 1,
+          'weight' => 1,
+        ),
+        array (
+          'is_active' => 1,
+          'is_default' => 0,
+          'label' => ts("No", array('domain' => 'org.civicrm.volunteer')),
+          'value' => 0,
+          'weight' => 2,
+        ),
+      );
+    }
+  }
+
+  return civicrm_api3_create_success($customFields, "VolunteerUtil", "getcountries", $params);
+}
