@@ -310,7 +310,7 @@ function civicrm_api3_volunteer_util_getcustomfields($params) {
     }
   }
 
-  return civicrm_api3_create_success($customFields, "VolunteerUtil", "getcountries", $params);
+  return civicrm_api3_create_success($customFields, "VolunteerUtil", "getcustomfields", $params);
 }
 
 /**
