@@ -248,3 +248,104 @@ function civicrm_api3_volunteer_util_getcountries($params) {
 
   return civicrm_api3_create_success($results, "VolunteerUtil", "getcountries", $params);
 }
+
+/**
+ * This function returns the active, searchable custom fields in the
+ * Volunteer_Information custom field group.
+ *
+ * @param array $params
+ *   Not presently used.
+ * @return array
+ */
+function civicrm_api3_volunteer_util_getcustomfields($params) {
+  $allowedCustomFieldTypes = array('AdvMulti-Select', 'Autocomplete-Select',
+    'CheckBox', 'Multi-Select', 'Radio', 'Select', 'Text');
+
+  $customGroupAPI = civicrm_api3('CustomGroup', 'getsingle', array(
+    'extends' => 'Individual',
+    'name' => 'Volunteer_Information',
+    'api.customField.get' => array(
+      'html_type' => array('IN' => $allowedCustomFieldTypes),
+      'is_active' => 1,
+      'is_searchable' => 1
+    ),
+    'options' => array('limit' => 0),
+  ));
+  $customFields = $customGroupAPI['api.customField.get']['values'];
+
+  $optionListIDs = _volunteer_util_getOptionGroupIds($customFields);
+  $optionValueAPI = civicrm_api3('OptionValue', 'get', array(
+    'is_active' => 1,
+    'opt_group_id' => array('IN' => $optionListIDs),
+    'options' => array(
+      'limit' => 0,
+      'sort' => 'weight',
+    )
+  ));
+
+  $optionData = _volunteer_util_groupBy($optionValueAPI['values'], 'option_group_id');
+  foreach($customFields as &$field) {
+    $optionGroupId = CRM_Utils_Array::value('option_group_id', $field);
+    if ($optionGroupId) {
+      $field['options'] = $optionData[$optionGroupId];
+
+    // Boolean fields don't use option groups, so we supply one
+    } elseif ($field['data_type'] === 'Boolean' && $field['html_type'] === 'Radio') {
+      $field['options'] = array(
+        array (
+          'is_active' => 1,
+          'is_default' => 1,
+          'label' => ts("Yes", array('domain' => 'org.civicrm.volunteer')),
+          'value' => 1,
+          'weight' => 1,
+        ),
+        array (
+          'is_active' => 1,
+          'is_default' => 0,
+          'label' => ts("No", array('domain' => 'org.civicrm.volunteer')),
+          'value' => 0,
+          'weight' => 2,
+        ),
+      );
+    }
+  }
+
+  return civicrm_api3_create_success($customFields, "VolunteerUtil", "getcustomfields", $params);
+}
+
+/**
+ * @param array $customFields
+ *   api.customField.get.values
+ * @return array
+ */
+function _volunteer_util_getOptionGroupIds(array $customFields) {
+  $optionListIDs = array();
+  foreach ($customFields as $field) {
+    if (!empty($field['option_group_id'])) {
+      $optionListIDs[] = $field['option_group_id'];
+    }
+  }
+  return array_unique($optionListIDs);
+}
+
+/**
+ * Splits an array into sets based on the $property.
+ *
+ * Inspired by underscorejs's _.groupBy function.
+ *
+ * @param array $collection
+ * @param type $property
+ * @return array
+ */
+function _volunteer_util_groupBy(array $collection, $property) {
+  $result = array();
+  foreach ($collection as $item) {
+    $key = CRM_Utils_Array::value($property, $item);
+    if (!array_key_exists($key, $result)) {
+      $result[$key] = array();
+    }
+    $result[$key][] = $item;
+  }
+
+  return $result;
+}
