@@ -499,7 +499,7 @@ class CRM_Volunteer_Upgrader extends CRM_Volunteer_Upgrader_Base {
         'weight' => 0,
       ));
       if (CRM_Utils_Array::value('is_error', $result, FALSE)) {
-        CRM_Core_Error::debug_var('activityTypeResult', $result);
+        CRM_Core_Error::debug_var('activityTypeResult', $result, TRUE, TRUE, 'org.civicrm.volunteer');
         throw new CRM_Core_Exception('Failed to register activity type ' . $machineName);
       }
       $id = $result['values'][$result['id']]['value'];
@@ -535,7 +535,7 @@ class CRM_Volunteer_Upgrader extends CRM_Volunteer_Upgrader_Base {
          )),
       ));
       if (CRM_Utils_Array::value('is_error', $create)) {
-        CRM_Core_Error::debug_var('contactTypeResult', $create);
+        CRM_Core_Error::debug_var('contactTypeResult', $create, TRUE, TRUE, 'org.civicrm.volunteer');
         throw new CRM_Core_Exception('Failed to register contact type');
       }
 
@@ -570,7 +570,7 @@ class CRM_Volunteer_Upgrader extends CRM_Volunteer_Upgrader_Base {
         'title' => ts('Volunteer Information', array('domain' => 'org.civicrm.volunteer')),
       ));
       if (CRM_Utils_Array::value('is_error', $create)) {
-        CRM_Core_Error::debug_var('customGroupResult', $create);
+        CRM_Core_Error::debug_var('customGroupResult', $create, TRUE, TRUE, 'org.civicrm.volunteer');
         throw new CRM_Core_Exception('Failed to register custom group for volunteer subtype');
       }
 
@@ -714,7 +714,7 @@ class CRM_Volunteer_Upgrader extends CRM_Volunteer_Upgrader_Base {
         $result = civicrm_api('OptionValue', 'create', $params);
 
         if (CRM_Utils_Array::value('is_error', $result, FALSE)) {
-          CRM_Core_Error::debug_var('activityStatusResult', $result);
+          CRM_Core_Error::debug_var('activityStatusResult', $result, TRUE, TRUE, 'org.civicrm.volunteer');
           throw new CRM_Core_Exception('Failed to register activity status');
         }
       }
