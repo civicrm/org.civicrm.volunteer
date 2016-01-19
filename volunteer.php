@@ -335,6 +335,20 @@ function volunteer_civicrm_pageRun(&$page) {
   if (function_exists($f)) {
     $f($page);
   }
+  _volunteer_civicrm_periodicChecks();
+}
+
+function _volunteer_civicrm_periodicChecks() {
+  $session = CRM_Core_Session::singleton();
+  if (
+    !CRM_Core_Permission::check('administer CiviCRM')
+    || !$session->timer('check_CRM_Volunteer_Depends', CRM_Utils_Check::CHECK_TIMER)
+    ) {
+    return;
+  }
+
+  $unmet = CRM_Volunteer_Upgrader::checkExtensionDependencies();
+  CRM_Volunteer_Upgrader::displayDependencyErrors($unmet);
 }
 
 /**
