@@ -122,6 +122,33 @@ class CRM_Volunteer_Form_VolunteerSignUp extends CRM_Core_Form {
 
     return $defaults;
   }
+ 
+  /**
+   * The URL parameter "vid" is from an older version of CiviVolunteer:
+   * 1.x, volunteers were directed to civicrm/volunteer/signup?reset=1&vid=1 to signup for volunteer project ID 1
+   * 
+   * We want to preserve backward compatibility by redirecting the request 
+   * to an interface where the user can select opportunities if the parameter was supplied:
+   * civicrm/vol/#/volunteer/opportunities?project=1&dest=event
+   * 
+   * In WordPress:
+   * The Current Page To Start From is:       ?page=CiviCRM&q=civicrm%2Fvolunteer%2Fsignup&reset=1&needs%5B0%5D=1&dest=list
+   * The Legacy Page We Want to Redirect is:  ?page=CiviCRM&q=civicrm%2Fvolunteer%2Fsignup&reset=1&needs%5B0%5D=1&dest=list&vid=1
+   * Redirect becomes:                        ?page=CiviCRM&q=civicrm%2Fvol%2F#/volunteer/opportunities?project=1&dest=event
+   *
+   */
+  function redirectIfUsingVID() {
+       
+    $vidParam = CRM_Utils_Request::retrieve('vid', 'Int', $this, FALSE, NULL, 'GET');
+    
+    if($vidParam != NULL) {
+      $vidParam = intval($vidParam);
+      $path = "civicrm/vol/";
+      $fragment =  "/volunteer/opportunities?project=$vidParam&dest=event";
+      $newURL = CRM_Utils_System::url($path, NULL, FALSE, $fragment, FALSE, FALSE, FALSE);
+      CRM_Utils_System::redirect($newURL);
+    }    
+  }
 
   /**
    * set variables up before form is built
@@ -129,6 +156,9 @@ class CRM_Volunteer_Form_VolunteerSignUp extends CRM_Core_Form {
    * @access public
    */
   function preProcess() {
+    
+    $this->redirectIfUsingVID();
+    
     // VOL-71: permissions check is moved from XML to preProcess function to support
     // permissions-challenged Joomla instances
     if (CRM_Core_Config::singleton()->userPermissionClass->isModulePermissionSupported()
