@@ -68,27 +68,22 @@ class CRM_Volunteer_Upgrader extends CRM_Volunteer_Upgrader_Base {
    */
   public function installProjectRelationships() {
     try {
-      $optionGroup = civicrm_api3('OptionGroup', 'create', array(
+      civicrm_api3('OptionGroup', 'create', array(
         'name' => CRM_Volunteer_BAO_ProjectContact::RELATIONSHIP_OPTION_GROUP,
         'title' => 'Volunteer Project Relationship',
         'description' => ts("Used to describe a contact's relationship to a project at large (e.g., beneficiary, manager). Not to be confused with contact-to-contact relationships.", array('domain' => 'org.civicrm.volunteer')),
         'is_reserved' => 1,
         'is_active' => 1,
       ));
-      $optionGroupId = $optionGroup['id'];
     } catch (Exception $e) {
-      // if an exception is thrown, most likely the option group already exists,
-      // in which case we'll just use that one
-      $optionGroupId = civicrm_api3('OptionGroup', 'getvalue', array(
-        'name' => CRM_Volunteer_BAO_ProjectContact::RELATIONSHIP_OPTION_GROUP,
-        'return' => 'id',
-      ));
+      $msg = 'Exception thrown in ' . __METHOD__ . '. Likely the option group alreadt exists.';
+      CRM_Core_Error::debug_log_message($msg, FALSE, 'org.civicrm.volunteer');
     }
 
     $optionDefaults = array(
       'is_active' => 1,
       'is_reserved' => 1,
-      'option_group_id' => $optionGroupId,
+      'option_group_id' => CRM_Volunteer_BAO_ProjectContact::RELATIONSHIP_OPTION_GROUP,
     );
 
     $options = array(
