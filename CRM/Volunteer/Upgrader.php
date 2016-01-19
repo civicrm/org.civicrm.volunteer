@@ -228,47 +228,22 @@ class CRM_Volunteer_Upgrader extends CRM_Volunteer_Upgrader_Base {
       ts('Volunteer Commendation', array('domain' => 'org.civicrm.volunteer'))
     );
 
-    $customGroupID = NULL;
-    try {
-      $get = civicrm_api3('CustomGroup', 'getsingle', array(
-        'extends' => 'Activity',
-        'name' => CRM_Volunteer_BAO_Commendation::CUSTOM_GROUP_NAME,
-        'return' => 'id',
-      ));
-      $customGroupID = $get['id'];
-    } catch (Exception $e) {
-      $create = civicrm_api('CustomGroup', 'create', array(
-        'extends' => 'Activity',
-        'extends_entity_column_value' => $activityTypeID,
-        'is_reserved' => 1,
-        'name' => CRM_Volunteer_BAO_Commendation::CUSTOM_GROUP_NAME,
-        'title' => ts('Volunteer Commendation', array('domain' => 'org.civicrm.volunteer')),
-        'version' => 3,
-      ));
-      if (CRM_Utils_Array::value('is_error', $create)) {
-        CRM_Core_Error::debug_var('customGroupResult', $create);
-        throw new CRM_Core_Exception('Failed to register custom group for commendation active type');
-      }
+    $this->createPossibleDuplicateRecord('CustomGroup', array(
+      'extends' => 'Activity',
+      'extends_entity_column_value' => $activityTypeID,
+      'is_reserved' => 1,
+      'name' => CRM_Volunteer_BAO_Commendation::CUSTOM_GROUP_NAME,
+      'title' => ts('Volunteer Commendation', array('domain' => 'org.civicrm.volunteer')),
+    ));
 
-      $customGroupID = $create['id'];
-    }
-
-    // Will throw an exception if it already exists.
-    try {
-      $create = civicrm_api3('customField', 'create', array(
-        'custom_group_id' => $customGroupID,
-        'data_type' => 'Int',
-        'html_type' => 'Text',
-        'is_searchable' => 0,
-        'label' => ts('Volunteer Project ID', array('domain' => 'org.civicrm.volunteer')),
-        'name' => CRM_Volunteer_BAO_Commendation::PROJECT_REF_FIELD_NAME,
-      ));
-
-      $this->fieldCreateCheckForError($create);
-    }
-    catch (Exception $e) {
-
-    }
+    $this->createPossibleDuplicateRecord('customField', array(
+      'custom_group_id' => CRM_Volunteer_BAO_Commendation::CUSTOM_GROUP_NAME,
+      'data_type' => 'Int',
+      'html_type' => 'Text',
+      'is_searchable' => 0,
+      'label' => ts('Volunteer Project ID', array('domain' => 'org.civicrm.volunteer')),
+      'name' => CRM_Volunteer_BAO_Commendation::PROJECT_REF_FIELD_NAME,
+    ));
   }
 
   /**
@@ -614,143 +589,99 @@ class CRM_Volunteer_Upgrader extends CRM_Volunteer_Upgrader_Base {
       throw new CRM_Core_Exception('Non-numeric custom group ID provided.');
     }
 
-// The code below is preferable, but it's blocked by CRM-15542.
-
-//    $check = civicrm_api3('OptionGroup', 'get', array(
-//      'name' => self::skillLevelOptionGroupName,
-//    ));
-//
-//    // don't create the optionGroup (or the options) if an optionGroup with the same name already exists
-//    if ($check['count'] === 0) {
-//      $values = array(
-//        1 => ts('Not interested', array('domain' => 'org.civicrm.volunteer')),
-//        2 => ts('Teach me', array('domain' => 'org.civicrm.volunteer')),
-//        3 => ts('Apprentice', array('domain' => 'org.civicrm.volunteer')),
-//        4 => ts('Journeyman', array('domain' => 'org.civicrm.volunteer')),
-//        5 => ts('Master', array('domain' => 'org.civicrm.volunteer')),
-//      );
-//
-//      $og = civicrm_api3('OptionGroup', 'create', array(
-//        'is_active' => 1,
-//        'name' => self::skillLevelOptionGroupName,
-//        'title' => ts('Skill Level', array('domain' => 'org.civicrm.volunteer')),
-//      ));
-//
-//      $weight = 1;
-//      foreach ($values as $k => $v) {
-//        civicrm_api3('OptionValue', 'create', array(
-//          'is_active' => 1,
-//          'label' => $v,
-//          'option_group_id' => $og['id'],
-//          'value' => $k,
-//          'weight' => $weight++,
-//        ));
-//      }
-//    }
-
-    // If the optionGroup already exists this api call will fail - not desired.
-    try {
-      $create = civicrm_api3('customField', 'create', array(
-        'custom_group_id' => $customGroupID,
-        'data_type' => 'String',
-        'html_type' => 'Multi-select',
-        'is_searchable' => 1,
-        'label' => ts('Camera Skill Level', array('domain' => 'org.civicrm.volunteer')),
-        'name' => 'camera_skill_level',
-  //      'option_group_id' => $og['id'], // blocked by CRM-15542, so instead use option_values
-        'option_values' => array(
-          5 => array(
-            'is_active' => 1,
-            'label' => ts('Master', array('domain' => 'org.civicrm.volunteer')),
-            'value' => 5,
-            'weight' => 5,
-          ),
-          4 => array(
-            'is_active' => 1,
-            'label' => ts('Journeyman', array('domain' => 'org.civicrm.volunteer')),
-            'value' => 4,
-            'weight' => 4,
-          ),
-          3 => array(
-            'is_active' => 1,
-            'label' => ts('Apprentice', array('domain' => 'org.civicrm.volunteer')),
-            'value' => 3,
-            'weight' => 3,
-          ),
-          2 => array(
-            'is_active' => 1,
-            'label' => ts('Teach me', array('domain' => 'org.civicrm.volunteer')),
-            'value' => 2,
-            'weight' => 2,
-          ),
-          1 => array(
-            'is_active' => 1,
-            'label' => ts('Not interested', array('domain' => 'org.civicrm.volunteer')),
-            'value' => 1,
-            'weight' => 1,
-          ),
-        ),
-      ));
-
-      $optionGroupId = $create['values'][$create['id']]['option_group_id'];
-    }
-    catch (Exception $ex){
-      // If it fails it's probably because it already exists.
-      $getCustomFieldResults = civicrm_api3('customField', 'getsingle', array(
-        'name' => 'camera_skill_level',
-      ));
-
-      $optionGroupId = $getCustomFieldResults['id'];
-    }
-
-    // hack for CRM-15542 - The custom field create API doesn't allow an existing option
-    // group to specified; the options must be created with the field. We want to give
-    // this option group a meaningful name and label so it's obvious it's intended to be
-    // reused, so we rename it below.
-
-    // If the optionGroup already exists this api call will fail - not desired.
-    try {
-      civicrm_api3('OptionGroup', 'create', array(
-        'id' => $optionGroupId,
-        'is_active' => 1,
+    $skillLevelOptionGroup = $this->createPossibleDuplicateRecord('OptionGroup', array(
+      'is_active' => 1,
+      'name' => self::skillLevelOptionGroupName,
+      'title' => ts('Skill Level', array('domain' => 'org.civicrm.volunteer')),
+    ));
+    $skillLevelOptionGroupId = CRM_Utils_Array::value('id', $skillLevelOptionGroup);
+    // option group ID needs to be fetched if creation attempt was a duplicate
+    if (!$skillLevelOptionGroupId) {
+      $skillLevelOptionGroupId = civicrm_api3('OptionGroup', 'getvalue', array(
         'name' => self::skillLevelOptionGroupName,
-        'title' => ts('Skill Level', array('domain' => 'org.civicrm.volunteer')),
+        'return' => 'id',
       ));
-
-      _volunteer_update_slider_fields(array(CRM_Core_Action::ADD => $create['id']));
-
-      $this->fieldCreateCheckForError($create);
     }
-    catch (Exception $ex){
-      // If it fails it's probably because it already exists.
+
+    $values = array(
+      1 => ts('Not interested', array('domain' => 'org.civicrm.volunteer')),
+      2 => ts('Teach me', array('domain' => 'org.civicrm.volunteer')),
+      3 => ts('Apprentice', array('domain' => 'org.civicrm.volunteer')),
+      4 => ts('Journeyman', array('domain' => 'org.civicrm.volunteer')),
+      5 => ts('Master', array('domain' => 'org.civicrm.volunteer')),
+    );
+
+    $weight = 1;
+    foreach ($values as $k => $v) {
+      civicrm_api3('OptionValue', 'create', array(
+        'is_active' => 1,
+        'label' => $v,
+        'option_group_id' => $skillLevelOptionGroupId,
+        'value' => $k,
+        'weight' => $weight++,
+      ));
     }
-    // end hack for CRM-15542
+
+    $customField = $this->createPossibleDuplicateRecord('customField', array(
+      'custom_group_id' => $customGroupID,
+      'data_type' => 'String',
+      'html_type' => 'Multi-select',
+      'is_searchable' => 1,
+      'label' => ts('Camera Skill Level', array('domain' => 'org.civicrm.volunteer')),
+      'name' => 'camera_skill_level',
+      'option_group_id' => $skillLevelOptionGroupId,
+    ));
+    $customFieldId = CRM_Utils_Array::value('id', $customField);
+    // custom field ID needs to be fetched if creation attempt was a duplicate
+    if (!$customFieldId) {
+      $customFieldId = civicrm_api3('customField', 'getvalue', array(
+        'custom_group_id' => $customGroupID,
+        'name' => 'camera_skill_level',
+        'return' => 'id',
+      ));
+    }
+
+    _volunteer_update_slider_fields(array(CRM_Core_Action::ADD => $customFieldId));
   }
 
   /**
-   * Helper function
+   * Wraps api.*.create to handle duplicate records in an upgrade-appropriate manner.
    *
-   * Sets status message if field already exists, throws exception in case of
-   * other error, does nothing on success
+   * Sets status message if entity already exists, throws exception in case of
+   * other error.
    *
-   * @param array $apiResult
+   * @param string $entityType
+   *   $entity argument to civicrm_api3()
+   * @param array $params
+   *   $params argument to civicrm_api3()
+   * @return array
+   *   API result
    * @throws CRM_Core_Exception
    */
-  private function fieldCreateCheckForError(array $apiResult) {
+  private function createPossibleDuplicateRecord($entityType, array $params) {
+    $apiResult = civicrm_api3($entityType, 'create', $params);
     if (CRM_Utils_Array::value('is_error', $apiResult)) {
       if ($apiResult['error_code'] == 'already exists') {
         CRM_Core_Session::setStatus(
-          ts('CiviVolunteer tried to create a custom field named %1, but it already exists. This may lead to unexpected behavior.', array('domain' => 'org.civicrm.volunteer', 1 => 'camera_skill_level')),
+          ts('CiviVolunteer tried to create a(n) %1 named %2, but it already exists. This may lead to unexpected behavior.',
+              array(
+                1 => $entityType,
+                2 => CRM_Utils_Array::value('name', $params),
+                'domain' => 'org.civicrm.volunteer',
+              )),
           ts('Field already exists', array('domain' => 'org.civicrm.volunteer'))
         );
       } else {
-        CRM_Core_Error::debug_var('customFieldResult', $apiResult);
-        throw new CRM_Core_Exception('Failed to create custom field for volunteer subtype');
+        CRM_Core_Error::debug_var('apiResult', $apiResult, TRUE, TRUE, 'org.civicrm.volunteer');
+        throw new CRM_Core_Exception("Failed to create $entityType.");
       }
     }
+    return $apiResult;
   }
 
-  /**                                                                                                                                                                                                        * @return int                                                                                                                                                                                            * @throws CRM_Core_Exception                                                                                                                                                                             */
+  /**
+   * @throws CRM_Core_Exception
+   */
   public function createVolunteerActivityStatus() {
     $activityStatus = civicrm_api('OptionGroup', 'Get', array(
       'version' => 3,
@@ -800,4 +731,5 @@ class CRM_Volunteer_Upgrader extends CRM_Volunteer_Upgrader_Base {
       $import->runXmlElement($xml);
       return TRUE;
   }
+
 }
