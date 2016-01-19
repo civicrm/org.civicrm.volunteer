@@ -59,39 +59,8 @@ class CRM_Volunteer_Upgrader extends CRM_Volunteer_Upgrader_Base {
     $this->addNeedEndDate();
     $this->installVolMsgWorkflowTpls();
 
-    $this->createVolunteerReportOption();
-
     // uncomment the next line to insert sample data
     // $this->executeSqlFile('sql/volunteer_sample.mysql');
-  }
-
-  /**
-   * Creates a Volunteer entry in the report template group.
-   */
-  function createVolunteerReportOption() {
-    try {
-      $optionGroupGetResult = civicrm_api3('OptionGroup', 'getsingle', array('name' => 'report_template'));
-    }
-    catch (Exception $e){
-      CRM_Core_Error::debug_log_message('Error in install process: could not retrieve OptionGroup with name "report_template".', TRUE);
-    }
-
-    $getOptionValueResult = civicrm_api3('OptionValue', 'get', array(
-      'sequential' => 1,
-      'option_group_id' => $optionGroupGetResult['id'],
-      'value' => 'volunteer',
-      'name' => 'CRM_Volunteer_Form_VolunteerReport',
-    ));
-
-    if ($getOptionValueResult['count'] == 0){
-      civicrm_api3('OptionValue', 'create', array(
-        'sequential' => 1,
-        'option_group_id' => $optionGroupGetResult['id'],
-        'label' => 'Volunteer Report',
-        'value' => 'volunteer',
-        'name' => 'CRM_Volunteer_Form_VolunteerReport',
-      ));
-    }
   }
 
   /**

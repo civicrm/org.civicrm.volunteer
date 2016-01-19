@@ -4,7 +4,6 @@ DROP TABLE IF EXISTS `civicrm_volunteer_project_contact`;
 DROP TABLE IF EXISTS `civicrm_volunteer_project`;
 
 /* drop report-related records */
-DELETE FROM `civicrm_option_value` WHERE name = 'CRM_Volunteer_Form_VolunteerReport';
 DELETE FROM `civicrm_report_instance` WHERE report_id = 'volunteer';
 
 /* drop custom option group for roles (FK takes care of option values) */
