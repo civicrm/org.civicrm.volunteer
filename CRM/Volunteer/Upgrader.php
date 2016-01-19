@@ -352,11 +352,11 @@ class CRM_Volunteer_Upgrader extends CRM_Volunteer_Upgrader_Base {
     return !is_a($query, 'DB_Error');
   }
 
-  /**
-   * Example: Run an external SQL script when the module is uninstalled
-   *
   public function uninstall() {
-   $this->executeSqlFile('sql/myuninstall.sql');
+    civicrm_api3('CustomGroup', 'get', array(
+      'name' => array('IN' => array('CiviVolunteer', 'Volunteer_Information', 'volunteer_commendation')),
+      'api.CustomGroup.delete' => array(),
+    ));
   }
 
   /**
