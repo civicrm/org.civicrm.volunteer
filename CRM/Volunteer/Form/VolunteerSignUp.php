@@ -134,7 +134,6 @@ class CRM_Volunteer_Form_VolunteerSignUp extends CRM_Core_Form {
     $vidParam = CRM_Utils_Request::retrieve('vid', 'Int', $this, FALSE, NULL, 'GET');
     
     if($vidParam != NULL) {
-      $vidParam = intval($vidParam);
       $path = "civicrm/vol/";
       $fragment =  "/volunteer/opportunities?project=$vidParam&dest=event";
       $newURL = CRM_Utils_System::url($path, NULL, FALSE, $fragment, FALSE, FALSE, FALSE);
