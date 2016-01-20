@@ -741,7 +741,7 @@ class CRM_Volunteer_Upgrader extends CRM_Volunteer_Upgrader_Base {
   public static function displayDependencyErrors(array $unmet){
     foreach ($unmet as $ext) {
       $message = self::getUnmetDependencyErrorMessage($ext);
-      CRM_Core_Session::setStatus($message, ts('Prerequisite check failed.', array('domain' => 'org.civicrm.volunteer')));
+      CRM_Core_Session::setStatus($message, ts('Prerequisite check failed.', array('domain' => 'org.civicrm.volunteer')), 'error');
     }
   }
 
