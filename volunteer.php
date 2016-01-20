@@ -48,7 +48,7 @@ function volunteer_civicrm_navigationMenu(&$params) {
   $administerMenuId = CRM_Core_DAO::getFieldValue('CRM_Core_BAO_Navigation', 'Administer', 'id', 'name');
   $posOfAdminMenu = array_search($administerMenuId, array_keys($params));
 
-  $newNavId = _getMenuKeyMax($params);
+  $newNavId = _volunteer_getMenuKeyMax($params);
   $volMenu = array(
     $newNavId => array(
       'attributes' => array(
@@ -164,11 +164,11 @@ function volunteer_civicrm_navigationMenu(&$params) {
  * @param array $menuArray
  * @return int
  */
-function _getMenuKeyMax($menuArray) {
+function _volunteer_getMenuKeyMax($menuArray) {
   $max = array(max(array_keys($menuArray)));
   foreach($menuArray as $v) {
     if (!empty($v['child'])) {
-      $max[] = _getMenuKeyMax($v['child']);
+      $max[] = _volunteer_getMenuKeyMax($v['child']);
     }
   }
   return max($max);
@@ -550,7 +550,7 @@ function volunteer_civicrm_alterAPIPermissions($entity, $action, &$params, &$per
 
 
   // allow fairly liberal access to the volunteer opp listing UI, which uses lots of API calls
-  if (_isVolListingApiCall($entity, $action) && CRM_Volunteer_Permission::checkProjectPerms(CRM_Core_Action::VIEW)) {
+  if (_volunteer_isVolListingApiCall($entity, $action) && CRM_Volunteer_Permission::checkProjectPerms(CRM_Core_Action::VIEW)) {
     $params['check_permissions'] = FALSE;
   }
 }
@@ -569,7 +569,7 @@ function volunteer_civicrm_alterAPIPermissions($entity, $action, &$params, &$per
  * @return boolean
  *   True if the API call is of the type that the vol opps UI depends on.
  */
-function _isVolListingApiCall($entity, $action) {
+function _volunteer_isVolListingApiCall($entity, $action) {
   $actions = array(
     'get',
     'getcountries',
