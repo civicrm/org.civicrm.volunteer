@@ -583,6 +583,10 @@ function _isVolListingApiCall($entity, $action) {
   return (in_array($entity, $entities) && in_array($action, $actions));
 }
 
+/**
+ * implementation of hook_civicrm_angularModules
+ * @param type $angularModule
+ */
 function volunteer_civicrm_angularModules(&$angularModule) {
   $angularModule['volunteer'] = array(
       'ext' => 'org.civicrm.volunteer',
