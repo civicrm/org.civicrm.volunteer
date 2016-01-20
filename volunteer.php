@@ -339,6 +339,14 @@ function volunteer_civicrm_pageRun(&$page) {
 }
 
 function _volunteer_civicrm_pageRun_CRM_Admin_Page_Extensions(&$page) {
+  _volunteer_civicrm_prereq_check();
+}
+
+function _volunteer_civicrm_pageRun_CRM_Volunteer_Page_Angular(&$page) {
+  _volunteer_civicrm_prereq_check();
+}
+
+function _volunteer_civicrm_prereq_check() {
   $unmet = CRM_Volunteer_Upgrader::checkExtensionDependencies();
   CRM_Volunteer_Upgrader::displayDependencyErrors($unmet);
 }
@@ -352,8 +360,7 @@ function _volunteer_civicrm_periodicChecks() {
     return;
   }
 
-  $unmet = CRM_Volunteer_Upgrader::checkExtensionDependencies();
-  CRM_Volunteer_Upgrader::displayDependencyErrors($unmet);
+  _volunteer_civicrm_prereq_check();
 }
 
 /**
