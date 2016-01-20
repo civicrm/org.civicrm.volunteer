@@ -76,7 +76,7 @@ class CRM_Volunteer_Upgrader extends CRM_Volunteer_Upgrader_Base {
         'is_active' => 1,
       ));
     } catch (Exception $e) {
-      $msg = 'Exception thrown in ' . __METHOD__ . '. Likely the option group alreadt exists.';
+      $msg = 'Exception thrown in ' . __METHOD__ . '. Likely the option group already exists.';
       CRM_Core_Error::debug_log_message($msg, FALSE, 'org.civicrm.volunteer');
     }
 
