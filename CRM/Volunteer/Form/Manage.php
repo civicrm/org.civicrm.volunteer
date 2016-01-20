@@ -109,6 +109,6 @@ class CRM_Volunteer_Form_Manage {
     ));
 
     // Check for problems
-    _volunteer_civicrm_check_resource_url();
+    _volunteer_checkResourceUrl();
   }
 }

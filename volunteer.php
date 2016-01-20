@@ -270,7 +270,7 @@ function volunteer_civicrm_enable() {
     <li>" . ts('Enable volunteer management for one or more <a href="%1" target="_blank">events</a>', array(1 => $events_url, 'domain' => 'org.civicrm.volunteer')) . "</li></ul>";
   // As long as the message contains a link, the pop-up will not automatically close
   CRM_Core_Session::setStatus($message, ts('CiviVolunteer Installed', array('domain' => 'org.civicrm.volunteer')), 'success');
-  _volunteer_civicrm_check_resource_url();
+  _volunteer_checkResourceUrl();
   return _volunteer_civix_civicrm_enable();
 }
 
@@ -520,7 +520,7 @@ function volunteer_civicrm_permission(array &$permissions) {
  * Displays an alert if the resource url is misconfigured
  * Proof is in the pudding - add a real js file to the page and see if it works.
  */
-function _volunteer_civicrm_check_resource_url() {
+function _volunteer_checkResourceUrl() {
   $message = json_encode(
     '<p>' . ts('Your extension resource url is not configured correctly. CiviVolunteer cannot work without this setting.', array('domain' => 'org.civicrm.volunteer')) .
     '</p><p>' . ts('Correct the problem at <a href="%1">Settings - Resource URLs</a>.', array(1 => CRM_Utils_System::url('civicrm/admin/setting/url', 'reset=1'), 'domain' => 'org.civicrm.volunteer')) . '</p>'
