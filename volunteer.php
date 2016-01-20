@@ -48,7 +48,7 @@ function volunteer_civicrm_navigationMenu(&$params) {
   $administerMenuId = CRM_Core_DAO::getFieldValue('CRM_Core_BAO_Navigation', 'Administer', 'id', 'name');
   $posOfAdminMenu = array_search($administerMenuId, array_keys($params));
 
-  $newNavId = _getMenuKeyMax($params);
+  $newNavId = _volunteer_getMenuKeyMax($params);
   $volMenu = array(
     $newNavId => array(
       'attributes' => array(
@@ -164,11 +164,11 @@ function volunteer_civicrm_navigationMenu(&$params) {
  * @param array $menuArray
  * @return int
  */
-function _getMenuKeyMax($menuArray) {
+function _volunteer_getMenuKeyMax($menuArray) {
   $max = array(max(array_keys($menuArray)));
   foreach($menuArray as $v) {
     if (!empty($v['child'])) {
-      $max[] = _getMenuKeyMax($v['child']);
+      $max[] = _volunteer_getMenuKeyMax($v['child']);
     }
   }
   return max($max);
@@ -270,7 +270,7 @@ function volunteer_civicrm_enable() {
     <li>" . ts('Enable volunteer management for one or more <a href="%1" target="_blank">events</a>', array(1 => $events_url, 'domain' => 'org.civicrm.volunteer')) . "</li></ul>";
   // As long as the message contains a link, the pop-up will not automatically close
   CRM_Core_Session::setStatus($message, ts('CiviVolunteer Installed', array('domain' => 'org.civicrm.volunteer')), 'success');
-  _volunteer_civicrm_check_resource_url();
+  _volunteer_checkResourceUrl();
   return _volunteer_civix_civicrm_enable();
 }
 
@@ -520,7 +520,7 @@ function volunteer_civicrm_permission(array &$permissions) {
  * Displays an alert if the resource url is misconfigured
  * Proof is in the pudding - add a real js file to the page and see if it works.
  */
-function _volunteer_civicrm_check_resource_url() {
+function _volunteer_checkResourceUrl() {
   $message = json_encode(
     '<p>' . ts('Your extension resource url is not configured correctly. CiviVolunteer cannot work without this setting.', array('domain' => 'org.civicrm.volunteer')) .
     '</p><p>' . ts('Correct the problem at <a href="%1">Settings - Resource URLs</a>.', array(1 => CRM_Utils_System::url('civicrm/admin/setting/url', 'reset=1'), 'domain' => 'org.civicrm.volunteer')) . '</p>'
@@ -550,7 +550,7 @@ function volunteer_civicrm_alterAPIPermissions($entity, $action, &$params, &$per
 
 
   // allow fairly liberal access to the volunteer opp listing UI, which uses lots of API calls
-  if (_isVolListingApiCall($entity, $action) && CRM_Volunteer_Permission::checkProjectPerms(CRM_Core_Action::VIEW)) {
+  if (_volunteer_isVolListingApiCall($entity, $action) && CRM_Volunteer_Permission::checkProjectPerms(CRM_Core_Action::VIEW)) {
     $params['check_permissions'] = FALSE;
   }
 }
@@ -569,7 +569,7 @@ function volunteer_civicrm_alterAPIPermissions($entity, $action, &$params, &$per
  * @return boolean
  *   True if the API call is of the type that the vol opps UI depends on.
  */
-function _isVolListingApiCall($entity, $action) {
+function _volunteer_isVolListingApiCall($entity, $action) {
   $actions = array(
     'get',
     'getcountries',
@@ -583,8 +583,14 @@ function _isVolListingApiCall($entity, $action) {
   return (in_array($entity, $entities) && in_array($action, $actions));
 }
 
-function volunteer_civicrm_angularModules(&$angularModule) {
-  $angularModule['volunteer'] = array(
+/**
+ * Implementation of hook_civicrm_angularModules.
+ *
+ * @param array $angularModules
+ *   An array containing a list of all Angular modules.
+ */
+function volunteer_civicrm_angularModules(&$angularModules) {
+  $angularModules['volunteer'] = array(
       'ext' => 'org.civicrm.volunteer',
       'js' =>
           array (
