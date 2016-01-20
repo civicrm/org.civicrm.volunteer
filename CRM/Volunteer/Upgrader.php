@@ -733,4 +733,52 @@ class CRM_Volunteer_Upgrader extends CRM_Volunteer_Upgrader_Base {
       return TRUE;
   }
 
+  /**
+   * Look up extension dependency error messages and display as Core Session Status
+   *
+   * @param array $unmet
+   */
+  public static function displayDependencyErrors(array $unmet){
+    foreach ($unmet as $ext) {
+      $message = self::getUnmetDependencyErrorMessage($ext);
+      CRM_Core_Session::setStatus($message, ts('Prerequisite check failed.', array('domain' => 'org.civicrm.volunteer')), 'error');
+    }
+  }
+
+  /**
+   * Mapping of extensions names to localized dependency error messages
+   *
+   * @param string $unmet an extension name
+   */
+  public static function getUnmetDependencyErrorMessage($unmet) {
+    switch ($unmet) {
+      case 'org.civicrm.angularprofiles':
+        return ts('CiviVolunteer was installed successfully, but you must also install and enable the <a href="%1">Angular Profiles Extension</a> before you can manage volunteer projects.', array(1 => 'https://github.com/ginkgostreet/org.civicrm.angularprofiles', 'domain' => 'org.civicrm.volunteer'));
+    }
+
+    CRM_Core_Error::fatal(ts('Unknown error key: %1', array(1 => $unmet, 'domain' => 'org.civicrm.volunteer')));
+  }
+
+  /**
+   * Extension Dependency Check
+   *
+   * @return Array of names of unmet extension dependencies; NOTE: returns an
+   *         empty array when all dependencies are met.
+   */
+  public static function checkExtensionDependencies() {
+    $manager = CRM_Extension_System::singleton()->getManager();
+
+    $dependencies = array(
+      // @TODO move this config out of code
+      'org.civicrm.angularprofiles',
+    );
+
+    $unmet = array();
+    foreach($dependencies as $ext) {
+      if($manager->getStatus($ext) != CRM_Extension_Manager::STATUS_INSTALLED) {
+        array_push($unmet, $ext);
+      }
+    }
+    return $unmet;
+  }
 }
