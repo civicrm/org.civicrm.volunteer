@@ -244,16 +244,24 @@ class CRM_Volunteer_BAO_NeedSearch {
       // CRM-17327
       if (empty($api['loc_block_id']) || empty($api['api.LocBlock.getsingle']['address_id'])) {
         $project['location'] = array(
-          // TODO: support state and country, which we get back as unfriendly IDs
           'city' => NULL,
+          'country' => NULL,
           'postal_code' => NULL,
+          'state_provice' => NULL,
           'street_address' => NULL,
         );
       } else {
+        $countryId = $api['api.LocBlock.getsingle']['api.Address.getsingle']['country_id'];
+        $country = $countryId ? CRM_Core_PseudoConstant::country($countryId) : NULL;
+
+        $stateProvinceId = $api['api.LocBlock.getsingle']['api.Address.getsingle']['state_province_id'];
+        $stateProvince = $stateProvinceId ? CRM_Core_PseudoConstant::stateProvince($stateProvinceId) : NULL;
+
         $project['location'] = array(
-          // TODO: support state and country, which we get back as unfriendly IDs
           'city' => $api['api.LocBlock.getsingle']['api.Address.getsingle']['city'],
+          'country' => $country,
           'postal_code' => $api['api.LocBlock.getsingle']['api.Address.getsingle']['postal_code'],
+          'state_province' => $stateProvince,
           'street_address' => $api['api.LocBlock.getsingle']['api.Address.getsingle']['street_address'],
         );
       }
