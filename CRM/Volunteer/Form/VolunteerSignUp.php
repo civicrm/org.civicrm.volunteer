@@ -122,6 +122,23 @@ class CRM_Volunteer_Form_VolunteerSignUp extends CRM_Core_Form {
 
     return $defaults;
   }
+ 
+  /**
+   * The "vid" URL parameter for this form was deprecated in CiviVolunteer 2.0.
+   *
+   * This redirect preserves backward compatibility for links from the Event
+   * Info page associated with a Volunteer Project. See VOL-180 for more info.
+   */
+  function redirectLegacyRequests() {
+    $vid = CRM_Utils_Request::retrieve('vid', 'Int', $this, FALSE, NULL, 'GET');
+    
+    if($vid != NULL) {
+      $path = "civicrm/vol/";
+      $fragment =  "/volunteer/opportunities?project=$vid&dest=event";
+      $newURL = CRM_Utils_System::url($path, NULL, FALSE, $fragment, FALSE, TRUE);
+      CRM_Utils_System::redirect($newURL);
+    }    
+  }
 
   /**
    * set variables up before form is built
@@ -129,6 +146,9 @@ class CRM_Volunteer_Form_VolunteerSignUp extends CRM_Core_Form {
    * @access public
    */
   function preProcess() {
+    
+    $this->redirectLegacyRequests();
+    
     // VOL-71: permissions check is moved from XML to preProcess function to support
     // permissions-challenged Joomla instances
     if (CRM_Core_Config::singleton()->userPermissionClass->isModulePermissionSupported()

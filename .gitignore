@@ -4,4 +4,4 @@ bin/setup.conf
 .DS_Store
 update.sh
 .*
-/nbproject/private/
+/nbproject
