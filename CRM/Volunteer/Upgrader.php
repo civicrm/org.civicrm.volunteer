@@ -766,17 +766,17 @@ class CRM_Volunteer_Upgrader extends CRM_Volunteer_Upgrader_Base {
    *         empty array when all dependencies are met.
    */
   public static function checkExtensionDependencies() {
-    $ext_manager = CRM_Extension_System::singleton()->getManager();
+    $manager = CRM_Extension_System::singleton()->getManager();
 
-    $arr_extension_dependencies = array(
+    $dependencies = array(
       // @TODO move this config out of code
       'org.civicrm.angularprofiles',
     );
 
     $unmet = array();
-    foreach($arr_extension_dependencies as $ext) {
-      if($ext_manager->getStatus($ext) != CRM_Extension_Manager::STATUS_INSTALLED) {
-          $unmet[] = $ext;
+    foreach($dependencies as $ext) {
+      if($manager->getStatus($ext) != CRM_Extension_Manager::STATUS_INSTALLED) {
+        array_push($unmet, $ext);
       }
     }
     return $unmet;
