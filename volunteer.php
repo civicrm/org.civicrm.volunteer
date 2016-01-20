@@ -338,6 +338,11 @@ function volunteer_civicrm_pageRun(&$page) {
   _volunteer_civicrm_periodicChecks();
 }
 
+function _volunteer_civicrm_pageRun_CRM_Admin_Page_Extensions(&$page) {
+  $unmet = CRM_Volunteer_Upgrader::checkExtensionDependencies();
+  CRM_Volunteer_Upgrader::displayDependencyErrors($unmet);
+}
+
 function _volunteer_civicrm_periodicChecks() {
   $session = CRM_Core_Session::singleton();
   if (
