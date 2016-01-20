@@ -335,23 +335,23 @@ function volunteer_civicrm_pageRun(&$page) {
   if (function_exists($f)) {
     $f($page);
   }
-  _volunteer_civicrm_periodicChecks();
+  _volunteer_periodicChecks();
 }
 
 function _volunteer_civicrm_pageRun_CRM_Admin_Page_Extensions(&$page) {
-  _volunteer_civicrm_prereq_check();
+  _volunteer_prereqCheck();
 }
 
 function _volunteer_civicrm_pageRun_CRM_Volunteer_Page_Angular(&$page) {
-  _volunteer_civicrm_prereq_check();
+  _volunteer_prereqCheck();
 }
 
-function _volunteer_civicrm_prereq_check() {
+function _volunteer_prereqCheck() {
   $unmet = CRM_Volunteer_Upgrader::checkExtensionDependencies();
   CRM_Volunteer_Upgrader::displayDependencyErrors($unmet);
 }
 
-function _volunteer_civicrm_periodicChecks() {
+function _volunteer_periodicChecks() {
   $session = CRM_Core_Session::singleton();
   if (
     !CRM_Core_Permission::check('administer CiviCRM')
@@ -360,7 +360,7 @@ function _volunteer_civicrm_periodicChecks() {
     return;
   }
 
-  _volunteer_civicrm_prereq_check();
+  _volunteer_prereqCheck();
 }
 
 /**
