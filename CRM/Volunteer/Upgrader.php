@@ -111,11 +111,12 @@ class CRM_Volunteer_Upgrader extends CRM_Volunteer_Upgrader_Base {
     );
 
     foreach ($options as $opt) {
-      $getOptionValues = civicrm_api3('OptionValue', 'get', $optionDefaults + $opt);
+      $optionValueParams = array_merge($optionDefaults, $opt);
+      $getOptionValues = civicrm_api3('OptionValue', 'get', $optionValueParams);
 
       // In the case of a user reinstalling CiviVolunteer we don't want duplicate options.
       if ($getOptionValues['count'] == 0) {
-        civicrm_api3('OptionValue', 'create', $optionDefaults + $opt);
+        civicrm_api3('OptionValue', 'create', $optionValueParams);
       }
     }
   }
