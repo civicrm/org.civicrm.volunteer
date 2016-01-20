@@ -130,12 +130,11 @@ class CRM_Volunteer_Form_VolunteerSignUp extends CRM_Core_Form {
    * Info page associated with a Volunteer Project. See VOL-180 for more info.
    */
   function redirectLegacyRequests() {
-       
-    $vidParam = CRM_Utils_Request::retrieve('vid', 'Int', $this, FALSE, NULL, 'GET');
+    $vid = CRM_Utils_Request::retrieve('vid', 'Int', $this, FALSE, NULL, 'GET');
     
-    if($vidParam != NULL) {
+    if($vid != NULL) {
       $path = "civicrm/vol/";
-      $fragment =  "/volunteer/opportunities?project=$vidParam&dest=event";
+      $fragment =  "/volunteer/opportunities?project=$vid&dest=event";
       $newURL = CRM_Utils_System::url($path, NULL, FALSE, $fragment, FALSE, FALSE, FALSE);
       CRM_Utils_System::redirect($newURL);
     }    
