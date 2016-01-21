@@ -4,20 +4,68 @@ layout: page
 title: Volunteer Interest Form
 ---
 <p>
-  From the <b>Volunteers</b> menu, clicking on <b>Volunteer Interest Form</b> yields:
+  As of version 1.4, CiviVolunteer provides a public-facing Volunteer Interest
+  Form. The purpose of this form is to allow potential volunteers to express
+  interest in volunteering for your organization without signing up for a
+  specific volunteer opportunity. This is useful if your organization doesn't
+  have any volunteer opportunities listed at the time of the potential
+  volunteer's visit, or if none of them are appropriate for the individual in
+  question. This form allows you to collect whatever information you choose
+  about potential volunteers, from basic contact information to self-assessments
+  of ability in various skill areas.
 </p>
-
+<p>
+  To see the form, choose <strong>Volunteers &gt; Volunteer Interest
+  Form</strong> from the menu. To encourage use of the form, you should link to
+  it from your website, as potential volunteers won't have access to CiviCRM's
+  administrative menu. Without additional information, the interest form
+  will look something like this:
+</p>
 <p>
   <img src="{{ site.baseurl }}/docs/screenshots/volunteer-interest-form.png" alt="Volunteer Interest Form Screen" />
 </p>
-
+<h2>Configuring the Volunteer Interest Form</h2>
 <p>
-  This form has two possible uses:
-  <ol>
-    <li>A user that is already logged in to CiviCRM can update their own contact information if they have access to this form.</li>
-    <li>Any web user (not logged in to CiviCRM) can create themselves as a Contact in CiviCRM, if the form is made publicly accessible.</li>
-  </ol>
+  At its core, the Volunteer Interest Form is nothing more than a
+  <a href="http://gitbook.civicrm.org/organising-your-data/profiles.html">CiviCRM
+  profile</a> with a fancy URL. (Since Drupal doesn't provide site
+  administrators an easy way to display a Profile at a custom URL, CiviVolunteer
+  supplies the http://example.org/civicrm/volunteer/join URL for this; WordPress
+  users may find this feature unnecessary.)
 </p>
 <p>
-  First Name, Last Name, and Email are required fields. Providing a Phone Number is optional.
+  You can customize the fields in the Volunteer Interest Form by selecting
+  <strong>Administer &gt; Customize Data and Screens &gt; Profiles</strong>
+  from the menu and editing the <strong>Notify Me of Volunteer
+  Opportunities</strong> Profile.
+</p>
+<h2>Collecting Skills or Interest on a Continuum</h2>
+<p>
+  <img src="{{ site.baseurl }}/docs/screenshots/slider.gif" alt="Slider" />
+</p>
+<p>
+  As of version 1.4, CiviVolunteer provides a slider widget for multi-select fields
+  where the option list represents a continuum. The options in the multi-select list
+  are converted to stops on a slider. Items with a lower weight in the option
+  group will appear on the left side of the slider, while heavily weighted
+  items will appear on the right.
+</p>
+<p>
+  <img src="{{ site.baseurl }}/docs/screenshots/slider-options.png" alt="Slider Options" />
+</p>
+<p>
+  The Skill Level option group that ships with CiviVolunteer demonstrates the
+  benefit of this feature. When a user drags the slider, the current option
+  (e.g., <strong>Master</strong>) as well as all options with a lower weight are
+  selected. As a result, a search for volunteers qualified to do
+  <strong>Apprentice</strong>-level work will include volunteers with
+  <strong>Master</strong>-level skills.
+</p>
+<p>
+  To enable this widget for a
+  <a href="http://gitbook.civicrm.org/organising-your-data/creating-custom-fields.html">Custom
+  Field</a>, select <strong>Alphanumeric Multi-Select</strong> as the
+  <strong>Data and Input Field Type</strong> for the field. When these
+  selections are made, a checkbox labeled <strong>Use Slider Selector?</strong>
+  will appear. Check it and save the field.
 </p>
