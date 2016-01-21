@@ -20,7 +20,7 @@ Required vars: volOppData, searchParams
     <h2>{{ts('Find Volunteer Opportunities')}}</h2>
     <form name="volOppSearchForm" crm-ui-id-scope>
       <div class="crm-block ui-tabs ui-widget ui-widget-content ui-corner-all">
-        <div class="crm-group">
+        <div class="crm-group" crm-ui-id-scope>
           <div crm-ui-field="{name: 'volOppSearchForm.date_start', title: ts('Between')}" class="crm-vol-opp-time">
             <input crm-ui-id="volOppSearchForm.date_start" crm-ui-datepicker="{time: false}" ng-model="searchParams().date_start" />
             <label crm-ui-for="volOppSearchForm.date_end">and</label>
@@ -65,7 +65,7 @@ Required vars: volOppData, searchParams
             />
           </div>
         </div>
-        <div class="crm-vol-proximity" crm-ui-accordion="{title: ts('Proximity Search'), collapsed: true}">
+        <div class="crm-vol-proximity" crm-ui-accordion="{title: ts('Proximity Search'), collapsed: true}" crm-ui-id-scope>
           <div crm-ui-field="{name: 'volOppSearchForm.radius', title: ts('Within')}" class="crm-vol-opp-radius">
             <input
               class="four crm-form-text"
