@@ -309,7 +309,12 @@
       saveProject().then(function(projectId) {
         if (projectId) {
           crmUiAlert({text: ts('Changes saved successfully'), title: ts('Saved'), type: 'success'});
-          $location.path( "/volunteer/manage" );
+          if($scope.useEventedButtons) {
+            //Trigger event
+            CRM.$("body").trigger("volunteerProjectSaveComplete");
+          } else {
+            $location.path( "/volunteer/manage" );
+          }
         }
       });
     };
@@ -328,7 +333,12 @@
     };
 
     $scope.cancel = function() {
-      $location.path( "/volunteer/manage" );
+      if($scope.useEventedButtons) {
+        //Trigger event
+        CRM.$("body").trigger("volunteerProjectCancel");
+      } else {
+        $location.path( "/volunteer/manage" );
+      }
     };
   });
 
