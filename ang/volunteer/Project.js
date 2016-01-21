@@ -77,6 +77,10 @@
     if(project.id == 0) {
       relationships = supporting_data.values.defaults.relationships;
       var originalRelationships = {};
+      if (CRM.VolunteerAngularSettings.entity_table) {
+        project.entity_table = CRM.VolunteerAngularSettings.entity_table;
+        project.entity_id = CRM.VolunteerAngularSettings.entity_id;
+      }
     } else {
       $(relationship_data.values).each(function (index, relationship) {
         if (!relationships.hasOwnProperty(relationship.relationship_type_id)) {
