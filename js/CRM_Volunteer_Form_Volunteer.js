@@ -47,6 +47,20 @@ CRM.$(function($) {
   });
 
 
+  //Wire up the define button
+  $("#crm-volunteer-event-define").click(function(event) {
+    if (CRM.VolunteerAngularSettings.ProjectId != 0) {
+      CRM.volunteerPopup(ts('Define Needs'), 'Define', CRM.VolunteerAngularSettings.ProjectId);
+    }
+  });
+
+  //Wire up the assign button
+  $("#crm-volunteer-event-assign").click(function(event) {
+    if (CRM.VolunteerAngularSettings.ProjectId != 0) {
+      CRM.volunteerPopup(ts('Assign Volunteers'), 'Assign', CRM.VolunteerAngularSettings.ProjectId);
+    }
+  });
+
   //Hide the Edit button by defult
   $("#crm-volunteer-event-edit").hide();
 
