@@ -133,7 +133,12 @@ function civicrm_api3_volunteer_project_get($params) {
 
   $result = CRM_Volunteer_BAO_Project::retrieve($params);
   foreach ($result as $k => $dao) {
+
     $result[$k] = $dao->toArray();
+
+    //Fetch and Assign the entity attributes to the output
+    //This is possible because despite the name, this is a BAO object not a DAO object
+    $result[$k]['entity_attributes'] = $dao->getEntityAttributes();
 
     $profiles = civicrm_api3("UFJoin", "get", array(
       "entity_id" => $dao->id,
