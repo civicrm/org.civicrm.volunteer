@@ -19,7 +19,7 @@ class CRM_Volunteer_Page_Angular extends Civi\Angular\Page\Main {
   /**
    * Register resources required by Angular.
    */
-  public function registerResources($region = 'html-header') {
+  public function registerResources($region = 'html-header', $includeExtras = true) {
     $modules = $this->angular->getModules();
     $page = $this; // PHP 5.3 does not propagate $this to inner functions.
 
@@ -37,11 +37,13 @@ class CRM_Volunteer_Page_Angular extends Civi\Angular\Page\Main {
     $page->res->addScriptFile('civicrm', 'bower_components/angular/angular.min.js', -100, $region, FALSE);
 
 
-    // FIXME: crmUi depends on loading ckeditor, but ckeditor doesn't work with this aggregation.
-    $page->res->addScriptFile('civicrm', 'packages/ckeditor/ckeditor.js', 120, $region, FALSE);
-
-    //Add jquery Notify
-    $page->res->addScriptFile('civicrm', 'packages/jquery/plugins/jquery.notify.min.js', 10, $region, FALSE);
+    if($includeExtras) {
+      // FIXME: crmUi depends on loading ckeditor, but ckeditor doesn't work with this aggregation.
+      $page->res->addScriptFile('civicrm', 'packages/ckeditor/ckeditor.js', 120, $region, FALSE);
+      //Add jquery Notify
+      $page->res->addScriptFile('civicrm', 'packages/jquery/plugins/jquery.notify.min.js', 10, $region, FALSE);
+      $page->assign("includeNotificationTemplate", true);
+    }
 
 
     $headOffset = 1;
