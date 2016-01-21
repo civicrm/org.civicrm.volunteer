@@ -14,7 +14,13 @@
             </span>
         </span>
 
-        <a href="{$volunteerLogURL}" class="button" data-popup-settings='{literal}{"dialog":{"width":"85%", "height":"80%"}}{/literal}'><span><div class="icon ui-icon-pencil"></div>{ts domain='org.civicrm.volunteer'}Log Volunteer Hours{/ts}</span></a>
+        <span class="crm-button crm-icon-button crm-span-button" id="crm-volunteer-event-log-hours">
+            <span class="crm-button-icon ui-icon-pencil"> </span>
+            <span class="crm-span-button-text">
+                {ts domain='org.civicrm.volunteer'}Log Volunteer Hours{/ts}
+            </span>
+        </span>
+
     </div>
     <span class="crm-button crm-icon-button crm-span-button" id="crm-volunteer-event-edit">
         <span class="crm-button-icon ui-icon-pencil"> </span>
