@@ -195,6 +195,7 @@ class CRM_Volunteer_Form_Volunteer extends CRM_Event_Form_ManageEvent {
 
       CRM_Core_Resources::singleton()->addSetting(array("VolunteerAngularSettings" => array(
         "Hash" => "#/volunteer/manage/" . $pid,
+        "ProjectId" => $pid,
         "entity_table" => $entity['entity_table'],
         "entity_id" => $entity['entity_id'],
         "entity_title" => $result,
