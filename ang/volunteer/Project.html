@@ -176,12 +176,14 @@
       </span>
     </div>
 
-    <div ng-if="useEventedButtons" class="crm-submit-buttons">
-      <span class="crm-button crm-icon-button">
-        <span class="crm-button-icon ui-icon-triangle-1-e"> </span> <input type="submit" ng-click="saveAndNext()" value="{{ts('Save')}}" class="crm-form-submit" />
+    <div ng-if="useEventedButtons" class="crm-submit-buttons crm-volunteer-evented-buttons">
+      <span class="crm-button crm-icon-button crm-evented-button" ng-click="saveAndNext()">
+        <span class="crm-button-icon ui-icon-triangle-1-e"> </span>
+        <span class="crm-evented-button-text">{{ts('Save')}}</span>
       </span>
-      <span class="crm-button crm-icon-button crm-button-type-cancel">
-        <span class="crm-button-icon ui-icon-close"> </span> <input type="submit" ng-click="cancel()" value="{{ts('Cancel')}}" class="crm-form-submit" />
+      <span class="crm-button crm-icon-button crm-button-type-cancel crm-evented-button" ng-click="cancel()">
+        <span class="crm-button-icon ui-icon-close"> </span>
+        <span class="crm-evented-button-text">{{ts('Cancel')}}</span>
       </span>
     </div>
 
