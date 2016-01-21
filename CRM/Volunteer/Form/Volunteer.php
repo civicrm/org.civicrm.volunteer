@@ -188,10 +188,16 @@ class CRM_Volunteer_Form_Volunteer extends CRM_Event_Form_ManageEvent {
       $entity = array();
       $this->minimumProjectParams($entity);
 
+      $result = civicrm_api3('Event', 'getvalue', array(
+        'return' => "title",
+        'id' => $entity['entity_id'],
+      ));
+
       CRM_Core_Resources::singleton()->addSetting(array("VolunteerAngularSettings" => array(
         "Hash" => "#/volunteer/manage/" . $pid,
         "entity_table" => $entity['entity_table'],
-        "entity_id" => $entity['entity_id']
+        "entity_id" => $entity['entity_id'],
+        "entity_title" => $result
       )));
 
 

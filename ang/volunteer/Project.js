@@ -81,6 +81,11 @@
         project.entity_table = CRM.VolunteerAngularSettings.entity_table;
         project.entity_id = CRM.VolunteerAngularSettings.entity_id;
       }
+      //For an associated Entity, make the title of the project default to
+      //The title of the entity
+      if(CRM.VolunteerAngularSettings.entity_title) {
+        project.title = CRM.VolunteerAngularSettings.entity_title;
+      }
     } else {
       $(relationship_data.values).each(function (index, relationship) {
         if (!relationships.hasOwnProperty(relationship.relationship_type_id)) {
