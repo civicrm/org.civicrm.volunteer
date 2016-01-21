@@ -103,7 +103,9 @@
       }];
     } else {
       $.each(project.profiles, function (key, data) {
-        data.module_data = JSON.parse(data.module_data);
+        if(data.module_data) {
+          data.module_data = JSON.parse(data.module_data);
+        }
       });
     }
     $scope.campaigns = campaigns;
