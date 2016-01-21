@@ -34,6 +34,9 @@
  *
  */
 
+
+require_once 'CRM/Volunteer/Angular/Manager.php';
+
 /**
  * This class generates form components for processing Event
  *
@@ -54,12 +57,12 @@ class CRM_Volunteer_Form_Volunteer extends CRM_Event_Form_ManageEvent {
    */
   private $_project;
 
-   /***
-    * Get the civiVolunteer Project for this Event.
-    * CAUTION: Returns only the first if there are multiple.
-    *
-    * @returns $project CRM_Volunteer_BAO_Project
-    */
+  /***
+   * Get the civiVolunteer Project for this Event.
+   * CAUTION: Returns only the first if there are multiple.
+   *
+   * @returns $project CRM_Volunteer_BAO_Project
+   */
   protected function getProject($params = NULL) {
     if ($this->_project === NULL) {
       $this->minimumProjectParams($params);
@@ -74,9 +77,9 @@ class CRM_Volunteer_Form_Volunteer extends CRM_Event_Form_ManageEvent {
     return $this->_project;
   }
 
-   /***
-    * Save (or create a project)
-    */
+  /***
+   * Save (or create a project)
+   */
   protected function saveProject($params) {
     $targetContacts = CRM_Utils_Array::value('target_contact_id', $params);
     unset($params['target_contact_id']);
@@ -93,9 +96,9 @@ class CRM_Volunteer_Form_Volunteer extends CRM_Event_Form_ManageEvent {
       if (CRM_Utils_Array::value('is_active', $form, 0) === '1') {
         // create the flexible need
         $need = array(
-        'project_id' => $this->_project->id,
-        'is_flexible' => '1',
-        'visibility_id' => CRM_Core_OptionGroup::getValue('visibility', 'public', 'name'),
+          'project_id' => $this->_project->id,
+          'is_flexible' => '1',
+          'visibility_id' => CRM_Core_OptionGroup::getValue('visibility', 'public', 'name'),
         );
         CRM_Volunteer_BAO_Need::create($need);
       }
@@ -119,41 +122,13 @@ class CRM_Volunteer_Form_Volunteer extends CRM_Event_Form_ManageEvent {
       $params['entity_table'] = CRM_Event_DAO_Event::$_tableName;
     }
   }
+
+
   /**
-   * Set default values for the form. For edit/view mode
-   * the default values are retrieved from the database
+   * Does a UFJoin lookup and caches it for future use.
    *
-   * @access public
-   *
-   * @return array
+   * @return array of UFGroup (profile) IDs
    */
-  function setDefaultValues() {
-    $target_contact_id = $this->_project ? $this->_project->target_contact_id : NULL;
-
-    if (!$target_contact_id) {
-      // default to the domain information
-      $domain = civicrm_api3('Domain', 'getsingle', array('current_domain' => 1));
-      $target_contact_id = $domain['contact_id'];
-    }
-
-    $defaults = array(
-      'is_active' => $this->_project ? $this->_project->is_active : 0,
-      'target_contact_id' => $target_contact_id,
-    );
-
-    foreach ($this->getProfileIDs() as $key => $value) {
-      CRM_Volunteer_Form_IncludeProfile::buildProfileWidget($this, $key);
-      $defaults["custom_signup_profiles[$key]"] = $value;
-    }
-
-    return $defaults;
-   }
-
-/**
-  * Does a UFJoin lookup and caches it for future use.
-  *
-  * @return array of UFGroup (profile) IDs
-  */
   private function getProfileIDs() {
     if (empty($this->_profile_ids) && $this->getProject() !== FALSE) {
       $dao = new CRM_Core_DAO_UFJoin();
@@ -181,115 +156,53 @@ class CRM_Volunteer_Form_Volunteer extends CRM_Event_Form_ManageEvent {
    * @access public
    */
   public function preProcess() {
-    parent::preProcess();
-
-    /*// Retrieve the profile IDs associated with the project; if none exist,
-    // create a dummy using CiviVolunteer's built-in profile. Note: this is
-    // necessary to ensure backwards compatibility with versions pre-dating the
-    // profile selection widget.
-    // Prior to php 5.5 you must store to a var before testing for empty
-    // http://joomla.stackexchange.com/questions/5565/fatal-error-cant-use-method-return-value-in-write-context
-    // hence re-instating the extra line of code
-    $profileIDs = $this->getProfileIDS();
-    if (empty($profileIDS)) {
-      $this->_profile_ids[] = civicrm_api3('UFGroup', 'getvalue', array(
-        'name' => 'volunteer_sign_up',
-        'return' => 'id',
-      ));
-    }*/
-      }
-
-  public function addRules() {
-    $this->addFormRule(array('CRM_Volunteer_Form_Volunteer', 'validateForm'));
-    parent::addRules();
+    if(array_key_exists("snippet", $_REQUEST) && $_REQUEST['snippet'] == "json") {
+      //Have the system load the angular tab
+      $this->loadAngular = true;
+    } else {
+      parent::preProcess();
+      $this->loadAngular = false;
+    }
   }
 
-  public static function validateForm($submit) {
-    $errors = array();
-    if (!array_key_exists('custom_signup_profiles', $submit)) {
-      CRM_Core_Error::fatal('An Error has occured, no Signup Profile submitted;');
-    }
 
-    $tmp_errors = array();
-    if (array_key_exists('custom_signup_profiles', $submit)) {
-      $count_submit = count($submit['custom_signup_profiles']);
-      foreach($submit['custom_signup_profiles'] as $idx => $pId) {
-        if ($pId === '') {
-          $tmp_errors["custom_signup_profiles[$idx]"] = 'You must select at least one Signup Profile.';
-        }
-      }
-    }
-    // if all submissions were empty
-    if (count($tmp_errors) == $count_submit) {
-      $errors = array_merge($errors, $tmp_errors);
-    }
 
-    return $errors;
-  }
-
-   /**
+  /**
    * Build the form object
    *
    * @return None
    * @access public
    */
   public function buildQuickForm() {
-    parent::buildQuickForm();
+    if($this->loadAngular) {
 
-    $this->add(
-      'checkbox',
-      'is_active',
-      ts('Enable Volunteer Management?', array('domain' => 'org.civicrm.volunteer'))
-    );
+      $ang = new CRM_Volunteer_Page_Angular(null, null, CRM_Core_Resources::singleton());
+      $ang->registerResources('ajax-snippet');
 
-    $this->addEntityRef(
-      'target_contact_id',
-      ts('Select Beneficiary', array('domain' => 'org.civicrm.volunteer')),
-      array('create' => TRUE, 'select' => array('allowClear' => FALSE)),
-      TRUE
-    );
+      //todo: Figure out why when this is loaded via Ajax it is empty
+      $pid = ($this->getProject()->id) ? $this->getProject()->id: 0;
 
-    $this->assign('vid', ($this->getProject() !== FALSE ? $this->getProject()->id : NULL));
+      CRM_Core_Resources::singleton()->addSetting(array("VolunteerAngularSettings" => array(
+        //"Scripts" => $scripts,
+        "Hash" => "#/volunteer/manage/" . $pid,
+        "entity_table" => CRM_Event_DAO_Event::$_tableName,
+        "entity_id" => $this->_id
+      )));
 
-    $this->assign('profileSignUpMultiple', array_keys($this->getProfileIDs()));
-    $this->assign('profileSignUpCounter', count($this->getProfileIDs()));
 
-    $this->assign('isModulePermissionSupported', CRM_Core_Config::singleton()->userPermissionClass->isModulePermissionSupported());
+      CRM_Core_Resources::singleton()->addScriptFile('org.civicrm.volunteer', 'js/CRM_Volunteer_Form_Volunteer.js', -1200, 'ajax-snippet');
 
-  }
 
-  /**
-   * Process the form submission. Enables/disables Volunteer Project. If the
-   * Project does not already exist, it is created, along with a "flexible" Need.
-   *
-   * @access public
-   *
-   * @return None
-   */
-  public function postProcess() {
-    $form = $this->getSubmitValues();
-    $form['is_active'] = CRM_Utils_Array::value('is_active', $form, 0);
+      // Low weight, go before all the other Angular scripts. The trick is only needed in snippet mode.
+      //CRM_Core_Resources::singleton()->addScript("CRM.origJQuery = window.jQuery; window.jQuery = CRM.$;", -1000, 'ajax-snippet');
+      //High weight, go after all the other Angular scripts. The trick is only needed in snippet mode.
+      //CRM_Core_Resources::singleton()->addScript("window.jQuery = CRM.origJQuery; delete CRM.origJQuery", 1000, 'ajax-snippet');
 
-    $params = array();
-    if ($this->getProject()) {
-      // force an update rather than an insert
-      $params['id'] = $this->getProject()->id;
+    } else {
+      parent::buildQuickForm();
     }
-    // save the project record
-    $params += array(
-      'is_active' => $form['is_active'],
-      'target_contact_id' => $form['target_contact_id'],
-      );
-
-    /* @var $project CRM_Volunteer_BAO_Project */
-    $project = $this->saveProject($params);
-
-    $this->saveProfileSelections($form['custom_signup_profiles']);
-
-    self::validateProfileForDedupe($form['custom_signup_profiles']);
-
-    parent::endPostProcess();
   }
+
 
   /**
    * Associates user-selected profiles with the volunteer project
