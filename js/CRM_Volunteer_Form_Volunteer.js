@@ -61,6 +61,32 @@ CRM.$(function($) {
     }
   });
 
+  //wire up the log Hours button
+  $("#crm-volunteer-event-log-hours").click(function(event) {
+    if (CRM.VolunteerAngularSettings.ProjectId != 0) {
+      var url = CRM.url("civicrm/volunteer/loghours", "reset=1&action=add&vid=" + CRM.VolunteerAngularSettings.ProjectId);
+      var dialogSettings = {"dialog":{"width":"85%", "height":"80%"}};
+      var formSuccess = false;
+      var $el = $(this);
+
+      //Create the Dialog
+      var dialog = CRM.loadForm(url, dialogSettings);
+      // Trigger events from the dialog on the original link element
+      $el.trigger('crmPopupOpen', [dialog]);
+
+      dialog.on('crmFormSuccess.crmPopup crmPopupFormSuccess.crmPopup', function() {
+        formSuccess = true;
+      });
+      dialog.on('dialogclose.crmPopup', function(e, data) {
+        if (formSuccess) {
+          $el.trigger('crmPopupFormSuccess', [dialog, data]);
+        }
+        $el.trigger('crmPopupClose', [dialog, data]);
+      });
+
+    }
+  });
+
   //Hide the Edit button by defult
   $("#crm-volunteer-event-edit").hide();
 
