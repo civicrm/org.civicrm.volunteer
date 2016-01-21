@@ -28,7 +28,7 @@
   //   $scope -- This is the set of variables shared between JS and HTML.
   //   crmApi, crmStatus, crmUiHelp -- These are services provided by civicrm-core.
   //   myContact -- The current contact, defined above in config().
-  angular.module('volunteer').controller('VolunteerProjects', function($scope, crmApi, crmStatus, crmUiHelp, projectData, $location, volunteerBackbone, campaigns) {
+  angular.module('volunteer').controller('VolunteerProjects', function($scope, crmApi, crmStatus, crmUiHelp, projectData, $location, volunteerBackbone, campaigns, $window) {
     // The ts() and hs() functions help load strings for this module.
     var ts = $scope.ts = CRM.ts('volunteer');
     var hs = $scope.hs = crmUiHelp({file: 'CRM/volunteer/Projects'}); // See: templates/CRM/volunteer/Projects.hlp
@@ -44,6 +44,43 @@
     $scope.campaigns = campaigns;
     $scope.needBase = CRM.url("civicrm/volunteer/need");
     $scope.assignBase = CRM.url("civicrm/volunteer/assign");
+
+    $scope.associatedEntityTitle = function(project) {
+
+      switch(project.entity_table) {
+        case 'civicrm_event':
+          console.log(project);
+          if (project.entity_attributes && project.entity_attributes.title) {
+            return project.entity_attributes.title;
+          } else {
+            return ts('Name Not Found') + ': (' + project.entity_table + ':' + project.entity_id + ')';
+          }
+        default:
+          return '--';
+      }
+    };
+
+    $scope.canLinkToAssociatedEntity = function(project) {
+      return (project.entity_id && project.entity_table && project.entity_table !== 'null');
+    };
+
+    $scope.linkToAssociatedEntity = function(project) {
+      if(project.entity_id && project.entity_table) {
+        var url = false;
+        switch(project.entity_table) {
+          case 'civicrm_event':
+            url = CRM.url("civicrm/event/manage/settings", "reset=1&action=update&id=" + project.entity_id);
+            break;
+          default:
+            CRM.alert(ts("We couldn't find a link to this item"));
+            break;
+        }
+
+        if(url) {
+          $window.open(url, "_blank");
+        }
+      }
+    };
 
     $scope.showLogHours = function() {
       var url = CRM.url("civicrm/volunteer/loghours", "reset=1&action=add&vid=" + this.project.id);
