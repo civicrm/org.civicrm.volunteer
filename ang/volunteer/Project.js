@@ -97,6 +97,13 @@
     }
     project.project_contacts = relationships;
 
+    if(CRM.VolunteerAngularSettings && CRM.VolunteerAngularSettings.use_evented_buttons) {
+      $scope.useEventedButtons = true;
+    } else {
+      $scope.useEventedButtons = false;
+    }
+
+
     $scope.countries = countries;
     $scope.locationBlocks = location_blocks.values;
     $scope.locationBlocks[0] = "Create a new Location";

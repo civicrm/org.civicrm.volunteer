@@ -163,7 +163,8 @@
         <span class="icon ui-icon-plus"></span>add another profile
       </a>
     </fieldset>
-    <div class="crm-submit-buttons">
+
+    <div ng-if="!useEventedButtons" class="crm-submit-buttons">
       <span class="crm-button crm-icon-button">
         <span class="crm-button-icon ui-icon-triangle-1-e"> </span> <input type="submit" ng-click="saveAndNext()" value="{{ts('Continue')}}" class="crm-form-submit" />
       </span>
@@ -174,6 +175,16 @@
         <span class="crm-button-icon ui-icon-close"> </span> <input type="submit" ng-click="cancel()" value="{{ts('Cancel')}}" class="crm-form-submit" />
       </span>
     </div>
+
+    <div ng-if="useEventedButtons" class="crm-submit-buttons">
+      <span class="crm-button crm-icon-button">
+        <span class="crm-button-icon ui-icon-triangle-1-e"> </span> <input type="submit" ng-click="saveAndNext()" value="{{ts('Save')}}" class="crm-form-submit" />
+      </span>
+      <span class="crm-button crm-icon-button crm-button-type-cancel">
+        <span class="crm-button-icon ui-icon-close"> </span> <input type="submit" ng-click="cancel()" value="{{ts('Cancel')}}" class="crm-form-submit" />
+      </span>
+    </div>
+
   </form>
 
 </div>
