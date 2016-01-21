@@ -197,12 +197,14 @@ class CRM_Volunteer_Form_Volunteer extends CRM_Event_Form_ManageEvent {
         "Hash" => "#/volunteer/manage/" . $pid,
         "entity_table" => $entity['entity_table'],
         "entity_id" => $entity['entity_id'],
-        "entity_title" => $result
+        "entity_title" => $result,
+        "use_evented_buttons" => true
       )));
 
 
       CRM_Core_Resources::singleton()->addScriptFile('org.civicrm.volunteer', 'js/CRM_Volunteer_Form_Volunteer.js', -1000, 'ajax-snippet');
 
+      CRM_Core_Resources::singleton()->addStyleFile('org.civicrm.volunteer', 'css/volunteer_events.css');
 
       // Low weight, go before all the other Angular scripts. The trick is only needed in snippet mode.
       CRM_Core_Resources::singleton()->addScript("CRM.origJQuery = window.jQuery; window.jQuery = CRM.$;", -1001, 'ajax-snippet');
