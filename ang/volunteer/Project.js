@@ -68,7 +68,7 @@
   );
 
 
-  angular.module('volunteer').controller('VolunteerProject', function($scope, $location, $q, crmApi, crmUiAlert, crmUiHelp, countries, project, profile_status, campaigns, relationship_data, supporting_data, location_blocks, volBackbone, userCanGetContactList) {
+  angular.module('volunteer').controller('VolunteerProject', function($scope, $location, $q, $route, crmApi, crmUiAlert, crmUiHelp, countries, project, profile_status, campaigns, relationship_data, supporting_data, location_blocks, volBackbone, userCanGetContactList) {
     // The ts() and hs() functions help load strings for this module.
     var ts = $scope.ts = CRM.ts('org.civicrm.volunteer');
     var hs = $scope.hs = crmUiHelp({file: 'CRM/Volunteer/Form/Volunteer'}); // See: templates/CRM/volunteer/Project.hlp
@@ -311,7 +311,7 @@
           crmUiAlert({text: ts('Changes saved successfully'), title: ts('Saved'), type: 'success'});
           if($scope.useEventedButtons) {
             //Trigger event
-            CRM.$("body").trigger("volunteerProjectSaveComplete");
+            CRM.$("body").trigger("volunteerProjectSaveComplete", projectId);
           } else {
             $location.path( "/volunteer/manage" );
           }
@@ -340,6 +340,13 @@
         $location.path( "/volunteer/manage" );
       }
     };
+
+    //Handle Refresh requests
+    CRM.$("body").on("volunteerProjectRefresh", function() {
+      $route.reload();
+    });
+
+
   });
 
 })(angular, CRM.$, CRM._);
