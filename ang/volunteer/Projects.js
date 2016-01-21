@@ -49,7 +49,6 @@
 
       switch(project.entity_table) {
         case 'civicrm_event':
-          console.log(project);
           if (project.entity_attributes && project.entity_attributes.title) {
             return project.entity_attributes.title;
           } else {
