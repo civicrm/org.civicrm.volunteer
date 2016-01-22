@@ -204,7 +204,6 @@ class CRM_Volunteer_Form_Volunteer extends CRM_Event_Form_ManageEvent {
 
 
       CRM_Core_Resources::singleton()->addScriptFile('org.civicrm.volunteer', 'js/CRM_Volunteer_Form_Volunteer.js', -1000, 'ajax-snippet');
-      CRM_Core_Resources::singleton()->addScriptFile('org.civicrm.volunteer', 'js/backbone/apps/volunteer_app.js', 120, 'ajax-snippet');
 
       CRM_Core_Resources::singleton()->addStyleFile('org.civicrm.volunteer', 'css/volunteer_events.css');
 
