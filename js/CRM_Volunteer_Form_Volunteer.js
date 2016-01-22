@@ -1,5 +1,23 @@
 CRM.$(function($) {
-  
+
+  //Defer loading of Angular
+  //Because we are loading Angular through an ajax interface
+  //we need to defer loading until everything is ready.
+  //The batarang module employs this method to defer loading
+  //see: https://docs.angularjs.org/guide/bootstrap
+  //maybeBootstrap modified from that found at: https://github.com/angular/batarang
+  var DEFER_LABEL = 'NG_DEFER_BOOTSTRAP!';
+  window.name = DEFER_LABEL + window.name;
+  function maybeBootstrap() {
+    if (typeof angular === 'undefined' || !angular.resumeBootstrap) {
+      return setTimeout(maybeBootstrap, 1);
+    }
+    window.name = window.name.substring(DEFER_LABEL.length);
+    angular.resumeBootstrap();
+  }
+  maybeBootstrap();
+
+
   if (CRM.VolunteerAngularSettings.Hash) {
     location.hash = CRM.VolunteerAngularSettings.Hash;
   }
