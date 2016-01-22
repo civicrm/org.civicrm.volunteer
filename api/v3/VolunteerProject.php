@@ -132,11 +132,13 @@ function civicrm_api3_volunteer_project_get($params) {
 
 
   $result = CRM_Volunteer_BAO_Project::retrieve($params);
-  foreach ($result as $k => $dao) {
-    $result[$k] = $dao->toArray();
+  foreach ($result as $k => $bao) {
+
+    $result[$k] = $bao->toArray();
+    $result[$k]['entity_attributes'] = $bao->getEntityAttributes();
 
     $profiles = civicrm_api3("UFJoin", "get", array(
-      "entity_id" => $dao->id,
+      "entity_id" => $bao->id,
       "entity_table" => "civicrm_volunteer_project",
       "sequential" => 1
     ));
