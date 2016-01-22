@@ -46,16 +46,10 @@
     $scope.assignBase = CRM.url("civicrm/volunteer/assign");
 
     $scope.associatedEntityTitle = function(project) {
-
-      switch(project.entity_table) {
-        case 'civicrm_event':
-          if (project.entity_attributes && project.entity_attributes.title) {
-            return project.entity_attributes.title;
-          } else {
-            return ts('Name Not Found') + ': (' + project.entity_table + ':' + project.entity_id + ')';
-          }
-        default:
-          return '--';
+      if (project.entity_attributes && project.entity_attributes.title) {
+        return project.entity_attributes.title;
+      } else {
+        return '--';
       }
     };
 
