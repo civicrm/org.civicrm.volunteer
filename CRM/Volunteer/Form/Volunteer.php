@@ -34,9 +34,6 @@
  *
  */
 
-
-require_once 'CRM/Volunteer/Angular/Manager.php';
-
 /**
  * This class generates form components for processing Event
  *
