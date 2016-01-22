@@ -213,14 +213,14 @@ class CRM_Volunteer_Form_Volunteer extends CRM_Event_Form_ManageEvent {
         'id' => $entity['entity_id'],
       ));
 
-      CRM_Core_Resources::singleton()->addSetting(array("VolunteerAngularSettings" => array(
-        "Hash" => "#/volunteer/manage/" . $pid,
-        "ProjectId" => $pid,
-        "entity_table" => $entity['entity_table'],
-        "entity_id" => $entity['entity_id'],
-        "entity_title" => $result,
-        "use_evented_buttons" => true
-      )));
+      CRM_Core_Resources::singleton()->addVars('org.civicrm.volunteer', array(
+        "hash" => "#/volunteer/manage/" . $pid,
+        "projectId" => $pid,
+        "entityTable" => $entity['entity_table'],
+        "entityId" => $entity['entity_id'],
+        "entityTitle" => $result,
+        "useEventedButtons" => true
+      ));
 
 
       CRM_Core_Resources::singleton()->addScriptFile('org.civicrm.volunteer', 'js/CRM_Volunteer_Form_Volunteer.js', -1000, 'ajax-snippet');

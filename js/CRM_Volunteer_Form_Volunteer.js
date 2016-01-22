@@ -18,8 +18,8 @@ CRM.$(function($) {
   maybeBootstrap();
 
 
-  if (CRM.VolunteerAngularSettings.Hash) {
-    location.hash = CRM.VolunteerAngularSettings.Hash;
+  if (CRM.vars['org.civicrm.volunteer'].hash) {
+    location.hash = CRM.vars['org.civicrm.volunteer'].hash;
   }
 
   //Handle Project Save
@@ -27,14 +27,14 @@ CRM.$(function($) {
 
 
     //If the buttons weren't visible, show them.
-    if(CRM.VolunteerAngularSettings.ProjectId == 0) {
+    if (CRM.vars['org.civicrm.volunteer'].projectId == 0) {
       $("#crm-volunteer-event-action-items").fadeIn();
     }
 
-    //Store the ProjectId for later use (This is important if
+    //Store the projectId for later use (This is important if
     //we just created a new project)
-    CRM.VolunteerAngularSettings.ProjectId = projectId;
-    CRM.VolunteerAngularSettings.Hash = CRM.VolunteerAngularSettings.Hash.replace(/[0-9]*$/, projectId);
+    CRM.vars['org.civicrm.volunteer'].projectId = projectId;
+    CRM.vars['org.civicrm.volunteer'].hash = CRM.vars['org.civicrm.volunteer'].hash.replace(/[0-9]*$/, projectId);
 
     //Hide the editor frame
     $("#crm_volunteer_angular_frame").slideUp();
@@ -57,7 +57,7 @@ CRM.$(function($) {
     $("#crm-volunteer-event-edit").fadeOut();
 
     //Refresh the editor frame's data
-    location.hash = CRM.VolunteerAngularSettings.Hash;
+    location.hash = CRM.vars['org.civicrm.volunteer'].hash;
     CRM.$("body").trigger("volunteerProjectRefresh");
 
     //Show the editor frame
@@ -67,22 +67,22 @@ CRM.$(function($) {
 
   //Wire up the define button
   $("#crm-volunteer-event-define").click(function(event) {
-    if (CRM.VolunteerAngularSettings.ProjectId != 0) {
-      CRM.volunteerPopup(ts('Define Needs'), 'Define', CRM.VolunteerAngularSettings.ProjectId);
+    if (CRM.vars['org.civicrm.volunteer'].projectId != 0) {
+      CRM.volunteerPopup(ts('Define Needs'), 'Define', CRM.vars['org.civicrm.volunteer'].projectId);
     }
   });
 
   //Wire up the assign button
   $("#crm-volunteer-event-assign").click(function(event) {
-    if (CRM.VolunteerAngularSettings.ProjectId != 0) {
-      CRM.volunteerPopup(ts('Assign Volunteers'), 'Assign', CRM.VolunteerAngularSettings.ProjectId);
+    if (CRM.vars['org.civicrm.volunteer'].projectId != 0) {
+      CRM.volunteerPopup(ts('Assign Volunteers'), 'Assign', CRM.vars['org.civicrm.volunteer'].projectId);
     }
   });
 
   //wire up the log Hours button
   $("#crm-volunteer-event-log-hours").click(function(event) {
-    if (CRM.VolunteerAngularSettings.ProjectId != 0) {
-      var url = CRM.url("civicrm/volunteer/loghours", "reset=1&action=add&vid=" + CRM.VolunteerAngularSettings.ProjectId);
+    if (CRM.vars['org.civicrm.volunteer'].projectId != 0) {
+      var url = CRM.url("civicrm/volunteer/loghours", "reset=1&action=add&vid=" + CRM.vars['org.civicrm.volunteer'].projectId);
       var dialogSettings = {"dialog":{"width":"85%", "height":"80%"}};
       var formSuccess = false;
       var $el = $(this);
@@ -108,7 +108,7 @@ CRM.$(function($) {
   //Hide the Edit button by defult
   $("#crm-volunteer-event-edit").hide();
 
-  if(CRM.VolunteerAngularSettings.ProjectId == 0) {
+  if (CRM.vars['org.civicrm.volunteer'].projectId == 0) {
     $("#crm-volunteer-event-action-items").hide();
   }
 

@@ -77,14 +77,14 @@
     if(project.id == 0) {
       relationships = supporting_data.values.defaults.relationships;
       var originalRelationships = {};
-      if (CRM.VolunteerAngularSettings.entity_table) {
-        project.entity_table = CRM.VolunteerAngularSettings.entity_table;
-        project.entity_id = CRM.VolunteerAngularSettings.entity_id;
+      if (CRM.vars['org.civicrm.volunteer'].entityTable) {
+        project.entity_table = CRM.vars['org.civicrm.volunteer'].entityTable;
+        project.entity_id = CRM.vars['org.civicrm.volunteer'].entityId;
       }
       //For an associated Entity, make the title of the project default to
       //The title of the entity
-      if(CRM.VolunteerAngularSettings.entity_title) {
-        project.title = CRM.VolunteerAngularSettings.entity_title;
+      if (CRM.vars['org.civicrm.volunteer'].entityTitle) {
+        project.title = CRM.vars['org.civicrm.volunteer'].entityTitle;
       }
     } else {
       $(relationship_data.values).each(function (index, relationship) {
@@ -97,7 +97,7 @@
     }
     project.project_contacts = relationships;
 
-    if(CRM.VolunteerAngularSettings && CRM.VolunteerAngularSettings.use_evented_buttons) {
+    if (CRM.vars['org.civicrm.volunteer'] && CRM.vars['org.civicrm.volunteer'].useEventedButtons) {
       $scope.useEventedButtons = true;
     } else {
       $scope.useEventedButtons = false;
