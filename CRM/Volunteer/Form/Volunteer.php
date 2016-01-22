@@ -198,30 +198,21 @@ class CRM_Volunteer_Form_Volunteer extends CRM_Event_Form_ManageEvent {
    * @access public
    */
   public function buildQuickForm() {
-    if($this->loadAngular) {
-
+    if ($this->loadAngular) {
       $ang = new CRM_Volunteer_Page_Angular(null, null, CRM_Core_Resources::singleton());
       $ang->registerResources('ajax-snippet', false);
 
-
-      $pid = ($this->getProject()->id) ? $this->getProject()->id: 0;
-      $entity = array();
-      $this->minimumProjectParams($entity);
-
-      $result = civicrm_api3('Event', 'getvalue', array(
-        'return' => "title",
-        'id' => $entity['entity_id'],
-      ));
+      $project = $this->getProject();
+      $entity = $project->getEntityAttributes();
 
       CRM_Core_Resources::singleton()->addVars('org.civicrm.volunteer', array(
-        "hash" => "#/volunteer/manage/" . $pid,
-        "projectId" => $pid,
-        "entityTable" => $entity['entity_table'],
-        "entityId" => $entity['entity_id'],
-        "entityTitle" => $result,
+        "hash" => "#/volunteer/manage/" . $project->id,
+        "projectId" => $project->id,
+        "entityTable" => $project->entity_table,
+        "entityId" => $project->entity_id,
+        "entityTitle" => $entity['title'],
         "useEventedButtons" => true
       ));
-
 
       CRM_Core_Resources::singleton()->addScriptFile('org.civicrm.volunteer', 'js/CRM_Volunteer_Form_Volunteer.js', -1000, 'ajax-snippet');
 
@@ -231,7 +222,6 @@ class CRM_Volunteer_Form_Volunteer extends CRM_Event_Form_ManageEvent {
       CRM_Core_Resources::singleton()->addScript("CRM.origJQuery = window.jQuery; window.jQuery = CRM.$;", -1001, 'ajax-snippet');
       //High weight, go after all the other Angular scripts. The trick is only needed in snippet mode.
       CRM_Core_Resources::singleton()->addScript("window.jQuery = CRM.origJQuery; delete CRM.origJQuery", 1000, 'ajax-snippet');
-
     } else {
       parent::buildQuickForm();
     }
