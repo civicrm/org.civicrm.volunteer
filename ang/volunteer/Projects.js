@@ -60,6 +60,8 @@
     };
 
     $scope.canLinkToAssociatedEntity = function(project) {
+      // Checking for string 'null' is probably unnecessary. We encountered such
+      // records earlier in development, but this was likely a transient bug.
       return (project.entity_id && project.entity_table && project.entity_table !== 'null');
     };
 
