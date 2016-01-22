@@ -44,6 +44,14 @@ require_once 'CRM/Volunteer/Angular/Manager.php';
 class CRM_Volunteer_Form_Volunteer extends CRM_Event_Form_ManageEvent {
 
   /**
+   * A flag used to indicate whether or not Angular should be loaded.
+   *
+   * @var boolean
+   * @see isLoadingTabContent()
+   */
+  private $loadAngular = FALSE;
+
+  /**
    * The profile IDs associated with this form
    *
    * @var array
@@ -155,21 +163,33 @@ class CRM_Volunteer_Form_Volunteer extends CRM_Event_Form_ManageEvent {
   }
 
   /**
-   * set variables up before form is built
+   * Set variables up before form is built.
    *
-   * @access public
+   * @return void
    */
   public function preProcess() {
-    if(array_key_exists("snippet", $_REQUEST) && $_REQUEST['snippet'] == "json") {
-      //Have the system load the angular tab
-      $this->loadAngular = true;
+    if ($this->isLoadingTabContent()) {
+      $this->loadAngular = TRUE;
     } else {
       parent::preProcess();
-      $this->loadAngular = false;
     }
   }
 
-
+  /**
+   * Distinguishes between different invocations of the form class.
+   *
+   * It is possible for this form class to be loaded twice in what the user
+   * perceives as a single page load. If the Event tabset is not already loaded
+   * (i.e., the user clicks Configure > Volunteers from the Manage Events
+   * screen), then the class is called twice: the first time to defer to its
+   * parent for the construction of the event tabset; the second time via AJAX
+   * to load content into the frame for the Volunteer tab.
+   *
+   * @return boolean
+   */
+  private function isLoadingTabContent() {
+    return CRM_Utils_Request::retrieve('snippet', 'String') === "json";
+  }
 
   /**
    * Build the form object
