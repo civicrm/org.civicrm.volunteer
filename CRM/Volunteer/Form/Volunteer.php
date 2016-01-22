@@ -61,39 +61,15 @@ class CRM_Volunteer_Form_Volunteer extends CRM_Event_Form_ManageEvent {
    *
    * @returns $project CRM_Volunteer_BAO_Project
    */
-  protected function getProject($params = NULL) {
+  protected function getProject() {
     if ($this->_project === NULL) {
-      $this->minimumProjectParams($params);
-      $this->_project = current(CRM_Volunteer_BAO_Project::retrieve($params));
-
-      if ($this->_project) {
-        $beneficiaryIds = CRM_Volunteer_BAO_Project::getContactsByRelationship($this->_project->id, 'volunteer_beneficiary');
-        $this->_project->target_contact_id = implode(',', $beneficiaryIds);
-      }
+      $this->_project = current(CRM_Volunteer_BAO_Project::retrieve(array(
+            'entity_id' => $this->_id ? $this->_id : CRM_Utils_Request::retrieve('id', 'Integer'),
+            'entity_table' => CRM_Event_DAO_Event::$_tableName,
+      )));
     }
 
     return $this->_project;
-  }
-
-  /**
-   * Use Page properties to set default params for retrieving a project BAO
-   *
-   * @param array $params by reference
-   */
-  function minimumProjectParams(&$params) {
-    if(!is_array($params)) {
-      $params = array();
-    }
-    if(!array_key_exists('entity_id', $params)) {
-      if($this->_id) {
-        $params['entity_id'] = $this->_id;
-      } else {
-        $params['entity_id'] = CRM_Utils_Array::value('id', $_REQUEST);
-      }
-    }
-    if (!array_key_exists('entity_table', $params)) {
-      $params['entity_table'] = CRM_Event_DAO_Event::$_tableName;
-    }
   }
 
   /**
