@@ -92,3 +92,7 @@
 #crm-vol-project-list a {
   cursor: pointer;
 }
+
+span.crm-button-text {
+  padding: 2px 7px 2px 20px;
+}

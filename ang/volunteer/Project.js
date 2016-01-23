@@ -68,7 +68,7 @@
   );
 
 
-  angular.module('volunteer').controller('VolunteerProject', function($scope, $location, $q, crmApi, crmUiAlert, crmUiHelp, countries, project, profile_status, campaigns, relationship_data, supporting_data, location_blocks, volBackbone, userCanGetContactList) {
+  angular.module('volunteer').controller('VolunteerProject', function($scope, $location, $q, $route, crmApi, crmUiAlert, crmUiHelp, countries, project, profile_status, campaigns, relationship_data, supporting_data, location_blocks, volBackbone, userCanGetContactList) {
     // The ts() and hs() functions help load strings for this module.
     var ts = $scope.ts = CRM.ts('org.civicrm.volunteer');
     var hs = $scope.hs = crmUiHelp({file: 'CRM/Volunteer/Form/Volunteer'}); // See: templates/CRM/volunteer/Project.hlp
@@ -77,6 +77,15 @@
     if(project.id == 0) {
       relationships = supporting_data.values.defaults.relationships;
       var originalRelationships = {};
+      if (CRM.vars['org.civicrm.volunteer'].entityTable) {
+        project.entity_table = CRM.vars['org.civicrm.volunteer'].entityTable;
+        project.entity_id = CRM.vars['org.civicrm.volunteer'].entityId;
+      }
+      //For an associated Entity, make the title of the project default to
+      //The title of the entity
+      if (CRM.vars['org.civicrm.volunteer'].entityTitle) {
+        project.title = CRM.vars['org.civicrm.volunteer'].entityTitle;
+      }
     } else {
       $(relationship_data.values).each(function (index, relationship) {
         if (!relationships.hasOwnProperty(relationship.relationship_type_id)) {
@@ -87,6 +96,36 @@
       var originalRelationships = _.clone(relationships);
     }
     project.project_contacts = relationships;
+
+    if (CRM.vars['org.civicrm.volunteer'] && CRM.vars['org.civicrm.volunteer'].context) {
+      $scope.formContext = CRM.vars['org.civicrm.volunteer'].context;
+    } else {
+      $scope.formContext = 'standAlone';
+    }
+
+    switch ($scope.formContext) {
+      case 'eventTab':
+        var cancelCallback = function (projectId) {
+          CRM.$("body").trigger("volunteerProjectCancel");
+        };
+        var saveAndNextCallback = function (projectId) {
+          CRM.$("body").trigger("volunteerProjectSaveComplete", projectId);
+        };
+        $scope.saveAndNextLabel = ts('Save');
+        break;
+
+      default:
+        var cancelCallback = function (projectId) {
+          $location.path("/volunteer/manage");
+        };
+        var saveAndNextCallback = function (projectId) {
+          volBackbone.load().then(function () {
+            CRM.volunteerPopup(ts('Define Needs'), 'Define', projectId);
+            $location.path("/volunteer/manage");
+          });
+        };
+        $scope.saveAndNextLabel = ts('Continue');
+    }
 
     $scope.countries = countries;
     $scope.locationBlocks = location_blocks.values;
@@ -103,7 +142,9 @@
       }];
     } else {
       $.each(project.profiles, function (key, data) {
-        data.module_data = JSON.parse(data.module_data);
+        if(data.module_data) {
+          data.module_data = JSON.parse(data.module_data);
+        }
       });
     }
     $scope.campaigns = campaigns;
@@ -287,11 +328,11 @@
       }
     };
 
-    $scope.saveAndDone = function() {
-      saveProject().then(function(projectId) {
+    $scope.saveAndDone = function () {
+      saveProject().then(function (projectId) {
         if (projectId) {
           crmUiAlert({text: ts('Changes saved successfully'), title: ts('Saved'), type: 'success'});
-          $location.path( "/volunteer/manage" );
+          $location.path("/volunteer/manage");
         }
       });
     };
@@ -300,18 +341,21 @@
       saveProject().then(function(projectId) {
         if (projectId) {
           crmUiAlert({text: ts('Changes saved successfully'), title: ts('Saved'), type: 'success'});
-
-          volBackbone.load().then(function() {
-            CRM.volunteerPopup(ts('Define Needs'), 'Define', projectId);
-            $location.path( "/volunteer/manage" );
-          });
+          saveAndNextCallback(projectId);
         }
       });
     };
 
     $scope.cancel = function() {
-      $location.path( "/volunteer/manage" );
+      cancelCallback();
     };
+
+    //Handle Refresh requests
+    CRM.$("body").on("volunteerProjectRefresh", function() {
+      $route.reload();
+    });
+
+
   });
 
 })(angular, CRM.$, CRM._);

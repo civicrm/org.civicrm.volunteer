@@ -14,7 +14,7 @@
     <!-- temporarily hiding this as I'm not sure the intent and it looks unfinished -->
     <div class="help" ng-hide="1"></div>
 
-    <fieldset class="crm-vol-project-settings">
+    <fieldset class="crm-vol-project-settings" crm-ui-id-scope>
       <legend>{{ts("Project Settings")}}</legend>
       <div class="crm-vol-title" crm-ui-field="{name: 'projectForm.title', title: ts('Project Title')}">
         <input class="big crm-form-text" crm-ui-id="projectForm.title" ng-model="project.title" ng-required="true" />
@@ -105,7 +105,7 @@
       </div>
     </fieldset>
 
-    <fieldset class="crm-vol-relationships" ng-show="userCanGetContactList">
+    <fieldset class="crm-vol-relationships" ng-show="userCanGetContactList" crm-ui-id-scope>
       <legend>{{ts("Relationships")}}</legend>
 
       <div ng-repeat="relType in relationship_types" crm-ui-field="{name: projectForm[relType.name], title: ts(relType.label)}" ng-class="'crm-vol-rel-' + relType.name">
@@ -163,17 +163,22 @@
         <span class="icon ui-icon-plus"></span>add another profile
       </a>
     </fieldset>
+
     <div class="crm-submit-buttons">
-      <span class="crm-button crm-icon-button">
-        <span class="crm-button-icon ui-icon-triangle-1-e"> </span> <input type="submit" ng-click="saveAndNext()" value="{{ts('Continue')}}" class="crm-form-submit" />
+      <span class="crm-button crm-icon-button" ng-click="saveAndNext()">
+        <span class="crm-button-icon ui-icon-triangle-1-e"> </span>
+        <span class="crm-button-text">{{saveAndNextLabel}}</span>
       </span>
-      <span class="crm-button crm-icon-button">
-        <span class="crm-button-icon ui-icon-circle-check"> </span> <input type="submit" ng-click="saveAndDone()" value="{{ts('Save and Done')}}" class="crm-form-submit" />
+      <span ng-show="formContext === 'standAlone'" class="crm-button crm-icon-button" ng-click="saveAndDone()">
+        <span class="crm-button-icon ui-icon-circle-check"> </span>
+        <span class="crm-button-text">{{ts('Save and Done')}}</span>
       </span>
-      <span class="crm-button crm-icon-button crm-button-type-cancel">
-        <span class="crm-button-icon ui-icon-close"> </span> <input type="submit" ng-click="cancel()" value="{{ts('Cancel')}}" class="crm-form-submit" />
+      <span class="crm-button crm-icon-button crm-button-type-cancel" ng-click="cancel()">
+        <span class="crm-button-icon ui-icon-close"> </span>
+        <span class="crm-button-text">{{ts('Cancel')}}</span>
       </span>
     </div>
+
   </form>
 
 </div>
