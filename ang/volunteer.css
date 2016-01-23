@@ -93,6 +93,6 @@
   cursor: pointer;
 }
 
-.crm-volunteer-evented-buttons .crm-button.crm-icon-button .crm-evented-button-text {
+span.crm-button-text {
   padding: 2px 7px 2px 20px;
 }

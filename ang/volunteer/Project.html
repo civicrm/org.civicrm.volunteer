@@ -164,26 +164,18 @@
       </a>
     </fieldset>
 
-    <div ng-if="!useEventedButtons" class="crm-submit-buttons">
-      <span class="crm-button crm-icon-button">
-        <span class="crm-button-icon ui-icon-triangle-1-e"> </span> <input type="submit" ng-click="saveAndNext()" value="{{ts('Continue')}}" class="crm-form-submit" />
-      </span>
-      <span class="crm-button crm-icon-button">
-        <span class="crm-button-icon ui-icon-circle-check"> </span> <input type="submit" ng-click="saveAndDone()" value="{{ts('Save and Done')}}" class="crm-form-submit" />
-      </span>
-      <span class="crm-button crm-icon-button crm-button-type-cancel">
-        <span class="crm-button-icon ui-icon-close"> </span> <input type="submit" ng-click="cancel()" value="{{ts('Cancel')}}" class="crm-form-submit" />
-      </span>
-    </div>
-
-    <div ng-if="useEventedButtons" class="crm-submit-buttons crm-volunteer-evented-buttons">
-      <span class="crm-button crm-icon-button crm-evented-button" ng-click="saveAndNext()">
+    <div class="crm-submit-buttons">
+      <span class="crm-button crm-icon-button" ng-click="saveAndNext()">
         <span class="crm-button-icon ui-icon-triangle-1-e"> </span>
-        <span class="crm-evented-button-text">{{ts('Save')}}</span>
+        <span class="crm-button-text">{{useEventedButtons ? ts('Save') : ts('Continue')}}</span>
       </span>
-      <span class="crm-button crm-icon-button crm-button-type-cancel crm-evented-button" ng-click="cancel()">
+      <span ng-show="!useEventedButtons" class="crm-button crm-icon-button" ng-click="saveAndDone()">
+        <span class="crm-button-icon ui-icon-circle-check"> </span>
+        <span class="crm-button-text">{{ts('Save and Done')}}</span>
+      </span>
+      <span class="crm-button crm-icon-button crm-button-type-cancel" ng-click="cancel()">
         <span class="crm-button-icon ui-icon-close"> </span>
-        <span class="crm-evented-button-text">{{ts('Cancel')}}</span>
+        <span class="crm-button-text">{{ts('Cancel')}}</span>
       </span>
     </div>
 
