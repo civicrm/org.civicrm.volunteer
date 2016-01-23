@@ -121,7 +121,7 @@ class CRM_Volunteer_Form_Volunteer extends CRM_Event_Form_ManageEvent {
         "entityTable" => $project->entity_table,
         "entityId" => $project->entity_id,
         "entityTitle" => $entity['title'],
-        "useEventedButtons" => true
+        "context" => 'eventTab',
       ));
 
       CRM_Core_Resources::singleton()->addScriptFile('org.civicrm.volunteer', 'js/CRM_Volunteer_Form_Volunteer.js', -1000, 'ajax-snippet');

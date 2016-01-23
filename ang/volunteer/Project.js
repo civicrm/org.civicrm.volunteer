@@ -97,12 +97,35 @@
     }
     project.project_contacts = relationships;
 
-    if (CRM.vars['org.civicrm.volunteer'] && CRM.vars['org.civicrm.volunteer'].useEventedButtons) {
-      $scope.useEventedButtons = true;
+    if (CRM.vars['org.civicrm.volunteer'] && CRM.vars['org.civicrm.volunteer'].context) {
+      $scope.formContext = CRM.vars['org.civicrm.volunteer'].context;
     } else {
-      $scope.useEventedButtons = false;
+      $scope.formContext = 'standAlone';
     }
 
+    switch ($scope.formContext) {
+      case 'eventTab':
+        var cancelCallback = function (projectId) {
+          CRM.$("body").trigger("volunteerProjectCancel");
+        };
+        var saveAndNextCallback = function (projectId) {
+          CRM.$("body").trigger("volunteerProjectSaveComplete", projectId);
+        };
+        $scope.saveAndNextLabel = ts('Save');
+        break;
+
+      default:
+        var cancelCallback = function (projectId) {
+          $location.path("/volunteer/manage");
+        };
+        var saveAndNextCallback = function (projectId) {
+          volBackbone.load().then(function () {
+            CRM.volunteerPopup(ts('Define Needs'), 'Define', projectId);
+            $location.path("/volunteer/manage");
+          });
+        };
+        $scope.saveAndNextLabel = ts('Continue');
+    }
 
     $scope.countries = countries;
     $scope.locationBlocks = location_blocks.values;
@@ -318,26 +341,13 @@
       saveProject().then(function(projectId) {
         if (projectId) {
           crmUiAlert({text: ts('Changes saved successfully'), title: ts('Saved'), type: 'success'});
-
-          if ($scope.useEventedButtons) {
-            CRM.$("body").trigger("volunteerProjectSaveComplete", projectId);
-          } else {
-            volBackbone.load().then(function () {
-              CRM.volunteerPopup(ts('Define Needs'), 'Define', projectId);
-              $location.path("/volunteer/manage");
-            });
-          }
+          saveAndNextCallback(projectId);
         }
       });
     };
 
     $scope.cancel = function() {
-      if($scope.useEventedButtons) {
-        //Trigger event
-        CRM.$("body").trigger("volunteerProjectCancel");
-      } else {
-        $location.path( "/volunteer/manage" );
-      }
+      cancelCallback();
     };
 
     //Handle Refresh requests
