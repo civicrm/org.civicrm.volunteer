@@ -305,16 +305,11 @@
       }
     };
 
-    $scope.saveAndDone = function() {
-      saveProject().then(function(projectId) {
+    $scope.saveAndDone = function () {
+      saveProject().then(function (projectId) {
         if (projectId) {
           crmUiAlert({text: ts('Changes saved successfully'), title: ts('Saved'), type: 'success'});
-          if($scope.useEventedButtons) {
-            //Trigger event
-            CRM.$("body").trigger("volunteerProjectSaveComplete", projectId);
-          } else {
-            $location.path( "/volunteer/manage" );
-          }
+          $location.path("/volunteer/manage");
         }
       });
     };
@@ -324,10 +319,14 @@
         if (projectId) {
           crmUiAlert({text: ts('Changes saved successfully'), title: ts('Saved'), type: 'success'});
 
-          volBackbone.load().then(function() {
-            CRM.volunteerPopup(ts('Define Needs'), 'Define', projectId);
-            $location.path( "/volunteer/manage" );
-          });
+          if ($scope.useEventedButtons) {
+            CRM.$("body").trigger("volunteerProjectSaveComplete", projectId);
+          } else {
+            volBackbone.load().then(function () {
+              CRM.volunteerPopup(ts('Define Needs'), 'Define', projectId);
+              $location.path("/volunteer/manage");
+            });
+          }
         }
       });
     };
