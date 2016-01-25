@@ -53,7 +53,9 @@
     var ts = $scope.ts = CRM.ts('volunteer');
     var hs = $scope.hs = crmUiHelp({file: 'CRM/volunteer/Projects'}); // See: templates/CRM/volunteer/Projects.hlp
 
-    $scope.searchParams = {};
+    $scope.searchParams = {
+      is_active: 1
+    };
     $scope.projects = projectData;
     $scope.batchAction = "";
     $scope.allSelected = false;

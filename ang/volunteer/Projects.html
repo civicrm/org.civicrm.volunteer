@@ -38,6 +38,14 @@
                 <option />
               </select>
             </div>
+            <div crm-ui-field="{name: 'volProjectSearchForm.is_active', title: ts('Active')}">
+              <label>
+                <input type="radio" ng-model="searchParams.is_active" value="1" /> Yes
+              </label>
+              <label>
+                <input type="radio" ng-model="searchParams.is_active" value="0" /> No
+              </label>
+            </div>
           </div>
         </fieldset>
       </form>
