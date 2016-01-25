@@ -106,6 +106,16 @@
       return result;
     };
 
+    $scope.formatBeneficiaries = function (project) {
+      var displayNames = [];
+
+      _.each(project.beneficiaries, function (item) {
+        displayNames.push($scope.beneficiaries[item].display_name);
+      });
+
+      return displayNames.sort().join('<br />');
+    };
+
     $scope.linkToAssociatedEntity = function(project) {
       if(project.entity_id && project.entity_table) {
         var url = false;
