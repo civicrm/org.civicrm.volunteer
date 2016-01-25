@@ -9,7 +9,14 @@
         // under "resolve".
         resolve: {
           projectData: function(crmApi) {
-            return crmApi('VolunteerProject', 'get', {"sequential": 1, "context": 'edit'});
+            return crmApi('VolunteerProject', 'get', {
+              sequential: 1,
+              context: 'edit',
+              'api.VolunteerProject.getlocblockdata': {
+                return: 'all',
+                sequential: 1
+              }
+            });
           },
           campaigns: function(crmApi) {
             return crmApi('VolunteerUtil', 'getcampaigns').then(function(data) {
@@ -49,6 +56,36 @@
       // Checking for string 'null' is probably unnecessary. We encountered such
       // records earlier in development, but this was likely a transient bug.
       return (project.entity_id && project.entity_table && project.entity_table !== 'null');
+    };
+
+    /**
+     * Utility for stringifying locations which may have varying levels of detail.
+     *
+     * @param array project
+     *   An item from the projectData provider.
+     * @return string
+     *   With HTML tags.
+     */
+    $scope.formatLocation = function (project) {
+      var result = '';
+
+      var locBlockData = project['api.VolunteerProject.getlocblockdata'].values;
+      if (!_.isEmpty(locBlockData)) {
+        var address = locBlockData[0].address;
+        result += address.street_address;
+
+        if (address.street_address && (address.city || address.postal_code)) {
+          result += '<br />' + address.city;
+        }
+
+        if (address.city && address.postal_code) {
+          result += ', ' + address.postal_code;
+        } else if (address.postal_code) {
+          result += address.postal_code;
+        }
+      }
+
+      return result;
     };
 
     $scope.linkToAssociatedEntity = function(project) {

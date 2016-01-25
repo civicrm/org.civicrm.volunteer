@@ -44,6 +44,7 @@
           <th class="ui-state-default crm-vol-manage-project">{{ ts('Volunteer Project') }}</th>
           <th class="ui-state-default crm-vol-manage-active">{{ ts('Active') }}</th>
           <th class="ui-state-default crm-vol-manage-entity">{{ ts('Associated Entity') }}</th>
+          <th class="ui-state-default crm-vol-manage-location">{{ ts('Location') }}</th>
           <th class="ui-state-default crm-vol-manage-actionlinks"></th>
         </tr>
       </thead>
@@ -59,6 +60,7 @@
           <a ng-if="canLinkToAssociatedEntity(project)" ng-click="linkToAssociatedEntity(project)">{{associatedEntityTitle(project)}}</a>
           <span ng-if="!canLinkToAssociatedEntity(project)">{{associatedEntityTitle(project)}}</span>
         </td>
+        <td class="crm-vol-manage-location" ng-bind-html="formatLocation(project)"></td>
         <td class="crm-vol-manage-actionlinks right nowrap">
           <div><a href="#/volunteer/manage/{{project.id}}">{{ ts('Edit') }}</a></div>
           <div><a ng-click="backbonePopup(ts('Define Needs'), 'Define', project.id)">{{ ts('Define Needs') }}</a></div>
