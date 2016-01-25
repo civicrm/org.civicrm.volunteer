@@ -8,14 +8,31 @@
         // If you need to look up data when opening the page, list it out
         // under "resolve".
         resolve: {
+          beneficiaries: function (crmApi) {
+            return crmApi('VolunteerUtil', 'getbeneficiaries').then(function(data) {
+              return data.values;
+            });
+          },
           projectData: function(crmApi) {
             return crmApi('VolunteerProject', 'get', {
               sequential: 1,
               context: 'edit',
+              'api.VolunteerProjectContact.get': {
+                relationship_type_id: "volunteer_beneficiary"
+              },
               'api.VolunteerProject.getlocblockdata': {
                 return: 'all',
                 sequential: 1
               }
+            }).then(function (data) {
+              // make the beneficiary IDs readily available for the live filter
+              return _.each(data.values, function (element, index, list) {
+                var beneficiaryIds = [];
+                _.each(element['api.VolunteerProjectContact.get']['values'], function (el) {
+                  beneficiaryIds.push(el.contact_id);
+                });
+                list[index].beneficiaries = beneficiaryIds;
+              });
             });
           },
           campaigns: function(crmApi) {
@@ -31,15 +48,16 @@
     }
   );
 
-  angular.module('volunteer').controller('VolunteerProjects', function ($scope, crmApi, crmStatus, crmUiHelp, projectData, $location, volunteerBackbone, campaigns, $window) {
+  angular.module('volunteer').controller('VolunteerProjects', function ($scope, crmApi, crmStatus, crmUiHelp, projectData, $location, volunteerBackbone, beneficiaries, campaigns, $window) {
     // The ts() and hs() functions help load strings for this module.
     var ts = $scope.ts = CRM.ts('volunteer');
     var hs = $scope.hs = crmUiHelp({file: 'CRM/volunteer/Projects'}); // See: templates/CRM/volunteer/Projects.hlp
 
     $scope.searchParams = {};
-    $scope.projects = projectData.values;
+    $scope.projects = projectData;
     $scope.batchAction = "";
     $scope.allSelected = false;
+    $scope.beneficiaries = beneficiaries;
     $scope.campaigns = campaigns;
     $scope.needBase = CRM.url("civicrm/volunteer/need");
     $scope.assignBase = CRM.url("civicrm/volunteer/assign");

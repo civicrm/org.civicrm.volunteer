@@ -1,4 +1,6 @@
 <div class="crm-container">
+  <div crm-ui-debug="beneficiaries"></div>
+  <div crm-ui-debug="campaigns"></div>
   <div crm-ui-debug="projects"></div>
   <div crm-ui-debug="searchParams"></div>
 
@@ -22,6 +24,12 @@
           <div class="crm-group" crm-ui-id-scope>
             <div crm-ui-field="{name: 'volProjectSearchForm.title', title: ts('Title')}">
               <input crm-ui-id="volProjectSearchForm.title" ng-model="searchParams.title" />
+            </div>
+            <div crm-ui-field="{name: 'volProjectSearchForm.beneficiary', title: ts('Beneficiary')}">
+              <select class="big crm-form-select crm-vol-beneficiary" crm-ui-select="{placeholder: ts('Filter by Beneficiary'), allowClear:true}"
+                      ng-options="key as value.display_name for (key , value) in beneficiaries" ng-model="searchParams.beneficiaries">
+                <option />
+              </select>
             </div>
             <div crm-ui-field="{name: 'volProjectSearchForm.campaign', title: ts('Campaign')}">
               <select class="big crm-form-select crm-vol-campaign" crm-ui-select="{placeholder: ts('Search for a Campaign'), allowClear:true}"
