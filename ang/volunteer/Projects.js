@@ -8,8 +8,32 @@
         // If you need to look up data when opening the page, list it out
         // under "resolve".
         resolve: {
+          beneficiaries: function (crmApi) {
+            return crmApi('VolunteerUtil', 'getbeneficiaries').then(function(data) {
+              return data.values;
+            });
+          },
           projectData: function(crmApi) {
-            return crmApi('VolunteerProject', 'get', {"sequential": 1, "context": 'edit'});
+            return crmApi('VolunteerProject', 'get', {
+              sequential: 1,
+              context: 'edit',
+              'api.VolunteerProjectContact.get': {
+                relationship_type_id: "volunteer_beneficiary"
+              },
+              'api.VolunteerProject.getlocblockdata': {
+                return: 'all',
+                sequential: 1
+              }
+            }).then(function (data) {
+              // make the beneficiary IDs readily available for the live filter
+              return _.each(data.values, function (element, index, list) {
+                var beneficiaryIds = [];
+                _.each(element['api.VolunteerProjectContact.get']['values'], function (el) {
+                  beneficiaryIds.push(el.contact_id);
+                });
+                list[index].beneficiaries = beneficiaryIds;
+              });
+            });
           },
           campaigns: function(crmApi) {
             return crmApi('VolunteerUtil', 'getcampaigns').then(function(data) {
@@ -24,23 +48,18 @@
     }
   );
 
-  // The controller uses *injection*. This default injects a few things:
-  //   $scope -- This is the set of variables shared between JS and HTML.
-  //   crmApi, crmStatus, crmUiHelp -- These are services provided by civicrm-core.
-  //   myContact -- The current contact, defined above in config().
-  angular.module('volunteer').controller('VolunteerProjects', function($scope, crmApi, crmStatus, crmUiHelp, projectData, $location, volunteerBackbone, campaigns, $window) {
+  angular.module('volunteer').controller('VolunteerProjects', function ($scope, crmApi, crmStatus, crmUiHelp, projectData, $location, volunteerBackbone, beneficiaries, campaigns, $window) {
     // The ts() and hs() functions help load strings for this module.
     var ts = $scope.ts = CRM.ts('volunteer');
     var hs = $scope.hs = crmUiHelp({file: 'CRM/volunteer/Projects'}); // See: templates/CRM/volunteer/Projects.hlp
 
-    // We have myContact available in JS. We also want to reference it in HTML.
-
-
-
-    $scope.searchParams = {};
-    $scope.projects = projectData.values;
+    $scope.searchParams = {
+      is_active: 1
+    };
+    $scope.projects = projectData;
     $scope.batchAction = "";
     $scope.allSelected = false;
+    $scope.beneficiaries = beneficiaries;
     $scope.campaigns = campaigns;
     $scope.needBase = CRM.url("civicrm/volunteer/need");
     $scope.assignBase = CRM.url("civicrm/volunteer/assign");
@@ -57,6 +76,46 @@
       // Checking for string 'null' is probably unnecessary. We encountered such
       // records earlier in development, but this was likely a transient bug.
       return (project.entity_id && project.entity_table && project.entity_table !== 'null');
+    };
+
+    /**
+     * Utility for stringifying locations which may have varying levels of detail.
+     *
+     * @param array project
+     *   An item from the projectData provider.
+     * @return string
+     *   With HTML tags.
+     */
+    $scope.formatLocation = function (project) {
+      var result = '';
+
+      var locBlockData = project['api.VolunteerProject.getlocblockdata'].values;
+      if (!_.isEmpty(locBlockData)) {
+        var address = locBlockData[0].address;
+        result += address.street_address;
+
+        if (address.street_address && (address.city || address.postal_code)) {
+          result += '<br />' + address.city;
+        }
+
+        if (address.city && address.postal_code) {
+          result += ', ' + address.postal_code;
+        } else if (address.postal_code) {
+          result += address.postal_code;
+        }
+      }
+
+      return result;
+    };
+
+    $scope.formatBeneficiaries = function (project) {
+      var displayNames = [];
+
+      _.each(project.beneficiaries, function (item) {
+        displayNames.push($scope.beneficiaries[item].display_name);
+      });
+
+      return displayNames.sort().join('<br />');
     };
 
     $scope.linkToAssociatedEntity = function(project) {

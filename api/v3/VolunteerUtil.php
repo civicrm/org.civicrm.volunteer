@@ -207,6 +207,31 @@ function _volunteerGetProjectRelationshipDefaults() {
 }
 
 /**
+ * This method returns a list of beneficiaries
+ *
+ * @param array $params
+ *   Not presently used.
+ * @return array
+ */
+function civicrm_api3_volunteer_util_getbeneficiaries($params) {
+  $beneficiaries = civicrm_api3('VolunteerProjectContact', 'get', array(
+    'relationship_type_id' => 'volunteer_beneficiary',
+    'return' => 'contact_id',
+  ));
+
+  $contactIds = array();
+  foreach ($beneficiaries['values'] as $b) {
+    array_push($contactIds, $b['contact_id']);
+  }
+  $contactIds = array_unique($contactIds);
+
+  return civicrm_api3('Contact', 'get', array(
+    'id' => array('IN' => $contactIds),
+    'return' => 'display_name',
+  ));
+}
+
+/**
  * This method returns a list of active campaigns
  *
  * @param array $params

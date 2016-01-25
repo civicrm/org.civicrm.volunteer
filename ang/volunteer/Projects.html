@@ -1,4 +1,6 @@
 <div class="crm-container">
+  <div crm-ui-debug="beneficiaries"></div>
+  <div crm-ui-debug="campaigns"></div>
   <div crm-ui-debug="projects"></div>
   <div crm-ui-debug="searchParams"></div>
 
@@ -23,12 +25,26 @@
             <div crm-ui-field="{name: 'volProjectSearchForm.title', title: ts('Title')}">
               <input crm-ui-id="volProjectSearchForm.title" ng-model="searchParams.title" />
             </div>
+            <div crm-ui-field="{name: 'volProjectSearchForm.beneficiary', title: ts('Beneficiary')}">
+              <select class="big crm-form-select crm-vol-beneficiary" crm-ui-select="{placeholder: ts('Filter by Beneficiary'), allowClear:true}"
+                      ng-options="key as value.display_name for (key , value) in beneficiaries" ng-model="searchParams.beneficiaries">
+                <option />
+              </select>
+            </div>
             <div crm-ui-field="{name: 'volProjectSearchForm.campaign', title: ts('Campaign')}">
-              <select class="big crm-form-select crm-vol-campaign" crm-ui-select="{placeholder: ts('Search for a Campaign'), allowClear:true}"
+              <select class="big crm-form-select crm-vol-campaign" crm-ui-select="{placeholder: ts('Filter by Campaign'), allowClear:true}"
                       ng-change="clearCampaign()"
                       ng-options="key as value.title for (key , value) in campaigns" ng-model="searchParams.campaign">
                 <option />
               </select>
+            </div>
+            <div crm-ui-field="{name: 'volProjectSearchForm.is_active', title: ts('Active')}">
+              <label>
+                <input type="radio" ng-model="searchParams.is_active" value="1" /> Yes
+              </label>
+              <label>
+                <input type="radio" ng-model="searchParams.is_active" value="0" /> No
+              </label>
             </div>
           </div>
         </fieldset>
@@ -42,8 +58,10 @@
         <tr role="row">
           <th class="ui-state-default crm-vol-manage-toggle"><input type="checkbox" ng-model="allSelected" ng-change="selectAll()" /></th>
           <th class="ui-state-default crm-vol-manage-project">{{ ts('Volunteer Project') }}</th>
-          <th class="ui-state-default crm-vol-manage-active">{{ ts('Active') }}</th>
           <th class="ui-state-default crm-vol-manage-entity">{{ ts('Associated Entity') }}</th>
+          <th class="ui-state-default crm-vol-manage-beneficiaries">{{ ts('Beneficiaries') }}</th>
+          <th class="ui-state-default crm-vol-manage-location">{{ ts('Location') }}</th>
+          <th class="ui-state-default crm-vol-manage-active">{{ ts('Active') }}</th>
           <th class="ui-state-default crm-vol-manage-actionlinks"></th>
         </tr>
       </thead>
@@ -54,11 +72,13 @@
           <span class="crm-vol-manage-project-title">{{ project.title }}</span>
           <span class="crm-vol-manage-project-id">{{ ts('(ID: %1)', {1: project.id}) }}</span>
         </td>
-        <td class="crm-vol-manage-active">{{ project.is_active == 1 ? ts("yes") : ts("no") }}</td>
         <td class="crm-vol-manage-entity">
           <a ng-if="canLinkToAssociatedEntity(project)" ng-click="linkToAssociatedEntity(project)">{{associatedEntityTitle(project)}}</a>
           <span ng-if="!canLinkToAssociatedEntity(project)">{{associatedEntityTitle(project)}}</span>
         </td>
+        <td class="crm-vol-manage-beneficiaries" ng-bind-html="formatBeneficiaries(project)"></td>
+        <td class="crm-vol-manage-location" ng-bind-html="formatLocation(project)"></td>
+        <td class="crm-vol-manage-active">{{ project.is_active == 1 ? ts("Yes") : ts("No") }}</td>
         <td class="crm-vol-manage-actionlinks right nowrap">
           <div><a href="#/volunteer/manage/{{project.id}}">{{ ts('Edit') }}</a></div>
           <div><a ng-click="backbonePopup(ts('Define Needs'), 'Define', project.id)">{{ ts('Define Needs') }}</a></div>
