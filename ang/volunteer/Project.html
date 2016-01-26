@@ -58,12 +58,12 @@
               -
               <input size="5" crm-ui-id="projectForm.locBlock.postal_code_suffix" ng-change="locBlockDirty()" ng-model="locBlock.address.postal_code_suffix" />
             </div>
-            <div class="crm-vol-location-country" crm-ui-field="{name: 'projectForm.locBlock.country', title: ts('Country')}">
+            <div class="crm-vol-location-country_id" crm-ui-field="{name: 'projectForm.locBlock.country_id', title: ts('Country')}">
               <select
                 class="big crm-form-select"
-                crm-ui-id="projectForm.locBlock.country"
+                crm-ui-id="projectForm.locBlock.country_id"
                 crm-ui-select="{allowClear: false}"
-                ng-model="locBlock.address.country"
+                ng-model="locBlock.address.country_id"
                 ng-options="k as v.name for (k, v) in countries">
               </select>
             </div>

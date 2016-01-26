@@ -180,7 +180,7 @@
       if($scope.project.loc_block_id == 0) {
         $scope.locBlock = {
           address: {
-            country: _.findWhere(countries, {is_default: "1"}).id
+            country_id: _.findWhere(countries, {is_default: "1"}).id
           }
         };
 
