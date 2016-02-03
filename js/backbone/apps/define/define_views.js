@@ -28,6 +28,7 @@
 
       events: {
         'change :input:not(.timeplugin, [name=schedule_type])': 'updateNeed',
+        'change select[name=schedule_type]': 'changeScheduleType',
         'blur :input.timeplugin': 'updateNeed',
         'click .crm-vol-del': 'deleteNeed'
       },
@@ -57,34 +58,77 @@
           this.$("[name='is_active']").prop("checked", true);
         }
 
-        var item = this;
-        this.$('select[name=schedule_type]').change(function () {
-          var start = item.$('.time_components .start_datetime').hide();
-          var end = item.$('.time_components .end_datetime').hide();
-          var duration = item.$('.time_components .duration').hide();
+        this.initializeTimeComponents();
+      },
 
-          switch ($(this).val()) {
-            case 'shift':
-              start.show();
-              end.find('.dateplugin').datepicker("setDate", null);
-              end.find('.timeplugin').timeEntry("setTime", null).trigger('blur');
-              duration.show();
-              break;
-            case 'flexible':
-              start.show();
-              end.show();
-              duration.show();
-              break;
-            case 'open':
-              duration.find(':input').val('').trigger('change');
-              end.find('.dateplugin').datepicker("setDate", null);
-              end.find('.timeplugin').timeEntry("setTime", null).trigger('blur');
-              start.find('.dateplugin').datepicker("setDate", "+0");
-              start.find('.timeplugin').timeEntry("setTime", '00:00:00').trigger('blur');
-              break;
-            default:
-          }
-        }).trigger('change');
+      initializeTimeComponents: function () {
+        var mode = '';
+        var needViewItem = this;
+
+        var durationValue = needViewItem.model.get('duration');
+        if (durationValue === '' || durationValue < 1) {
+          mode = 'open';
+        } else if (!needViewItem.model.get('end_time')) {
+          mode = 'shift';
+        } else {
+          mode = 'flexible';
+        }
+
+        needViewItem.$('select[name=schedule_type]').val(mode);
+        this.toggleTimeComponents(mode, false);
+      },
+
+      changeScheduleType: function (e) {
+        this.toggleTimeComponents(e.currentTarget.value);
+      },
+
+      /**
+       * Shows/hides time fields according to schedule type (mode).
+       *
+       * @param {String} mode
+       *   'shift,' 'flexible,' and 'open' are supported. If another string is
+       *   passed, all time components will be hidden.
+       * @param {Boolean} save
+       *   Whether or not the field toggling should trigger updateNeeds. Default to true.
+       */
+      toggleTimeComponents: function (mode, save) {
+        save = (typeof (save) === 'undefined') ? true : save;
+
+        var needViewItem = this;
+        var start = needViewItem.$('.time_components .start_datetime').hide();
+        var end = needViewItem.$('.time_components .end_datetime').hide();
+        var duration = needViewItem.$('.time_components .duration').hide();
+
+        switch (mode) {
+          case 'shift':
+            start.show();
+            end.find('.dateplugin').datepicker("setDate", null);
+            var endTimeField = end.find('.timeplugin').timeEntry("setTime", null);
+            duration.show();
+
+            if (save) {
+              endTimeField.trigger('blur');
+            }
+            break;
+          case 'flexible':
+            start.show();
+            end.show();
+            duration.show();
+            break;
+          case 'open':
+            var durationField = duration.find(':input').val('');
+            end.find('.dateplugin').datepicker("setDate", null);
+            var endTimeField = end.find('.timeplugin').timeEntry("setTime", null);
+            start.find('.dateplugin').datepicker("setDate", "+0");
+            var startTimeField = start.find('.timeplugin').timeEntry("setTime", '00:00:00');
+
+            if (save) {
+              durationField.trigger('change');
+              endTimeField.trigger('blur');
+              startTimeField.trigger('blur');
+            }
+            break;
+        }
       },
 
       updateNeed: function(e) {
