@@ -30,16 +30,10 @@
 {/htxt}
 {htxt id="volunteer-define"}
     <p>
-      {ts domain='org.civicrm.volunteer'}Use this form to define the number of
-      volunteers needed for each role and time slot. For each slot, you will
-      select a role, set the number of volunteers needed, set a start date and
-      time, and indicate the duration in minutes.{/ts}
+      {ts domain='org.civicrm.volunteer'}Use this form to define the number of volunteers needed for each role and time slot. For each slot, you will select a role, set the number of volunteers needed, and select a schedule type.{/ts}
     </p>
     <p>
-      {ts domain='org.civicrm.volunteer'}If you want to include a Sign Up button
-      on the event information page, check the 'Public' column for at least one
-      of the slots, or check the box to allow users to sign up without specifying
-      a shift. 'Public' slots will be visible on the public signup form.{/ts}
+      {ts domain='org.civicrm.volunteer'}Opportunities which have both the 'Public' and 'Enabled' boxes checked will appear in the public volunteer opportunity search. If the volunteer project is associated with an event, a 'Sign Up' button will be displayed on the event information page. Volunteer may sign up without specifying a shift if the 'Allow users to sign up without specifying a shift' box is checked.{/ts}
       {if $params.isModulePermissionSupported}
         {ts domain='org.civicrm.volunteer'}You will also need to ensure that the
         'CiviVolunteer: register to volunteer' permission has been enabled.{/ts}
