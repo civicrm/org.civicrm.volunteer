@@ -223,7 +223,7 @@
       },
 
       onRender: function() {
-        this.$('tbody').append($('#crm-vol-define-add-row-tpl').html());
+        this.$('#crm-vol-define-needs-table > tbody').append($('#crm-vol-define-add-row-tpl').html());
         this.$('#crm-vol-define-add-need').crmSelect2();
       }
     });
