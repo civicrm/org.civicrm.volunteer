@@ -766,6 +766,7 @@ class CRM_Volunteer_BAO_Project extends CRM_Volunteer_DAO_Project {
           && (
             strtotime($need['start_time']) >= $now
             || strtotime($need['end_time']) >= $now
+            || (!$need['end_time'] && !$need['duration'])
           )
         ) {
           $this->open_needs[$id] = $need;
