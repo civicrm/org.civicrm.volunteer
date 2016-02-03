@@ -15,6 +15,7 @@ CRM.volunteerApp.module('Entities', function(Entities, volunteerApp, Backbone, M
       'end_time': null,
       'quantity': null,
       'filled': null,
+      'userAdded': false, // see this.createNewNeed() and initializeTimeComponents() in the view
       'visibility_id': CRM.pseudoConstant.volunteer_need_visibility.public
     }
   });
@@ -29,6 +30,9 @@ CRM.volunteerApp.module('Entities', function(Entities, volunteerApp, Backbone, M
       }, params);
       formatDate(params);
       var need = new this.model(params);
+      // this feels a bit like a dirty hack... passing a flag along so the view
+      // can distinguish between user-added models and ones that were already there
+      need.set('userAdded', true);
       this.add(need);
       return CRM.api3('volunteer_need', 'create', params, true)
         .done(function(result) {

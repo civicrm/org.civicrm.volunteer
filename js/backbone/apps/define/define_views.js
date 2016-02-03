@@ -66,7 +66,9 @@
         var needViewItem = this;
 
         var durationValue = needViewItem.model.get('duration');
-        if (durationValue === '' || durationValue < 1) {
+        if (needViewItem.model.get('userAdded') === true) {
+          mode = '';
+        } else if (durationValue === '' || durationValue < 1) {
           mode = 'open';
         } else if (!needViewItem.model.get('end_time')) {
           mode = 'shift';
