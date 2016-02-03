@@ -169,6 +169,21 @@
   min-width: 35%;
 }
 
+#crm-vol-define-needs-table .time_components {
+  margin-top: 1em;
+}
+
+/* Prevent resizing of the table when a Need's schedule type is toggled */
+#crm-vol-define-needs-table #time_components {
+  min-width: 575px;
+  max-width: 850px;
+  width: 50%;
+}
+
+#crm-vol-define-needs-table select[name="schedule_type"] {
+  margin-left: 1em;
+}
+
 /*
  * Since we don't know where CiviVolunteer will be installed, we can't specify a
  * relative path to core's white icon set. This stanza is here to counteract rules
