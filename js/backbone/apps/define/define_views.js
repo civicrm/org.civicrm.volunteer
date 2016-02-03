@@ -89,12 +89,49 @@
 
       updateNeed: function(e) {
         var field_name = e.currentTarget.name;
+        var thisNeed = this;
         var value = e.currentTarget.value;
 
         function pad(number) {
           var r = String(number);
           return (r.length === 1) ? '0' + r : r;
         }
+
+        /**
+         * Helper function to put together the date/time from user input.
+         *
+         * @param {String} when
+         *   Either 'start' or 'end.'
+         * @returns {String}
+         *   A string representation of the time.
+         */
+        function getUserInputDateTime(when) {
+          var date = thisNeed.$("[name='display_" + when + "_date']").datepicker('getDate');
+          var time = thisNeed.$("[name='display_" + when + "_time']").timeEntry('getTime');
+
+          if (!date && !time) {
+            value = '';
+          } else if (!date) {
+            // Don't save a datetime field unless the date is set. (Resetting
+            // the dateTime value to that of the model short-circuits
+            // updateNeed's API call.)
+            value = thisNeed.model.get(when + '_time');
+          } else {
+            // format the time; if not set, use the last second of the day for
+            // the end of a window, and the first second of the day for the
+            // beginning of a window
+            if (!time) {
+              time = (when === 'end' ? '23:59:00' : '00:00:00');
+            } else {
+              time = time.toTimeString().split(' ')[0];
+            }
+
+            value = '' + date.getFullYear() + '-' + pad(1 + date.getMonth()) + '-' + pad(date.getDate()) + ' ' + time;
+          }
+
+          return value;
+        }
+
 
         // preprocess special-case fields
         switch (field_name) {
@@ -104,26 +141,7 @@
           case 'display_end_time':
             var when = field_name.substring(0, 11) === 'display_end' ? 'end' : 'start';
             field_name = when + '_time';
-            var date = this.$("[name='display_" + when + "_date']").datepicker('getDate');
-            var time = this.$("[name='display_" + when + "_time']").timeEntry('getTime');
-
-            if (!date && !time) {
-              value = '';
-            } else if (!date) {
-              // don't save a datetime field unless the date is set
-              value = this.model.get(field_name);
-            } else {
-              // format the time; if not set, use the last second of the day for
-              // the end of a window, and the first second of the day for the
-              // beginning of a window
-              if (!time) {
-                time = (when === 'end' ? '23:59:00' : '00:00:00');
-              } else {
-                time = time.toTimeString().split(' ')[0];
-              }
-
-              value = '' + date.getFullYear() + '-' + pad(1 + date.getMonth()) + '-' + pad(date.getDate()) + ' ' + time;
-            }
+            value = getUserInputDateTime(when);
             break;
           case 'visibility_id':
             value = e.currentTarget.checked ? e.currentTarget.value : visibility.admin;
@@ -134,10 +152,10 @@
         }
 
         // update only if a change occurred
-        if(this.model.get(field_name) != value) {
-          this.model.set(field_name, value);
+        if (thisNeed.model.get(field_name) != value) {
+          thisNeed.model.set(field_name, value);
 
-          var params = {'id': this.model.get('id')};
+          var params = {'id': thisNeed.model.get('id')};
           params[field_name] = value;
           CRM.api3('VolunteerNeed', 'create', params, true).done(function() {
             // As needs are updated, their IDs are added to an array on the body
