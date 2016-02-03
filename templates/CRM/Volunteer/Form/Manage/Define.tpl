@@ -42,18 +42,16 @@
 
 <script type="text/template" id="crm-vol-define-table-tpl">
   <table id="crm-vol-define-needs-table">
-    <thead><tr>
+    <thead>
+      <tr>
         <th id="role_id">{ts domain='org.civicrm.volunteer'}Role{/ts}</th>
         <th id="quantity">{ts domain='org.civicrm.volunteer'}Volunteers Needed{/ts}</th>
-        <th id="start_date">{ts domain='org.civicrm.volunteer'}Start Date/Time{/ts}</th>
-        <th id="end_date">
-          {ts domain='org.civicrm.volunteer'}End Date/Time{/ts} {help id="volunteer-define-end_time" file="CRM/Volunteer/Form/Manage/Define.hlp"}
-        </th>
-        <th id="duration">{ts domain='org.civicrm.volunteer'}Minutes{/ts}</th>
+        <th id="time_components">{ts domain='org.civicrm.volunteer'}Time{/ts}</th>
         <th id="visibility">{ts domain='org.civicrm.volunteer'}Public?{/ts}</th>
         <th>Enabled?</th>
         <th></th>
-      </tr></thead>
+      </tr>
+    </thead>
     <tbody></tbody>
   </table>
 </script>
@@ -73,14 +71,50 @@
   </td>
   <td><input type="text" class="crm-form-text" name="quantity" value="<%= quantity %>" size="4"></td>
   <td>
-    <input type="text" class="crm-form-text dateplugin" name="display_start_date"  value="<%= display_start_date %>" size="20">
-    <input type="text" class="crm-form-text" name="display_start_time" size="10">
+    <label>
+    {ts domain='org.civicrm.volunteer'}Type of opportunity?{/ts}
+      <select name="schedule_type">
+        <option value="">
+    {ts domain='org.civicrm.volunteer'}- select one -{/ts}
+        </option>
+        <option value="shift">
+    {ts domain='org.civicrm.volunteer'}Set shift{/ts}
+        </option>
+        <option value="flexible">
+    {ts domain='org.civicrm.volunteer'}Flexible timeframe{/ts}
+        </option>
+        <option value="open">
+          {ts domain='org.civicrm.volunteer'}Open until filled{/ts}
+        </option>
+      </select>
+    </label>
+    <table class="time_components">
+      <thead>
+        <tr>
+          <th class="start_datetime">{ts domain='org.civicrm.volunteer'}Start Date/Time{/ts}</th>
+          <th class="end_datetime">
+          {ts domain='org.civicrm.volunteer'}End Date/Time{/ts} {help id="volunteer-define-end_time" file="CRM/Volunteer/Form/Manage/Define.hlp"}
+          </th>
+          <th class="duration">{ts domain='org.civicrm.volunteer'}Minutes{/ts}</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td class="start_datetime">
+            <input type="text" class="crm-form-text dateplugin" name="display_start_date"  value="<%= display_start_date %>" size="20">
+            <input type="text" class="crm-form-text" name="display_start_time" size="10">
+          </td>
+          <td class="end_datetime">
+            <input type="text" class="crm-form-text dateplugin" name="display_end_date"  value="<%= display_end_date %>" size="20">
+            <input type="text" class="crm-form-text" name="display_end_time" size="10">
+          </td>
+          <td class="duration">
+            <input type="text" class="crm-form-text" name="duration" value="<%= duration %>" size="6">
+          </td>
+        </tr>
+      </tbody>
+    </table>
   </td>
-  <td>
-    <input type="text" class="crm-form-text dateplugin" name="display_end_date"  value="<%= display_end_date %>" size="20">
-    <input type="text" class="crm-form-text" name="display_end_time" size="10">
-  </td>
-  <td><input type="text" class="crm-form-text" name="duration" value="<%= duration %>" size="6"></td>
   <td><input type="checkbox" name="visibility_id" value="<%= visibilityValue %>"></td>
   <td><input type="checkbox" name="is_active" value="1"></td>
   <td><a href="#" class="crm-vol-del" title="{ts domain='org.civicrm.volunteer'}Delete{/ts}"><img src="{$config->resourceBase}i/close.png" alt="{ts}Delete{/ts}"/></a></td>

@@ -56,6 +56,32 @@
         if (this.model.get('is_active') == '1') {
           this.$("[name='is_active']").prop("checked", true);
         }
+
+        var item = this;
+        this.$('select[name=schedule_type]').change(function () {
+          var start = item.$('.time_components .start_datetime').hide();
+          var end = item.$('.time_components .end_datetime').hide();
+          var duration = item.$('.time_components .duration').hide();
+
+          switch ($(this).val()) {
+            case 'shift':
+              var dateField = end.find('.timeplugin');
+
+              start.show();
+              dateField.timeEntry("setTime", null);
+              end.find('.dateplugin').datepicker("setDate", null);
+              duration.show();
+              break;
+            case 'flexible':
+              start.show();
+              end.show();
+              duration.show();
+              break;
+            case 'open':
+              break;
+            default:
+          }
+        }).trigger('change');
       },
 
       updateNeed: function(e) {
@@ -161,7 +187,7 @@
       id: "manage_needs",
       template: "#crm-vol-define-table-tpl",
       itemView: Define.scheduledNeedItemView,
-      itemViewContainer: 'tbody',
+      itemViewContainer: '#crm-vol-define-needs-table > tbody',
 
       events: {
         'change #crm-vol-define-add-need': 'addNewNeed'
