@@ -27,7 +27,7 @@
       },
 
       events: {
-        'change :input:not(.timeplugin)': 'updateNeed',
+        'change :input:not(.timeplugin, [name=schedule_type])': 'updateNeed',
         'blur :input.timeplugin': 'updateNeed',
         'click .crm-vol-del': 'deleteNeed'
       },
@@ -65,11 +65,9 @@
 
           switch ($(this).val()) {
             case 'shift':
-              var dateField = end.find('.timeplugin');
-
               start.show();
-              dateField.timeEntry("setTime", null);
               end.find('.dateplugin').datepicker("setDate", null);
+              end.find('.timeplugin').timeEntry("setTime", null).trigger('blur');
               duration.show();
               break;
             case 'flexible':
@@ -78,6 +76,11 @@
               duration.show();
               break;
             case 'open':
+              duration.find(':input').val('').trigger('change');
+              end.find('.dateplugin').datepicker("setDate", null);
+              end.find('.timeplugin').timeEntry("setTime", null).trigger('blur');
+              start.find('.dateplugin').datepicker("setDate", "+0");
+              start.find('.timeplugin').timeEntry("setTime", '00:00:00').trigger('blur');
               break;
             default:
           }
@@ -104,7 +107,9 @@
             var date = this.$("[name='display_" + when + "_date']").datepicker('getDate');
             var time = this.$("[name='display_" + when + "_time']").timeEntry('getTime');
 
-            if (!date) {
+            if (!date && !time) {
+              value = '';
+            } else if (!date) {
               // don't save a datetime field unless the date is set
               value = this.model.get(field_name);
             } else {
