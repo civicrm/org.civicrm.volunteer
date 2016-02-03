@@ -72,7 +72,7 @@
   <td><input type="text" class="crm-form-text" name="quantity" value="<%= quantity %>" size="4"></td>
   <td>
     <label>
-    {ts domain='org.civicrm.volunteer'}Type of opportunity?{/ts}
+    {ts domain='org.civicrm.volunteer'}Schedule Type:{/ts}
       <select name="schedule_type">
         <option value="">
     {ts domain='org.civicrm.volunteer'}- select one -{/ts}
@@ -87,13 +87,14 @@
           {ts domain='org.civicrm.volunteer'}Open until filled{/ts}
         </option>
       </select>
+          {help id="volunteer-define-schedule_type" file="CRM/Volunteer/Form/Manage/Define.hlp"}
     </label>
     <table class="time_components">
       <thead>
         <tr>
           <th class="start_datetime">{ts domain='org.civicrm.volunteer'}Start Date/Time{/ts}</th>
           <th class="end_datetime">
-          {ts domain='org.civicrm.volunteer'}End Date/Time{/ts} {help id="volunteer-define-end_time" file="CRM/Volunteer/Form/Manage/Define.hlp"}
+          {ts domain='org.civicrm.volunteer'}End Date/Time{/ts}
           </th>
           <th class="duration">{ts domain='org.civicrm.volunteer'}Minutes{/ts}</th>
         </tr>

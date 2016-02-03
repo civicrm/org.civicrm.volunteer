@@ -181,7 +181,7 @@
 }
 
 #crm-vol-define-needs-table select[name="schedule_type"] {
-  margin-left: 1em;
+  margin: 0 1em;
 }
 
 /*
