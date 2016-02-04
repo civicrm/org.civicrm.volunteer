@@ -215,6 +215,7 @@ function _volunteerGetProjectRelationshipDefaults() {
  */
 function civicrm_api3_volunteer_util_getbeneficiaries($params) {
   $beneficiaries = civicrm_api3('VolunteerProjectContact', 'get', array(
+    'options' => array('limit' => 0),
     'relationship_type_id' => 'volunteer_beneficiary',
     'return' => 'contact_id',
   ));
@@ -227,6 +228,7 @@ function civicrm_api3_volunteer_util_getbeneficiaries($params) {
 
   return civicrm_api3('Contact', 'get', array(
     'id' => array('IN' => $contactIds),
+    'options' => array('limit' => 0),
     'return' => 'display_name',
   ));
 }
