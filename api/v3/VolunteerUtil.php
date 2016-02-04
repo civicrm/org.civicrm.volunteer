@@ -137,6 +137,7 @@ function civicrm_api3_volunteer_util_getsupportingdata($params) {
   if ($controller === 'VolunteerProject') {
     $relTypes = civicrm_api3('OptionValue', 'get', array(
       'option_group_id' => CRM_Volunteer_BAO_ProjectContact::RELATIONSHIP_OPTION_GROUP,
+      'options' => array('limit' => 0),
     ));
     $results['relationship_types'] = $relTypes['values'];
 
@@ -242,6 +243,7 @@ function civicrm_api3_volunteer_util_getbeneficiaries($params) {
  */
 function civicrm_api3_volunteer_util_getcampaigns($params) {
   return civicrm_api3('Campaign', 'get', array(
+    "options" => array("limit" => 0),
     "return" => "title,id",
     "is_active" => 1
   ));
@@ -264,6 +266,7 @@ function civicrm_api3_volunteer_util_getcountries($params) {
     "id" => array(
       "IN" => $settings['values'][0]['countryLimit'],
     ),
+    "options" => array("limit" => 0),
   ));
 
   $results = $countries['values'];

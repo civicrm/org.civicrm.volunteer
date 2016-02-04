@@ -22,6 +22,7 @@
               },
               'api.VolunteerProject.getlocblockdata': {
                 id: '$value.loc_block_id',
+                options: {limit: 0},
                 return: 'all',
                 sequential: 1
               }
