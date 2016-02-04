@@ -27,7 +27,8 @@
       },
 
       events: {
-        'change :input:not(.timeplugin)': 'updateNeed',
+        'change :input:not(.timeplugin, [name=schedule_type])': 'updateNeed',
+        'change select[name=schedule_type]': 'changeScheduleType',
         'blur :input.timeplugin': 'updateNeed',
         'click .crm-vol-del': 'deleteNeed'
       },
@@ -56,16 +57,127 @@
         if (this.model.get('is_active') == '1') {
           this.$("[name='is_active']").prop("checked", true);
         }
+
+        this.initializeTimeComponents();
+      },
+
+      initializeTimeComponents: function () {
+        var mode = '';
+        var needViewItem = this;
+
+        var durationValue = needViewItem.model.get('duration');
+        if (needViewItem.model.get('userAdded') === true) {
+          mode = '';
+        } else if (durationValue === '' || durationValue < 1) {
+          mode = 'open';
+        } else if (!needViewItem.model.get('end_time')) {
+          mode = 'shift';
+        } else {
+          mode = 'flexible';
+        }
+
+        needViewItem.$('select[name=schedule_type]').val(mode);
+        this.toggleTimeComponents(mode, false);
+      },
+
+      changeScheduleType: function (e) {
+        this.toggleTimeComponents(e.currentTarget.value);
+      },
+
+      /**
+       * Shows/hides time fields according to schedule type (mode).
+       *
+       * @param {String} mode
+       *   'shift,' 'flexible,' and 'open' are supported. If another string is
+       *   passed, all time components will be hidden.
+       * @param {Boolean} save
+       *   Whether or not the field toggling should trigger updateNeeds. Default to true.
+       */
+      toggleTimeComponents: function (mode, save) {
+        save = (typeof (save) === 'undefined') ? true : save;
+
+        var needViewItem = this;
+        var start = needViewItem.$('.time_components .start_datetime').hide();
+        var end = needViewItem.$('.time_components .end_datetime').hide();
+        var duration = needViewItem.$('.time_components .duration').hide();
+
+        switch (mode) {
+          case 'shift':
+            start.show();
+            end.find('.dateplugin').datepicker("setDate", null);
+            var endTimeField = end.find('.timeplugin').timeEntry("setTime", null);
+            duration.show();
+
+            if (save) {
+              endTimeField.trigger('blur');
+            }
+            break;
+          case 'flexible':
+            start.show();
+            end.show();
+            duration.show();
+            break;
+          case 'open':
+            var durationField = duration.find(':input').val('');
+            end.find('.dateplugin').datepicker("setDate", null);
+            var endTimeField = end.find('.timeplugin').timeEntry("setTime", null);
+            start.find('.dateplugin').datepicker("setDate", "+0");
+            var startTimeField = start.find('.timeplugin').timeEntry("setTime", '00:00:00');
+
+            if (save) {
+              durationField.trigger('change');
+              endTimeField.trigger('blur');
+              startTimeField.trigger('blur');
+            }
+            break;
+        }
       },
 
       updateNeed: function(e) {
         var field_name = e.currentTarget.name;
+        var thisNeed = this;
         var value = e.currentTarget.value;
 
         function pad(number) {
           var r = String(number);
           return (r.length === 1) ? '0' + r : r;
         }
+
+        /**
+         * Helper function to put together the date/time from user input.
+         *
+         * @param {String} when
+         *   Either 'start' or 'end.'
+         * @returns {String}
+         *   A string representation of the time.
+         */
+        function getUserInputDateTime(when) {
+          var date = thisNeed.$("[name='display_" + when + "_date']").datepicker('getDate');
+          var time = thisNeed.$("[name='display_" + when + "_time']").timeEntry('getTime');
+
+          if (!date && !time) {
+            value = '';
+          } else if (!date) {
+            // Don't save a datetime field unless the date is set. (Resetting
+            // the dateTime value to that of the model short-circuits
+            // updateNeed's API call.)
+            value = thisNeed.model.get(when + '_time');
+          } else {
+            // format the time; if not set, use the last second of the day for
+            // the end of a window, and the first second of the day for the
+            // beginning of a window
+            if (!time) {
+              time = (when === 'end' ? '23:59:00' : '00:00:00');
+            } else {
+              time = time.toTimeString().split(' ')[0];
+            }
+
+            value = '' + date.getFullYear() + '-' + pad(1 + date.getMonth()) + '-' + pad(date.getDate()) + ' ' + time;
+          }
+
+          return value;
+        }
+
 
         // preprocess special-case fields
         switch (field_name) {
@@ -75,24 +187,7 @@
           case 'display_end_time':
             var when = field_name.substring(0, 11) === 'display_end' ? 'end' : 'start';
             field_name = when + '_time';
-            var date = this.$("[name='display_" + when + "_date']").datepicker('getDate');
-            var time = this.$("[name='display_" + when + "_time']").timeEntry('getTime');
-
-            if (!date) {
-              // don't save a datetime field unless the date is set
-              value = this.model.get(field_name);
-            } else {
-              // format the time; if not set, use the last second of the day for
-              // the end of a window, and the first second of the day for the
-              // beginning of a window
-              if (!time) {
-                time = (when === 'end' ? '23:59:00' : '00:00:00');
-              } else {
-                time = time.toTimeString().split(' ')[0];
-              }
-
-              value = '' + date.getFullYear() + '-' + pad(1 + date.getMonth()) + '-' + pad(date.getDate()) + ' ' + time;
-            }
+            value = getUserInputDateTime(when);
             break;
           case 'visibility_id':
             value = e.currentTarget.checked ? e.currentTarget.value : visibility.admin;
@@ -103,10 +198,10 @@
         }
 
         // update only if a change occurred
-        if(this.model.get(field_name) != value) {
-          this.model.set(field_name, value);
+        if (thisNeed.model.get(field_name) != value) {
+          thisNeed.model.set(field_name, value);
 
-          var params = {'id': this.model.get('id')};
+          var params = {'id': thisNeed.model.get('id')};
           params[field_name] = value;
           CRM.api3('VolunteerNeed', 'create', params, true).done(function() {
             // As needs are updated, their IDs are added to an array on the body
@@ -161,7 +256,7 @@
       id: "manage_needs",
       template: "#crm-vol-define-table-tpl",
       itemView: Define.scheduledNeedItemView,
-      itemViewContainer: 'tbody',
+      itemViewContainer: '#crm-vol-define-needs-table > tbody',
 
       events: {
         'change #crm-vol-define-add-need': 'addNewNeed'
@@ -192,7 +287,7 @@
       },
 
       onRender: function() {
-        this.$('tbody').append($('#crm-vol-define-add-row-tpl').html());
+        this.$('#crm-vol-define-needs-table > tbody').append($('#crm-vol-define-add-row-tpl').html());
         this.$('#crm-vol-define-add-need').crmSelect2();
       }
     });
