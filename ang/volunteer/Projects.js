@@ -101,10 +101,16 @@
         return result;
       }
 
-      result += address.street_address;
+      if (address.street_address) {
+        result += address.street_address;
+      }
 
       if (address.street_address && (address.city || address.postal_code)) {
-        result += '<br />' + address.city;
+        result += '<br />';
+      }
+
+      if (address.city) {
+        result += address.city;
       }
 
       if (address.city && address.postal_code) {
