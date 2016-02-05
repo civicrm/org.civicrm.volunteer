@@ -22,6 +22,7 @@
               },
               'api.VolunteerProject.getlocblockdata': {
                 id: '$value.loc_block_id',
+                options: {limit: 0},
                 return: 'all',
                 sequential: 1
               }
@@ -91,19 +92,25 @@
       var result = '';
 
       var locBlockData = project['api.VolunteerProject.getlocblockdata'].values;
-      if (!_.isEmpty(locBlockData)) {
-        var address = locBlockData[0].address;
-        result += address.street_address;
+      if (_.isEmpty(locBlockData)) {
+        return result;
+      }
 
-        if (address.street_address && (address.city || address.postal_code)) {
-          result += '<br />' + address.city;
-        }
+      var address = locBlockData[0].address;
+      if (_.isEmpty(address)) {
+        return result;
+      }
 
-        if (address.city && address.postal_code) {
-          result += ', ' + address.postal_code;
-        } else if (address.postal_code) {
-          result += address.postal_code;
-        }
+      result += address.street_address;
+
+      if (address.street_address && (address.city || address.postal_code)) {
+        result += '<br />' + address.city;
+      }
+
+      if (address.city && address.postal_code) {
+        result += ', ' + address.postal_code;
+      } else if (address.postal_code) {
+        result += address.postal_code;
       }
 
       return result;

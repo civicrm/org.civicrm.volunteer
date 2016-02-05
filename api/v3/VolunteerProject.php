@@ -58,8 +58,9 @@ function civicrm_api3_volunteer_project_create($params) {
   $profiles = civicrm_api3("UFJoin", "get",
     array(
       "entity_id" => $project->id,
-      "entity_table" => "civicrm_volunteer_project"
-    ));
+      "entity_table" => "civicrm_volunteer_project",
+      "options" => array("limit" => 0),
+  ));
 
   foreach($profiles['values'] as $profile) {
     if(!in_array($profile['id'], $project->profileIds)) {
@@ -71,11 +72,11 @@ function civicrm_api3_volunteer_project_create($params) {
 
   //Cleanup Project Contacts
   if(array_key_exists("project_contacts", $params)) {
-    $allProjectContacts = civicrm_api3("VolunteerProjectContact", "get",
-      array(
-        'project_id' => $project->id,
-        'sequential' => 1
-      ));
+    $allProjectContacts = civicrm_api3("VolunteerProjectContact", "get", array(
+      'options' => array('limit' => 0),
+      'project_id' => $project->id,
+      'sequential' => 1,
+    ));
 
     foreach ($allProjectContacts['values'] as $contact) {
       $relType = $contact['relationship_type_id'];
@@ -140,6 +141,7 @@ function civicrm_api3_volunteer_project_get($params) {
     $profiles = civicrm_api3("UFJoin", "get", array(
       "entity_id" => $bao->id,
       "entity_table" => "civicrm_volunteer_project",
+      "options" => array("limit" => 0),
       "sequential" => 1
     ));
     $result[$k]['profiles'] = $profiles['values'];
