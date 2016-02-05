@@ -265,11 +265,6 @@ function civicrm_api3_volunteer_project_getlocblockdata($params) {
   return civicrm_api3("LocBlock", "get", $params);
 }
 
-function civicrm_api3_volunteer_project_getlocblockdata_spec(&$params) {
-  $params['id']['api.required'] = 1;
-}
-
-
 /**
  * Saves/creates an entire location block with a single call instead of
  * requiring a handful of calls/promises/resolutions from angular
