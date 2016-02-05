@@ -21,6 +21,7 @@
                 relationship_type_id: "volunteer_beneficiary"
               },
               'api.VolunteerProject.getlocblockdata': {
+                id: '$value.loc_block_id',
                 return: 'all',
                 sequential: 1
               }
