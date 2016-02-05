@@ -6,6 +6,10 @@ You are confirmed to volunteer for the following project(s):
 {foreach from=$volunteer_projects item=volunteer_project}
 Project: {$volunteer_project.title}
 
+{if !empty($volunteer_project.description)}
+Description: {$volunteer_project.description}
+{/if}
+
 {if !empty($volunteer_project.location)}
 Location:
     {$volunteer_project.location.address.street_address}

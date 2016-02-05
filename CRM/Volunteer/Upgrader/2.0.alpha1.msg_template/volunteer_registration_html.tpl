@@ -22,6 +22,12 @@
                       <td><strong>Project:</strong> {$volunteer_project.title}</td>
                     </tr>
 
+                    {if !empty($volunteer_project.description)}
+                    <tr>
+                      <td><strong>Description:</strong> {$volunteer_project.description}</td>
+                    </tr>
+                    {/if}
+
                     {if !empty($volunteer_project.location)}
                     <tr>
                       <td>
