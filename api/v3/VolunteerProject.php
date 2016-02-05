@@ -255,15 +255,15 @@ function civicrm_api3_volunteer_project_getlocblockdata($params) {
   //todo VOL-159: Check Permissions
   unset($params['check_permissions']);
 
-  $result = civicrm_api3("LocBlock", "get", $params);
+  // Prevent chaining problems: for instance, if this API is chained to
+  // api.volunteer_project.get, and the returned project has no loc_block_id,
+  // we should return 0 loc_blocks instead of 25 (the API default limit).
+  if (empty($params['id'])) {
+    return civicrm_api3_create_success(array(), $params, 'VolunteerProject', 'getlocblockdata');
+  }
 
-  return $result;
+  return civicrm_api3("LocBlock", "get", $params);
 }
-
-function civicrm_api3_volunteer_project_getlocblockdata_spec(&$params) {
-  $params['id']['api.required'] = 1;
-}
-
 
 /**
  * Saves/creates an entire location block with a single call instead of
