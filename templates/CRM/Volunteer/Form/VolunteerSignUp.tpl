@@ -16,9 +16,19 @@
       </tr>
       {foreach from=$volunteerNeeds key=key item=volunteerNeed}
         <tr>
-          <td>{$volunteerNeed.project.title}</td>
+          <td>
+            {$volunteerNeed.project.title}
+            {if $volunteerNeed.project.description}
+              <span class="icon ui-icon-comment crm-vol-description">{$volunteerNeed.project.description}</span>
+            {/if}
+          </td>
           <td>{$volunteerNeed.project.beneficiaries}</td>
-          <td>{$volunteerNeed.role_label}</td>
+          <td>
+            {$volunteerNeed.role_label}
+            {if $volunteerNeed.role_description}
+              <span class="icon ui-icon-comment crm-vol-description">{$volunteerNeed.role_description}</span>
+            {/if}
+          </td>
           <td>{$volunteerNeed.display_time}</td>
         </tr>
       {/foreach}

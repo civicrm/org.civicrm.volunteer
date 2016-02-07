@@ -269,6 +269,7 @@ class CRM_Volunteer_Form_VolunteerSignUp extends CRM_Core_Form {
       ));
 
       $projectDetails['beneficiaries'] = array();
+      $projectDetails['description'] = $volProjectDetails['description'];
       $projectDetails['entity_id'] = $volProjectDetails['entity_id'];
       $projectDetails['profiles'] = $volProjectDetails['profiles'];
       $projectDetails['title'] = $volProjectDetails['title'];
@@ -290,6 +291,7 @@ class CRM_Volunteer_Form_VolunteerSignUp extends CRM_Core_Form {
       $projectId = (int) $need['project_id'];
       $need['project'] = array();
       $need['project']['beneficiaries'] = implode('<br />', $this->_projects[$projectId]['beneficiaries']);
+      $need['project']['description'] = $this->_projects[$projectId]['description'];
       $need['project']['title'] = $this->_projects[$projectId]['title'];
     }
 
