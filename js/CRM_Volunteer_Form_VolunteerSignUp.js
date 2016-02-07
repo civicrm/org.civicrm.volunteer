@@ -11,7 +11,7 @@
     }
 
     function getDescription(el) {
-      return el.text();
+      return '<p>' + el.text() + '</p>';
     }
 
     $('.crm-vol-description').css('cursor', 'pointer').click(function () {
