@@ -287,7 +287,7 @@ class CRM_Volunteer_Form_VolunteerSignUp extends CRM_Core_Form {
     $profiles = $this->buildCustom($this->getPrimaryVolunteerProfileIDs(), $contactID);
     $this->assign('customProfiles', $profiles);
 
-    foreach ($this->_needs as $needId => &$need) {
+    foreach ($this->_needs as &$need) {
       $projectId = (int) $need['project_id'];
       $need['project'] = array();
       $need['project']['beneficiaries'] = implode('<br />', $this->_projects[$projectId]['beneficiaries']);
