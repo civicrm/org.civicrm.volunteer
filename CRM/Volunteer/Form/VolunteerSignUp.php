@@ -146,16 +146,7 @@ class CRM_Volunteer_Form_VolunteerSignUp extends CRM_Core_Form {
    * @access public
    */
   function preProcess() {
-    
     $this->redirectLegacyRequests();
-    
-    // VOL-71: permissions check is moved from XML to preProcess function to support
-    // permissions-challenged Joomla instances
-    if (CRM_Core_Config::singleton()->userPermissionClass->isModulePermissionSupported()
-      && !CRM_Volunteer_Permission::check('register to volunteer')
-    ) {
-      CRM_Utils_System::permissionDenied();
-    }
 
     $validNeedIds = array();
     $needs = CRM_Utils_Request::retrieve('needs', 'String', $this, TRUE);
