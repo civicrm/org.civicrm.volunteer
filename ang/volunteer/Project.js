@@ -314,6 +314,15 @@
         return crmApi('VolunteerProject', 'create', $scope.project).then(function(result) {
           var projectId = result.values.id;
 
+          // VOL-140: For legacy reasons, a new flexible need should be created
+          // for each project. Pretty sure we want to re-architect this soon.
+          if ($scope.project.id === 0) {
+            crmApi('VolunteerNeed', 'create', {
+              is_flexible: 1,
+              project_id: projectId
+            });
+          }
+
           //Save the LocBlock
           if($scope.locBlockIsDirty) {
             $scope.locBlock.entity_id = projectId;
