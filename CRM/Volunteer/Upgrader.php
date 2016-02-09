@@ -353,6 +353,29 @@ class CRM_Volunteer_Upgrader extends CRM_Volunteer_Upgrader_Base {
     return !is_a($query, 'DB_Error');
   }
 
+  /**
+   * Create a flexible need for projects that don't have one.
+   *
+   * See VOL-140. This is probably not needed for upgrades from 1.x to 2.x, but
+   * anyone who created incomplete data during the alpha/beta period will
+   * benefit from running this code.
+   *
+   * @return boolean
+   */
+  public function upgrade_2005() {
+    $this->ctx->log->info('Applying update 2005 - Ensuring each project has a flexible need');
+
+    $query = CRM_Core_DAO::executeQuery('
+      INSERT INTO `civicrm_volunteer_need` (`is_flexible`, `project_id`)
+        SELECT 1, p.id
+        FROM `civicrm_volunteer_project` p
+        LEFT JOIN `civicrm_volunteer_need` n
+        ON n.project_id = p.id
+          AND n.is_flexible = 1
+        WHERE n.id IS NULL');
+    return !is_a($query, 'DB_Error');
+  }
+
   public function uninstall() {
     civicrm_api3('CustomGroup', 'get', array(
       'name' => array('IN' => array('CiviVolunteer', 'Volunteer_Information', 'volunteer_commendation')),
