@@ -148,6 +148,10 @@ class CRM_Volunteer_Form_VolunteerSignUp extends CRM_Core_Form {
   function preProcess() {
     $this->redirectLegacyRequests();
 
+    CRM_Core_Resources::singleton()
+        ->addScriptFile('org.civicrm.volunteer', 'js/CRM_Volunteer_Form_VolunteerSignUp.js')
+        ->addScriptFile('civicrm', 'packages/jquery/plugins/jquery.notify.min.js', -9990, 'html-header', FALSE);
+
     $validNeedIds = array();
     $needs = CRM_Utils_Request::retrieve('needs', 'String', $this, TRUE);
     if (!is_array($needs)) {
@@ -260,6 +264,7 @@ class CRM_Volunteer_Form_VolunteerSignUp extends CRM_Core_Form {
       ));
 
       $projectDetails['beneficiaries'] = array();
+      $projectDetails['description'] = $volProjectDetails['description'];
       $projectDetails['entity_id'] = $volProjectDetails['entity_id'];
       $projectDetails['profiles'] = $volProjectDetails['profiles'];
       $projectDetails['title'] = $volProjectDetails['title'];
@@ -277,10 +282,11 @@ class CRM_Volunteer_Form_VolunteerSignUp extends CRM_Core_Form {
     $profiles = $this->buildCustom($this->getPrimaryVolunteerProfileIDs(), $contactID);
     $this->assign('customProfiles', $profiles);
 
-    foreach ($this->_needs as $needId => &$need) {
+    foreach ($this->_needs as &$need) {
       $projectId = (int) $need['project_id'];
       $need['project'] = array();
       $need['project']['beneficiaries'] = implode('<br />', $this->_projects[$projectId]['beneficiaries']);
+      $need['project']['description'] = $this->_projects[$projectId]['description'];
       $need['project']['title'] = $this->_projects[$projectId]['title'];
     }
 
