@@ -45,24 +45,30 @@ class CRM_Volunteer_Permission extends CRM_Core_Permission {
   }
 
   /**
-   * Given a permission string or array, check for access requirements. For
-   * VOL-71, if this is a permissions-challenged Joomla instance, don't enforce
-   * CiviVolunteer-defined permissions.
+   * Given a permission string or array, check for access requirements.
    *
-   * @param mixed $permissions The permission(s) to check as an array or string.
-   *        See parent class for examples.
+   * @param mixed $permissions
+   *   The permission(s) to check as an array or string. See parent class for examples.
    * @return boolean
    */
   public static function check($permissions) {
     $permissions = (array) $permissions;
+    $isModulePermissionSupported = CRM_Core_Config::singleton()->userPermissionClass->isModulePermissionSupported();
 
-    if (!CRM_Core_Config::singleton()->userPermissionClass->isModulePermissionSupported()) {
-      array_walk_recursive($permissions, function(&$v, $k) {
+    array_walk_recursive($permissions, function(&$v, $k) use ($isModulePermissionSupported) {
+      // For VOL-71, if this is a permissions-challenged Joomla instance, don't
+      // enforce CiviVolunteer-defined permissions.
+      if (!$isModulePermissionSupported) {
         if (array_key_exists($v, CRM_Volunteer_Permission::getVolunteerPermissions())) {
           $v = CRM_Core_Permission::ALWAYS_ALLOW_PERMISSION;
         }
-      });
-    }
+      }
+
+      // Ensure that checks for "edit own" pass if user has "edit all."
+      if ($v === 'edit own volunteer projects' && self::check('edit all volunteer projects')) {
+        $v = CRM_Core_Permission::ALWAYS_ALLOW_PERMISSION;
+      }
+    });
 
     return parent::check($permissions);
   }

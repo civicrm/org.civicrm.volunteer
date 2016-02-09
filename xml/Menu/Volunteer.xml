@@ -6,8 +6,10 @@
      <title>Batch Data Entry for Logging Volunteer</title>
      <page_callback>CRM_Volunteer_Form_Log</page_callback>
      <path_arguments>action=add</path_arguments>
-     <access_arguments>access CiviEvent,edit all events</access_arguments>
-     <component>CiviEvent</component>
+     <!-- Access is further restricted in the preprocessor -->
+     <access_callback>CRM_Volunteer_Permission::check</access_callback>
+     <access_arguments>edit own volunteer projects</access_arguments>
+     <is_public>1</is_public>
   </item>
   <item>
      <path>civicrm/volunteer/need</path>
@@ -37,9 +39,8 @@
     <path>civicrm/volunteer/signup</path>
     <page_callback>CRM_Volunteer_Form_VolunteerSignUp</page_callback>
     <title>Volunteer Signup</title>
-    <!-- For VOL-71, we move access control into the preprocessor -->
-    <access_callback>1</access_callback>
-    <!-- <access_arguments>register to volunteer</access_arguments> -->
+    <access_callback>CRM_Volunteer_Permission::check</access_callback>
+    <access_arguments>register to volunteer</access_arguments>
     <is_public>true</is_public>
   </item>
   <item>
@@ -56,7 +57,10 @@
     <path>civicrm/volunteer/commendation</path>
     <page_callback>CRM_Volunteer_Form_Commendation</page_callback>
     <title>Volunteer Commendation</title>
-    <access_arguments>access CiviCRM</access_arguments>
+    <!-- Access is further restricted in the preprocessor -->
+    <access_callback>CRM_Volunteer_Permission::check</access_callback>
+    <access_arguments>edit own volunteer projects</access_arguments>
+    <is_public>true</is_public>
   </item>
   <item>
     <path>civicrm/volunteer/manage/includeprofile</path>
@@ -94,6 +98,9 @@
     <path>civicrm/volunteer/roster</path>
     <page_callback>CRM_Volunteer_Page_Roster</page_callback>
     <title>Roster</title>
-    <access_arguments>access CiviCRM</access_arguments>
+    <!-- Access is further restricted in CRM_Volunteer_BAO_Project::retrieve() -->
+    <access_callback>CRM_Volunteer_Permission::check</access_callback>
+    <access_arguments>edit own volunteer projects</access_arguments>
+    <is_public>true</is_public>
   </item>
 </menu>
