@@ -108,7 +108,7 @@ class CRM_Volunteer_BAO_Need extends CRM_Volunteer_DAO_Need {
   }
 
   /**
-   * Gets label to be used for Flexible Needs.
+   * Gets role label to be used for Flexible Needs.
    *
    * Implemented as a function in case we need to use logic later (e.g., if we
    * allow users to set this on a per-project basis).
@@ -116,7 +116,19 @@ class CRM_Volunteer_BAO_Need extends CRM_Volunteer_DAO_Need {
    * @return string
    */
   static function getFlexibleRoleLabel() {
-    return ts("I'm Flexible", array('domain' => 'org.civicrm.volunteer'));
+    return ts("Any", array('domain' => 'org.civicrm.volunteer'));
+  }
+
+  /**
+   * Gets display time to be used for Flexible Needs.
+   *
+   * Implemented as a function in case we need to use logic later (e.g., if we
+   * allow users to set this on a per-project basis).
+   *
+   * @return string
+   */
+  static function getFlexibleDisplayTime() {
+    return ts("Any", array('domain' => 'org.civicrm.volunteer'));
   }
 
   /**

@@ -68,20 +68,28 @@ class CRM_Volunteer_BAO_NeedSearch {
   public function search() {
     $projects = CRM_Volunteer_BAO_Project::retrieve($this->searchParams['project']);
     foreach ($projects as $project) {
-      $openNeeds = $project->open_needs;
-      if (empty($openNeeds)) {
-        continue;
+      $results = array();
+
+      $flexibleNeed = civicrm_api3('VolunteerNeed', 'getsingle', array(
+        'id' => $project->flexible_need_id,
+      ));
+      if ($flexibleNeed['visibility_id'] === CRM_Core_OptionGroup::getValue('visibility', 'public', 'name')) {
+        $needId = $flexibleNeed['id'];
+        $results[$needId] = $flexibleNeed;
       }
 
+      $openNeeds = $project->open_needs;
       foreach ($openNeeds as $key => $need) {
-        if (!$this->needFitsSearchCriteria($need)) {
-          unset($openNeeds[$key]);
-        } elseif (!array_key_exists($project->id, $this->projects)) {
-          $this->projects[$project->id] = array();
+        if ($this->needFitsSearchCriteria($need)) {
+          $results[$key] = $need;
         }
       }
 
-      $this->searchResults += $openNeeds;
+      if (!empty($results)) {
+        $this->projects[$project->id] = array();
+      }
+
+      $this->searchResults += $results;
     }
 
     $this->getSearchResultsProjectData();
