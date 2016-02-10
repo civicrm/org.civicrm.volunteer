@@ -120,6 +120,18 @@ class CRM_Volunteer_BAO_Need extends CRM_Volunteer_DAO_Need {
   }
 
   /**
+   * Gets display time to be used for Flexible Needs.
+   *
+   * Implemented as a function in case we need to use logic later (e.g., if we
+   * allow users to set this on a per-project basis).
+   *
+   * @return string
+   */
+  static function getFlexibleDisplayTime() {
+    return ts("Any", array('domain' => 'org.civicrm.volunteer'));
+  }
+
+  /**
    * Returns a string representing the times of a shift. Times will be formatted
    * according to the user's defined time display settings. If no duration/end
    * date is given, only the formatted start time will be returned.

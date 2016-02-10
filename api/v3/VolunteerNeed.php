@@ -82,7 +82,7 @@ function civicrm_api3_volunteer_need_get($params) {
           CRM_Utils_Array::value('end_time', $need));
       }
       else {
-        $need['display_time'] = ts('Flexible', array('domain' => 'org.civicrm.volunteer'));
+        $need['display_time'] = CRM_Volunteer_BAO_Need::getFlexibleDisplayTime();
       }
       if (isset($need['role_id'])) {
         $role = CRM_Core_OptionGroup::getRowValues(
