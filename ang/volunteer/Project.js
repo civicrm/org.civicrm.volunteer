@@ -319,7 +319,8 @@
           if ($scope.project.id === 0) {
             crmApi('VolunteerNeed', 'create', {
               is_flexible: 1,
-              project_id: projectId
+              project_id: projectId,
+              visibility_id: 'admin'
             });
           }
 
