@@ -6,6 +6,11 @@
     </p>
   </div>
 
+  <p class="description">
+    {ts domain='org.civicrm.volunteer'}For additional project or role detail, click the corresponding detail icon in the table below.{/ts}
+    <span class="icon ui-icon-comment"></span>
+  </p>
+
   <div class="crm-volunteer-signup-summary">
     <table>
       <tr>
