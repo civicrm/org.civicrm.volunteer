@@ -41,6 +41,14 @@
 class CRM_Volunteer_Form_Volunteer extends CRM_Event_Form_ManageEvent {
 
   /**
+   * The ID of the entity (in case, the event) associated with the volunteer project.
+   *
+   * @var int
+   * @see getEntityId()
+   */
+  private $entityId = NULL;
+
+  /**
    * A flag used to indicate whether or not Angular should be loaded.
    *
    * @var boolean
@@ -55,6 +63,18 @@ class CRM_Volunteer_Form_Volunteer extends CRM_Event_Form_ManageEvent {
    */
   private $_project;
 
+  /**
+   * Returns the ID of the entity (in this case, the event) associated with the volunteer project.
+   *
+   * @return int
+   */
+  protected function getEntityId() {
+    if ($this->entityId === NULL) {
+      $this->entityId = $this->_id ? $this->_id : CRM_Utils_Request::retrieve('id', 'Positive', $this, TRUE);
+    }
+    return $this->entityId;
+  }
+
   /***
    * Get the civiVolunteer Project for this Event.
    * CAUTION: Returns only the first if there are multiple.
@@ -64,12 +84,29 @@ class CRM_Volunteer_Form_Volunteer extends CRM_Event_Form_ManageEvent {
   protected function getProject() {
     if ($this->_project === NULL) {
       $this->_project = current(CRM_Volunteer_BAO_Project::retrieve(array(
-            'entity_id' => $this->_id ? $this->_id : CRM_Utils_Request::retrieve('id', 'Integer'),
+            'entity_id' => $this->getEntityId(),
             'entity_table' => CRM_Event_DAO_Event::$_tableName,
       )));
     }
 
     return $this->_project;
+  }
+
+  /**
+   * Initializes a placeholder volunteer project.
+   *
+   * Used in cases where no project yet exists for the event, to prepopulate the
+   * "create" form.
+   *
+   * @return \CRM_Volunteer_BAO_Project
+   */
+  protected function initializeProject() {
+    $project = new CRM_Volunteer_BAO_Project();
+    $project->id = 0;
+    $project->entity_id = $this->getEntityId();
+    $project->entity_table = CRM_Event_DAO_Event::$_tableName;
+
+    return $project;
   }
 
   /**
@@ -80,6 +117,24 @@ class CRM_Volunteer_Form_Volunteer extends CRM_Event_Form_ManageEvent {
   public function preProcess() {
     if ($this->isLoadingTabContent()) {
       $this->loadAngular = TRUE;
+
+      $project = $this->getProject();
+      if (!$project) {
+        $project = $this->initializeProject();
+      }
+
+      $entity = $project->getEntityAttributes();
+      $entityTitle = $entity['title'];
+
+      CRM_Core_Resources::singleton()->addVars('org.civicrm.volunteer', array(
+        "hash" => "#/volunteer/manage/" . $project->id,
+        "projectId" => $project->id,
+        "entityTable" => $project->entity_table,
+        "entityId" => $project->entity_id,
+        "entityTitle" => $entityTitle,
+        "context" => 'eventTab',
+      ));
+
     } else {
       parent::preProcess();
     }
@@ -111,18 +166,6 @@ class CRM_Volunteer_Form_Volunteer extends CRM_Event_Form_ManageEvent {
     if ($this->loadAngular) {
       $ang = new CRM_Volunteer_Page_Angular(null, null, CRM_Core_Resources::singleton());
       $ang->registerResources('ajax-snippet', false);
-
-      $project = $this->getProject();
-      $entity = $project->getEntityAttributes();
-
-      CRM_Core_Resources::singleton()->addVars('org.civicrm.volunteer', array(
-        "hash" => "#/volunteer/manage/" . $project->id,
-        "projectId" => $project->id,
-        "entityTable" => $project->entity_table,
-        "entityId" => $project->entity_id,
-        "entityTitle" => $entity['title'],
-        "context" => 'eventTab',
-      ));
 
       CRM_Core_Resources::singleton()->addScriptFile('org.civicrm.volunteer', 'js/CRM_Volunteer_Form_Volunteer.js', -1000, 'ajax-snippet');
 
