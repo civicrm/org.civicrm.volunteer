@@ -26,6 +26,7 @@ CRM.volunteerApp.module('Entities', function(Entities, volunteerApp, Backbone, M
     createNewNeed: function (params) {
       params = _.extend({
         project_id: volunteerApp.project_id,
+        quantity: 1,
         start_time: CRM.volunteer.default_date,
         visibility_id: CRM.pseudoConstant.volunteer_need_visibility.public
       }, params);
