@@ -31,10 +31,10 @@
                 <option />
               </select>
             </div>
-            <div crm-ui-field="{name: 'volProjectSearchForm.campaign', title: ts('Campaign')}">
+            <div crm-ui-field="{name: 'volProjectSearchForm.campaign_id', title: ts('Campaign')}">
               <select class="big crm-form-select crm-vol-campaign" crm-ui-select="{placeholder: ts('Filter by Campaign'), allowClear:true}"
                       ng-change="clearCampaign()"
-                      ng-options="key as value.title for (key , value) in campaigns" ng-model="searchParams.campaign">
+                      ng-options="key as value.title for (key , value) in campaigns" ng-model="searchParams.campaign_id">
                 <option />
               </select>
             </div>

@@ -167,8 +167,8 @@
     };
 
     $scope.clearCampaign = function() {
-      if ($scope.searchParams.campaign == "") {
-        delete $scope.searchParams.campaign;
+      if ($scope.searchParams.campaign_id == "") {
+        delete $scope.searchParams.campaign_id;
       }
     };
 
