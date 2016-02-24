@@ -23,10 +23,12 @@ CRM.volunteerApp.module('Entities', function(Entities, volunteerApp, Backbone, M
   Entities.Needs = Backbone.Collection.extend({
     model: Entities.NeedModel,
     comparator: 'start_time',
-    createNewNeed : function(params) {
+    createNewNeed: function (params) {
       params = _.extend({
         project_id: volunteerApp.project_id,
-        start_time: CRM.volunteer.default_date
+        quantity: 1,
+        start_time: CRM.volunteer.default_date,
+        visibility_id: CRM.pseudoConstant.volunteer_need_visibility.public
       }, params);
       formatDate(params);
       var need = new this.model(params);

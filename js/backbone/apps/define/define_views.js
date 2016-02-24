@@ -264,8 +264,7 @@
 
       addNewNeed: function() {
         var params = {
-          role_id: $('#crm-vol-define-add-need').val(),
-          visibility_id: $('#crm-vol-visibility-id:checked').length ? visibility.public : visibility.admin
+          role_id: $('#crm-vol-define-add-need').val()
         };
         // Reset add another select
         $('#crm-vol-define-add-need').select2('val', '');
