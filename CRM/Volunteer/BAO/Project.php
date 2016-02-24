@@ -585,14 +585,22 @@ class CRM_Volunteer_BAO_Project extends CRM_Volunteer_DAO_Project {
       $this->entityAttributes = array_fill_keys($arrayKeys, NULL);
 
       if ($this->entity_table && $this->entity_id) {
-        switch ($this->entity_table) {
-          case 'civicrm_event' :
-            $result = civicrm_api3('Event', 'getsingle', array(
-              'id' => $this->entity_id,
-            ));
-            $this->entityAttributes['title'] = $result['title'];
-            $this->entityAttributes['start_time'] = $result['start_date'];
-            break;
+        try {
+          switch ($this->entity_table) {
+            case 'civicrm_event' :
+              $result = civicrm_api3('Event', 'getsingle', array(
+                'id' => $this->entity_id,
+              ));
+              $this->entityAttributes['title'] = $result['title'];
+              $this->entityAttributes['start_time'] = $result['start_date'];
+              break;
+          }
+        }
+        catch (Exception $e) {
+          $format = 'Could not fetch entity attributes for volunteer project with ID %d. '
+              . 'No %s with ID %d exists; perhaps it has been deleted.';
+          $msg = sprintf($format, $this->id, $this->entity_table, $this->entity_id);
+          CRM_Core_Error::debug_log_message($msg, FALSE, 'org.civicrm.volunteer');
         }
       }
     }
