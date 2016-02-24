@@ -11,7 +11,10 @@
       }
     });
 
-    var menuItemTemplate = _.template($('#crm-vol-menu-item-tpl').html());
+    var menuItemTemplate = function (params) {
+      var compiled = _.template($('#crm-vol-menu-item-tpl').html());
+      return compiled(params);
+    }
 
     var assignmentViewSettings = {
       tagName: 'tr',
