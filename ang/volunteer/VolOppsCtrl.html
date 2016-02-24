@@ -41,11 +41,6 @@ Required vars: volOppData, searchParams
           </select>
           </div>
           <div crm-ui-field="{name: 'volOppSearchForm.beneficiary', title: ts('With')}" class="crm-vol-opp-beneficiary">
-            <!--
-            TODO: CiviVolunteer perhaps needs to provide a group which beneficiaries
-            can be added to so we don't expose the whole database. Actually, the
-            result of api.VolunteerProjectContact.get might do with the right params.
-            -->
             <input
               crm-entityref="{
                 select: {
