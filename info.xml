@@ -2,25 +2,25 @@
 <extension key="org.civicrm.volunteer" type="module">
   <file>volunteer</file>
   <name>CiviVolunteer</name>
-  <description>The CiviVolunteer extension provides tools for signing up, managing and tracking volunteers. The features for this release focus on volunteering at events, but the design creates a foundation for adding support for volunteering in a wide variety of situations.</description>
+  <description>The CiviVolunteer extension provides tools for signing up, managing, and tracking volunteers.</description>
   <license>AGPL-3.0</license>
   <maintainer>
-    <author>Yashodha Chaku, Michael Z. Daryabeygi, Frank J. G&#xF3;mez, Dave Greenberg, and Coleman Watts</author>
-    <email>info@civicrm.org</email>
+    <author>Ginkgo Street Labs; CiviCRM, LLC; and the CiviCRM community</author>
+    <email>inquire@ginkgostreet.com</email>
   </maintainer>
-  <releaseDate>2015-12-16</releaseDate>
-  <version>4.6-2.0.beta2</version>
-  <develStage>beta</develStage>
+  <releaseDate>2016-02-24</releaseDate>
+  <version>4.6-2.0.0</version>
+  <develStage>stable</develStage>
   <compatibility>
     <ver>4.6</ver>
   </compatibility>
   <comments>
-    Developed by CiviCRM LLC &amp; Ginkgo Street Labs with contributions from the community. Special thanks to Friends of Georgia State Parks &amp; Historic Sites for funding the initial release, and to The Manhattan Neighborhood Network for funding the 1.4 release.
+    Developed by Ginkgo Street Labs and CiviCRM, LLC with contributions from the community. Special thanks to Friends of Georgia State Parks &amp; Historic Sites for funding the initial release, and to The Manhattan Neighborhood Network for funding the 1.4 release.
   </comments>
   <civix>
     <namespace>CRM/Volunteer</namespace>
   </civix>
   <urls>
-    <url desc="Documentation">https://github.com/civicrm/org.civicrm.volunteer/blob/v4.6-2.0.beta2/README.md</url>
+    <url desc="Documentation">http://civicrm.github.io/org.civicrm.volunteer/docs</url>
   </urls>
 </extension>
