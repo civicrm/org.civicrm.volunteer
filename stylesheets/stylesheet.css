@@ -770,6 +770,39 @@ footer a:hover {
 * html .clearfix {height: 1%;}
 .clearfix {display: block;}
 
+#contributors-widget .contributor {
+  background: #ebf8ff;
+  border: 1px #9ddcff solid;
+  border-radius: 10px;
+  display: inline-block;
+  margin: 10px;
+  padding: 10px;
+  text-align: center;
+  width: 125px;
+}
+
+#contributors-widget .contributor a {
+  display: inline-block;
+  height: 100%;
+  width: 100%;
+}
+
+#contributors-widget .contributor img {
+  border-radius: 5px;
+  height: 80px;
+  width: 80px;
+}
+
+#contributors-widget .contributor .handle,
+#contributors-widget .contributor .commits {
+  clear: both;
+  display: block;
+}
+
+#contributors-widget .contributor .commits {
+  font-size: 75%;
+}
+
 /* #Media Queries
 ================================================== */
 
