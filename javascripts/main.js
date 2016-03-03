@@ -6,8 +6,10 @@ $(function () {
         widgetWrapper.append('<div class="contributor"><a href="' + this.html_url + '">'
                 + '<img src="' + this.avatar_url + '" />'
                 + '<span class="handle">' + this.login + '</span> '
-                + '<span class="commits">(' + this.contributions + ' commits)</span>'
-                + '</a></div>');
+                + '<span class="commits">(' + this.contributions + ' commit'
+                // pluralize only if appropriate
+                + (this.contributions > 1 ? 's' : '')
+                + ')</span></a></div>');
       });
     });
   }
