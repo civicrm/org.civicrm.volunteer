@@ -11,6 +11,12 @@
           beneficiaries: function (crmApi) {
             return crmApi('VolunteerUtil', 'getbeneficiaries').then(function(data) {
               return data.values;
+            }, function(error) {
+              if (error.is_error) {
+                CRM.alert(error.error_message, ts("Error"), "error");
+              } else {
+                return error;
+              }
             });
           },
           projectData: function(crmApi) {
