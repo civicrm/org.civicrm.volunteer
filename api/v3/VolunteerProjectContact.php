@@ -91,6 +91,11 @@ function civicrm_api3_volunteer_project_contact_get($params) {
   $result = _civicrm_api3_basic_get(_civicrm_api3_get_BAO(__FUNCTION__), $params);
   if (!empty($result['values'])) {
     foreach ($result['values'] as &$projectContact) {
+      //In some contexts we are passing 'return' => 'contact_id' in with $params
+      //In this case, there is no relationship_type_id returned as part of the results set above
+      //Following that, when you pass a null value into getsingle, it finds 3 results and errors out
+      //This solution was created to fall back on relationship_type_id if present in
+      //$params, and if not, skip loading the relationship type label.
       $rType = false;
       $rType = (array_key_exists("relationship_type_id", $params) ) ? $params['relationship_type_id'] : $rType;
       $rType = (array_key_exists("relationship_type_id", $projectContact) ) ? $projectContact['relationship_type_id'] : $rType;
