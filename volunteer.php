@@ -617,3 +617,19 @@ function volunteer_civicrm_angularModules(&$angularModules) {
       'currentContactId' => CRM_Core_Session::singleton()->getLoggedInContactID()
     ));
 }
+
+/**
+ * This is an implementation of hook_civicrm_fieldOptions
+ * It includes `civicrm_volunteer_project` in the whitelist
+ * of tables allowed to have UFJoins
+ *
+ * @param $entity
+ * @param $field
+ * @param $options
+ * @param $params
+ */
+function volunteer_civicrm_fieldOptions($entity, $field, &$options, $params) {
+  if ($entity == "UFJoin" && $field == "entity_table" && $params['context'] == "validate") {
+    $options[CRM_Volunteer_DAO_Project::getTableName()] = CRM_Volunteer_DAO_Project::getTableName();
+  }
+}

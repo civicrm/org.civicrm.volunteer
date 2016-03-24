@@ -253,6 +253,9 @@ class CRM_Volunteer_BAO_Project extends CRM_Volunteer_DAO_Project {
       $profile['module'] = "CiviVolunteer";
       $profile['entity_table'] = "civicrm_volunteer_project";
       $profile['entity_id'] = $project->id;
+      if (is_array($profile['module_data'])) {
+        $profile['module_data'] = json_encode($profile['module_data']);
+      }
       $result = civicrm_api3('UFJoin', 'create', $profile);
       if ($result['is_error'] == 0) {
         $project->profileIds[] = $result['values'][0]['id'];

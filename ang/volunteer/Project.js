@@ -304,10 +304,6 @@
     saveProject = function() {
       if ($scope.validateProject()) {
 
-        $.each($scope.project.profiles, function (index, data) {
-           data.module_data = JSON.stringify(data.module_data);
-        });
-
         if($scope.project.loc_block_id == 0) {
           $scope.locBlockIsDirty = true;
         }
