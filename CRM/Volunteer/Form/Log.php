@@ -288,7 +288,7 @@ class CRM_Volunteer_Form_Log extends CRM_Core_Form {
           'time_completed_minutes' => CRM_Utils_Array::value('actual_duration', $value),
           'time_scheduled_minutes' => CRM_Utils_Array::value('scheduled_duration', $value),
         );
-        if (!empty($needs['start_time'])) {
+        if (!empty($value['start_date'])) {
           $volunteer['activity_date_time'] = CRM_Utils_Date::processDate($value['start_date'], $value['start_date_time'], TRUE);
         }
 
