@@ -682,7 +682,8 @@ class CRM_Volunteer_Form_VolunteerSignUp extends CRM_Core_Form {
         if (count($this->_projects) === 1) {
           $project = current($this->_projects);
           if (empty($project['entity_id'])) {
-            continue;
+            $path = 'civicrm/vol/';
+            $fragment = '/volunteer/opportunities';
           }
           $eventId = $project['entity_id'];
           $path = 'civicrm/event/info';
