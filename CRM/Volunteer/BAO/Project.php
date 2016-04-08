@@ -758,6 +758,15 @@ class CRM_Volunteer_BAO_Project extends CRM_Volunteer_DAO_Project {
   }
 
   /**
+   * Public wrapper around _get_open_needs()
+   * 
+   * @return array
+   */
+  public function get_open_needs() {
+    return $this->_get_open_needs();
+  }
+
+  /**
    * Sets and returns $this->open_needs. Delegate of __get().
    *
    * @return array Keyed by Need ID, with a subarray keyed by 'label' and 'role_id'
