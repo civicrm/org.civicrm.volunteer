@@ -31,6 +31,29 @@
     // on page load, search based on the URL params
     volOppSearch.search();
 
+    //VOL-190: Allow hiding of search pane based on url param
+    if ($route.current.params.hasOwnProperty('hideSearch')) {
+      if ($route.current.params.hideSearch === "always") {
+        $scope.hideSearch = true;
+        $scope.allowShowSearch = false;
+      } else if (
+        $route.current.params.hideSearch === "false" ||
+        $route.current.params.hideSearch === "0" ||
+        $route.current.params.hideSearch === "" ||
+        $route.current.params.hideSearch === null
+      ) {
+        $scope.hideSearch = false;
+        $scope.allowShowSearch = false;
+      } else {
+        $scope.hideSearch = true;
+        $scope.allowShowSearch = true;
+      }
+    } else {
+      $scope.hideSearch = false;
+      $scope.allowShowSearch = false;
+    }
+
+
     $scope.countries = countries;
     $scope.roles = supporting_data.values.roles;
     $scope.searchParams = volOppSearch.getParams;
@@ -71,6 +94,11 @@
         }
       });
       return result;
+    };
+
+    $scope.showSearch = function() {
+      $scope.hideSearch = false;
+      $scope.allowShowSearch = false;
     };
 
     $scope.search = function () {
