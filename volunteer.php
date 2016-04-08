@@ -392,31 +392,46 @@ function _volunteer_civicrm_pageRun_CRM_Event_Page_EventInfo(&$page) {
   // show volunteer button only if user has CiviVolunteer: register to volunteer AND this event has an active project
   if (CRM_Volunteer_Permission::check('register to volunteer') && count($projects)) {
     $project = current($projects);
-    $url = CRM_Utils_System::url('civicrm/vol/',
-      NULL, // query string
-      FALSE, // absolute?
-      "/volunteer/opportunities?project={$project->id}&dest=event", // fragment
-      TRUE, // htmlize?
-      TRUE // is frontend?
-    );
-    $button_text = ts('Volunteer Now', array('domain' => 'org.civicrm.volunteer'));
 
-    $snippet = array(
-      'template' => 'CRM/Event/Page/volunteer-button.tpl',
-      'button_text' => $button_text,
-      'position' => 'top',
-      'url' => $url,
-      'weight' => -10,
-    );
-    CRM_Core_Region::instance('event-page-eventinfo-actionlinks-top')->add($snippet);
+    //VOL-189: Do not show the volunteer now button if there are not open needs.
+    $openNeeds = $project->get_open_needs();
+    if($openNeeds) {
+      //VOL-191: Skip "shopping cart" if only one need
+      if (count($openNeeds) == 1) {
+        $need = current($openNeeds);
+        $url = CRM_Utils_System::url('civicrm/volunteer/signup', "reset=1&needs[]={$need['id']}&dest=event");
+      } else {
+        //VOL-190: Hide search pane in "shopping cart" for low role count projects
+        $hideSearch = (count($openNeeds) < 10) ? "hideSearch=always" : ((count($openNeeds) < 25) ? "hideSearch=1" : "hideSearch=0");
+        $url = CRM_Utils_System::url('civicrm/vol/',
+          NULL, // query string
+          FALSE, // absolute?
+          "/volunteer/opportunities?project={$project->id}&dest=event&{$hideSearch}", // fragment
+          TRUE, // htmlize?
+          TRUE // is frontend?
+        );
+      }
 
-    $snippet['position'] = 'bottom';
-    $snippet['weight'] = 10;
-    CRM_Core_Region::instance('event-page-eventinfo-actionlinks-bottom')->add($snippet);
 
-    CRM_Core_Resources::singleton()->addStyleFile('org.civicrm.volunteer',
-      'templates/CRM/Event/Page/EventInfo.css'
-    );
+      $button_text = ts('Volunteer Now', array('domain' => 'org.civicrm.volunteer'));
+
+      $snippet = array(
+        'template' => 'CRM/Event/Page/volunteer-button.tpl',
+        'button_text' => $button_text,
+        'position' => 'top',
+        'url' => $url,
+        'weight' => -10,
+      );
+      CRM_Core_Region::instance('event-page-eventinfo-actionlinks-top')->add($snippet);
+
+      $snippet['position'] = 'bottom';
+      $snippet['weight'] = 10;
+      CRM_Core_Region::instance('event-page-eventinfo-actionlinks-bottom')->add($snippet);
+
+      CRM_Core_Resources::singleton()->addStyleFile('org.civicrm.volunteer',
+        'templates/CRM/Event/Page/EventInfo.css'
+      );
+    }
   }
 }
 
