@@ -83,7 +83,7 @@
       help += ' ' + ts('Click the checkbox for each volunteer opportunity you wish to add to your schedule, then click the "Sign Up!" button to supply your contact information and complete your registration.');
 
       return help;
-    }
+    };
 
     /**
      * Returns true if a proximity search has been started; else false.
