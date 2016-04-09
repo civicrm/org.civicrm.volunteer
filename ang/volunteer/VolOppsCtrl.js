@@ -32,25 +32,17 @@
     volOppSearch.search();
 
     //VOL-190: Allow hiding of search pane based on url param
+    $scope.hideSearch = false;
+    $scope.allowShowSearch = false;
     if ($route.current.params.hasOwnProperty('hideSearch')) {
       if ($route.current.params.hideSearch === "always") {
         $scope.hideSearch = true;
         $scope.allowShowSearch = false;
-      } else if (
-        $route.current.params.hideSearch === "false" ||
-        $route.current.params.hideSearch === "0" ||
-        $route.current.params.hideSearch === "" ||
-        $route.current.params.hideSearch === null
-      ) {
-        $scope.hideSearch = false;
-        $scope.allowShowSearch = false;
-      } else {
+      }
+      if ($route.current.params.hideSearch === "1") {
         $scope.hideSearch = true;
         $scope.allowShowSearch = true;
       }
-    } else {
-      $scope.hideSearch = false;
-      $scope.allowShowSearch = false;
     }
 
 
