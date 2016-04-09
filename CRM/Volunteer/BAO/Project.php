@@ -757,6 +757,7 @@ class CRM_Volunteer_BAO_Project extends CRM_Volunteer_DAO_Project {
     return $this->roles;
   }
 
+  
   /**
    * Sets and returns $this->open_needs. Delegate of __get().
    *
