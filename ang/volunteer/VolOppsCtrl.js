@@ -69,6 +69,23 @@
     };
 
     /**
+     * Provides help text for the "shopping cart."
+     *
+     * @returns {String}
+     */
+    $scope.helpText = function () {
+      var help = '';
+
+      if (!$scope.hideSearch) {
+        help += ts("Use this search form to find the volunteer opportunity near you that best matches with your personal skill set, interests, and time availability.");
+      }
+
+      help += ' ' + ts('Click the checkbox for each volunteer opportunity you wish to add to your schedule, then click the "Sign Up!" button to supply your contact information and complete your registration.');
+
+      return help;
+    };
+
+    /**
      * Returns true if a proximity search has been started; else false.
      *
      * @returns {Boolean}
