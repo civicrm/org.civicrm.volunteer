@@ -394,15 +394,18 @@ function _volunteer_civicrm_pageRun_CRM_Event_Page_EventInfo(&$page) {
     $project = current($projects);
 
     //VOL-189: Do not show the volunteer now button if there are not open needs.
-    $openNeeds = $project->get_open_needs();
-    if($openNeeds) {
+    $openNeeds = civicrm_api3('VolunteerNeed', 'getsearchresult', array(
+      'project' => $project->id,
+      'sequential' => 1
+    ));
+    if($openNeeds['count'] > 0) {
       //VOL-191: Skip "shopping cart" if only one need
-      if (count($openNeeds) == 1) {
-        $need = current($openNeeds);
+      if ($openNeeds['count'] == 1) {
+        $need = $openNeeds['values'][0];
         $url = CRM_Utils_System::url('civicrm/volunteer/signup', "reset=1&needs[]={$need['id']}&dest=event");
       } else {
         //VOL-190: Hide search pane in "shopping cart" for low role count projects
-        $hideSearch = (count($openNeeds) < 10) ? "hideSearch=always" : ((count($openNeeds) < 25) ? "hideSearch=1" : "hideSearch=0");
+        $hideSearch = ($openNeeds['count'] < 10) ? "hideSearch=always" : (($openNeeds['count'] < 25) ? "hideSearch=1" : "hideSearch=0");
         $url = CRM_Utils_System::url('civicrm/vol/',
           NULL, // query string
           FALSE, // absolute?
