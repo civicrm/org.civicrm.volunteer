@@ -62,7 +62,11 @@ class CRM_Volunteer_BAO_Assignment extends CRM_Volunteer_BAO_Activity {
     $activity_fields = CRM_Activity_DAO_Activity::fields();
     $contact_fields = CRM_Contact_DAO_Contact::fields();
     $custom_fields = self::getCustomFields();
-    $foreign_fields = array('project_id', 'target_contact_id');
+    $foreign_fields = array(
+      'project_id',
+      'target_contact_id',
+      'assignee_contact_id',
+    );
 
     // This is the "real" id
     $activity_fields['id'] = $activity_fields['activity_id'];
@@ -128,6 +132,10 @@ class CRM_Volunteer_BAO_Assignment extends CRM_Volunteer_BAO_Activity {
         $dataType = 'Int';
         $fieldName = 'contact_id';
         $tableName = 'tgt'; // this is an alias for civicrm_activity_contact
+      } elseif ($key == 'assignee_contact_id') {
+        $dataType = 'Int';
+        $fieldName = 'contact_id';
+        $tableName = 'assignee'; // this is an alias for civicrm_activity_contact
       }
       $where[] = "{$tableName}.{$fieldName} = %{$i}";
 
