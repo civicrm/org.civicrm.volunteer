@@ -122,7 +122,7 @@ class CRM_Volunteer_Form_VolunteerSignUp extends CRM_Core_Form {
 
     return $defaults;
   }
- 
+
   /**
    * The "vid" URL parameter for this form was deprecated in CiviVolunteer 2.0.
    *
@@ -131,13 +131,13 @@ class CRM_Volunteer_Form_VolunteerSignUp extends CRM_Core_Form {
    */
   function redirectLegacyRequests() {
     $vid = CRM_Utils_Request::retrieve('vid', 'Int', $this, FALSE, NULL, 'GET');
-    
+
     if($vid != NULL) {
       $path = "civicrm/vol/";
       $fragment =  "/volunteer/opportunities?project=$vid&dest=event";
       $newURL = CRM_Utils_System::url($path, NULL, FALSE, $fragment, FALSE, TRUE);
       CRM_Utils_System::redirect($newURL);
-    }    
+    }
   }
 
   /**
@@ -681,6 +681,10 @@ class CRM_Volunteer_Form_VolunteerSignUp extends CRM_Core_Form {
         // to that event form; otherwise, default to the vol opps page.
         if (count($this->_projects) === 1) {
           $project = current($this->_projects);
+          if (empty($project['entity_id'])) {
+            $path = 'civicrm/vol/';
+            $fragment = '/volunteer/opportunities';
+          }
           $eventId = $project['entity_id'];
           $path = 'civicrm/event/info';
           $query = "reset=1&id={$eventId}";
