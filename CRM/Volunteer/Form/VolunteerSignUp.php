@@ -680,7 +680,7 @@ class CRM_Volunteer_Form_VolunteerSignUp extends CRM_Core_Form {
         // If only one project is associated with the form, send the user back
         // to that event form; otherwise, default to the vol opps page.
         if (count($this->_projects) === 1) {
-          $project = current($this->_projects);
+          $project = reset($this->_projects);
           $eventId = $project['entity_id'];
           $path = 'civicrm/event/info';
           $query = "reset=1&id={$eventId}";
