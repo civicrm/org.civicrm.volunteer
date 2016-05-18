@@ -96,3 +96,7 @@
 span.crm-button-text {
   padding: 2px 7px 2px 20px;
 }
+
+.crm-vol-project .select2-choice {
+  min-height: 26px;
+}
