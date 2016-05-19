@@ -20,14 +20,19 @@ class CRM_Volunteer_Form_Defaults extends CRM_Core_Form {
       false // is required,
     );
 
+    $campaigns = civicrm_api3('VolunteerUtil', 'getcampaigns', array());
+    $campaignList = array();
+    foreach($campaigns['values'] as $campaign) {
+      $campaignList[$campaign['id']] = $campaign['title'];
+    }
     $this->add(
-      'text',
+      'select',
       'volunteer_default_campaign',
       ts('Default Campaign'),
-      array("size" => 35),
-      false // is required,
+      $campaignList,
+      false, // is required,
+      array("placeholder" => true)
     );
-
 
     $this->add(
       'text',
