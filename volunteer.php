@@ -370,7 +370,7 @@ function _volunteer_periodicChecks() {
   if (
     !CRM_Core_Permission::check('administer CiviCRM')
     || !$session->timer('check_CRM_Volunteer_Depends', CRM_Utils_Check::CHECK_TIMER)
-    ) {
+  ) {
     return;
   }
 
@@ -623,17 +623,17 @@ function _volunteer_isVolListingApiCall($entity, $action) {
  */
 function volunteer_civicrm_angularModules(&$angularModules) {
   $angularModules['volunteer'] = array(
-      'ext' => 'org.civicrm.volunteer',
-      'js' =>
-          array (
-              0 => 'ang/volunteer.js',
-              1 => 'ang/volunteer/*.js',
-              2 => 'ang/volunteer/*/*.js'
-          ),
-      'css' => array (0 => 'ang/volunteer.css'),
-      'partials' => array (0 => 'ang/volunteer'),
-      'settings' => array (),
-      'volunteer' => true
+    'ext' => 'org.civicrm.volunteer',
+    'js' =>
+      array (
+        0 => 'ang/volunteer.js',
+        1 => 'ang/volunteer/*.js',
+        2 => 'ang/volunteer/*/*.js'
+      ),
+    'css' => array (0 => 'ang/volunteer.css'),
+    'partials' => array (0 => 'ang/volunteer'),
+    'settings' => array (),
+    'volunteer' => true
   );
 
   // Perhaps the placement of this code is a little hackish; unless/until we
@@ -664,4 +664,53 @@ function volunteer_civicrm_fieldOptions($entity, $field, &$options, $params) {
   if ($entity == "UFJoin" && $field == "entity_table" && $params['context'] == "validate") {
     $options[CRM_Volunteer_DAO_Project::getTableName()] = CRM_Volunteer_DAO_Project::getTableName();
   }
+}
+
+
+function volunteer_composeDefaultArray() {
+  $defaults = array();
+  $settings = CRM_Core_BAO_Setting::getItem("volunteer_defaults");
+
+  $defaults['is_active'] = (array_key_exists("volunteer_default_is_active", $settings)) ? $settings['volunteer_default_is_active'] : 1;
+  $defaults['campaign_id'] = (array_key_exists("volunteer_default_campaign", $settings)) ? $settings['volunteer_default_campaign'] : '';
+  $defaults['loc_block_id'] = (array_key_exists("volunteer_default_locblock", $settings)) ? $settings['volunteer_default_locblock'] : '';
+
+  $coreDefaultProfile = array(
+    "is_active" => "1",
+    "module" => "CiviVolunteer",
+    "entity_table" => "civicrm_volunteer_project",
+    "weight" => 1,
+    "module_data" => array("audience" => "primary"),
+    "uf_group_id" => civicrm_api3('UFGroup', 'getvalue', array(
+      "name" => "volunteer_sign_up",
+      "return" => "id"
+    ))
+  );
+
+  $profiles = array();
+
+  $profileTypes = array(
+    "primary" => "volunteer_default_profiles_individual",
+    "additional" => "volunteer_default_profiles_group",
+    "both" => "volunteer_default_profiles_both"
+  );
+
+  foreach($profileTypes as $audience => $setName) {
+    if (array_key_exists($setName, $settings)) {
+      foreach ($settings[$setName] as $profileId) {
+        $profile = $coreDefaultProfile;
+        $profile['uf_group_id'] = $profileId;
+        $profile['weight'] = count($profiles) + 1;
+        $profile['module_data']['audience'] = $audience;
+        $profiles[] = $profile;
+      }
+    }
+  }
+
+  $defaults['profiles'] = $profiles;
+
+
+  //Todo: Handle Contacts
+
+  return $defaults;
 }
