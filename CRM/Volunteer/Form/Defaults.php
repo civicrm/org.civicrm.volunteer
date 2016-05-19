@@ -34,12 +34,14 @@ class CRM_Volunteer_Form_Defaults extends CRM_Core_Form {
       array("placeholder" => true)
     );
 
+    $locBlocks = civicrm_api3('VolunteerProject', 'locations', array());
     $this->add(
-      'text',
+      'select',
       'volunteer_default_locblock',
       ts('Default Location'),
-      array("size" => 35),
-      false // is required,
+      $locBlocks['values'],
+      false, // is required,
+      array("placeholder" => ts("-- No Default Location --"))
     );
 
     $this->add(
