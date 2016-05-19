@@ -666,7 +666,14 @@ function volunteer_civicrm_fieldOptions($entity, $field, &$options, $params) {
   }
 }
 
-
+/**
+ * This function fetches the defaults from civicrm settings
+ * And puts them into the appropriate data format to return
+ * to the angular front-end
+ *
+ * @return array
+ * @throws CiviCRM_API3_Exception
+ */
 function volunteer_composeDefaultArray() {
   $defaults = array();
   $settings = CRM_Core_BAO_Setting::getItem("volunteer_defaults");
