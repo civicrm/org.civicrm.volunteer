@@ -12,12 +12,37 @@ class CRM_Volunteer_Form_Defaults extends CRM_Core_Form {
   function buildQuickForm() {
     // add form elements
 
+    $profiles = civicrm_api3('UFGroup', 'get', array("return" => "title", "sequential" => 1, 'options' => array('limit' => 0)));
+    $profileList = array();
+    foreach($profiles['values'] as $profile) {
+      $profileList[$profile['id']] = $profile['title'];
+    }
+
     $this->add(
-      'text',
-      'volunteer_default_profiles',
-      ts('Default Profiles'),
-      array("size" => 35),
-      false // is required,
+      'select',
+      'volunteer_default_profiles_individual',
+      ts('Default Profile(s) for Individual Registration'),
+      $profileList,
+      false, // is required,
+      array("placeholder" => ts("-- No Default profiles --"), "multiple" => "multiple", "class" => "crm-select2")
+    );
+
+    $this->add(
+      'select',
+      'volunteer_default_profiles_group',
+      ts('Default Profile(s) for Group Registration'),
+      $profileList,
+      false, // is required,
+      array("placeholder" => ts("-- No Default profiles --"), "multiple" => "multiple", "class" => "crm-select2")
+    );
+
+    $this->add(
+      'select',
+      'volunteer_default_profiles_both',
+      ts('Default Profile(s) for Both Individual and Group Registration'),
+      $profileList,
+      false, // is required,
+      array("placeholder" => ts("-- No Default profiles --"), "multiple" => "multiple", "class" => "crm-select2")
     );
 
     $campaigns = civicrm_api3('VolunteerUtil', 'getcampaigns', array());
@@ -89,7 +114,9 @@ class CRM_Volunteer_Form_Defaults extends CRM_Core_Form {
   function postProcess() {
     $values = $this->exportValues();
 
-    CRM_Core_BAO_Setting::setItem($values['volunteer_default_profiles'],"volunteer_defaults", "volunteer_default_profiles");
+    CRM_Core_BAO_Setting::setItem($values['volunteer_default_profiles_individual'],"volunteer_defaults", "volunteer_default_profiles_individual");
+    CRM_Core_BAO_Setting::setItem($values['volunteer_default_profiles_group'],"volunteer_defaults", "volunteer_default_profiles_group");
+    CRM_Core_BAO_Setting::setItem($values['volunteer_default_profiles_both'],"volunteer_defaults", "volunteer_default_profiles_both");
     CRM_Core_BAO_Setting::setItem($values['volunteer_default_campaign'],"volunteer_defaults", "volunteer_default_campaign");
     CRM_Core_BAO_Setting::setItem($values['volunteer_default_locblock'],"volunteer_defaults", "volunteer_default_locblock");
 
