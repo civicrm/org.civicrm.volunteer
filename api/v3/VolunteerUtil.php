@@ -143,13 +143,17 @@ function civicrm_api3_volunteer_util_getsupportingdata($params) {
 
     $results['phone_types'] = CRM_Core_OptionGroup::values("phone_type", FALSE, FALSE, TRUE);
 
-    $results['defaults'] = array(
-      'profile' => civicrm_api3('UFGroup', 'getvalue', array(
-        "name" => "volunteer_sign_up",
-        "return" => "id"
-      )),
-      'relationships' => _volunteerGetProjectRelationshipDefaults(),
-    );
+    //Fetch the Defaults from saved settings.
+    $defaults = volunteer_composeDefaultArray();
+
+    //StopGap because the interface for contacts didn't fit into scope
+    if(!array_key_exists("relationships", $defaults)) {
+     $defaults['relationships'] = _volunteerGetProjectRelationshipDefaults();
+    }
+    //Allow other extensions to modify the defaults
+    CRM_Volunteer_Hook::runDefaultSettingsHook($defaults);
+
+    $results['defaults'] = $defaults;
   }
 
   if ($controller === 'VolOppsCtrl') {
