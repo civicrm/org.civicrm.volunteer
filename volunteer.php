@@ -718,6 +718,8 @@ function volunteer_composeDefaultArray() {
 
 
   //Todo: Handle Contacts
+  //We should implement "tokens" such as [employer] and [self] so the
+  // defaults can be relative to the user creating the project.
 
   return $defaults;
 }
