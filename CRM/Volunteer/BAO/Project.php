@@ -654,6 +654,64 @@ class CRM_Volunteer_BAO_Project extends CRM_Volunteer_DAO_Project {
   }
 
   /**
+   * This function fetches the defaults from civicrm settings
+   * And puts them into the appropriate data format to return
+   * to the angular front-end
+   *
+   * @return array
+   * @throws CiviCRM_API3_Exception
+   */
+  public static function composeDefaultSettingsArray() {
+    $defaults = array();
+    $settings = CRM_Core_BAO_Setting::getItem("volunteer_defaults");
+
+    $defaults['is_active'] = (array_key_exists("volunteer_default_is_active", $settings)) ? $settings['volunteer_default_is_active'] : 1;
+    $defaults['campaign_id'] = (array_key_exists("volunteer_default_campaign", $settings)) ? $settings['volunteer_default_campaign'] : '';
+    $defaults['loc_block_id'] = (array_key_exists("volunteer_default_locblock", $settings)) ? $settings['volunteer_default_locblock'] : '';
+
+    $coreDefaultProfile = array(
+      "is_active" => "1",
+      "module" => "CiviVolunteer",
+      "entity_table" => "civicrm_volunteer_project",
+      "weight" => 1,
+      "module_data" => array("audience" => "primary"),
+      "uf_group_id" => civicrm_api3('UFGroup', 'getvalue', array(
+        "name" => "volunteer_sign_up",
+        "return" => "id"
+      ))
+    );
+
+    $profiles = array();
+
+    $profileTypes = array(
+      "primary" => "volunteer_default_profiles_individual",
+      "additional" => "volunteer_default_profiles_group",
+      "both" => "volunteer_default_profiles_both"
+    );
+
+    foreach($profileTypes as $audience => $setName) {
+      if (array_key_exists($setName, $settings)) {
+        foreach ($settings[$setName] as $profileId) {
+          $profile = $coreDefaultProfile;
+          $profile['uf_group_id'] = $profileId;
+          $profile['weight'] = count($profiles) + 1;
+          $profile['module_data']['audience'] = $audience;
+          $profiles[] = $profile;
+        }
+      }
+    }
+
+    $defaults['profiles'] = $profiles;
+
+
+    //Todo: Handle Contacts
+    //We should implement "tokens" such as [employer] and [self] so the
+    // defaults can be relative to the user creating the project.
+
+    return $defaults;
+  }
+
+  /**
    * Sets and returns the start date of the entity associated with this Project
    *
    * @access private

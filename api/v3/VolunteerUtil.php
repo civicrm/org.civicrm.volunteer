@@ -144,7 +144,7 @@ function civicrm_api3_volunteer_util_getsupportingdata($params) {
     $results['phone_types'] = CRM_Core_OptionGroup::values("phone_type", FALSE, FALSE, TRUE);
 
     //Fetch the Defaults from saved settings.
-    $defaults = volunteer_composeDefaultArray();
+    $defaults = CRM_Volunteer_BAO_Project::composeDefaultSettingsArray();
 
     //StopGap because the interface for contacts didn't fit into scope
     if(!array_key_exists("relationships", $defaults)) {
