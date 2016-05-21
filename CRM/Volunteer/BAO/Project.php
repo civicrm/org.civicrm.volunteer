@@ -108,6 +108,7 @@ class CRM_Volunteer_BAO_Project extends CRM_Volunteer_DAO_Project {
    */
   private $end_date;
 
+
   /**
    * class constructor
    */
@@ -233,7 +234,7 @@ class CRM_Volunteer_BAO_Project extends CRM_Volunteer_DAO_Project {
     $projectContacts = CRM_Utils_Array::value('project_contacts', $params, array());
     foreach ($projectContacts as $relationshipType => &$contactIds) {
       $contactIds = CRM_Volunteer_BAO_Project::validateContactFormat($contactIds);
-      
+
       foreach ($contactIds as $id) {
         if(!array_key_exists($relationshipType, $existingContacts) || !in_array($id, $existingContacts[$relationshipType])) {
           civicrm_api3('VolunteerProjectContact', 'create', array(
@@ -601,7 +602,7 @@ class CRM_Volunteer_BAO_Project extends CRM_Volunteer_DAO_Project {
         }
         catch (Exception $e) {
           $format = 'Could not fetch entity attributes for volunteer project with ID %d. '
-              . 'No %s with ID %d exists; perhaps it has been deleted.';
+            . 'No %s with ID %d exists; perhaps it has been deleted.';
           $msg = sprintf($format, $this->id, $this->entity_table, $this->entity_id);
           CRM_Core_Error::debug_log_message($msg, FALSE, 'org.civicrm.volunteer');
         }
@@ -663,6 +664,7 @@ class CRM_Volunteer_BAO_Project extends CRM_Volunteer_DAO_Project {
    */
   public static function composeDefaultSettingsArray() {
     $defaults = array();
+    //Todo: Make 4.7 Compat
     $settings = CRM_Core_BAO_Setting::getItem("volunteer_defaults");
 
     $defaults['is_active'] = (array_key_exists("volunteer_default_is_active", $settings)) ? $settings['volunteer_default_is_active'] : 1;
@@ -711,6 +713,31 @@ class CRM_Volunteer_BAO_Project extends CRM_Volunteer_DAO_Project {
     return $defaults;
   }
 
+  /**
+   * The types of
+   *
+   * @var array
+   */
+  public static function getProjectProfileAudienceTypes()
+  {
+    return array(
+      "primary" => array(
+        "type" => "primary",
+        "description" => "Default Profile(s) for Individual Registration",
+        "label" => "Individual Registration"
+      ),
+      "additional" => array(
+        "type" => "additional",
+        "description" => "Default Profile(s) for Group Registration",
+        "label" => "Group Registration"
+      ),
+      "both" => array(
+        "type" => "both",
+        "description" => "Default Profile(s) for Both Individual and Group Registration",
+        "label" => "Both"
+      ),
+    );
+  }
   /**
    * Sets and returns the start date of the entity associated with this Project
    *
@@ -815,7 +842,7 @@ class CRM_Volunteer_BAO_Project extends CRM_Volunteer_DAO_Project {
     return $this->roles;
   }
 
-  
+
   /**
    * Sets and returns $this->open_needs. Delegate of __get().
    *

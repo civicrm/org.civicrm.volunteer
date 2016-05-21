@@ -18,32 +18,16 @@ class CRM_Volunteer_Form_Defaults extends CRM_Core_Form {
       $profileList[$profile['id']] = $profile['title'];
     }
 
-    $this->add(
-      'select',
-      'volunteer_default_profiles_individual',
-      ts('Default Profile(s) for Individual Registration'),
-      $profileList,
-      false, // is required,
-      array("placeholder" => ts("-- No Default profiles --"), "multiple" => "multiple", "class" => "crm-select2")
-    );
-
-    $this->add(
-      'select',
-      'volunteer_default_profiles_group',
-      ts('Default Profile(s) for Group Registration'),
-      $profileList,
-      false, // is required,
-      array("placeholder" => ts("-- No Default profiles --"), "multiple" => "multiple", "class" => "crm-select2")
-    );
-
-    $this->add(
-      'select',
-      'volunteer_default_profiles_both',
-      ts('Default Profile(s) for Both Individual and Group Registration'),
-      $profileList,
-      false, // is required,
-      array("placeholder" => ts("-- No Default profiles --"), "multiple" => "multiple", "class" => "crm-select2")
-    );
+    foreach(CRM_Volunteer_BAO_Project::getProjectProfileAudienceTypes() as $audience) {
+      $this->add(
+        'select',
+        'volunteer_default_profiles_' . $audience['type'],
+        ts($audience['description']),
+        $profileList,
+        false, // is required,
+        array("placeholder" => ts("-- No Default profiles --"), "multiple" => "multiple", "class" => "crm-select2")
+      );
+    }
 
     $campaigns = civicrm_api3('VolunteerUtil', 'getcampaigns', array());
     $campaignList = array();
@@ -101,7 +85,15 @@ class CRM_Volunteer_Form_Defaults extends CRM_Core_Form {
 
 
   function setDefaultValues() {
+    //Todo: Make 4.7 compat
     $defaults = CRM_Core_BAO_Setting::getItem("volunteer_defaults");
+
+    //Break the profiles out into their own fields
+    $profiles = CRM_Utils_Array::value('volunteer_default_profiles', $defaults);
+    foreach(CRM_Volunteer_BAO_Project::getProjectProfileAudienceTypes() as $audience) {
+      $defaults["volunteer_default_profiles_" . $audience['type']] = CRM_Utils_Array::value($audience['type'], $profiles, array());
+    }
+
     return $defaults;
   }
 
@@ -114,18 +106,29 @@ class CRM_Volunteer_Form_Defaults extends CRM_Core_Form {
   function postProcess() {
     $values = $this->exportValues();
 
-    CRM_Core_BAO_Setting::setItem($values['volunteer_default_profiles_individual'],"volunteer_defaults", "volunteer_default_profiles_individual");
-    CRM_Core_BAO_Setting::setItem($values['volunteer_default_profiles_group'],"volunteer_defaults", "volunteer_default_profiles_group");
-    CRM_Core_BAO_Setting::setItem($values['volunteer_default_profiles_both'],"volunteer_defaults", "volunteer_default_profiles_both");
-    CRM_Core_BAO_Setting::setItem($values['volunteer_default_campaign'],"volunteer_defaults", "volunteer_default_campaign");
-    CRM_Core_BAO_Setting::setItem($values['volunteer_default_locblock'],"volunteer_defaults", "volunteer_default_locblock");
 
-    $isActive = array_key_exists("volunteer_default_is_active", $values) ? $values['volunteer_default_is_active'] : 0;
-    CRM_Core_BAO_Setting::setItem($isActive, "volunteer_defaults", "volunteer_default_is_active");
+    //Compose the profiles before we save tem.
+    $profiles = array();
 
-    CRM_Core_BAO_Setting::setItem($values['volunteer_default_contacts'],"volunteer_defaults", "volunteer_default_contacts");
+    foreach(CRM_Volunteer_BAO_Project::getProjectProfileAudienceTypes() as $audience) {
+      $profiles[$audience['type']] = CRM_Utils_Array::value('volunteer_default_profiles_' . $audience['type'], $values);
+    }
 
-    CRM_Core_Session::setStatus(ts("Changed Saved"), "Saved", "success");
+    CRM_Core_BAO_Setting::setItem(
+      $profiles,
+      "volunteer_defaults",
+      "volunteer_default_profiles"
+    );
+
+
+    CRM_Core_BAO_Setting::setItem(CRM_Utils_Array::value('volunteer_default_campaign', $values),"volunteer_defaults", "volunteer_default_campaign");
+    CRM_Core_BAO_Setting::setItem(CRM_Utils_Array::value('volunteer_default_locblock', $values),"volunteer_defaults", "volunteer_default_locblock");
+    CRM_Core_BAO_Setting::setItem(CRM_Utils_Array::value('volunteer_default_is_active', $values, 0), "volunteer_defaults", "volunteer_default_is_active");
+
+    //Todo: Create Composit data structure like we do for profiles
+    CRM_Core_BAO_Setting::setItem(CRM_Utils_Array::value('volunteer_default_contacts', $values),"volunteer_defaults", "volunteer_default_contacts");
+
+    CRM_Core_Session::setStatus(ts("Changes Saved"), "Saved", "success");
     parent::postProcess();
   }
 
