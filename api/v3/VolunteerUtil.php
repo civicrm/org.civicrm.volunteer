@@ -151,7 +151,7 @@ function civicrm_api3_volunteer_util_getsupportingdata($params) {
      $defaults['relationships'] = _volunteerGetProjectRelationshipDefaults();
     }
     //Allow other extensions to modify the defaults
-    CRM_Volunteer_Hook::runDefaultSettingsHook($defaults);
+    CRM_Volunteer_Hook::projectDefaultSettings($defaults);
 
     $results['defaults'] = $defaults;
   }

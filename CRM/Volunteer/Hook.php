@@ -1,12 +1,11 @@
 <?php
 class CRM_Volunteer_Hook
 {
-  static $_nullObject = NULL;
 
-  static function runDefaultSettingsHook(&$defaults) {
-    return CRM_Utils_Hook::singleton()->invoke(1, $defaults, self::$_nullObject,
-      self::$_nullObject, self::$_nullObject, self::$_nullObject, self::$_nullObject,
-      'volunteer_ProjectDefaultSettings'
+  static function projectDefaultSettings(&$defaults) {
+    return CRM_Utils_Hook::singleton()->invoke(1, $defaults, CRM_Utils_Hook::$_nullObject,
+      CRM_Utils_Hook::$_nullObject, CRM_Utils_Hook::$_nullObject, CRM_Utils_Hook::$_nullObject, CRM_Utils_Hook::$_nullObject,
+      'civicrm_volunteer_projectDefaultSettings'
     );
   }
 }
