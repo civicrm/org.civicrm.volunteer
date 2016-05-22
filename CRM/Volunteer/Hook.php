@@ -9,4 +9,3 @@ class CRM_Volunteer_Hook
     );
   }
 }
-?>
