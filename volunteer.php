@@ -121,7 +121,7 @@ function volunteer_civicrm_navigationMenu(&$params) {
         ),
         $newNavId + 5 => array(
           'attributes' => array(
-            'label' => ts('Configure Default Project Settings', array('domain' => 'org.civicrm.volunteer')),
+            'label' => ts('Configure Default Settings', array('domain' => 'org.civicrm.volunteer')),
             'name' => 'volunteer_config_defaults',
             'url' => 'civicrm/volunteer/defaults',
             'permission' => NULL,
