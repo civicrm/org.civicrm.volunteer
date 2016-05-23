@@ -664,12 +664,10 @@ class CRM_Volunteer_BAO_Project extends CRM_Volunteer_DAO_Project {
    */
   public static function composeDefaultSettingsArray() {
     $defaults = array();
-    //Todo: Make 4.7 Compat
-    $settings = CRM_Core_BAO_Setting::getItem("volunteer_defaults");
 
-    $defaults['is_active'] = (array_key_exists("volunteer_default_is_active", $settings)) ? $settings['volunteer_default_is_active'] : 1;
-    $defaults['campaign_id'] = (array_key_exists("volunteer_default_campaign", $settings)) ? $settings['volunteer_default_campaign'] : '';
-    $defaults['loc_block_id'] = (array_key_exists("volunteer_default_locblock", $settings)) ? $settings['volunteer_default_locblock'] : '';
+    $defaults['is_active'] = CRM_Core_BAO_Setting::getItem("org.civicrm.volunteer", "volunteer_project_default_is_active");
+    $defaults['campaign_id'] = CRM_Core_BAO_Setting::getItem("org.civicrm.volunteer", "volunteer_project_default_campaign");
+    $defaults['loc_block_id'] = CRM_Core_BAO_Setting::getItem("org.civicrm.volunteer", "volunteer_project_default_locblock");
 
     $coreDefaultProfile = array(
       "is_active" => "1",
@@ -684,31 +682,27 @@ class CRM_Volunteer_BAO_Project extends CRM_Volunteer_DAO_Project {
     );
 
     $profiles = array();
+    $profileByType = CRM_Core_BAO_Setting::getItem("org.civicrm.volunteer", "volunteer_project_default_profiles");
 
-    $profileTypes = array(
-      "primary" => "volunteer_default_profiles_individual",
-      "additional" => "volunteer_default_profiles_group",
-      "both" => "volunteer_default_profiles_both"
-    );
-
-    foreach($profileTypes as $audience => $setName) {
-      if (array_key_exists($setName, $settings)) {
-        foreach ($settings[$setName] as $profileId) {
-          $profile = $coreDefaultProfile;
-          $profile['uf_group_id'] = $profileId;
-          $profile['weight'] = count($profiles) + 1;
-          $profile['module_data']['audience'] = $audience;
-          $profiles[] = $profile;
-        }
+    foreach($profileByType as $audience => $profileForType) {
+      foreach ($profileForType as $profileId) {
+        $profile = $coreDefaultProfile;
+        $profile['uf_group_id'] = $profileId;
+        $profile['weight'] = count($profiles) + 1;
+        $profile['module_data']['audience'] = $audience;
+        $profiles[] = $profile;
       }
     }
 
     $defaults['profiles'] = $profiles;
 
 
-    //Todo: Handle Contacts
+    //Todo VOL-202: Handle ProjectContacts/Relationship Defaults
     //We should implement "tokens" such as [employer] and [self] so the
-    // defaults can be relative to the user creating the project.
+    //defaults can be relative to the user creating the project.
+    //When this is implemented, the defaults should be such that if
+    //the user takes no action it replicates what is in
+    //VolunteerUtil::getSupportingData()
 
     return $defaults;
   }

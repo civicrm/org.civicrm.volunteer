@@ -85,11 +85,14 @@ class CRM_Volunteer_Form_Defaults extends CRM_Core_Form {
 
 
   function setDefaultValues() {
-    //Todo: Make 4.7 compat
-    $defaults = CRM_Core_BAO_Setting::getItem("volunteer_defaults");
+    $defaults = array();
+
+    $defaults['is_active'] = CRM_Core_BAO_Setting::getItem("org.civicrm.volunteer", "volunteer_project_default_is_active");
+    $defaults['campaign_id'] = CRM_Core_BAO_Setting::getItem("org.civicrm.volunteer", "volunteer_project_default_campaign");
+    $defaults['loc_block_id'] = CRM_Core_BAO_Setting::getItem("org.civicrm.volunteer", "volunteer_project_default_locblock");
 
     //Break the profiles out into their own fields
-    $profiles = CRM_Utils_Array::value('volunteer_project_default_profiles', $defaults);
+    $profiles = CRM_Core_BAO_Setting::getItem("org.civicrm.volunteer", "volunteer_project_default_profiles");
     foreach(CRM_Volunteer_BAO_Project::getProjectProfileAudienceTypes() as $audience) {
       $defaults["volunteer_project_default_profiles_" . $audience['type']] = CRM_Utils_Array::value($audience['type'], $profiles, array());
     }
