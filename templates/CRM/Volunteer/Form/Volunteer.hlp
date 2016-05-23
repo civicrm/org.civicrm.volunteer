@@ -30,8 +30,8 @@
   <p>
     {ts domain='org.civicrm.volunteer'}If you want to provide Volunteer Management for this event,
     check the box below and submit the form. After the submission is
-    processed, you will be provided links to define volunteer needs for the
-    event, to assign volunteers to needs, and to log volunteer hours.{/ts}
+    processed, you will be provided links to define volunteer opportunities for the
+    event, to assign volunteers to opportunities, and to log volunteer hours.{/ts}
   </p>
   <p>
     {if !$params.isModulePermissionSupported}

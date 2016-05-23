@@ -26,7 +26,7 @@
 {capture assign=volRoleURL}{crmURL p="civicrm/admin/options/volunteer_role" q="reset=1"}{/capture}
 
 {htxt id="volunteer-define-title"}
-  {ts domain='org.civicrm.volunteer'}Volunteer Needs{/ts}
+  {ts domain='org.civicrm.volunteer'}Volunteer Opportunities{/ts}
 {/htxt}
 {htxt id="volunteer-define"}
     <p>

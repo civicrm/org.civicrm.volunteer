@@ -68,7 +68,7 @@ CRM.$(function($) {
   //Wire up the define button
   $("#crm-volunteer-event-define").click(function(event) {
     if (CRM.vars['org.civicrm.volunteer'].projectId != 0) {
-      CRM.volunteerPopup(ts('Define Needs'), 'Define', CRM.vars['org.civicrm.volunteer'].projectId);
+      CRM.volunteerPopup(ts('Define Volunteer Opportunities'), 'Define', CRM.vars['org.civicrm.volunteer'].projectId);
     }
   });
 

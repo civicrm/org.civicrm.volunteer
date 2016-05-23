@@ -117,7 +117,7 @@ function _civicrm_api3_volunteer_need_getsearchresult_spec(&$params) {
     'title' => 'Project Beneficiary',
     'description' => 'Contacts which benefit from a Volunteer Project. (An
       int-like string, a comma-separated list thereof, or an array representing
-      one or more contact IDs who benefit from the Needs.)',
+      one or more contact IDs who benefit from the Needs/Opportunities.)',
     'type' => CRM_Utils_Type::T_INT,
   );
   $params['project'] = array(
@@ -136,17 +136,17 @@ function _civicrm_api3_volunteer_need_getsearchresult_spec(&$params) {
     'title' => 'Role',
     'description' => 'The role the volunteer will perform in the project. (An
       int-like string, a comma-separated list thereof, or an array representing
-      one or more contact IDs who benefit from the Needs.)',
+      one or more contact IDs who benefit from the Needs/Opportunities.)',
     'type' => CRM_Utils_Type::T_STRING,
   );
   $params['date_start'] = array(
     'title' => 'Start Date',
-    'description' => 'Used to filter Needs. Needs before this date won\'t be returned.',
+    'description' => 'Used to filter Needs/Opportunities. Needs/Opportunities before this date won\'t be returned.',
     'type' => CRM_Utils_Type::T_DATE,
   );
   $params['date_end'] = array(
     'title' => 'End Date',
-    'description' => 'Used to filter Needs. Needs after this date won\'t be returned.',
+    'description' => 'Used to filter Needs/Opportunities. Needs/Opportunities after this date won\'t be returned.',
     'type' => CRM_Utils_Type::T_DATE,
   );
 }

@@ -9,7 +9,7 @@ After installing the extension using the automated installer from Manage Extensi
 you'll see a new Volunteers tab for each event (Manage Events > Configure). Check the
 'Enable Volunteer Management' box to get started.
 
-You can then build a list of volunteer shifts by clicking 'Define Volunteer Needs.'
+You can then build a list of volunteer shifts by clicking 'Define Volunteer Opportunities.'
 Shifts consist of a volunteer role (e.g. Usher, Box Office, etc.) plus a date and time
 period. For each shift you can specify the number of volunteers required.
 

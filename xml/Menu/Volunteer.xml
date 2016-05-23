@@ -13,7 +13,7 @@
   </item>
   <item>
      <path>civicrm/volunteer/need</path>
-     <title>Define Volunteer Needs</title>
+     <title>Define Volunteer Opportunities</title>
      <page_callback>CRM_Volunteer_Form_Need</page_callback>
      <path_arguments>action=add</path_arguments>
      <access_arguments>access CiviEvent,edit all events</access_arguments>
