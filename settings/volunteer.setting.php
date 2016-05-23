@@ -14,12 +14,16 @@ return array(
     'help_text' => 'Which fields should use the slider widget?',
   ),
 
-  'volunteer_default_profiles' => array(
+  'volunteer_project_default_profiles' => array(
     'group_name' => 'CiviVolunteer Configurations',
     'group' => 'volunteer_defaults',
-    'name' => 'volunteer_default_profiles',
+    'name' => 'volunteer_project_default_profiles',
     'type' => 'String',
-    'default' => '',
+    'default' => array(
+      "primary" => civicrm_api3('UFGroup', 'getvalue', array(
+        "name" => "volunteer_sign_up",
+        "return" => "id"
+      ))),
     'add' => '4.5',
     'is_domain' => 1,
     'is_contact' => 0,
@@ -27,10 +31,10 @@ return array(
     'help_text' => '',
   ),
 
-  'volunteer_default_campaign' => array(
+  'volunteer_project_default_campaign' => array(
     'group_name' => 'CiviVolunteer Configurations',
     'group' => 'volunteer_defaults',
-    'name' => 'volunteer_default_campaign',
+    'name' => 'volunteer_project_default_campaign',
     'type' => 'Int',
     'default' => '',
     'add' => '4.5',
@@ -39,10 +43,10 @@ return array(
     'description' => 'Default Campaign for new Volunteer Projects',
     'help_text' => '',
   ),
-  'volunteer_default_locblock' => array(
+  'volunteer_project_default_locblock' => array(
     'group_name' => 'CiviVolunteer Configurations',
     'group' => 'volunteer_defaults',
-    'name' => 'volunteer_default_locblock',
+    'name' => 'volunteer_project_default_locblock',
     'type' => 'Int',
     'default' => '',
     'add' => '4.5',
@@ -51,22 +55,22 @@ return array(
     'description' => 'Default Location for new Volunteer Projects',
     'help_text' => '',
   ),
-  'volunteer_default_is_active' => array(
+  'volunteer_project_default_is_active' => array(
     'group_name' => 'CiviVolunteer Configurations',
     'group' => 'volunteer_defaults',
-    'name' => 'volunteer_default_is_active',
+    'name' => 'volunteer_project_default_is_active',
     'type' => 'Int',
-    'default' => '1',
+    'default' => 1,
     'add' => '4.5',
     'is_domain' => 1,
     'is_contact' => 0,
     'description' => 'Default Active status for new Volunteer Projects',
     'help_text' => 'Should new Projects default to being active?',
   ),
-  'volunteer_default_contacts' => array(
+  'volunteer_project_default_contacts' => array(
     'group_name' => 'CiviVolunteer Configurations',
     'group' => 'volunteer_defaults',
-    'name' => 'volunteer_default_contacts',
+    'name' => 'volunteer_project_default_contacts',
     'type' => 'String',
     'default' => '',
     'add' => '4.5',
