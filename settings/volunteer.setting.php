@@ -16,9 +16,9 @@ return array(
 
   'volunteer_project_default_profiles' => array(
     'group_name' => 'CiviVolunteer Configurations',
-    'group' => 'volunteer_defaults',
+    'group' => 'org.civicrm.volunteer',
     'name' => 'volunteer_project_default_profiles',
-    'type' => 'String',
+    'type' => 'Array',
     'default' => array(
       "primary" => civicrm_api3('UFGroup', 'getvalue', array(
         "name" => "volunteer_sign_up",
@@ -33,7 +33,7 @@ return array(
 
   'volunteer_project_default_campaign' => array(
     'group_name' => 'CiviVolunteer Configurations',
-    'group' => 'volunteer_defaults',
+    'group' => 'org.civicrm.volunteer',
     'name' => 'volunteer_project_default_campaign',
     'type' => 'Int',
     'default' => '',
@@ -45,7 +45,7 @@ return array(
   ),
   'volunteer_project_default_locblock' => array(
     'group_name' => 'CiviVolunteer Configurations',
-    'group' => 'volunteer_defaults',
+    'group' => 'org.civicrm.volunteer',
     'name' => 'volunteer_project_default_locblock',
     'type' => 'Int',
     'default' => '',
@@ -57,7 +57,7 @@ return array(
   ),
   'volunteer_project_default_is_active' => array(
     'group_name' => 'CiviVolunteer Configurations',
-    'group' => 'volunteer_defaults',
+    'group' => 'org.civicrm.volunteer',
     'name' => 'volunteer_project_default_is_active',
     'type' => 'Int',
     'default' => 1,
@@ -69,9 +69,9 @@ return array(
   ),
   'volunteer_project_default_contacts' => array(
     'group_name' => 'CiviVolunteer Configurations',
-    'group' => 'volunteer_defaults',
+    'group' => 'org.civicrm.volunteer',
     'name' => 'volunteer_project_default_contacts',
-    'type' => 'String',
+    'type' => 'Array',
     'default' => '',
     'add' => '4.5',
     'is_domain' => 1,
