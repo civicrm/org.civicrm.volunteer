@@ -717,18 +717,18 @@ class CRM_Volunteer_BAO_Project extends CRM_Volunteer_DAO_Project {
     return array(
       "primary" => array(
         "type" => "primary",
-        "description" => "Default Profile(s) for Individual Registration",
-        "label" => "Individual Registration"
+        "description" => ts("Default Profile(s) for Individual Registration", array('domain' => 'org.civicrm.volunteer')),
+        "label" => ts("Individual Registration", array('domain' => 'org.civicrm.volunteer'))
       ),
       "additional" => array(
         "type" => "additional",
-        "description" => "Default Profile(s) for Group Registration",
-        "label" => "Group Registration"
+        "description" => ts("Default Profile(s) for Group Registration", array('domain' => 'org.civicrm.volunteer')),
+        "label" => ts("Group Registration", array('domain' => 'org.civicrm.volunteer'))
       ),
       "both" => array(
         "type" => "both",
-        "description" => "Default Profile(s) for Both Individual and Group Registration",
-        "label" => "Both"
+        "description" => ts("Default Profile(s) for Both Individual and Group Registration", array('domain' => 'org.civicrm.volunteer')),
+        "label" => ts("Both", array('domain' => 'org.civicrm.volunteer'))
       ),
     );
   }

@@ -22,10 +22,10 @@ class CRM_Volunteer_Form_Defaults extends CRM_Core_Form {
       $this->add(
         'select',
         'volunteer_project_default_profiles_' . $audience['type'],
-        ts($audience['description']),
+        $audience['description'],
         $profileList,
         false, // is required,
-        array("placeholder" => ts("-- No Default profiles --"), "multiple" => "multiple", "class" => "crm-select2")
+        array("placeholder" => ts("-- No Default profiles --", array('domain' => 'org.civicrm.volunteer')), "multiple" => "multiple", "class" => "crm-select2")
       );
     }
 
@@ -37,7 +37,7 @@ class CRM_Volunteer_Form_Defaults extends CRM_Core_Form {
     $this->add(
       'select',
       'volunteer_project_default_campaign',
-      ts('Default Campaign'),
+      ts('Default Campaign', array('domain' => 'org.civicrm.volunteer')),
       $campaignList,
       false, // is required,
       array("placeholder" => true)
@@ -47,16 +47,16 @@ class CRM_Volunteer_Form_Defaults extends CRM_Core_Form {
     $this->add(
       'select',
       'volunteer_project_default_locblock',
-      ts('Default Location'),
+      ts('Default Location', array('domain' => 'org.civicrm.volunteer')),
       $locBlocks['values'],
       false, // is required,
-      array("placeholder" => ts("-- No Default Location --"))
+      array("placeholder" => ts("-- No Default Location --", array('domain' => 'org.civicrm.volunteer')))
     );
 
     $this->add(
       'checkbox',
       'volunteer_project_default_is_active',
-      ts('Are new Projects active by Default?'),
+      ts('Are new Projects active by Default?', array('domain' => 'org.civicrm.volunteer')),
       null,
       false
     );
@@ -65,7 +65,7 @@ class CRM_Volunteer_Form_Defaults extends CRM_Core_Form {
     $this->add(
       'text',
       'volunteer_project_default_contacts',
-      ts('Default Associated Contacts'),
+      ts('Default Associated Contacts', array('domain' => 'org.civicrm.volunteer')),
       array("size" => 35),
       true // is required,
     );
@@ -74,7 +74,7 @@ class CRM_Volunteer_Form_Defaults extends CRM_Core_Form {
     $this->addButtons(array(
       array(
         'type' => 'submit',
-        'name' => ts('Save Default Settings'),
+        'name' => ts('Save Default Settings', array('domain' => 'org.civicrm.volunteer')),
         'isDefault' => TRUE,
       ),
     ));
@@ -102,7 +102,7 @@ class CRM_Volunteer_Form_Defaults extends CRM_Core_Form {
 
 
   function validate() {
-    //CRM_Core_Session::setStatus(ts(""), "Error", "error");
+    //CRM_Core_Session::setStatus(ts("", array('domain' => 'org.civicrm.volunteer')), "Error", "error");
     return true;
   }
 
@@ -131,7 +131,7 @@ class CRM_Volunteer_Form_Defaults extends CRM_Core_Form {
     //Todo: Create Composit data structure like we do for profiles
     CRM_Core_BAO_Setting::setItem(CRM_Utils_Array::value('volunteer_project_default_contacts', $values),"org.civicrm.volunteer", "volunteer_project_default_contacts");
 
-    CRM_Core_Session::setStatus(ts("Changes Saved"), "Saved", "success");
+    CRM_Core_Session::setStatus(ts("Changes Saved", array('domain' => 'org.civicrm.volunteer')), "Saved", "success");
     parent::postProcess();
   }
 
@@ -147,7 +147,7 @@ class CRM_Volunteer_Form_Defaults extends CRM_Core_Form {
     foreach ($this->_elements as $element) {
       $name = $element->getName();
       $entity = preg_replace("/volunteer_(.*)_default_.*/", "$1", $name);
-      $group = ts("Default " . ucfirst($entity) . " Settings");
+      $group = ts("Default " . ucfirst($entity) . " Settings", array('domain' => 'org.civicrm.volunteer'));
 
       $label = $element->getLabel();
       if (!empty($label)) {

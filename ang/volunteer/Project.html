@@ -150,7 +150,7 @@
           <div class="crm-volunteer-profile-use-type">
             <label>{{ts("Use For:")}}</label>
             <select ng-model="profile.module_data.audience" crm-ui-select="{}" ng-change="validateProfileSelections()">
-              <option ng-repeat="audience in supporting_data.profile_audience_types" value="{{audience.type}}">{{ts(audience.label)}}</option>
+              <option ng-repeat="audience in supporting_data.profile_audience_types" value="{{audience.type}}">{{audience.label}}</option>
             </select>
           </div>
 
