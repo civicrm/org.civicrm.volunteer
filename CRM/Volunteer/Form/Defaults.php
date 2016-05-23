@@ -21,7 +21,7 @@ class CRM_Volunteer_Form_Defaults extends CRM_Core_Form {
     foreach(CRM_Volunteer_BAO_Project::getProjectProfileAudienceTypes() as $audience) {
       $this->add(
         'select',
-        'volunteer_default_profiles_' . $audience['type'],
+        'volunteer_project_default_profiles_' . $audience['type'],
         ts($audience['description']),
         $profileList,
         false, // is required,
@@ -36,7 +36,7 @@ class CRM_Volunteer_Form_Defaults extends CRM_Core_Form {
     }
     $this->add(
       'select',
-      'volunteer_default_campaign',
+      'volunteer_project_default_campaign',
       ts('Default Campaign'),
       $campaignList,
       false, // is required,
@@ -46,7 +46,7 @@ class CRM_Volunteer_Form_Defaults extends CRM_Core_Form {
     $locBlocks = civicrm_api3('VolunteerProject', 'locations', array());
     $this->add(
       'select',
-      'volunteer_default_locblock',
+      'volunteer_project_default_locblock',
       ts('Default Location'),
       $locBlocks['values'],
       false, // is required,
@@ -55,7 +55,7 @@ class CRM_Volunteer_Form_Defaults extends CRM_Core_Form {
 
     $this->add(
       'checkbox',
-      'volunteer_default_is_active',
+      'volunteer_project_default_is_active',
       ts('Are new Projects active by Default?'),
       null,
       false
@@ -64,7 +64,7 @@ class CRM_Volunteer_Form_Defaults extends CRM_Core_Form {
     /*
     $this->add(
       'text',
-      'volunteer_default_contacts',
+      'volunteer_project_default_contacts',
       ts('Default Associated Contacts'),
       array("size" => 35),
       true // is required,
@@ -79,7 +79,7 @@ class CRM_Volunteer_Form_Defaults extends CRM_Core_Form {
       ),
     ));
     // export form elements
-    $this->assign('elementNames', $this->getRenderableElementNames());
+    $this->assign('elementGroups', $this->getRenderableElementNames());
     parent::buildQuickForm();
   }
 
@@ -89,9 +89,9 @@ class CRM_Volunteer_Form_Defaults extends CRM_Core_Form {
     $defaults = CRM_Core_BAO_Setting::getItem("volunteer_defaults");
 
     //Break the profiles out into their own fields
-    $profiles = CRM_Utils_Array::value('volunteer_default_profiles', $defaults);
+    $profiles = CRM_Utils_Array::value('volunteer_project_default_profiles', $defaults);
     foreach(CRM_Volunteer_BAO_Project::getProjectProfileAudienceTypes() as $audience) {
-      $defaults["volunteer_default_profiles_" . $audience['type']] = CRM_Utils_Array::value($audience['type'], $profiles, array());
+      $defaults["volunteer_project_default_profiles_" . $audience['type']] = CRM_Utils_Array::value($audience['type'], $profiles, array());
     }
 
     return $defaults;
@@ -111,22 +111,22 @@ class CRM_Volunteer_Form_Defaults extends CRM_Core_Form {
     $profiles = array();
 
     foreach(CRM_Volunteer_BAO_Project::getProjectProfileAudienceTypes() as $audience) {
-      $profiles[$audience['type']] = CRM_Utils_Array::value('volunteer_default_profiles_' . $audience['type'], $values);
+      $profiles[$audience['type']] = CRM_Utils_Array::value('volunteer_project_default_profiles_' . $audience['type'], $values);
     }
 
     CRM_Core_BAO_Setting::setItem(
       $profiles,
       "volunteer_defaults",
-      "volunteer_default_profiles"
+      "volunteer_project_default_profiles"
     );
 
 
-    CRM_Core_BAO_Setting::setItem(CRM_Utils_Array::value('volunteer_default_campaign', $values),"volunteer_defaults", "volunteer_default_campaign");
-    CRM_Core_BAO_Setting::setItem(CRM_Utils_Array::value('volunteer_default_locblock', $values),"volunteer_defaults", "volunteer_default_locblock");
-    CRM_Core_BAO_Setting::setItem(CRM_Utils_Array::value('volunteer_default_is_active', $values, 0), "volunteer_defaults", "volunteer_default_is_active");
+    CRM_Core_BAO_Setting::setItem(CRM_Utils_Array::value('volunteer_project_default_campaign', $values),"volunteer_defaults", "volunteer_project_default_campaign");
+    CRM_Core_BAO_Setting::setItem(CRM_Utils_Array::value('volunteer_project_default_locblock', $values),"volunteer_defaults", "volunteer_project_default_locblock");
+    CRM_Core_BAO_Setting::setItem(CRM_Utils_Array::value('volunteer_project_default_is_active', $values, 0), "volunteer_defaults", "volunteer_project_default_is_active");
 
     //Todo: Create Composit data structure like we do for profiles
-    CRM_Core_BAO_Setting::setItem(CRM_Utils_Array::value('volunteer_default_contacts', $values),"volunteer_defaults", "volunteer_default_contacts");
+    CRM_Core_BAO_Setting::setItem(CRM_Utils_Array::value('volunteer_project_default_contacts', $values),"volunteer_defaults", "volunteer_project_default_contacts");
 
     CRM_Core_Session::setStatus(ts("Changes Saved"), "Saved", "success");
     parent::postProcess();
@@ -139,19 +139,25 @@ class CRM_Volunteer_Form_Defaults extends CRM_Core_Form {
    * @return array (string)
    */
   function getRenderableElementNames() {
-    // The _elements list includes some items which should not be
-    // auto-rendered in the loop -- such as "qfKey" and "buttons".  These
-    // items don't have labels.  We'll identify renderable by filtering on
-    // the 'label'.
-    $elementNames = array();
+    $elementGroups = array();
+
     foreach ($this->_elements as $element) {
-      /** @var HTML_QuickForm_Element $element */
+      $name = $element->getName();
+      $entity = preg_replace("/volunteer_(.*)_default_.*/", "$1", $name);
+      $group = ts("Default " . ucfirst($entity) . " Settings");
+
       $label = $element->getLabel();
       if (!empty($label)) {
-        $elementNames[] = $element->getName();
+
+        if(!array_key_exists($group, $elementGroups)) {
+          $elementGroups[$group] = array();
+        }
+
+        $elementGroups[$group][] = $name;
       }
     }
-    return $elementNames;
+
+    return $elementGroups;
   }
 
 }
