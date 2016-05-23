@@ -73,8 +73,7 @@
 
     var relationships = {};
     if(project.id == 0) {
-      project = supporting_data.values.defaults;
-      project.id = 0;
+      project = _.extend(supporting_data.values.defaults, project);
       relationships = supporting_data.values.defaults.relationships;
       var originalRelationships = {};
       if (CRM.vars['org.civicrm.volunteer'].entityTable) {
