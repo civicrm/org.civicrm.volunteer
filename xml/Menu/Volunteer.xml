@@ -106,7 +106,7 @@
   <item>
     <path>civicrm/volunteer/defaults</path>
     <page_callback>CRM_Volunteer_Form_Defaults</page_callback>
-    <title>Volunteer Default Settings</title>
+    <title>CiviVolunteer: Configure Default Settings</title>
     <access_arguments>administer CiviCRM</access_arguments>
   </item>
 </menu>
