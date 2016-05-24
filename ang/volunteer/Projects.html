@@ -22,23 +22,23 @@
         <fieldset class="crm-vol-ui-fieldset ui-corner-all">
           <legend>Find Volunteer Projects</legend>
           <div class="crm-group" crm-ui-id-scope>
-            <div class="crm-vol-field crm-vol-field-projects-search crm-vol-field-projects-search-title" crm-ui-field="{name: 'volProjectSearchForm.title', title: ts('Title')}">
+            <div class="crm-vol-field crm-vol-field-projects-search-title" crm-ui-field="{name: 'volProjectSearchForm.title', title: ts('Title')}">
               <input crm-ui-id="volProjectSearchForm.title" ng-model="searchParams.title" />
             </div>
-            <div class="crm-vol-field crm-vol-field-projects-search crm-vol-field-projects-search-beneficiaries" crm-ui-field="{name: 'volProjectSearchForm.beneficiary', title: ts('Beneficiary')}">
+            <div class="crm-vol-field crm-vol-field-projects-search-beneficiaries" crm-ui-field="{name: 'volProjectSearchForm.beneficiary', title: ts('Beneficiary')}">
               <select class="big crm-form-select crm-vol-beneficiary" crm-ui-select="{placeholder: ts('Filter by Beneficiary'), allowClear:true}"
                       ng-options="key as value.display_name for (key , value) in beneficiaries" ng-model="searchParams.beneficiaries">
                 <option />
               </select>
             </div>
-            <div class="crm-vol-field crm-vol-field-projects-search crm-vol-field-projects-search-campaign" crm-ui-field="{name: 'volProjectSearchForm.campaign_id', title: ts('Campaign')}">
+            <div class="crm-vol-field crm-vol-field-projects-search-campaign" crm-ui-field="{name: 'volProjectSearchForm.campaign_id', title: ts('Campaign')}">
               <select class="big crm-form-select crm-vol-campaign" crm-ui-select="{placeholder: ts('Filter by Campaign'), allowClear:true}"
                       ng-change="clearCampaign()"
                       ng-options="key as value.title for (key , value) in campaigns" ng-model="searchParams.campaign_id">
                 <option />
               </select>
             </div>
-            <div class="crm-vol-field crm-vol-field-projects-search crm-vol-field-projects-search-active" crm-ui-field="{name: 'volProjectSearchForm.is_active', title: ts('Active')}">
+            <div class="crm-vol-field crm-vol-field-projects-search-active" crm-ui-field="{name: 'volProjectSearchForm.is_active', title: ts('Active')}">
               <label>
                 <input type="radio" ng-model="searchParams.is_active" value="1" /> Yes
               </label>
