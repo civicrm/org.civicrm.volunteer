@@ -25,7 +25,7 @@ class CRM_Volunteer_Form_Defaults extends CRM_Core_Form {
         $audience['description'],
         $profileList,
         false, // is required,
-        array("placeholder" => ts("-- No Default profiles --", array('domain' => 'org.civicrm.volunteer')), "multiple" => "multiple", "class" => "crm-select2")
+        array("placeholder" => ts("- none -", array('domain' => 'org.civicrm.volunteer')), "multiple" => "multiple", "class" => "crm-select2")
       );
     }
 
@@ -37,7 +37,7 @@ class CRM_Volunteer_Form_Defaults extends CRM_Core_Form {
     $this->add(
       'select',
       'volunteer_project_default_campaign',
-      ts('Default Campaign', array('domain' => 'org.civicrm.volunteer')),
+      ts('Campaign', array('domain' => 'org.civicrm.volunteer')),
       $campaignList,
       false, // is required,
       array("placeholder" => true)
@@ -47,7 +47,7 @@ class CRM_Volunteer_Form_Defaults extends CRM_Core_Form {
     $this->add(
       'select',
       'volunteer_project_default_locblock',
-      ts('Default Location', array('domain' => 'org.civicrm.volunteer')),
+      ts('Location', array('domain' => 'org.civicrm.volunteer')),
       $locBlocks['values'],
       false, // is required,
       array("placeholder" => ts("-- No Default Location --", array('domain' => 'org.civicrm.volunteer')))
@@ -56,7 +56,7 @@ class CRM_Volunteer_Form_Defaults extends CRM_Core_Form {
     $this->add(
       'checkbox',
       'volunteer_project_default_is_active',
-      ts('Are new Projects active by Default?', array('domain' => 'org.civicrm.volunteer')),
+      ts('Are new Projects active by default?', array('domain' => 'org.civicrm.volunteer')),
       null,
       false
     );

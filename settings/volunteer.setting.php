@@ -27,7 +27,7 @@ return array(
     'add' => '4.5',
     'is_domain' => 1,
     'is_contact' => 0,
-    'description' => 'Default Profiles for new Volunteer Projects',
+    'description' => 'Profiles for new Volunteer Projects',
     'help_text' => '',
   ),
 
@@ -40,7 +40,7 @@ return array(
     'add' => '4.5',
     'is_domain' => 1,
     'is_contact' => 0,
-    'description' => 'Default Campaign for new Volunteer Projects',
+    'description' => 'Campaign for new Volunteer Projects',
     'help_text' => '',
   ),
   'volunteer_project_default_locblock' => array(
@@ -52,7 +52,7 @@ return array(
     'add' => '4.5',
     'is_domain' => 1,
     'is_contact' => 0,
-    'description' => 'Default Location for new Volunteer Projects',
+    'description' => 'Location for new Volunteer Projects',
     'help_text' => '',
   ),
   'volunteer_project_default_is_active' => array(
@@ -64,7 +64,7 @@ return array(
     'add' => '4.5',
     'is_domain' => 1,
     'is_contact' => 0,
-    'description' => 'Default Active status for new Volunteer Projects',
+    'description' => 'Active status for new Volunteer Projects',
     'help_text' => 'Should new Projects default to being active?',
   ),
   'volunteer_project_default_contacts' => array(
