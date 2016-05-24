@@ -143,13 +143,17 @@ function civicrm_api3_volunteer_util_getsupportingdata($params) {
 
     $results['phone_types'] = CRM_Core_OptionGroup::values("phone_type", FALSE, FALSE, TRUE);
 
-    $results['defaults'] = array(
-      'profile' => civicrm_api3('UFGroup', 'getvalue', array(
-        "name" => "volunteer_sign_up",
-        "return" => "id"
-      )),
-      'relationships' => _volunteerGetProjectRelationshipDefaults(),
-    );
+    //Fetch the Defaults from saved settings.
+    $defaults = CRM_Volunteer_BAO_Project::composeDefaultSettingsArray();
+
+    //StopGap because the interface for contacts didn't fit into scope
+    if(!array_key_exists("relationships", $defaults)) {
+     $defaults['relationships'] = _volunteerGetProjectRelationshipDefaults();
+    }
+    //Allow other extensions to modify the defaults
+    CRM_Volunteer_Hook::projectDefaultSettings($defaults);
+
+    $results['defaults'] = $defaults;
   }
 
   if ($controller === 'VolOppsCtrl') {
@@ -157,6 +161,8 @@ function civicrm_api3_volunteer_util_getsupportingdata($params) {
   }
 
   $results['use_profile_editor'] = CRM_Volunteer_Permission::check(array("access CiviCRM","profile listings and forms"));
+
+  $results['profile_audience_types'] = CRM_Volunteer_BAO_Project::getProjectProfileAudienceTypes();
 
   if (!$results['use_profile_editor']) {
     $profiles = civicrm_api3('UFGroup', 'get', array("return" => "title", "sequential" => 1, 'options' => array('limit' => 0)));

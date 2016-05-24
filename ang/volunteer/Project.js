@@ -13,8 +13,6 @@
           project: function(crmApi, $route) {
             if ($route.current.params.projectId == 0) {
               return {
-                // default new projects to active
-                is_active: "1",
                 id: 0
               };
             } else {
@@ -75,6 +73,7 @@
 
     var relationships = {};
     if(project.id == 0) {
+      project = _.extend(supporting_data.values.defaults, project);
       relationships = supporting_data.values.defaults.relationships;
       var originalRelationships = {};
       if (CRM.vars['org.civicrm.volunteer'].entityTable) {
@@ -131,22 +130,13 @@
     $scope.locationBlocks = location_blocks.values;
     $scope.locationBlocks[0] = "Create a new Location";
     $scope.locBlock = {};
-    if (_.isEmpty(project.profiles)) {
-      project.profiles = [{
-        "is_active": "1",
-        "module": "CiviVolunteer",
-        "entity_table": "civicrm_volunteer_project",
-        "weight": "1",
-        "module_data": {audience: "primary"},
-        "uf_group_id": supporting_data.values.defaults.profile
-      }];
-    } else {
-      $.each(project.profiles, function (key, data) {
-        if(data.module_data) {
-          data.module_data = JSON.parse(data.module_data);
-        }
-      });
-    }
+
+    $.each(project.profiles, function (key, data) {
+      if(data.module_data && typeof(data.module_data) === "string") {
+        data.module_data = JSON.parse(data.module_data);
+      }
+    });
+
     $scope.campaigns = campaigns;
     $scope.relationship_types = supporting_data.values.relationship_types;
     $scope.phone_types = supporting_data.values.phone_types;

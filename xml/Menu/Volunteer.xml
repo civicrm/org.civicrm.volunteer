@@ -103,4 +103,10 @@
     <access_arguments>edit own volunteer projects</access_arguments>
     <is_public>true</is_public>
   </item>
+  <item>
+    <path>civicrm/volunteer/defaults</path>
+    <page_callback>CRM_Volunteer_Form_Defaults</page_callback>
+    <title>CiviVolunteer: Configure Default Settings</title>
+    <access_arguments>administer CiviCRM</access_arguments>
+  </item>
 </menu>

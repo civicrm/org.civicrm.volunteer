@@ -112,7 +112,7 @@ function volunteer_civicrm_navigationMenu(&$params) {
             'url' => 'civicrm/admin/options/volunteer_project_relationship?reset=1',
             'permission' => NULL,
             'operator' => NULL,
-            'separator' => 1,
+            'separator' => 0,
             'parentID' => $newNavId,
             'navID' => $newNavId + 4,
             'active' => 1,
@@ -121,12 +121,12 @@ function volunteer_civicrm_navigationMenu(&$params) {
         ),
         $newNavId + 5 => array(
           'attributes' => array(
-            'label' => ts('Volunteer Interest Form', array('domain' => 'org.civicrm.volunteer')),
-            'name' => 'volunteer_join',
-            'url' => 'civicrm/volunteer/join',
+            'label' => ts('Configure Default Settings', array('domain' => 'org.civicrm.volunteer')),
+            'name' => 'volunteer_config_defaults',
+            'url' => 'civicrm/volunteer/defaults',
             'permission' => NULL,
             'operator' => NULL,
-            'separator' => 0,
+            'separator' => 1,
             'parentID' => $newNavId,
             'navID' => $newNavId + 5,
             'active' => 1,
@@ -135,6 +135,20 @@ function volunteer_civicrm_navigationMenu(&$params) {
         ),
         $newNavId + 6 => array(
           'attributes' => array(
+            'label' => ts('Volunteer Interest Form', array('domain' => 'org.civicrm.volunteer')),
+            'name' => 'volunteer_join',
+            'url' => 'civicrm/volunteer/join',
+            'permission' => NULL,
+            'operator' => NULL,
+            'separator' => 0,
+            'parentID' => $newNavId,
+            'navID' => $newNavId + 6,
+            'active' => 1,
+          ),
+          'child' => array(),
+        ),
+        $newNavId + 7 => array(
+          'attributes' => array(
             'label' => ts('Search for Volunteer Opportunities', array('domain' => 'org.civicrm.volunteer')),
             'name' => 'volunteer_opp_search',
             'url' => 'civicrm/vol/#/volunteer/opportunities',
@@ -142,7 +156,7 @@ function volunteer_civicrm_navigationMenu(&$params) {
             'operator' => NULL,
             'separator' => 0,
             'parentID' => $newNavId,
-            'navID' => $newNavId + 6,
+            'navID' => $newNavId + 7,
             'active' => 1,
           ),
           'child' => array(),
@@ -356,7 +370,7 @@ function _volunteer_periodicChecks() {
   if (
     !CRM_Core_Permission::check('administer CiviCRM')
     || !$session->timer('check_CRM_Volunteer_Depends', CRM_Utils_Check::CHECK_TIMER)
-    ) {
+  ) {
     return;
   }
 
@@ -609,17 +623,17 @@ function _volunteer_isVolListingApiCall($entity, $action) {
  */
 function volunteer_civicrm_angularModules(&$angularModules) {
   $angularModules['volunteer'] = array(
-      'ext' => 'org.civicrm.volunteer',
-      'js' =>
-          array (
-              0 => 'ang/volunteer.js',
-              1 => 'ang/volunteer/*.js',
-              2 => 'ang/volunteer/*/*.js'
-          ),
-      'css' => array (0 => 'ang/volunteer.css'),
-      'partials' => array (0 => 'ang/volunteer'),
-      'settings' => array (),
-      'volunteer' => true
+    'ext' => 'org.civicrm.volunteer',
+    'js' =>
+      array (
+        0 => 'ang/volunteer.js',
+        1 => 'ang/volunteer/*.js',
+        2 => 'ang/volunteer/*/*.js'
+      ),
+    'css' => array (0 => 'ang/volunteer.css'),
+    'partials' => array (0 => 'ang/volunteer'),
+    'settings' => array (),
+    'volunteer' => true
   );
 
   // Perhaps the placement of this code is a little hackish; unless/until we
@@ -651,3 +665,4 @@ function volunteer_civicrm_fieldOptions($entity, $field, &$options, $params) {
     $options[CRM_Volunteer_DAO_Project::getTableName()] = CRM_Volunteer_DAO_Project::getTableName();
   }
 }
+

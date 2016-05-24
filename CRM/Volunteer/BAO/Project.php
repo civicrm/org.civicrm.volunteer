@@ -108,6 +108,7 @@ class CRM_Volunteer_BAO_Project extends CRM_Volunteer_DAO_Project {
    */
   private $end_date;
 
+
   /**
    * class constructor
    */
@@ -233,7 +234,7 @@ class CRM_Volunteer_BAO_Project extends CRM_Volunteer_DAO_Project {
     $projectContacts = CRM_Utils_Array::value('project_contacts', $params, array());
     foreach ($projectContacts as $relationshipType => &$contactIds) {
       $contactIds = CRM_Volunteer_BAO_Project::validateContactFormat($contactIds);
-      
+
       foreach ($contactIds as $id) {
         if(!array_key_exists($relationshipType, $existingContacts) || !in_array($id, $existingContacts[$relationshipType])) {
           civicrm_api3('VolunteerProjectContact', 'create', array(
@@ -601,7 +602,7 @@ class CRM_Volunteer_BAO_Project extends CRM_Volunteer_DAO_Project {
         }
         catch (Exception $e) {
           $format = 'Could not fetch entity attributes for volunteer project with ID %d. '
-              . 'No %s with ID %d exists; perhaps it has been deleted.';
+            . 'No %s with ID %d exists; perhaps it has been deleted.';
           $msg = sprintf($format, $this->id, $this->entity_table, $this->entity_id);
           CRM_Core_Error::debug_log_message($msg, FALSE, 'org.civicrm.volunteer');
         }
@@ -653,6 +654,84 @@ class CRM_Volunteer_BAO_Project extends CRM_Volunteer_DAO_Project {
     return $contacts;
   }
 
+  /**
+   * This function fetches the defaults from civicrm settings
+   * And puts them into the appropriate data format to return
+   * to the angular front-end
+   *
+   * @return array
+   * @throws CiviCRM_API3_Exception
+   */
+  public static function composeDefaultSettingsArray() {
+    $defaults = array();
+
+    $defaults['is_active'] = CRM_Core_BAO_Setting::getItem("org.civicrm.volunteer", "volunteer_project_default_is_active");
+    $defaults['campaign_id'] = CRM_Core_BAO_Setting::getItem("org.civicrm.volunteer", "volunteer_project_default_campaign");
+    $defaults['loc_block_id'] = CRM_Core_BAO_Setting::getItem("org.civicrm.volunteer", "volunteer_project_default_locblock");
+
+    $coreDefaultProfile = array(
+      "is_active" => "1",
+      "module" => "CiviVolunteer",
+      "entity_table" => "civicrm_volunteer_project",
+      "weight" => 1,
+      "module_data" => array("audience" => "primary"),
+      "uf_group_id" => civicrm_api3('UFGroup', 'getvalue', array(
+        "name" => "volunteer_sign_up",
+        "return" => "id"
+      ))
+    );
+
+    $profiles = array();
+    $profileByType = CRM_Core_BAO_Setting::getItem("org.civicrm.volunteer", "volunteer_project_default_profiles");
+
+    foreach($profileByType as $audience => $profileForType) {
+      foreach ($profileForType as $profileId) {
+        $profile = $coreDefaultProfile;
+        $profile['uf_group_id'] = $profileId;
+        $profile['weight'] = count($profiles) + 1;
+        $profile['module_data']['audience'] = $audience;
+        $profiles[] = $profile;
+      }
+    }
+
+    $defaults['profiles'] = $profiles;
+
+
+    //Todo VOL-202: Handle ProjectContacts/Relationship Defaults
+    //We should implement "tokens" such as [employer] and [self] so the
+    //defaults can be relative to the user creating the project.
+    //When this is implemented, the defaults should be such that if
+    //the user takes no action it replicates what is in
+    //VolunteerUtil::getSupportingData()
+
+    return $defaults;
+  }
+
+  /**
+   * The types of
+   *
+   * @var array
+   */
+  public static function getProjectProfileAudienceTypes()
+  {
+    return array(
+      "primary" => array(
+        "type" => "primary",
+        "description" => ts("Profile(s) for Individual Registration", array('domain' => 'org.civicrm.volunteer')),
+        "label" => ts("Individual Registration", array('domain' => 'org.civicrm.volunteer'))
+      ),
+      "additional" => array(
+        "type" => "additional",
+        "description" => ts("Profile(s) for Group Registration", array('domain' => 'org.civicrm.volunteer')),
+        "label" => ts("Group Registration", array('domain' => 'org.civicrm.volunteer'))
+      ),
+      "both" => array(
+        "type" => "both",
+        "description" => ts("Profile(s) for Both Individual and Group Registration", array('domain' => 'org.civicrm.volunteer')),
+        "label" => ts("Both", array('domain' => 'org.civicrm.volunteer'))
+      ),
+    );
+  }
   /**
    * Sets and returns the start date of the entity associated with this Project
    *
@@ -757,7 +836,7 @@ class CRM_Volunteer_BAO_Project extends CRM_Volunteer_DAO_Project {
     return $this->roles;
   }
 
-  
+
   /**
    * Sets and returns $this->open_needs. Delegate of __get().
    *
