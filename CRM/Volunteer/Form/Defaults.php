@@ -80,9 +80,19 @@ class CRM_Volunteer_Form_Defaults extends CRM_Core_Form {
     ));
     // export form elements
     $this->assign('elementGroups', $this->getRenderableElementNames());
+    $this->buildHelpText();
     parent::buildQuickForm();
   }
 
+  /**
+   * Assigns help text to the form object for use in the template layer.
+   */
+  private function buildHelpText() {
+    $newProjectUrl = CRM_Utils_System::url('civicrm/vol/', NULL, FALSE, 'volunteer/manage/0');
+    $this->assign('helpText', array(
+      'Default Project Settings' => ts('Streamline creating new volunteer projects by selecting the options you choose most. The <a href="%1">New Project screen</a> will open with these settings already selected.', array(1 => $newProjectUrl, 'domain' => 'org.civicrm.volunteer')),
+    ));
+  }
 
   function setDefaultValues() {
     $defaults = array();

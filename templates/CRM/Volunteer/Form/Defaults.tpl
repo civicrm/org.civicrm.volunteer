@@ -7,10 +7,13 @@
 
 {foreach from=$elementGroups item=elementNames key=groupName}
     <fieldset>
-        <legend>{$groupName}</legend>
-    {foreach from=$elementNames item=elementName}
-        <div class="crm-section">
-            <div class="label">{$form.$elementName.label}</div>
+      <legend>{$groupName}</legend>
+      {if $helpText.$groupName}
+        <div class="help">{$helpText.$groupName}</div>
+      {/if}
+      {foreach from=$elementNames item=elementName}
+      <div class="crm-section">
+        <div class="label">{$form.$elementName.label}</div>
             <div class="content">{$form.$elementName.html}</div>
             <div class="clear"></div>
         </div>
