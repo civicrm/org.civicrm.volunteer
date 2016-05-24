@@ -50,7 +50,7 @@ class CRM_Volunteer_Form_Defaults extends CRM_Core_Form {
       ts('Location', array('domain' => 'org.civicrm.volunteer')),
       $locBlocks['values'],
       false, // is required,
-      array("placeholder" => ts("-- No Default Location --", array('domain' => 'org.civicrm.volunteer')))
+      array("placeholder" => ts("- none -", array('domain' => 'org.civicrm.volunteer')))
     );
 
     $this->add(
