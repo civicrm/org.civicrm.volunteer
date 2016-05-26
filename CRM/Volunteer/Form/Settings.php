@@ -150,6 +150,14 @@ class CRM_Volunteer_Form_Settings extends CRM_Core_Form {
 
 
   function validate() {
+    parent::validate();
+
+    $values = $this->exportValues();
+    if($values['volunteer_general_campaign_filter_type'] == "whitelist" &&
+      empty($values['volunteer_general_campaign_filter_list'])) {
+      CRM_Core_Session::setStatus(ts("Your whitelist of Campaign types is empty, this will result in no campaigns being available for Volunteer Projects", array('domain' => 'org.civicrm.volunteer')), "Warning", "warning");
+    }
+
     //CRM_Core_Session::setStatus(ts("", array('domain' => 'org.civicrm.volunteer')), "Error", "error");
     return true;
   }
@@ -170,8 +178,7 @@ class CRM_Volunteer_Form_Settings extends CRM_Core_Form {
       "org.civicrm.volunteer",
       "volunteer_project_default_profiles"
     );
-
-
+    
     CRM_Core_BAO_Setting::setItem(CRM_Utils_Array::value('volunteer_project_default_campaign', $values),"org.civicrm.volunteer", "volunteer_project_default_campaign");
     CRM_Core_BAO_Setting::setItem(CRM_Utils_Array::value('volunteer_project_default_locblock', $values),"org.civicrm.volunteer", "volunteer_project_default_locblock");
     CRM_Core_BAO_Setting::setItem(CRM_Utils_Array::value('volunteer_project_default_is_active', $values, 0), "org.civicrm.volunteer", "volunteer_project_default_is_active");
