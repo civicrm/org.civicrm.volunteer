@@ -15,7 +15,7 @@ return array(
   ),
 
   'volunteer_project_default_profiles' => array(
-    'group_name' => 'CiviVolunteer Configurations',
+    'group_name' => 'Default Project Settings',
     'group' => 'org.civicrm.volunteer',
     'name' => 'volunteer_project_default_profiles',
     'type' => 'Array',
@@ -32,7 +32,7 @@ return array(
   ),
 
   'volunteer_project_default_campaign' => array(
-    'group_name' => 'CiviVolunteer Configurations',
+    'group_name' => 'Default Project Settings',
     'group' => 'org.civicrm.volunteer',
     'name' => 'volunteer_project_default_campaign',
     'type' => 'Int',
@@ -44,7 +44,7 @@ return array(
     'help_text' => '',
   ),
   'volunteer_project_default_locblock' => array(
-    'group_name' => 'CiviVolunteer Configurations',
+    'group_name' => 'Default Project Settings',
     'group' => 'org.civicrm.volunteer',
     'name' => 'volunteer_project_default_locblock',
     'type' => 'Int',
@@ -56,7 +56,7 @@ return array(
     'help_text' => '',
   ),
   'volunteer_project_default_is_active' => array(
-    'group_name' => 'CiviVolunteer Configurations',
+    'group_name' => 'Default Project Settings',
     'group' => 'org.civicrm.volunteer',
     'name' => 'volunteer_project_default_is_active',
     'type' => 'Int',
@@ -68,7 +68,7 @@ return array(
     'help_text' => 'Should new Projects default to being active?',
   ),
   'volunteer_project_default_contacts' => array(
-    'group_name' => 'CiviVolunteer Configurations',
+    'group_name' => 'Default Project Settings',
     'group' => 'org.civicrm.volunteer',
     'name' => 'volunteer_project_default_contacts',
     'type' => 'Array',
@@ -80,7 +80,7 @@ return array(
     'help_text' => '',
   ),
   'volunteer_general_campaign_filter_type' => array(
-    'group_name' => 'CiviVolunteer Configurations',
+    'group_name' => 'CiviVolunteer Global Settings',
     'group' => 'org.civicrm.volunteer',
     'name' => 'volunteer_general_campaign_filter_type',
     'type' => 'String',
@@ -92,7 +92,7 @@ return array(
     'help_text' => 'Whether Volunteer should use the campaign type list as a Blacklist or a Whitelist',
   ),
   'volunteer_general_campaign_filter_list' => array(
-    'group_name' => 'CiviVolunteer Configurations',
+    'group_name' => 'CiviVolunteer Global Settings',
     'group' => 'org.civicrm.volunteer',
     'name' => 'volunteer_general_campaign_filter_list',
     'type' => 'Array',

@@ -9,6 +9,14 @@ require_once 'CRM/Core/Form.php';
  */
 class CRM_Volunteer_Form_Settings extends CRM_Core_Form {
 
+  function preProcess() {
+    parent::preProcess();
+
+    //Fetch the Metadata so it is available later on.
+    $result = civicrm_api3('Setting', 'getfields');
+    $this->_settingsMetadata = ($result['count'] > 0) ? $result['values'] : array();
+  }
+
   function buildQuickForm() {
     // add form elements
 
@@ -25,7 +33,12 @@ class CRM_Volunteer_Form_Settings extends CRM_Core_Form {
         $audience['description'],
         $profileList,
         false, // is required,
-        array("placeholder" => ts("- none -", array('domain' => 'org.civicrm.volunteer')), "multiple" => "multiple", "class" => "crm-select2")
+        array(
+          "placeholder" => ts("- none -", array('domain' => 'org.civicrm.volunteer')),
+          "multiple" => "multiple",
+          "class" => "crm-select2",
+          "fieldGroup" => "Default Project Settings"
+        )
       );
     }
 
@@ -172,7 +185,7 @@ class CRM_Volunteer_Form_Settings extends CRM_Core_Form {
       "org.civicrm.volunteer",
       "volunteer_project_default_profiles"
     );
-    
+
     CRM_Core_BAO_Setting::setItem(CRM_Utils_Array::value('volunteer_project_default_campaign', $values),"org.civicrm.volunteer", "volunteer_project_default_campaign");
     CRM_Core_BAO_Setting::setItem(CRM_Utils_Array::value('volunteer_project_default_locblock', $values),"org.civicrm.volunteer", "volunteer_project_default_locblock");
     CRM_Core_BAO_Setting::setItem(CRM_Utils_Array::value('volunteer_project_default_is_active', $values, 0), "org.civicrm.volunteer", "volunteer_project_default_is_active");
@@ -198,18 +211,22 @@ class CRM_Volunteer_Form_Settings extends CRM_Core_Form {
 
     foreach ($this->_elements as $element) {
       $name = $element->getName();
-      $entity = preg_replace("/volunteer_([a-zA-Z0-9]*)_.*/", "$1", $name);
-      $includeDefault = strpos($name, "default") ? "Default " : "";
-      $group = $includeDefault . ucfirst($entity) . " Settings";
+      $groupName = $element->getAttribute("fieldGroup");
 
+      if (empty($groupName)) {
+        $groupName = CRM_Utils_Array::value($name, $this->_settingsMetadata);
+        $groupName = $groupName['group_name'];
+      }
+
+      $groupLabel = ts($groupName, array('domain' => 'org.civicrm.volunteer'));
       $label = $element->getLabel();
       if (!empty($label)) {
 
-        if(!array_key_exists($group, $elementGroups)) {
-          $elementGroups[$group] = array();
+        if(!array_key_exists($groupLabel, $elementGroups)) {
+          $elementGroups[$groupLabel] = array();
         }
 
-        $elementGroups[$group][] = $name;
+        $elementGroups[$groupLabel][] = $name;
       }
     }
 
