@@ -7,7 +7,7 @@ require_once 'CRM/Core/Form.php';
  *
  * @see http://wiki.civicrm.org/confluence/display/CRMDOC43/QuickForm+Reference
  */
-class CRM_Volunteer_Form_Defaults extends CRM_Core_Form {
+class CRM_Volunteer_Form_Settings extends CRM_Core_Form {
 
   function buildQuickForm() {
     // add form elements
@@ -108,7 +108,7 @@ class CRM_Volunteer_Form_Defaults extends CRM_Core_Form {
     $this->addButtons(array(
       array(
         'type' => 'submit',
-        'name' => ts('Save Default Settings', array('domain' => 'org.civicrm.volunteer')),
+        'name' => ts('Save Volunteer Settings', array('domain' => 'org.civicrm.volunteer')),
         'isDefault' => TRUE,
       ),
     ));
