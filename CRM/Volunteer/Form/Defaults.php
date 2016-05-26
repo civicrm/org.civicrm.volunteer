@@ -62,14 +62,48 @@ class CRM_Volunteer_Form_Defaults extends CRM_Core_Form {
     );
 
     /*
+        $this->add(
+          'text',
+          'volunteer_project_default_contacts',
+          ts('Default Associated Contacts', array('domain' => 'org.civicrm.volunteer')),
+          array("size" => 35),
+          true // is required,
+        );
+        */
+
+
+    /*** Fields for Campaign Whitelist/Blacklist ***/
     $this->add(
-      'text',
-      'volunteer_project_default_contacts',
-      ts('Default Associated Contacts', array('domain' => 'org.civicrm.volunteer')),
-      array("size" => 35),
-      true // is required,
+      'select',
+      'volunteer_general_campaign_filter_type',
+      ts('Campaign Filter Whitelist/Blacklist', array('domain' => 'org.civicrm.volunteer')),
+      array(
+        "blacklist" => ts("Blacklist", array('domain' => 'org.civicrm.volunteer')),
+        "whitelist" => ts("Whitelist", array('domain' => 'org.civicrm.volunteer')),
+      ),
+      true
     );
-    */
+
+
+    $results = civicrm_api3('OptionValue', 'get', array(
+      'sequential' => 1,
+      'option_group_id' => "campaign_type",
+      'return' => "value,label",
+    ));
+    $campaignTypes = array();
+    foreach($results['values'] as $campaignType) {
+      $campaignTypes[$campaignType['value']] = $campaignType['label'];
+    }
+
+    $this->add(
+      'select',
+      'volunteer_general_campaign_filter_list',
+      ts('Campaign Type(s)', array('domain' => 'org.civicrm.volunteer')),
+      $campaignTypes,
+      false, // is required,
+      array("placeholder" => ts("- none -", array('domain' => 'org.civicrm.volunteer')), "multiple" => "multiple", "class" => "crm-select2")
+    );
+
 
     $this->addButtons(array(
       array(
@@ -107,6 +141,10 @@ class CRM_Volunteer_Form_Defaults extends CRM_Core_Form {
       $defaults["volunteer_project_default_profiles_" . $audience['type']] = CRM_Utils_Array::value($audience['type'], $profiles, array());
     }
 
+    //General Settings
+    $defaults['volunteer_general_campaign_filter_type'] = CRM_Core_BAO_Setting::getItem("org.civicrm.volunteer", "volunteer_general_campaign_filter_type");
+    $defaults['volunteer_general_campaign_filter_list'] = CRM_Core_BAO_Setting::getItem("org.civicrm.volunteer", "volunteer_general_campaign_filter_list");
+
     return $defaults;
   }
 
@@ -141,6 +179,12 @@ class CRM_Volunteer_Form_Defaults extends CRM_Core_Form {
     //Todo: Create Composit data structure like we do for profiles
     CRM_Core_BAO_Setting::setItem(CRM_Utils_Array::value('volunteer_project_default_contacts', $values),"org.civicrm.volunteer", "volunteer_project_default_contacts");
 
+
+    //Whitelist/Blacklist settings
+    CRM_Core_BAO_Setting::setItem(CRM_Utils_Array::value('volunteer_general_campaign_filter_type', $values), "org.civicrm.volunteer", "volunteer_general_campaign_filter_type");
+    CRM_Core_BAO_Setting::setItem(CRM_Utils_Array::value('volunteer_general_campaign_filter_list', $values, 0), "org.civicrm.volunteer", "volunteer_general_campaign_filter_list");
+
+
     CRM_Core_Session::setStatus(ts("Changes Saved", array('domain' => 'org.civicrm.volunteer')), "Saved", "success");
     parent::postProcess();
   }
@@ -156,8 +200,9 @@ class CRM_Volunteer_Form_Defaults extends CRM_Core_Form {
 
     foreach ($this->_elements as $element) {
       $name = $element->getName();
-      $entity = preg_replace("/volunteer_(.*)_default_.*/", "$1", $name);
-      $group = ts("Default " . ucfirst($entity) . " Settings", array('domain' => 'org.civicrm.volunteer'));
+      $entity = preg_replace("/volunteer_([a-zA-Z0-9]*)_.*/", "$1", $name);
+      $includeDefault = strpos($name, "default") ? "Default " : "";
+      $group = ts($includeDefault . ucfirst($entity) . " Settings", array('domain' => 'org.civicrm.volunteer'));
 
       $label = $element->getLabel();
       if (!empty($label)) {
