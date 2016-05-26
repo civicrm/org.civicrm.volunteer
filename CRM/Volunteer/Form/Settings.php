@@ -20,6 +20,9 @@ class CRM_Volunteer_Form_Settings extends CRM_Core_Form {
   function buildQuickForm() {
     // add form elements
 
+    $this->_fieldDescriptions = array();
+    $this->_helpIcons = array();
+
     $profiles = civicrm_api3('UFGroup', 'get', array("return" => "title", "sequential" => 1, 'options' => array('limit' => 0)));
     $profileList = array();
     foreach($profiles['values'] as $profile) {
@@ -125,6 +128,7 @@ class CRM_Volunteer_Form_Settings extends CRM_Core_Form {
     // export form elements
     $this->assign('elementGroups', $this->getRenderableElementNames());
     $this->buildHelpText();
+    $this->buildFieldDescriptions();
     parent::buildQuickForm();
   }
 
@@ -136,6 +140,19 @@ class CRM_Volunteer_Form_Settings extends CRM_Core_Form {
     $this->assign('helpText', array(
       'Default Project Settings' => ts('Streamline creating new volunteer projects by selecting the options you choose most. The <a href="%1">New Project screen</a> will open with these settings already selected.', array(1 => $newProjectUrl, 'domain' => 'org.civicrm.volunteer')),
     ));
+  }
+
+  private function buildFieldDescriptions() {
+
+    foreach ($this->_elements as $element) {
+      $name = $element->getName();
+      $helpText = $this->getSettingMetadata($name, "help_text");
+      if ($helpText && !array_key_exists($name, $this->_fieldDescriptions)) {
+        $this->_fieldDescriptions[$name] = $helpText;
+      }
+    }
+
+    $this->assign('fieldDescriptions', $this->_fieldDescriptions);
   }
 
   function setDefaultValues() {
@@ -199,6 +216,20 @@ class CRM_Volunteer_Form_Settings extends CRM_Core_Form {
 
     CRM_Core_Session::setStatus(ts("Changes Saved", array('domain' => 'org.civicrm.volunteer')), "Saved", "success");
     parent::postProcess();
+  }
+
+  /**
+   * This function fetches individual attributes from
+   * the Settings Metadata.
+   *
+   * @param $settingName
+   * @param $attr
+   * @return bool|mixed
+   */
+  function getSettingMetadata($settingName, $attr) {
+    if (!$settingName || !$attr) { return false; }
+    $setting = CRM_Utils_Array::value($settingName, $this->_settingsMetadata);
+    return CRM_Utils_Array::value($attr, $setting);
   }
 
   /**
