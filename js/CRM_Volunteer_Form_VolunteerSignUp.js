@@ -11,7 +11,10 @@
     }
 
     function getDescription(el) {
-      return '<p>' + el.text() + '</p>';
+      //This wrapper was added when we allowed HTML in the project description
+      //to keep the icon visible, instead of the HTML from the description
+      //covering over the icon
+      return el.find(".vol-project-description-wrapper").html();
     }
 
     $('.crm-vol-description').css('cursor', 'pointer').click(function () {
