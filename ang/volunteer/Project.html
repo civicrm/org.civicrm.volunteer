@@ -21,6 +21,10 @@
       </div>
 
       <div class="crm-vol-description" crm-ui-field="{name: 'projectForm.description', title: ts('Project Description')}">
+        <span class="crm-button crm-icon-button crm-vol-button crm-vol-preview-description crm-vol-project-preview-description" ng-click="previewDescription()">
+          <span class="crm-button-icon ui-icon-comment"> </span>
+          <span class="crm-button-text">{{ts('Preview Description')}}</span>
+        </span>
         <textarea crm-ui-richtext class="big crm-form-textarea" crm-ui-id="projectForm.description" ng-model="project.description"></textarea>
       </div>
 
@@ -33,8 +37,8 @@
 
       <div class="crm-vol-location" crm-ui-field='{name: "projectForm.locBlock", title: ts("Location")}'>
         <select class="big crm-form-select crm-vol-location-block-id"
-          ng-change="locBlockChanged()" crm-ui-select="{placeholder: '', allowClear:true}"
-          ng-options="key as value for (key , value) in locationBlocks" ng-model="project.loc_block_id">
+                ng-change="locBlockChanged()" crm-ui-select="{placeholder: '', allowClear:true}"
+                ng-options="key as value for (key , value) in locationBlocks" ng-model="project.loc_block_id">
           <option />
         </select>
         <div id="crm-vol-location-block" class="crm-vol-extra-top" crm-ui-accordion="{title: ts('Edit Location'), collapsed: project.loc_block_id !==0}" ng-hide="!project.loc_block_id">
@@ -138,7 +142,7 @@
 
           <div class="crm-profile-selector-wrapper">
             <input ng-if="supporting_data.use_profile_editor" crm-profile-selector="{}"
-                    ng-model="profile.uf_group_id" ng-change="validateProfileSelections()"/>
+                   ng-model="profile.uf_group_id" ng-change="validateProfileSelections()"/>
 
             <select ng-if="!supporting_data.use_profile_editor" class="big crm-form-select crm-vol-simple-profile-selector"
                     crm-ui-select="{placeholder: '', allowClear:true}" ng-change="validateProfileSelections()"
