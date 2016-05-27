@@ -18,6 +18,9 @@ CRM.$(function($) {
       buttons: [{text: ts('Done'), click: function() {$(this).dialog('close');}, icons: {primary: 'ui-icon-close'}}],
       close: function() {
         CRM.volunteerApp.module(CRM.volunteerApp.tab).stop();
+        if(CRM.volunteerApp.tab == "Define") {
+          $("body").trigger("volunteer:close:define", [CRM.volunteerApp.project_id, CRM.volunteerApp.changedNeeds]);
+        }
       }
     };
     return settings;
