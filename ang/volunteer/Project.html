@@ -21,10 +21,13 @@
       </div>
 
       <div class="crm-vol-description" crm-ui-field="{name: 'projectForm.description', title: ts('Project Description')}">
-        <span class="crm-button crm-icon-button crm-vol-button crm-vol-preview-description crm-vol-project-preview-description" ng-click="previewDescription()">
-          <span class="crm-button-icon ui-icon-comment"> </span>
-          <span class="crm-button-text">{{ts('Preview Description')}}</span>
-        </span>
+        <p>
+          <span class="crm-button crm-icon-button crm-vol-button crm-vol-preview-description crm-vol-project-preview-description" ng-click="previewDescription()">
+            <span class="crm-button-icon ui-icon-comment"> </span>
+            <span class="crm-button-text">{{ts('Preview Description')}}</span>
+          </span>
+        </p>
+        <br />
         <textarea crm-ui-richtext class="big crm-form-textarea" crm-ui-id="projectForm.description" ng-model="project.description"></textarea>
       </div>
 
