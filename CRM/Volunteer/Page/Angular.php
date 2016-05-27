@@ -41,7 +41,7 @@ class CRM_Volunteer_Page_Angular extends Civi\Angular\Page\Main {
 
       //Civi vs 4.7 and above has reworked how wysiwyg works and we don't
       //have to side load ckeditor anymore
-      $version = CRM_Utils_System::majorVersion();
+      $version = substr(CRM_Utils_System::version(), 0, 3);
       if($version <= 4.6) {
         //crmUi depends on loading ckeditor, but ckeditor doesn't work with aggregation.
         $page->res->addScriptFile('civicrm', 'packages/ckeditor/ckeditor.js', 120, $region, FALSE);
