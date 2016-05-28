@@ -71,7 +71,6 @@ class CRM_Volunteer_Form_Settings extends CRM_Core_Form {
         );
         */
 
-
     /*** Fields for Campaign Whitelist/Blacklist ***/
     $this->add(
       'select',
@@ -83,7 +82,6 @@ class CRM_Volunteer_Form_Settings extends CRM_Core_Form {
       ),
       true
     );
-
 
     $results = civicrm_api3('OptionValue', 'get', array(
       'sequential' => 1,
@@ -103,7 +101,6 @@ class CRM_Volunteer_Form_Settings extends CRM_Core_Form {
       false, // is required,
       array("placeholder" => ts("- none -", array('domain' => 'org.civicrm.volunteer')), "multiple" => "multiple", "class" => "crm-select2")
     );
-
 
     $this->addButtons(array(
       array(
@@ -148,7 +145,6 @@ class CRM_Volunteer_Form_Settings extends CRM_Core_Form {
     return $defaults;
   }
 
-
   function validate() {
     parent::validate();
 
@@ -164,7 +160,6 @@ class CRM_Volunteer_Form_Settings extends CRM_Core_Form {
 
   function postProcess() {
     $values = $this->exportValues();
-
 
     //Compose the profiles before we save tem.
     $profiles = array();
@@ -186,16 +181,13 @@ class CRM_Volunteer_Form_Settings extends CRM_Core_Form {
     //Todo: Create Composit data structure like we do for profiles
     CRM_Core_BAO_Setting::setItem(CRM_Utils_Array::value('volunteer_project_default_contacts', $values),"org.civicrm.volunteer", "volunteer_project_default_contacts");
 
-
     //Whitelist/Blacklist settings
     CRM_Core_BAO_Setting::setItem(CRM_Utils_Array::value('volunteer_general_campaign_filter_type', $values), "org.civicrm.volunteer", "volunteer_general_campaign_filter_type");
     CRM_Core_BAO_Setting::setItem(CRM_Utils_Array::value('volunteer_general_campaign_filter_list', $values, 0), "org.civicrm.volunteer", "volunteer_general_campaign_filter_list");
 
-
     CRM_Core_Session::setStatus(ts("Changes Saved", array('domain' => 'org.civicrm.volunteer')), "Saved", "success");
     parent::postProcess();
   }
-
 
   /**
    * Get the fields/elements defined in this form.
