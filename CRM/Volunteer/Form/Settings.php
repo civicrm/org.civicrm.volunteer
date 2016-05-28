@@ -201,7 +201,7 @@ class CRM_Volunteer_Form_Settings extends CRM_Core_Form {
       $name = $element->getName();
       $entity = preg_replace("/volunteer_([a-zA-Z0-9]*)_.*/", "$1", $name);
       $includeDefault = strpos($name, "default") ? "Default " : "";
-      $group = ts($includeDefault . ucfirst($entity) . " Settings", array('domain' => 'org.civicrm.volunteer'));
+      $group = $includeDefault . ucfirst($entity) . " Settings";
 
       $label = $element->getLabel();
       if (!empty($label)) {
