@@ -101,7 +101,7 @@ return array(
     'is_domain' => 1,
     'is_contact' => 0,
     'description' => 'Campaign Type(s)',
-    'help_text' => 'The list of Campaign Types to use as either a Whitelist or Blacklist',
+    'help_text' => 'Depending on the value of the Campaign Filter Whitelist/Blacklist setting, the campaign types in this list will either be shown or hidden from CiviVolunteer screens.',
   ),
 
 );
