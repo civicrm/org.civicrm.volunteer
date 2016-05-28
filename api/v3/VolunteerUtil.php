@@ -248,7 +248,6 @@ function civicrm_api3_volunteer_util_getbeneficiaries($params) {
  * @return array
  */
 function civicrm_api3_volunteer_util_getcampaigns($params) {
-
   $filterType = CRM_Core_BAO_Setting::getItem("org.civicrm.volunteer", "volunteer_general_campaign_filter_type");
   $filterList = CRM_Core_BAO_Setting::getItem("org.civicrm.volunteer", "volunteer_general_campaign_filter_list");
 
@@ -261,21 +260,27 @@ function civicrm_api3_volunteer_util_getcampaigns($params) {
   //Filter the campaigns by Campaign type if the settings
   //are set to do so.
   switch($filterType) {
+    case "whitelist":
+      if (empty($filterList)) {
+        $result = array();
+      } else {
+        $campaignParams['campaign_type_id'] = array('IN' => $filterList);
+      }
+      break;
     case "blacklist":
+    default:
       if (!empty($filterList)) {
         $campaignParams['campaign_type_id'] = array('NOT IN' => $filterList);
       }
       break;
-    case "whitelist":
-      if (!empty($filterList)) {
-        $campaignParams['campaign_type_id'] = array('IN' => $filterList);
-      } else {
-        return civicrm_api3_create_success(array(), "VolunteerUtil", "getcampaigns", $params);
-      }
-      break;
   }
 
-  return civicrm_api3('Campaign', 'get', $campaignParams);
+  if (!isset($result)) {
+    $api = civicrm_api3('Campaign', 'get', $campaignParams);
+    $result = $api['values'];
+  }
+
+  return civicrm_api3_create_success($result, "VolunteerUtil", "getcampaigns", $params);
 }
 
 /**
