@@ -151,11 +151,10 @@ class CRM_Volunteer_Form_Settings extends CRM_Core_Form {
     $values = $this->exportValues();
     if($values['volunteer_general_campaign_filter_type'] == "whitelist" &&
       empty($values['volunteer_general_campaign_filter_list'])) {
-      CRM_Core_Session::setStatus(ts("Your whitelist of Campaign types is empty, this will result in no campaigns being available for Volunteer Projects", array('domain' => 'org.civicrm.volunteer')), "Warning", "warning");
+      CRM_Core_Session::setStatus(ts("Your whitelist of campaign types is empty. As a result, no campaigns will be available for Volunteer Projects.", array('domain' => 'org.civicrm.volunteer')), "Warning", "warning");
     }
 
-    //CRM_Core_Session::setStatus(ts("", array('domain' => 'org.civicrm.volunteer')), "Error", "error");
-    return true;
+    return TRUE;
   }
 
   function postProcess() {
