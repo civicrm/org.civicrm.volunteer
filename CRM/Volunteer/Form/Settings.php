@@ -9,8 +9,22 @@ require_once 'CRM/Core/Form.php';
  */
 class CRM_Volunteer_Form_Settings extends CRM_Core_Form {
 
+  protected $_fieldDescriptions = array();
+  protected $_helpIcons = array();
+  protected $_settingsMetadata = array();
+
+  function preProcess() {
+    parent::preProcess();
+
+    $result = civicrm_api3('Setting', 'getfields');
+    $this->_settingsMetadata = ($result['count'] > 0) ? $result['values'] : array();
+  }
+
   function buildQuickForm() {
     // add form elements
+
+    $this->_fieldDescriptions = array();
+    $this->_helpIcons = array();
 
     $profiles = civicrm_api3('UFGroup', 'get', array("return" => "title", "sequential" => 1, 'options' => array('limit' => 0)));
     $profileList = array();
@@ -25,7 +39,12 @@ class CRM_Volunteer_Form_Settings extends CRM_Core_Form {
         $audience['description'],
         $profileList,
         false, // is required,
-        array("placeholder" => ts("- none -", array('domain' => 'org.civicrm.volunteer')), "multiple" => "multiple", "class" => "crm-select2")
+        array(
+          "placeholder" => ts("- none -", array('domain' => 'org.civicrm.volunteer')),
+          "multiple" => "multiple",
+          "class" => "crm-select2",
+          "fieldGroup" => "Default Project Settings"
+        )
       );
     }
 
@@ -112,6 +131,7 @@ class CRM_Volunteer_Form_Settings extends CRM_Core_Form {
     // export form elements
     $this->assign('elementGroups', $this->getRenderableElementNames());
     $this->buildHelpText();
+    $this->buildFieldDescriptions();
     parent::buildQuickForm();
   }
 
@@ -123,6 +143,19 @@ class CRM_Volunteer_Form_Settings extends CRM_Core_Form {
     $this->assign('helpText', array(
       'Default Project Settings' => ts('Streamline creating new volunteer projects by selecting the options you choose most. The <a href="%1">New Project screen</a> will open with these settings already selected.', array(1 => $newProjectUrl, 'domain' => 'org.civicrm.volunteer')),
     ));
+  }
+
+  private function buildFieldDescriptions() {
+
+    foreach ($this->_elements as $element) {
+      $name = $element->getName();
+      $helpText = $this->getSettingMetadata($name, "help_text");
+      if ($helpText && !array_key_exists($name, $this->_fieldDescriptions)) {
+        $this->_fieldDescriptions[$name] = $helpText;
+      }
+    }
+
+    $this->assign('fieldDescriptions', $this->_fieldDescriptions);
   }
 
   function setDefaultValues() {
@@ -172,7 +205,7 @@ class CRM_Volunteer_Form_Settings extends CRM_Core_Form {
       "org.civicrm.volunteer",
       "volunteer_project_default_profiles"
     );
-    
+
     CRM_Core_BAO_Setting::setItem(CRM_Utils_Array::value('volunteer_project_default_campaign', $values),"org.civicrm.volunteer", "volunteer_project_default_campaign");
     CRM_Core_BAO_Setting::setItem(CRM_Utils_Array::value('volunteer_project_default_locblock', $values),"org.civicrm.volunteer", "volunteer_project_default_locblock");
     CRM_Core_BAO_Setting::setItem(CRM_Utils_Array::value('volunteer_project_default_is_active', $values, 0), "org.civicrm.volunteer", "volunteer_project_default_is_active");
@@ -189,6 +222,20 @@ class CRM_Volunteer_Form_Settings extends CRM_Core_Form {
   }
 
   /**
+   * This function fetches individual attributes from
+   * the Settings Metadata.
+   *
+   * @param string $settingName
+   * @param string $attr
+   * @return bool|mixed
+   */
+  function getSettingMetadata($settingName, $attr) {
+    if (!$settingName || !$attr) { return false; }
+    $setting = CRM_Utils_Array::value($settingName, $this->_settingsMetadata, array());
+    return CRM_Utils_Array::value($attr, $setting);
+  }
+
+  /**
    * Get the fields/elements defined in this form.
    *
    * @return array (string)
@@ -198,18 +245,21 @@ class CRM_Volunteer_Form_Settings extends CRM_Core_Form {
 
     foreach ($this->_elements as $element) {
       $name = $element->getName();
-      $entity = preg_replace("/volunteer_([a-zA-Z0-9]*)_.*/", "$1", $name);
-      $includeDefault = strpos($name, "default") ? "Default " : "";
-      $group = $includeDefault . ucfirst($entity) . " Settings";
+      $groupName = $element->getAttribute("fieldGroup");
+
+      if (empty($groupName)) {
+        $groupName = CRM_Utils_Array::value($name, $this->_settingsMetadata);
+        $groupName = $groupName['group_name'];
+      }
 
       $label = $element->getLabel();
       if (!empty($label)) {
 
-        if(!array_key_exists($group, $elementGroups)) {
-          $elementGroups[$group] = array();
+        if(!array_key_exists($groupName, $elementGroups)) {
+          $elementGroups[$groupName] = array();
         }
 
-        $elementGroups[$group][] = $name;
+        $elementGroups[$groupName][] = $name;
       }
     }
 
