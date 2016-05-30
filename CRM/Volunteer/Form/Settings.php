@@ -252,15 +252,14 @@ class CRM_Volunteer_Form_Settings extends CRM_Core_Form {
         $groupName = $groupName['group_name'];
       }
 
-      $groupLabel = ts($groupName, array('domain' => 'org.civicrm.volunteer'));
       $label = $element->getLabel();
       if (!empty($label)) {
 
-        if(!array_key_exists($groupLabel, $elementGroups)) {
-          $elementGroups[$groupLabel] = array();
+        if(!array_key_exists($groupName, $elementGroups)) {
+          $elementGroups[$groupName] = array();
         }
 
-        $elementGroups[$groupLabel][] = $name;
+        $elementGroups[$groupName][] = $name;
       }
     }
 
