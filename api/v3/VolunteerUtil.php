@@ -148,7 +148,7 @@ function civicrm_api3_volunteer_util_getsupportingdata($params) {
 
     //StopGap because the interface for contacts didn't fit into scope
     if(!array_key_exists("relationships", $defaults)) {
-     $defaults['relationships'] = _volunteerGetProjectRelationshipDefaults();
+      $defaults['relationships'] = _volunteerGetProjectRelationshipDefaults();
     }
     //Allow other extensions to modify the defaults
     CRM_Volunteer_Hook::projectDefaultSettings($defaults);
@@ -248,11 +248,39 @@ function civicrm_api3_volunteer_util_getbeneficiaries($params) {
  * @return array
  */
 function civicrm_api3_volunteer_util_getcampaigns($params) {
-  return civicrm_api3('Campaign', 'get', array(
+  $filterType = CRM_Core_BAO_Setting::getItem("org.civicrm.volunteer", "volunteer_general_campaign_filter_type");
+  $filterList = CRM_Core_BAO_Setting::getItem("org.civicrm.volunteer", "volunteer_general_campaign_filter_list");
+
+  $campaignParams = array(
     "options" => array("limit" => 0),
     "return" => "title,id",
     "is_active" => 1
-  ));
+  );
+
+  //Filter the campaigns by Campaign type if the settings
+  //are set to do so.
+  switch($filterType) {
+    case "whitelist":
+      if (empty($filterList)) {
+        $result = array();
+      } else {
+        $campaignParams['campaign_type_id'] = array('IN' => $filterList);
+      }
+      break;
+    case "blacklist":
+    default:
+      if (!empty($filterList)) {
+        $campaignParams['campaign_type_id'] = array('NOT IN' => $filterList);
+      }
+      break;
+  }
+
+  if (!isset($result)) {
+    $api = civicrm_api3('Campaign', 'get', $campaignParams);
+    $result = $api['values'];
+  }
+
+  return civicrm_api3_create_success($result, "VolunteerUtil", "getcampaigns", $params);
 }
 
 /**
@@ -325,7 +353,7 @@ function civicrm_api3_volunteer_util_getcustomfields($params) {
     if ($optionGroupId) {
       $field['options'] = $optionData[$optionGroupId];
 
-    // Boolean fields don't use option groups, so we supply one
+      // Boolean fields don't use option groups, so we supply one
     } elseif ($field['data_type'] === 'Boolean' && $field['html_type'] === 'Radio') {
       $field['options'] = array(
         array (
