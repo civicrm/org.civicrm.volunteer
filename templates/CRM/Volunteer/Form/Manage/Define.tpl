@@ -84,7 +84,7 @@
     {ts domain='org.civicrm.volunteer'}Flexible timeframe{/ts}
         </option>
         <option value="open">
-          {ts domain='org.civicrm.volunteer'}Open until filled{/ts}
+          {ts domain='org.civicrm.volunteer'}Open-Ended{/ts}
         </option>
       </select>
           {help id="volunteer-define-schedule_type" file="CRM/Volunteer/Form/Manage/Define.hlp"}

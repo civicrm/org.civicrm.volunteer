@@ -55,7 +55,7 @@
       {ts domain='org.civicrm.volunteer'}Select this schedule type for a volunteer opportunity with a specific duration but flexible dates. Example: I need a volunteer to complete 15 hours of filing sometime during the month of December.{/ts}
     </li>
     <li>
-      <strong>{ts domain='org.civicrm.volunteer'}Open Until Filled:{/ts}</strong>
+      <strong>{ts domain='org.civicrm.volunteer'}Open-Ended:{/ts}</strong>
       {ts domain='org.civicrm.volunteer'}Select this schedule type for a volunteer opportunity with no time or duration constraints. Example: I need a volunteer graphic designer.{/ts}
     </li>
   </ul>
