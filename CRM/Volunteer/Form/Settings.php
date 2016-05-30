@@ -9,10 +9,13 @@ require_once 'CRM/Core/Form.php';
  */
 class CRM_Volunteer_Form_Settings extends CRM_Core_Form {
 
+  protected $_fieldDescriptions = array();
+  protected $_helpIcons = array();
+  protected $_settingsMetadata = array();
+
   function preProcess() {
     parent::preProcess();
 
-    //Fetch the Metadata so it is available later on.
     $result = civicrm_api3('Setting', 'getfields');
     $this->_settingsMetadata = ($result['count'] > 0) ? $result['values'] : array();
   }
