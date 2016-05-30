@@ -225,13 +225,13 @@ class CRM_Volunteer_Form_Settings extends CRM_Core_Form {
    * This function fetches individual attributes from
    * the Settings Metadata.
    *
-   * @param $settingName
-   * @param $attr
+   * @param string $settingName
+   * @param string $attr
    * @return bool|mixed
    */
   function getSettingMetadata($settingName, $attr) {
     if (!$settingName || !$attr) { return false; }
-    $setting = CRM_Utils_Array::value($settingName, $this->_settingsMetadata);
+    $setting = CRM_Utils_Array::value($settingName, $this->_settingsMetadata, array());
     return CRM_Utils_Array::value($attr, $setting);
   }
 
