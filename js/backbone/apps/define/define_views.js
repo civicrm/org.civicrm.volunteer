@@ -245,19 +245,19 @@
     };
 
     Define.registerNeedChange = function(action, id) {
-      CRM.volunteerApp.changedNeeds.clean = _.without(CRM.volunteerApp.changedNeeds.clean, id);
+      Define.needRegistry.clean = _.without(Define.needRegistry.clean, id);
 
       //Only remove from the new category if we are deleting it.
       if(action === "deleted") {
-        CRM.volunteerApp.changedNeeds.new = _.without(CRM.volunteerApp.changedNeeds.new, id);
-        CRM.volunteerApp.changedNeeds.updated = _.without(CRM.volunteerApp.changedNeeds.updated, id);
+        Define.needRegistry.new = _.without(Define.needRegistry.new, id);
+        Define.needRegistry.updated = _.without(Define.needRegistry.updated, id);
       }
 
       //Only push it to the list if we haven't already.
-      if(CRM.volunteerApp.changedNeeds[action].indexOf(id) === -1) {
+      if (Define.needRegistry[action].indexOf(id) === -1) {
         //If it is an Update, but this need is new, leave it in new.
-        if(action !== "update" || CRM.volunteerApp.changedNeeds.new.indexOf(id) === -1) {
-          CRM.volunteerApp.changedNeeds[action].push(id);
+        if (action !== "update" || Define.needRegistry.new.indexOf(id) === -1) {
+          Define.needRegistry[action].push(id);
         }
       }
     };
