@@ -119,7 +119,7 @@
         };
         var saveAndNextCallback = function (projectId) {
           volBackbone.load().then(function () {
-            CRM.volunteerPopup(ts('Define Needs'), 'Define', projectId);
+            CRM.volunteerPopup(ts('Define Volunteer Opportunities'), 'Define', projectId);
             $location.path("/volunteer/manage");
           });
         };

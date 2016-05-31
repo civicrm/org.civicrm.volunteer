@@ -3,7 +3,7 @@
         <span class="crm-button crm-icon-button crm-span-button" id="crm-volunteer-event-define">
             <span class="crm-button-icon ui-icon-pencil"> </span>
             <span class="crm-span-button-text">
-                {ts domain='org.civicrm.volunteer'}Define Volunteer Needs{/ts}
+                {ts domain='org.civicrm.volunteer'}Define Volunteer Opportunities{/ts}
             </span>
         </span>
 

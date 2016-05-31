@@ -81,7 +81,7 @@
         <td class="crm-vol-manage-active">{{ project.is_active == 1 ? ts("Yes") : ts("No") }}</td>
         <td class="crm-vol-manage-actionlinks right nowrap">
           <div><a href="#/volunteer/manage/{{project.id}}">{{ ts('Edit') }}</a></div>
-          <div><a ng-click="backbonePopup(ts('Define Needs'), 'Define', project.id)">{{ ts('Define Needs') }}</a></div>
+          <div><a ng-click="backbonePopup(ts('Define Volunteer Opportunities'), 'Define', project.id)">{{ ts('Define Volunteer Opportunities') }}</a></div>
           <div><a ng-click="backbonePopup(ts('Assign Volunteers'), 'Assign', project.id)">{{ ts('Assign Volunteers') }}</a></div>
           <div><a ng-click="showRoster()">{{ ts('View Volunteer Roster') }}</a></div>
           <div><a ng-click="showLogHours()">{{ ts('Log Hours') }}</a></div>
