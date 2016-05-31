@@ -136,7 +136,7 @@ function _civicrm_api3_volunteer_need_getsearchresult_spec(&$params) {
     'title' => 'Role',
     'description' => 'The role the volunteer will perform in the project. (An
       int-like string, a comma-separated list thereof, or an array representing
-      one or more contact IDs who benefit from the Needs/Opportunities.)',
+      one or more role IDs.)',
     'type' => CRM_Utils_Type::T_STRING,
   );
   $params['date_start'] = array(
