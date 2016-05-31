@@ -6,8 +6,8 @@ CRM.volunteerApp.module('Define', function(Define, volunteerApp, Backbone, Mario
   // As needs are created, updated and deleted, their IDs are added to an object.
   // Reopening the dialog resets the data. This is intended to be
   // an extension point; external code can listen for the volunteer:close:define event
-  // then access the list of needs indexed by event type (clean, updated, new, deleted)
-  Define.needRegistry = {"clean": [], "updated": [], "new": [], "deleted": []};
+  // then access the list of needs indexed by event type (clean, updated, created, deleted)
+  Define.needRegistry = {"clean": [], "updated": [], "created": [], "deleted": []};
 
   // Kick everything off
   Define.addInitializer(function() {

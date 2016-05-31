@@ -247,16 +247,16 @@
     Define.registerNeedChange = function(action, id) {
       Define.needRegistry.clean = _.without(Define.needRegistry.clean, id);
 
-      //Only remove from the new category if we are deleting it.
+      //Only remove from the "created" category if we are deleting it.
       if(action === "deleted") {
-        Define.needRegistry.new = _.without(Define.needRegistry.new, id);
+        Define.needRegistry.created = _.without(Define.needRegistry.created, id);
         Define.needRegistry.updated = _.without(Define.needRegistry.updated, id);
       }
 
       //Only push it to the list if we haven't already.
       if (Define.needRegistry[action].indexOf(id) === -1) {
-        //If it is an Update, but this need is new, leave it in new.
-        if (action !== "update" || Define.needRegistry.new.indexOf(id) === -1) {
+        //If it is an Update, but this need is new, leave it in "created".
+        if (action !== "update" || Define.needRegistry.created.indexOf(id) === -1) {
           Define.needRegistry[action].push(id);
         }
       }
@@ -291,7 +291,7 @@
         $('#crm-vol-define-needs-table').block();
         this.collection.createNewNeed(params).done(function(data) {
           //Register the new ID
-          Define.registerNeedChange("new", data.id);
+          Define.registerNeedChange("created", data.id);
           $('#crm-vol-define-needs-table').unblock();
         });
       },
