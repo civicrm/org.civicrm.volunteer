@@ -24,7 +24,9 @@
           <td>
             {$volunteerNeed.project.title}
             {if $volunteerNeed.project.description}
-              <span class="icon ui-icon-comment crm-vol-description">{$volunteerNeed.project.description}</span>
+              <span class="icon ui-icon-comment crm-vol-description">
+                <div class="vol-project-description-wrapper">{$volunteerNeed.project.description}</div>
+              </span>
             {/if}
           </td>
           <td>{$volunteerNeed.project.beneficiaries}</td>

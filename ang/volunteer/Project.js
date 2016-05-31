@@ -346,6 +346,10 @@
       cancelCallback();
     };
 
+    $scope.previewDescription = function() {
+      CRM.alert($scope.project.description, $scope.project.title, 'info', {expires: 0});
+    };
+
     //Handle Refresh requests
     CRM.$("body").on("volunteerProjectRefresh", function() {
       $route.reload();
