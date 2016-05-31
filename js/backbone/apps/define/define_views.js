@@ -204,13 +204,11 @@
           var params = {'id': thisNeed.model.get('id')};
           params[field_name] = value;
           CRM.api3('VolunteerNeed', 'create', params, true).done(function() {
-            // As needs are updated, their IDs are added to an array on the body
-            // element. This is intended to be an extension point; external code
-            // can listen for the dialogclose event then access the list of
-            // updated needs.
-            var updatedNeeds = $('body').data('updatedNeeds') || [];
-            updatedNeeds.push(params.id);
-            $('body').data('updatedNeeds', updatedNeeds);
+            // As needs are updated, their IDs are added to an array
+            // This is intended to be an extension point; external code
+            // can listen for the 'volunteer:close:define' event then access the list of
+            // needs.
+            Define.registerNeedChange("updated", params.id);
           });
         }
       },
@@ -233,12 +231,34 @@
         // END FIXME
         CRM.confirm(function() {
           Define.collectionView.collection.remove(id);
-          CRM.api3('volunteer_need', 'delete', {id: id}, true);
+          CRM.api3('volunteer_need', 'delete', {id: id}, true).done(function() {
+            //Store the deleted need ID so the "volunteer:close:define" event
+            //Can send it to any listeners
+            Define.registerNeedChange("deleted", id);
+          });
         }, {
           title: ts('Delete %1', {1: role}),
           message: msg
         });
         return false;
+      }
+    };
+
+    Define.registerNeedChange = function(action, id) {
+      Define.needRegistry.clean = _.without(Define.needRegistry.clean, id);
+
+      //Only remove from the "created" category if we are deleting it.
+      if(action === "deleted") {
+        Define.needRegistry.created = _.without(Define.needRegistry.created, id);
+        Define.needRegistry.updated = _.without(Define.needRegistry.updated, id);
+      }
+
+      //Only push it to the list if we haven't already.
+      if (Define.needRegistry[action].indexOf(id) === -1) {
+        //If it is an Update, but this need is new, leave it in "created".
+        if (action !== "update" || Define.needRegistry.created.indexOf(id) === -1) {
+          Define.needRegistry[action].push(id);
+        }
       }
     };
 
@@ -269,7 +289,9 @@
         // Reset add another select
         $('#crm-vol-define-add-need').select2('val', '');
         $('#crm-vol-define-needs-table').block();
-        this.collection.createNewNeed(params).done(function() {
+        this.collection.createNewNeed(params).done(function(data) {
+          //Register the new ID
+          Define.registerNeedChange("created", data.id);
           $('#crm-vol-define-needs-table').unblock();
         });
       },
