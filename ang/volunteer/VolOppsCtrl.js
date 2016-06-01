@@ -189,10 +189,16 @@
     $scope.cartIsFixed = false;
     var cartObj = $("div.crm-vol-opp-cart");
     var cartCutoffTop = cartObj.offset().top;
+    var cartDelay = 200;
     $(window).on("scroll", function(e) {
-      $scope.$apply(function() {
-        $scope.cartIsFixed = ($(window).scrollTop() > cartCutoffTop);
-      });
+      var shouldBeFixed = ($(window).scrollTop() > cartCutoffTop);
+      if($scope.cartIsFixed !== shouldBeFixed) {
+        $("#crm-vol-opp-cart").fadeOut(cartDelay);
+        $timeout(function () {
+          $scope.cartIsFixed = shouldBeFixed;
+          $("#crm-vol-opp-cart").fadeIn(cartDelay);
+        }, cartDelay);
+      }
     });
   });
 
