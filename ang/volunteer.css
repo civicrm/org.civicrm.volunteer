@@ -119,3 +119,8 @@ span.crm-button-text {
   text-align: center;
   margin: 10px auto;
 }
+
+.crm-vol-opp-cart-transfer {
+  border: 3px dotted black;
+  background: rgba(0,0,0,0.25);
+}

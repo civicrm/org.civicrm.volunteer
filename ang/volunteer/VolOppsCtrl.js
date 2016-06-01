@@ -21,7 +21,7 @@
     });
   });
 
-  angular.module('volunteer').controller('VolOppsCtrl', function ($route, $scope, $window, crmStatus, crmUiHelp, volOppSearch, countries, supporting_data) {
+  angular.module('volunteer').controller('VolOppsCtrl', function ($route, $scope, $window, $timeout, crmStatus, crmUiHelp, volOppSearch, countries, supporting_data) {
     // The ts() and hs() functions help load strings for this module.
     var ts = $scope.ts = CRM.ts('org.civicrm.volunteer');
     var hs = $scope.hs = crmUiHelp({file: 'ang/VolOppsCtrl'}); // See: templates/ang/VolOppsCtrl.hlp
@@ -162,11 +162,18 @@
       need.inCart = !need.hasOwnProperty('inCart') ? true : !need.inCart;
 
       // if the need was just added to the cart...
+      var delay = 500;
+      var srcObj = (need.inCart) ? "#crm-vol-opp-need-" + need.id : "#crm-vol-opp-cart-large-indicator span";
+      var targetObj = (need.inCart) ? "#crm-vol-opp-cart-large-indicator span" : "#crm-vol-opp-need-" + need.id;
+      $(srcObj).effect( "transfer", { className: 'crm-vol-opp-cart-transfer', to: $( targetObj ) }, delay);
+
+      $timeout(function() {
       if (need.inCart) {
         volOppsInCart[need.id] = need;
       } else {
         delete volOppsInCart[need.id];
       }
+      }, delay);
     };
 
     $scope.$watch('shoppingCart', function(oldValue, newValue) {
