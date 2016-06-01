@@ -129,7 +129,7 @@ Required vars: volOppData, searchParams
 
 
   <!-- Shopping Cart -->
-  <div class="crm-vol-half-responsive crm-vol-opp-cart">
+  <div class="crm-vol-half-responsive crm-vol-opp-cart {{floating_cart}}" ng-class="{'floating_cart_fixed': cartIsFixed, 'floating_cart floating_cart_custom': floatingCartEnabled}">
     <h2>{{ts('Your Selected Volunteer Opportunities')}}</h2>
     <div class="crm-block ui-tabs ui-widget ui-widget-content ui-corner-all " ng-form="volOppCheckoutForm" crm-ui-id-scope>
       <table class="display dataTable no-footer" role="grid">
@@ -142,7 +142,7 @@ Required vars: volOppData, searchParams
           </tr>
         </thead>
         <tbody>
-          <tr ng-repeat="need in shoppingCart()" role="row">
+          <tr ng-repeat="need in shoppingCart" role="row">
             <td class="crm-vol-opp-project">
               {{need.project.title}}
               <span
@@ -171,7 +171,7 @@ Required vars: volOppData, searchParams
       </table>
 
       <div class="crm-buttons">
-        <button crm-icon="check" ng-click="checkout()" ng-disabled="_.size(shoppingCart()) === 0">
+        <button crm-icon="check" ng-click="checkout()" ng-disabled="_.size(shoppingCart) === 0">
           {{ts('Sign Up!')}}
         </button>
       </div>

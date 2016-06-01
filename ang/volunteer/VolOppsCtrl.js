@@ -27,6 +27,10 @@
     var hs = $scope.hs = crmUiHelp({file: 'ang/VolOppsCtrl'}); // See: templates/ang/VolOppsCtrl.hlp
 
     var volOppsInCart = {};
+    $scope.shoppingCart = volOppsInCart;
+    //This looks strange but is meant to allow us to drop in a setting
+    //to allow an admin to turn on and off the floating cart.
+    $scope.floatingCartEnabled = true;
 
     // on page load, search based on the URL params
     volOppSearch.search();
@@ -117,9 +121,11 @@
       );
     };
 
+    /*
     $scope.shoppingCart = function () {
       return volOppsInCart;
     };
+    */
 
     $scope.showProjectDescription = function (project) {
       var description = project.description;
@@ -167,6 +173,15 @@
       {value: 'miles', label: ts('miles')}
     ];
 
+    //Logic for managing Cart Floating
+    $scope.cartIsFixed = false;
+    var cartObj = $("div.crm-vol-opp-cart");
+    var cartCutoffTop = cartObj.offset().top;
+    $(window).on("scroll", function(e) {
+      $scope.$apply(function() {
+        $scope.cartIsFixed = ($(window).scrollTop() > cartCutoffTop);
+      });
+    });
   });
 
 })(angular, CRM.$, CRM._);
