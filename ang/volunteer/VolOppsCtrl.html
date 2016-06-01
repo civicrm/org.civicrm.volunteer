@@ -134,7 +134,7 @@ Required vars: volOppData, searchParams
     <div class="crm-block ui-tabs ui-widget ui-widget-content ui-corner-all " ng-form="volOppCheckoutForm" crm-ui-id-scope>
       <div class="crm-vol-opp-cart-message-wrapper">
         <div id="crm-vol-opp-cart-large-indicator" class="crm-vol-opp-cart-large-indicator crm-vol-opp-cart-large-indicator-custom">
-          {{itemCountInCart}}
+          <span>{{itemCountInCart}}</span>
         </div>
         <div class="crm-vol-opp-cart-message">
           <span>{{ts('You have selected')}} {{itemCountInCart}} {{ts('volunteer opportunities.')}}</span>
@@ -213,7 +213,7 @@ Required vars: volOppData, searchParams
       </tr>
       </thead>
       <tbody>
-      <tr ng-repeat="need in volOppData()" role="row">
+      <tr ng-repeat="need in volOppData()" role="row" id="crm-vol-opp-need-{{need.id}}">
         <td class="crm-vol-opp-project">
           {{need.project.title}}
             <span
