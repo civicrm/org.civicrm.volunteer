@@ -100,3 +100,22 @@ span.crm-button-text {
 .crm-vol-project .select2-choice {
   min-height: 26px;
 }
+
+@media (min-width: 700px) {
+  .crm-vol-half-responsive.crm-vol-opp-cart.floating_cart.floating_cart_fixed {
+    position: fixed;
+    top: 50px;
+    right: 0;
+    max-width: 200px;
+  }
+}
+.crm-vol-half-responsive.crm-vol-opp-cart.floating_cart.floating_cart_fixed {
+  width: auto;
+}
+
+.crm-vol-opp-cart-large-indicator {
+  font-size: 3rem;
+  font-weight: bold;
+  text-align: center;
+  margin: 10px auto;
+}
