@@ -31,6 +31,7 @@
     //This looks strange but is meant to allow us to drop in a setting
     //to allow an admin to turn on and off the floating cart.
     $scope.floatingCartEnabled = true;
+    $scope.showCartContents = false;
 
     // on page load, search based on the URL params
     volOppSearch.search();
@@ -167,6 +168,10 @@
         delete volOppsInCart[need.id];
       }
     };
+
+    $scope.$watch('shoppingCart', function(oldValue, newValue) {
+      $scope.itemCountInCart = _.size($scope.shoppingCart);
+    }, true);
 
     $scope.proximityUnits = [
       {value: 'km', label: ts('km')},

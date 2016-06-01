@@ -42,8 +42,8 @@ Required vars: volOppData, searchParams
               ng-model="searchParams().role_id"
               ng-options="key as value for (key , value) in  roles"
               class="big crm-form-text">
-            <option />
-          </select>
+              <option />
+            </select>
           </div>
           <div crm-ui-field="{name: 'volOppSearchForm.beneficiary', title: ts('With')}" class="crm-vol-opp-beneficiary">
             <input
@@ -132,41 +132,52 @@ Required vars: volOppData, searchParams
   <div class="crm-vol-half-responsive crm-vol-opp-cart {{floating_cart}}" ng-class="{'floating_cart_fixed': cartIsFixed, 'floating_cart floating_cart_custom': floatingCartEnabled}">
     <h2>{{ts('Your Selected Volunteer Opportunities')}}</h2>
     <div class="crm-block ui-tabs ui-widget ui-widget-content ui-corner-all " ng-form="volOppCheckoutForm" crm-ui-id-scope>
-      <table class="display dataTable no-footer" role="grid">
+      <div class="crm-vol-opp-cart-message-wrapper">
+        <div id="crm-vol-opp-cart-large-indicator" class="crm-vol-opp-cart-large-indicator crm-vol-opp-cart-large-indicator-custom">
+          {{itemCountInCart}}
+        </div>
+        <div class="crm-vol-opp-cart-message">
+          <span>{{ts('You have selected')}} {{itemCountInCart}} {{ts('volunteer opportunities.')}}</span>
+          <span ng-show="_.size(shoppingCart) === 0">{{ts('Add one by clicking the checkbox for the opportunity that interests you.')}}</span>
+          <span ng-hide="_.size(shoppingCart) === 0">{{ts('Add more by clicking the checkbox for the opportunity that interests you, or click \'Sign Up!\' to complete your registration.')}}</span>
+        </div>
+      </div>
+
+      <table ng-show="showCartContents" class="display dataTable no-footer crm-vol-opp-cart-list" role="grid">
         <thead>
-          <tr role="row">
-            <th class="ui-state-default crm-vol-opp-project">{{ts('Project')}}</th>
-            <th class="ui-state-default crm-vol-opp-role">{{ts('Role')}}</th>
-            <th class="ui-state-default crm-vol-opp-time">{{ts('Time')}}</th>
-            <th class="ui-state-default crm-vol-opp-toggle">{{ts('Remove')}}</th>
-          </tr>
+        <tr role="row">
+          <th class="ui-state-default crm-vol-opp-project">{{ts('Project')}}</th>
+          <th class="ui-state-default crm-vol-opp-role">{{ts('Role')}}</th>
+          <th class="ui-state-default crm-vol-opp-time">{{ts('Time')}}</th>
+          <th class="ui-state-default crm-vol-opp-toggle">{{ts('Remove')}}</th>
+        </tr>
         </thead>
         <tbody>
-          <tr ng-repeat="need in shoppingCart" role="row">
-            <td class="crm-vol-opp-project">
-              {{need.project.title}}
+        <tr ng-repeat="need in shoppingCart" role="row">
+          <td class="crm-vol-opp-project">
+            {{need.project.title}}
               <span
                 class="icon ui-icon-comment"
                 ng-show="need.project.description"
                 ng-click="showProjectDescription(need.project)">
               </span>
-            </td>
-            <td class="crm-vol-opp-role">{{need.role_label}}
+          </td>
+          <td class="crm-vol-opp-role">{{need.role_label}}
               <span
                 class="icon ui-icon-comment"
                 ng-show="need.role_description"
                 ng-click="showRoleDescription(need)">
               </span>
-            </td>
-            <td class="crm-vol-opp-time">{{need.display_time}}</td>
-            <td class="crm-vol-opp-toggle">
+          </td>
+          <td class="crm-vol-opp-time">{{need.display_time}}</td>
+          <td class="crm-vol-opp-toggle">
               <span
                 class="icon ui-icon-trash"
                 ng-checked="need.inCart"
                 ng-click="toggleSelection(need)"
-              </span>
-            </td>
-          </tr>
+            </span>
+          </td>
+        </tr>
         </tbody>
       </table>
 
@@ -202,9 +213,9 @@ Required vars: volOppData, searchParams
       </tr>
       </thead>
       <tbody>
-        <tr ng-repeat="need in volOppData()" role="row">
-          <td class="crm-vol-opp-project">
-            {{need.project.title}}
+      <tr ng-repeat="need in volOppData()" role="row">
+        <td class="crm-vol-opp-project">
+          {{need.project.title}}
             <span
               class="icon ui-icon-comment"
               ng-show="need.project.description"
@@ -228,7 +239,7 @@ Required vars: volOppData, searchParams
             ng-checked="need.inCart"
             ng-click="toggleSelection(need)"
             class="crm-form-checkbox"
-            />
+          />
         </td>
       </tr>
       </tbody>
