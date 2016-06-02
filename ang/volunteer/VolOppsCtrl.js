@@ -163,9 +163,14 @@
 
       // if the need was just added to the cart...
       var delay = 500;
-      var srcObj = (need.inCart) ? "#crm-vol-opp-need-" + need.id : "#crm-vol-opp-cart-large-indicator span";
-      var targetObj = (need.inCart) ? "#crm-vol-opp-cart-large-indicator span" : "#crm-vol-opp-need-" + need.id;
-      $(srcObj).effect( "transfer", { className: 'crm-vol-opp-cart-transfer', to: $( targetObj ) }, delay);
+      var animSrc = (need.inCart) ? "#crm-vol-opp-need-" + need.id : "#crm-vol-opp-cart-large-indicator span";
+      var animTarget = (need.inCart) ? "#crm-vol-opp-cart-large-indicator span" : "#crm-vol-opp-need-" + need.id;
+
+      if ($scope.showCartContents) {
+        animSrc = (need.inCart) ? "#crm-vol-opp-need-" + need.id : "#crm-vol-opp-cart-need-" + need.id;
+        animTarget = (need.inCart) ? ".crm-vol-opp-cart-list tr:last" : "#crm-vol-opp-need-" + need.id;
+      }
+      $(animSrc).effect( "transfer", { className: 'crm-vol-opp-cart-transfer', to: $( animTarget ) }, delay);
 
       $timeout(function() {
       if (need.inCart) {
@@ -174,6 +179,10 @@
         delete volOppsInCart[need.id];
       }
       }, delay);
+    };
+
+    $scope.toggleCartList = function () {
+      $scope.showCartContents = !$scope.showCartContents;
     };
 
     $scope.$watch('shoppingCart', function(oldValue, newValue) {

@@ -129,7 +129,7 @@ Required vars: volOppData, searchParams
 
 
   <!-- Shopping Cart -->
-  <div id="crm-vol-opp-cart" class="crm-vol-half-responsive crm-vol-opp-cart {{floating_cart}}" ng-class="{'floating_cart_fixed': cartIsFixed, 'floating_cart floating_cart_custom': floatingCartEnabled}">
+  <div id="crm-vol-opp-cart" class="crm-vol-half-responsive crm-vol-opp-cart {{floating_cart}}" ng-class="{'floating_cart_fixed': cartIsFixed, 'floating_cart floating_cart_custom': floatingCartEnabled, 'contents_visible': showCartContents}">
     <h2>{{ts('Your Selected Volunteer Opportunities')}}</h2>
     <div class="crm-block ui-tabs ui-widget ui-widget-content ui-corner-all " ng-form="volOppCheckoutForm" crm-ui-id-scope>
       <div class="crm-vol-opp-cart-message-wrapper">
@@ -143,7 +143,7 @@ Required vars: volOppData, searchParams
         </div>
       </div>
 
-      <table ng-show="showCartContents" class="display dataTable no-footer crm-vol-opp-cart-list" role="grid">
+      <table ng-show="showCartContents" class="display dataTable no-footer crm-vol-opp-cart-list" ng-class="'contents_visible': showCartContents}" role="grid">
         <thead>
         <tr role="row">
           <th class="ui-state-default crm-vol-opp-project">{{ts('Project')}}</th>
@@ -153,7 +153,7 @@ Required vars: volOppData, searchParams
         </tr>
         </thead>
         <tbody>
-        <tr ng-repeat="need in shoppingCart" role="row">
+        <tr ng-repeat="need in shoppingCart" role="row" id="crm-vol-opp-cart-need-{{need.id}}">
           <td class="crm-vol-opp-project">
             {{need.project.title}}
               <span
@@ -182,8 +182,12 @@ Required vars: volOppData, searchParams
       </table>
 
       <div class="crm-buttons">
-        <button crm-icon="check" ng-click="checkout()" ng-disabled="_.size(shoppingCart) === 0">
+        <button class="crm-vol-button crm-vol-opp-button crm-vol-opp-cart-button crm-vol-opp-cart-sign-up" crm-icon="check" ng-click="checkout()" ng-disabled="_.size(shoppingCart) === 0">
           {{ts('Sign Up!')}}
+        </button>
+
+        <button class="crm-vol-button crm-vol-opp-button crm-vol-opp-cart-button crm-vol-opp-cart-show-contents"  ng-click="toggleCartList()" >
+          {{ts('Cart Contents')}}
         </button>
       </div>
     </div>
