@@ -122,12 +122,6 @@
       );
     };
 
-    /*
-    $scope.shoppingCart = function () {
-      return volOppsInCart;
-    };
-    */
-
     $scope.showProjectDescription = function (project) {
       var description = project.description;
       var addressBlock = '';
