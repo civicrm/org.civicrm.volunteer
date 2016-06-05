@@ -108,8 +108,10 @@ function civicrm_api3_volunteer_need_get($params) {
  * @param array $params
  */
 function _civicrm_api3_volunteer_need_get_spec(&$params) {
-  // this alias facilitates chaining from api.volunteer_project.get
-  $params['volunteer_need_project_id']['api.aliases'] = array('volunteer_project_id');
+  // VOL-196: these aliases facilitate API chaining as well as provide backwards
+  // compatibility for code referencing the fields' removed uniqueNames
+  $params['id']['api.aliases'] = array('volunteer_need_id');
+  $params['project_id']['api.aliases'] = array('volunteer_project_id', 'volunteer_need_project_id');
 }
 
 function _civicrm_api3_volunteer_need_getsearchresult_spec(&$params) {
