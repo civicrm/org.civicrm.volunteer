@@ -8,7 +8,6 @@
   <log>true</log>
   <field>
     <name>id</name>
-    <uniqueName>volunteer_project_contact_id</uniqueName>
     <title>CiviVolunteer ProjectContact Row ID</title>
     <type>int unsigned</type>
     <required>true</required>
