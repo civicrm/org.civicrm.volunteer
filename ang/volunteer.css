@@ -101,6 +101,18 @@ span.crm-button-text {
   min-height: 26px;
 }
 
+.crm-vol-opp-cart .ui-widget-content {
+  padding: 20px;
+}
+
+.crm-vol-opp-cart .crm-vol-opp-cart-message {
+  padding: 20px 0px;
+}
+
+.crm-vol-opp-cart-show-contents {
+  font-size: 0.75rem;
+}
+
 .crm-vol-half-responsive.crm-vol-opp-cart.floating_cart {
   position: fixed;
   top: 50px;
@@ -119,8 +131,12 @@ span.crm-button-text {
   width: 50%;
 }
 
+.crm-container .crm-button.crm-vol-opp-cart-sign-up {
+  font-size: 1.25rem;
+}
+
 .crm-vol-opp-cart-large-indicator {
-  font-size: 3rem;
+  font-size: 2rem;
   font-weight: bold;
   text-align: center;
   margin: 10px auto;

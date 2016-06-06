@@ -134,12 +134,11 @@ Required vars: volOppData, searchParams
     <div class="crm-block ui-tabs ui-widget ui-widget-content ui-corner-all " ng-form="volOppCheckoutForm" crm-ui-id-scope>
       <div class="crm-vol-opp-cart-message-wrapper">
         <div id="crm-vol-opp-cart-large-indicator" class="crm-vol-opp-cart-large-indicator crm-vol-opp-cart-large-indicator-custom">
-          <span>{{itemCountInCart}}</span>
+          <span>{{itemCountInCart}} {{ts('Commitments')}}</span>
         </div>
         <div class="crm-vol-opp-cart-message">
-          <span>{{ts('You have selected')}} {{itemCountInCart}} {{ts('volunteer opportunities.')}}</span>
-          <span ng-show="_.size(shoppingCart) === 0">{{ts('Add one by clicking the checkbox for the opportunity that interests you.')}}</span>
-          <span ng-hide="_.size(shoppingCart) === 0">{{ts('Add more by clicking the checkbox for the opportunity that interests you, or click \'Sign Up!\' to complete your registration.')}}</span>
+          <span ng-show="_.size(shoppingCart) === 0">{{ts('Your cart is empty. Make a commitment by clicking the checkbox for the volunteer opportunity that interests you.')}}</span>
+          <span ng-hide="_.size(shoppingCart) === 0">{{ts('Great! Make as many selections you like, then click \'Sign Up!\' to complete your registration.')}}</span>
         </div>
       </div>
 
@@ -186,9 +185,7 @@ Required vars: volOppData, searchParams
           {{ts('Sign Up!')}}
         </button>
 
-        <button class="crm-vol-button crm-vol-opp-button crm-vol-opp-cart-button crm-vol-opp-cart-show-contents" crm-icon="clipboard" ng-click="toggleCartList()" >
-          {{ts('Cart Contents')}}
-        </button>
+        <a class="crm-vol-opp-cart-show-contents" ng-click="toggleCartList()">{{ts('View cart contents')}}</a>
       </div>
     </div>
   </div>
