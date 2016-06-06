@@ -121,6 +121,12 @@ class CRM_Volunteer_Form_Settings extends CRM_Core_Form {
       array("placeholder" => ts("- none -", array('domain' => 'org.civicrm.volunteer')), "multiple" => "multiple", "class" => "crm-select2")
     );
 
+    $this->addWysiwyg(
+      'volunteer_general_project_settings_help_text',
+      ts("Help text for the project settings screen", array('domain' => 'org.civicrm.volunteer')),
+      array()
+    );
+
     $this->addButtons(array(
       array(
         'type' => 'submit',
@@ -174,6 +180,7 @@ class CRM_Volunteer_Form_Settings extends CRM_Core_Form {
     //General Settings
     $defaults['volunteer_general_campaign_filter_type'] = CRM_Core_BAO_Setting::getItem("org.civicrm.volunteer", "volunteer_general_campaign_filter_type");
     $defaults['volunteer_general_campaign_filter_list'] = CRM_Core_BAO_Setting::getItem("org.civicrm.volunteer", "volunteer_general_campaign_filter_list");
+    $defaults['volunteer_general_project_settings_help_text'] = CRM_Core_BAO_Setting::getItem("org.civicrm.volunteer", "volunteer_general_project_settings_help_text");
 
     return $defaults;
   }
@@ -209,6 +216,11 @@ class CRM_Volunteer_Form_Settings extends CRM_Core_Form {
     CRM_Core_BAO_Setting::setItem(CRM_Utils_Array::value('volunteer_project_default_campaign', $values),"org.civicrm.volunteer", "volunteer_project_default_campaign");
     CRM_Core_BAO_Setting::setItem(CRM_Utils_Array::value('volunteer_project_default_locblock', $values),"org.civicrm.volunteer", "volunteer_project_default_locblock");
     CRM_Core_BAO_Setting::setItem(CRM_Utils_Array::value('volunteer_project_default_is_active', $values, 0), "org.civicrm.volunteer", "volunteer_project_default_is_active");
+    CRM_Core_BAO_Setting::setItem(
+      CRM_Utils_Array::value('volunteer_general_project_settings_help_text', $values),
+      "org.civicrm.volunteer",
+      "volunteer_general_project_settings_help_text"
+    );
 
     //Todo: Create Composit data structure like we do for profiles
     CRM_Core_BAO_Setting::setItem(CRM_Utils_Array::value('volunteer_project_default_contacts', $values),"org.civicrm.volunteer", "volunteer_project_default_contacts");

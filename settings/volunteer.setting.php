@@ -103,5 +103,16 @@ return array(
     'description' => 'Campaign Type(s)',
     'help_text' => 'Depending on the value of the Campaign Filter Whitelist/Blacklist setting, the campaign types in this list will either be shown or hidden from CiviVolunteer screens.',
   ),
+  'volunteer_general_project_settings_help_text' => array(
+    'group_name' => 'CiviVolunteer Global Settings',
+    'group' => 'org.civicrm.volunteer',
+    'name' => 'volunteer_general_project_settings_help_text',
+    'type' => 'String',
+    'default' => '',
+    'add' => '4.5',
+    'is_domain' => 1,
+    'is_contact' => 0,
+    'description' => 'Help Text for the Project Settings Screen',
+  ),
 
 );
