@@ -9,10 +9,9 @@
   <div crm-ui-debug="relationships"></div>
   <div id="backboneIncludes"></div>
 
+  <div class="help" ng-show="supporting_data.volunteer_general_project_settings_help_text"
+       ng-bind-html="supporting_data.volunteer_general_project_settings_help_text"></div>
   <form class="crm-form-block" name="projectForm" crm-ui-id-scope>
-
-    <!-- temporarily hiding this as I'm not sure the intent and it looks unfinished -->
-    <div class="help" ng-hide="1"></div>
 
     <fieldset class="crm-vol-project-settings" crm-ui-id-scope>
       <legend>{{ts("Project Settings")}}</legend>
