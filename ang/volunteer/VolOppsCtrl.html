@@ -129,11 +129,11 @@ Required vars: volOppData, searchParams
 
 
   <!-- Shopping Cart -->
-  <div id="crm-vol-opp-cart" class="crm-vol-half-responsive crm-vol-opp-cart" ng-class="{'floating_cart': cartIsFloating, 'contents_visible': showCartContents}">
+  <div class="crm-vol-half-responsive crm-vol-opp-cart" ng-class="{'floating_cart': cartIsFloating, 'contents_visible': showCartContents}">
     <h2>{{ts('Your Selected Volunteer Opportunities')}}</h2>
     <div class="crm-block ui-tabs ui-widget ui-widget-content ui-corner-all " ng-form="volOppCheckoutForm" crm-ui-id-scope>
       <div class="crm-vol-opp-cart-message-wrapper">
-        <div id="crm-vol-opp-cart-large-indicator" class="crm-vol-opp-cart-large-indicator crm-vol-opp-cart-large-indicator-custom">
+        <div class="crm-vol-opp-cart-large-indicator">
           <span>{{itemCountInCart}} {{ts('Commitments')}}</span>
         </div>
         <div class="crm-vol-opp-cart-message">
@@ -152,8 +152,8 @@ Required vars: volOppData, searchParams
         </tr>
         </thead>
         <tbody>
-        <tr ng-repeat="need in shoppingCart" role="row" id="crm-vol-opp-cart-need-{{need.id}}">
-          <td class="crm-vol-opp-project">
+          <tr ng-repeat="need in shoppingCart" role="row" class="crm-vol-opp-cart-need-{{need.id}}">
+            <td class="crm-vol-opp-project">
             {{need.project.title}}
               <span
                 class="icon ui-icon-comment"
@@ -213,8 +213,8 @@ Required vars: volOppData, searchParams
       </tr>
       </thead>
       <tbody>
-      <tr ng-repeat="need in volOppData()" role="row" id="crm-vol-opp-need-{{need.id}}">
-        <td class="crm-vol-opp-project">
+        <tr ng-repeat="need in volOppData()" role="row" class="crm-vol-opp-need-{{need.id}}">
+          <td class="crm-vol-opp-project">
           {{need.project.title}}
             <span
               class="icon ui-icon-comment"

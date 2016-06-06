@@ -163,12 +163,12 @@
 
       // if the need was just added to the cart...
       var delay = 500;
-      var animSrc = (need.inCart) ? "#crm-vol-opp-need-" + need.id : "#crm-vol-opp-cart .ui-widget-content";
-      var animTarget = (need.inCart) ? "#crm-vol-opp-cart .ui-widget-content" : "#crm-vol-opp-need-" + need.id;
+      var animSrc = (need.inCart) ? ".crm-vol-opp-need-" + need.id : ".crm-vol-opp-cart .ui-widget-content";
+      var animTarget = (need.inCart) ? ".crm-vol-opp-cart .ui-widget-content" : ".crm-vol-opp-need-" + need.id;
 
       if ($scope.showCartContents) {
-        animSrc = (need.inCart) ? "#crm-vol-opp-need-" + need.id : "#crm-vol-opp-cart-need-" + need.id;
-        animTarget = (need.inCart) ? ".crm-vol-opp-cart-list tr:last" : "#crm-vol-opp-need-" + need.id;
+        animSrc = (need.inCart) ? ".crm-vol-opp-need-" + need.id : ".crm-vol-opp-cart-need-" + need.id;
+        animTarget = (need.inCart) ? ".crm-vol-opp-cart-list tr:last" : ".crm-vol-opp-need-" + need.id;
       }
       $(animSrc).effect( "transfer", { className: 'crm-vol-opp-cart-transfer', to: $( animTarget ) }, delay);
 
@@ -204,10 +204,10 @@
       $(window).on("scroll", function (e) {
         var cartShouldFloat = ($(window).scrollTop() > cartTop);
         if ($scope.cartIsFloating !== cartShouldFloat) {
-          $("#crm-vol-opp-cart").fadeOut(cartDelay);
+          $(".crm-vol-opp-cart").fadeOut(cartDelay);
           $timeout(function () {
             $scope.cartIsFloating = cartShouldFloat;
-            $("#crm-vol-opp-cart").fadeIn(cartDelay);
+            $(".crm-vol-opp-cart").fadeIn(cartDelay);
           }, cartDelay);
         }
       });
