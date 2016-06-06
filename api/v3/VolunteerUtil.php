@@ -142,6 +142,9 @@ function civicrm_api3_volunteer_util_getsupportingdata($params) {
     $results['relationship_types'] = $relTypes['values'];
 
     $results['phone_types'] = CRM_Core_OptionGroup::values("phone_type", FALSE, FALSE, TRUE);
+    $results['volunteer_general_project_settings_help_text'] = civicrm_api3('Setting', 'getvalue', array(
+      'name' => "volunteer_general_project_settings_help_text",
+    ));
 
     //Fetch the Defaults from saved settings.
     $defaults = CRM_Volunteer_BAO_Project::composeDefaultSettingsArray();
