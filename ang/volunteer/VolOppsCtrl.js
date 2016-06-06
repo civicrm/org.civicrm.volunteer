@@ -12,6 +12,15 @@
             return result.values;
           });
         },
+        // This looks strange but is meant to allow us to drop in a setting
+        // to allow an admin to manage cart-related settings. The stub
+        // function below will likely be replaced with an API call.
+        settings: function (crmApi) {
+          return {
+            volunteer_floating_cart_enabled: true,
+            volunteer_show_cart_contents: false
+          };
+        },
         supporting_data: function(crmApi) {
           return crmApi('VolunteerUtil', 'getsupportingdata', {
             controller: 'VolOppsCtrl'
@@ -21,12 +30,14 @@
     });
   });
 
-  angular.module('volunteer').controller('VolOppsCtrl', function ($route, $scope, $window, crmStatus, crmUiHelp, volOppSearch, countries, supporting_data) {
+  angular.module('volunteer').controller('VolOppsCtrl', function ($route, $scope, $window, $timeout, crmStatus, crmUiHelp, volOppSearch, countries, settings, supporting_data) {
     // The ts() and hs() functions help load strings for this module.
     var ts = $scope.ts = CRM.ts('org.civicrm.volunteer');
     var hs = $scope.hs = crmUiHelp({file: 'ang/VolOppsCtrl'}); // See: templates/ang/VolOppsCtrl.hlp
 
     var volOppsInCart = {};
+    $scope.shoppingCart = volOppsInCart;
+    $scope.showCartContents = settings.volunteer_show_cart_contents;
 
     // on page load, search based on the URL params
     volOppSearch.search();
@@ -117,10 +128,6 @@
       );
     };
 
-    $scope.shoppingCart = function () {
-      return volOppsInCart;
-    };
-
     $scope.showProjectDescription = function (project) {
       var description = project.description;
       var addressBlock = '';
@@ -155,18 +162,56 @@
       need.inCart = !need.hasOwnProperty('inCart') ? true : !need.inCart;
 
       // if the need was just added to the cart...
+      var delay = 500;
+      var animSrc = (need.inCart) ? ".crm-vol-opp-need-" + need.id : ".crm-vol-opp-cart .ui-widget-content";
+      var animTarget = (need.inCart) ? ".crm-vol-opp-cart .ui-widget-content" : ".crm-vol-opp-need-" + need.id;
+
+      if ($scope.showCartContents) {
+        animSrc = (need.inCart) ? ".crm-vol-opp-need-" + need.id : ".crm-vol-opp-cart-need-" + need.id;
+        animTarget = (need.inCart) ? ".crm-vol-opp-cart-list tr:last" : ".crm-vol-opp-need-" + need.id;
+      }
+      $(animSrc).effect( "transfer", { className: 'crm-vol-opp-cart-transfer', to: $( animTarget ) }, delay);
+
+      $timeout(function() {
       if (need.inCart) {
         volOppsInCart[need.id] = need;
       } else {
         delete volOppsInCart[need.id];
       }
+      }, delay);
     };
+
+    $scope.toggleCartList = function () {
+      $scope.showCartContents = !$scope.showCartContents;
+    };
+
+    $scope.$watch('shoppingCart', function(oldValue, newValue) {
+      $scope.itemCountInCart = _.size($scope.shoppingCart);
+    }, true);
 
     $scope.proximityUnits = [
       {value: 'km', label: ts('km')},
       {value: 'miles', label: ts('miles')}
     ];
 
+    // Logic for managing Cart Floating - TODO: refactor as a directive
+    $scope.cartIsFloating = false;
+
+    if (settings.volunteer_floating_cart_enabled) {
+      var cartDelay = 200;
+
+      var cartTop = $("div.crm-vol-opp-cart").offset().top;
+      $(window).on("scroll", function (e) {
+        var cartShouldFloat = ($(window).scrollTop() > cartTop);
+        if ($scope.cartIsFloating !== cartShouldFloat) {
+          $(".crm-vol-opp-cart").fadeOut(cartDelay);
+          $timeout(function () {
+            $scope.cartIsFloating = cartShouldFloat;
+            $(".crm-vol-opp-cart").fadeIn(cartDelay);
+          }, cartDelay);
+        }
+      });
+    }
   });
 
 })(angular, CRM.$, CRM._);

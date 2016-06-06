@@ -172,14 +172,14 @@ class CRM_Volunteer_DAO_Need extends CRM_Core_DAO
   {
     if (!(self::$_fields)) {
       self::$_fields = array(
-        'volunteer_need_id' => array(
+        'id' => array(
           'name' => 'id',
           'type' => CRM_Utils_Type::T_INT,
           'title' => ts('CiviVolunteer Need ID', array('domain' => 'org.civicrm.volunteer')) ,
           'description' => 'Need Id',
           'required' => true,
         ) ,
-        'volunteer_need_project_id' => array(
+        'project_id' => array(
           'name' => 'project_id',
           'type' => CRM_Utils_Type::T_INT,
           'description' => 'FK to civicrm_volunteer_project table which contains entity_table + entity for each volunteer project (initially civicrm_event + eventID).',
@@ -261,8 +261,8 @@ class CRM_Volunteer_DAO_Need extends CRM_Core_DAO
   {
     if (!(self::$_fieldKeys)) {
       self::$_fieldKeys = array(
-        'id' => 'volunteer_need_id',
-        'project_id' => 'volunteer_need_project_id',
+        'id' => 'id',
+        'project_id' => 'project_id',
         'start_time' => 'start_time',
         'end_time' => 'end_time',
         'duration' => 'duration',

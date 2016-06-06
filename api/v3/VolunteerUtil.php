@@ -296,12 +296,16 @@ function civicrm_api3_volunteer_util_getcountries($params) {
     "sequential" => 1,
   ));
 
-  $countries = civicrm_api3('Country', 'get', array(
-    "id" => array(
-      "IN" => $settings['values'][0]['countryLimit'],
-    ),
+
+  $countryParams = array(
     "options" => array("limit" => 0),
-  ));
+  );
+
+  if (!empty($settings['values'][0]['countryLimit'])) {
+    $countryParams["id"] = array("IN" => $settings['values'][0]['countryLimit']);
+  }
+
+  $countries = civicrm_api3('Country', 'get', $countryParams);
 
   $results = $countries['values'];
   foreach ($results as $k => $country) {
