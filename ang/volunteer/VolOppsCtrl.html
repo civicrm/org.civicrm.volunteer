@@ -137,8 +137,8 @@ Required vars: volOppData, searchParams
           <span>{{itemCountInCart}} {{ts('Commitments')}}</span>
         </div>
         <div class="crm-vol-opp-cart-message">
-          <span ng-show="_.size(shoppingCart) === 0">{{ts('Make a commitment by clicking the checkbox for the volunteer opportunity that interests you.')}}</span>
-          <span ng-hide="_.size(shoppingCart) === 0">{{ts('Great! Make as many selections you like, then click \'Sign Up!\' to complete your registration.')}}</span>
+          <span ng-show="itemCountInCart === 0">{{ts('Make a commitment by clicking the checkbox for the volunteer opportunity that interests you.')}}</span>
+          <span ng-hide="itemCountInCart === 0">{{ts('Great! Make as many selections you like, then click \'Sign Up!\' to complete your registration.')}}</span>
         </div>
       </div>
 
