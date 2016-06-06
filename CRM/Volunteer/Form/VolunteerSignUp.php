@@ -344,6 +344,7 @@ class CRM_Volunteer_Form_VolunteerSignUp extends CRM_Core_Form {
       CRM_Core_Resources::singleton()->addScriptFile('org.civicrm.volunteer', 'js/VolunteerSignUp.js', 12);
       CRM_Core_Resources::singleton()->addStyleFile('org.civicrm.volunteer', 'css/additional_volunteers.css');
     }
+    CRM_Core_Resources::singleton()->addStyleFile('org.civicrm.volunteer', 'css/signup.css');
   }
 
   /**
