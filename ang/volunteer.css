@@ -122,7 +122,7 @@ span.crm-button-text {
   width: 20%;
   -webkit-transition: width 1s, -webkit-transform 1s;
   transition: width 1s, transform 1s;
-
+  border-radius: 4px;
   -webkit-box-shadow: -1px 1px 3px 0px rgba(0,0,0,0.45);
   -moz-box-shadow: -1px 1px 3px 0px rgba(0,0,0,0.45);
   box-shadow: -1px 1px 3px 0px rgba(0,0,0,0.45);
