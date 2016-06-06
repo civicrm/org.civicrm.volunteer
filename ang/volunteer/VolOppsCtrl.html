@@ -181,11 +181,10 @@ Required vars: volOppData, searchParams
       </table>
 
       <div class="crm-buttons">
-        <button class="crm-vol-button crm-vol-opp-button crm-vol-opp-cart-button crm-vol-opp-cart-sign-up" crm-icon="check" ng-click="checkout()" ng-disabled="_.size(shoppingCart) === 0">
+        <button class="crm-vol-button crm-vol-opp-button crm-vol-opp-cart-button crm-vol-opp-cart-sign-up" crm-icon="check" ng-click="checkout()" ng-disabled="itemCountInCart === 0">
           {{ts('Sign Up!')}}
         </button>
-
-        <a class="crm-vol-opp-cart-show-contents" ng-hide="_.size(shoppingCart) === 0" ng-click="toggleCartList()">{{ts('View cart contents')}}</a>
+        <a class="crm-vol-opp-cart-show-contents" ng-hide="itemCountInCart === 0" ng-click="toggleCartList()">{{showCartContents ? ts('Hide selections') : ts('View selections')}}</a>
       </div>
     </div>
   </div>

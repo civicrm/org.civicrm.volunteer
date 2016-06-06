@@ -163,8 +163,8 @@
 
       // if the need was just added to the cart...
       var delay = 500;
-      var animSrc = (need.inCart) ? "#crm-vol-opp-need-" + need.id : "#crm-vol-opp-cart-large-indicator span";
-      var animTarget = (need.inCart) ? "#crm-vol-opp-cart-large-indicator span" : "#crm-vol-opp-need-" + need.id;
+      var animSrc = (need.inCart) ? "#crm-vol-opp-need-" + need.id : "#crm-vol-opp-cart .ui-widget-content";
+      var animTarget = (need.inCart) ? "#crm-vol-opp-cart .ui-widget-content" : "#crm-vol-opp-need-" + need.id;
 
       if ($scope.showCartContents) {
         animSrc = (need.inCart) ? "#crm-vol-opp-need-" + need.id : "#crm-vol-opp-cart-need-" + need.id;
