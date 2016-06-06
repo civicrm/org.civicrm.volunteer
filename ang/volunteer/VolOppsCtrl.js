@@ -21,12 +21,17 @@
     });
   });
 
-  angular.module('volunteer').controller('VolOppsCtrl', function ($route, $scope, $window, crmStatus, crmUiHelp, volOppSearch, countries, supporting_data) {
+  angular.module('volunteer').controller('VolOppsCtrl', function ($route, $scope, $window, $timeout, crmStatus, crmUiHelp, volOppSearch, countries, supporting_data) {
     // The ts() and hs() functions help load strings for this module.
     var ts = $scope.ts = CRM.ts('org.civicrm.volunteer');
     var hs = $scope.hs = crmUiHelp({file: 'ang/VolOppsCtrl'}); // See: templates/ang/VolOppsCtrl.hlp
 
     var volOppsInCart = {};
+    $scope.shoppingCart = volOppsInCart;
+    //This looks strange but is meant to allow us to drop in a setting
+    //to allow an admin to turn on and off the floating cart.
+    $scope.floatingCartEnabled = true;
+    $scope.showCartContents = false;
 
     // on page load, search based on the URL params
     volOppSearch.search();
@@ -117,9 +122,11 @@
       );
     };
 
+    /*
     $scope.shoppingCart = function () {
       return volOppsInCart;
     };
+    */
 
     $scope.showProjectDescription = function (project) {
       var description = project.description;
@@ -155,18 +162,53 @@
       need.inCart = !need.hasOwnProperty('inCart') ? true : !need.inCart;
 
       // if the need was just added to the cart...
+      var delay = 500;
+      var animSrc = (need.inCart) ? "#crm-vol-opp-need-" + need.id : "#crm-vol-opp-cart-large-indicator span";
+      var animTarget = (need.inCart) ? "#crm-vol-opp-cart-large-indicator span" : "#crm-vol-opp-need-" + need.id;
+
+      if ($scope.showCartContents) {
+        animSrc = (need.inCart) ? "#crm-vol-opp-need-" + need.id : "#crm-vol-opp-cart-need-" + need.id;
+        animTarget = (need.inCart) ? ".crm-vol-opp-cart-list tr:last" : "#crm-vol-opp-need-" + need.id;
+      }
+      $(animSrc).effect( "transfer", { className: 'crm-vol-opp-cart-transfer', to: $( animTarget ) }, delay);
+
+      $timeout(function() {
       if (need.inCart) {
         volOppsInCart[need.id] = need;
       } else {
         delete volOppsInCart[need.id];
       }
+      }, delay);
     };
+
+    $scope.toggleCartList = function () {
+      $scope.showCartContents = !$scope.showCartContents;
+    };
+
+    $scope.$watch('shoppingCart', function(oldValue, newValue) {
+      $scope.itemCountInCart = _.size($scope.shoppingCart);
+    }, true);
 
     $scope.proximityUnits = [
       {value: 'km', label: ts('km')},
       {value: 'miles', label: ts('miles')}
     ];
 
+    //Logic for managing Cart Floating
+    $scope.cartIsFixed = false;
+    var cartObj = $("div.crm-vol-opp-cart");
+    var cartCutoffTop = cartObj.offset().top;
+    var cartDelay = 200;
+    $(window).on("scroll", function(e) {
+      var shouldBeFixed = ($(window).scrollTop() > cartCutoffTop);
+      if($scope.cartIsFixed !== shouldBeFixed) {
+        $("#crm-vol-opp-cart").fadeOut(cartDelay);
+        $timeout(function () {
+          $scope.cartIsFixed = shouldBeFixed;
+          $("#crm-vol-opp-cart").fadeIn(cartDelay);
+        }, cartDelay);
+      }
+    });
   });
 
 })(angular, CRM.$, CRM._);

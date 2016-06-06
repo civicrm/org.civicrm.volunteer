@@ -100,3 +100,34 @@ span.crm-button-text {
 .crm-vol-project .select2-choice {
   min-height: 26px;
 }
+
+.crm-vol-half-responsive.crm-vol-opp-cart.floating_cart.floating_cart_fixed {
+  position: fixed;
+  top: 50px;
+  right: 0;
+  min-width: 200px;
+  width: 20%;
+  -webkit-transition: width 1s, -webkit-transform 1s;
+  transition: width 1s, transform 1s;
+
+  -webkit-box-shadow: -1px 1px 3px 0px rgba(0,0,0,0.45);
+  -moz-box-shadow: -1px 1px 3px 0px rgba(0,0,0,0.45);
+  box-shadow: -1px 1px 3px 0px rgba(0,0,0,0.45);
+}
+
+.crm-vol-half-responsive.crm-vol-opp-cart.floating_cart.floating_cart_fixed.contents_visible {
+  width: 50%;
+}
+
+.crm-vol-opp-cart-large-indicator {
+  font-size: 3rem;
+  font-weight: bold;
+  text-align: center;
+  margin: 10px auto;
+}
+
+.crm-vol-opp-cart-transfer {
+  border: 3px dotted black;
+  background: rgba(0,0,0,0.25);
+}
+
