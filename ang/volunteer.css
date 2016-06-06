@@ -101,7 +101,7 @@ span.crm-button-text {
   min-height: 26px;
 }
 
-.crm-vol-half-responsive.crm-vol-opp-cart.floating_cart.floating_cart_fixed {
+.crm-vol-half-responsive.crm-vol-opp-cart.floating_cart {
   position: fixed;
   top: 50px;
   right: 0;
@@ -115,7 +115,7 @@ span.crm-button-text {
   box-shadow: -1px 1px 3px 0px rgba(0,0,0,0.45);
 }
 
-.crm-vol-half-responsive.crm-vol-opp-cart.floating_cart.floating_cart_fixed.contents_visible {
+.crm-vol-half-responsive.crm-vol-opp-cart.floating_cart.contents_visible {
   width: 50%;
 }
 

@@ -129,7 +129,7 @@ Required vars: volOppData, searchParams
 
 
   <!-- Shopping Cart -->
-  <div id="crm-vol-opp-cart" class="crm-vol-half-responsive crm-vol-opp-cart" ng-class="{'floating_cart_fixed': cartIsFixed, 'floating_cart floating_cart_custom': floatingCartEnabled, 'contents_visible': showCartContents}">
+  <div id="crm-vol-opp-cart" class="crm-vol-half-responsive crm-vol-opp-cart" ng-class="{'floating_cart': cartIsFloating, 'contents_visible': showCartContents}">
     <h2>{{ts('Your Selected Volunteer Opportunities')}}</h2>
     <div class="crm-block ui-tabs ui-widget ui-widget-content ui-corner-all " ng-form="volOppCheckoutForm" crm-ui-id-scope>
       <div class="crm-vol-opp-cart-message-wrapper">

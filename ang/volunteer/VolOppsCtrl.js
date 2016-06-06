@@ -188,17 +188,17 @@
       {value: 'miles', label: ts('miles')}
     ];
 
-    //Logic for managing Cart Floating
-    $scope.cartIsFixed = false;
-    var cartObj = $("div.crm-vol-opp-cart");
-    var cartCutoffTop = cartObj.offset().top;
+    // Logic for managing Cart Floating - TODO: refactor as a directive
+    $scope.cartIsFloating = false;
     var cartDelay = 200;
+
+    var cartTop = $("div.crm-vol-opp-cart").offset().top;
     $(window).on("scroll", function(e) {
-      var shouldBeFixed = ($(window).scrollTop() > cartCutoffTop);
-      if($scope.cartIsFixed !== shouldBeFixed) {
+      var cartShouldFloat = ($(window).scrollTop() > cartTop);
+      if ($scope.cartIsFloating !== cartShouldFloat) {
         $("#crm-vol-opp-cart").fadeOut(cartDelay);
         $timeout(function () {
-          $scope.cartIsFixed = shouldBeFixed;
+          $scope.cartIsFloating = cartShouldFloat;
           $("#crm-vol-opp-cart").fadeIn(cartDelay);
         }, cartDelay);
       }
