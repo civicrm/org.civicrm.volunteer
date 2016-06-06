@@ -121,11 +121,21 @@ class CRM_Volunteer_Form_Settings extends CRM_Core_Form {
       array("placeholder" => ts("- none -", array('domain' => 'org.civicrm.volunteer')), "multiple" => "multiple", "class" => "crm-select2")
     );
 
-    $this->addWysiwyg(
-      'volunteer_general_project_settings_help_text',
-      ts("Help text for the project settings screen", array('domain' => 'org.civicrm.volunteer')),
-      array()
-    );
+    // hack for 4.6/4.7 compatibility
+    if (method_exists($this, 'addWysiwyg')) {
+      $this->addWysiwyg(
+        'volunteer_general_project_settings_help_text',
+        ts("Help text for the project settings screen", array('domain' => 'org.civicrm.volunteer')),
+        array()
+      );
+    } else {
+      $this->add(
+        'wysiwyg',
+        'volunteer_general_project_settings_help_text',
+        ts("Help text for the project settings screen", array('domain' => 'org.civicrm.volunteer')),
+        array()
+      );
+    }
 
     $this->addButtons(array(
       array(
