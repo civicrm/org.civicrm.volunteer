@@ -118,7 +118,7 @@
   </td>
   <td><input type="checkbox" name="visibility_id" value="<%= visibilityValue %>"></td>
   <td><input type="checkbox" name="is_active" value="1"></td>
-  <td><a href="#" class="crm-vol-del" title="{ts domain='org.civicrm.volunteer'}Delete{/ts}"><img src="{$config->resourceBase}i/close.png" alt="{ts}Delete{/ts}"/></a></td>
+  <td><a href="#" class="crm-vol-del action-item crm-hover-button small-popup" title="{ts domain='org.civicrm.volunteer'}Delete{/ts}">{ts}Delete{/ts}</a></td>
 </script>
 
 <script type="text/template" id="crm-vol-define-flexible-need-tpl">
