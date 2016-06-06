@@ -128,6 +128,10 @@ span.crm-button-text {
   box-shadow: -1px 1px 3px 0px rgba(0,0,0,0.45);
 }
 
+.crm-vol-half-responsive.crm-vol-opp-cart.floating_cart h2 {
+  display: none;
+}
+
 .crm-vol-half-responsive.crm-vol-opp-cart.floating_cart.contents_visible {
   width: 50%;
 }
