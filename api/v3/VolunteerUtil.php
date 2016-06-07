@@ -161,6 +161,9 @@ function civicrm_api3_volunteer_util_getsupportingdata($params) {
 
   if ($controller === 'VolOppsCtrl') {
     $results['roles'] = CRM_Core_OptionGroup::values('volunteer_role', FALSE, FALSE, TRUE);
+    $results['show_location'] = civicrm_api3('Setting', 'getvalue', array(
+      'name' => 'volunteer_general_show_project_location_public',
+    ));
   }
 
   $results['use_profile_editor'] = CRM_Volunteer_Permission::check(array("access CiviCRM","profile listings and forms"));
