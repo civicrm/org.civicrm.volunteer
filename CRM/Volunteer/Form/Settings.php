@@ -26,8 +26,12 @@ class CRM_Volunteer_Form_Settings extends CRM_Core_Form {
     $result = civicrm_api3('Setting', 'getfields');
     $this->_settingsMetadata = ($result['count'] > 0) ? $result['values'] : array();
 
+    $currentDomainId = civicrm_api3('Domain', 'getvalue', array(
+      'return' => array("id"),
+      'current_domain' => 1,
+    ));
     $setting = civicrm_api3('Setting', 'get');
-    $this->_settings = $setting['values'][1];
+    $this->_settings = $setting['values'][$currentDomainId];
   }
 
   function buildQuickForm() {
