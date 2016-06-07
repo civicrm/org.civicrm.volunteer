@@ -8,11 +8,12 @@
     <author>Ginkgo Street Labs; CiviCRM, LLC; and the CiviCRM community</author>
     <email>inquire@ginkgostreet.com</email>
   </maintainer>
-  <releaseDate>2016-04-09</releaseDate>
-  <version>4.6-2.0.2</version>
+  <releaseDate>2016-06-07</releaseDate>
+  <version>4.6-2.1.0</version>
   <develStage>stable</develStage>
   <compatibility>
     <ver>4.6</ver>
+    <ver>4.7</ver>
   </compatibility>
   <comments>
     Developed by Ginkgo Street Labs and CiviCRM, LLC with contributions from the community. Special thanks to Friends of Georgia State Parks &amp; Historic Sites for funding the initial release, and to The Manhattan Neighborhood Network for funding the 1.4 release.
