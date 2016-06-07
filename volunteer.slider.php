@@ -124,5 +124,8 @@ function _volunteer_update_slider_fields(array $params) {
   }
 
   sort($widgetized_fields);
-  CRM_Core_BAO_Setting::setItem($widgetized_fields, 'CiviVolunteer Configurations', 'slider_widget_fields');
+  civicrm_api3('Setting', 'create', array(
+    'slider_widget_fields' => $widgetized_fields,
+  ));
+
 }
