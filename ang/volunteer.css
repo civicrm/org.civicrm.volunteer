@@ -154,3 +154,7 @@ span.crm-button-text {
   background: rgba(255, 255, 0, 0.1);
 }
 
+.crm-vol-project-submit-buttons .crm-vol-save-done {
+  display: none !important;;
+}
+
