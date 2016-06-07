@@ -235,23 +235,16 @@ class CRM_Volunteer_Form_Settings extends CRM_Core_Form {
       "volunteer_project_default_profiles" => $profiles,
     ));
 
-<<<<<<< HEAD
-    CRM_Core_BAO_Setting::setItem(CRM_Utils_Array::value('volunteer_project_default_campaign', $values),"org.civicrm.volunteer", "volunteer_project_default_campaign");
-    CRM_Core_BAO_Setting::setItem(CRM_Utils_Array::value('volunteer_project_default_locblock', $values),"org.civicrm.volunteer", "volunteer_project_default_locblock");
-    CRM_Core_BAO_Setting::setItem(CRM_Utils_Array::value('volunteer_project_default_is_active', $values, 0), "org.civicrm.volunteer", "volunteer_project_default_is_active");
-    CRM_Core_BAO_Setting::setItem(
-      CRM_Utils_Array::value('volunteer_general_project_settings_help_text', $values),
-      "org.civicrm.volunteer",
-      "volunteer_general_project_settings_help_text"
-    );
-=======
+    civicrm_api3('Setting', 'create', array(
+      "volunteer_general_project_settings_help_text" => CRM_Utils_Array::value('volunteer_general_project_settings_help_text', $values),
+    ));
+
     civicrm_api3('Setting', 'create', array(
       "volunteer_project_default_campaign" => CRM_Utils_Array::value('volunteer_project_default_campaign', $values)
     ));
     civicrm_api3('Setting', 'create', array(
       "volunteer_project_default_locblock" => CRM_Utils_Array::value('volunteer_project_default_locblock', $values)
     ));
->>>>>>> origin/master
 
     civicrm_api3('Setting', 'create', array(
       "volunteer_project_default_is_active" => CRM_Utils_Array::value('volunteer_project_default_is_active', $values, 0)
