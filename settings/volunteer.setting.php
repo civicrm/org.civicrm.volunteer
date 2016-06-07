@@ -20,10 +20,10 @@ return array(
     'name' => 'volunteer_project_default_profiles',
     'type' => 'Array',
     'default' => array(
-      "primary" => civicrm_api3('UFGroup', 'getvalue', array(
+      "primary" => array(civicrm_api3('UFGroup', 'getvalue', array(
         "name" => "volunteer_sign_up",
         "return" => "id"
-      ))),
+      )))),
     'add' => '4.5',
     'is_domain' => 1,
     'is_contact' => 0,
