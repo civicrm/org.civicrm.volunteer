@@ -665,9 +665,15 @@ class CRM_Volunteer_BAO_Project extends CRM_Volunteer_DAO_Project {
   public static function composeDefaultSettingsArray() {
     $defaults = array();
 
-    $defaults['is_active'] = CRM_Core_BAO_Setting::getItem("org.civicrm.volunteer", "volunteer_project_default_is_active");
-    $defaults['campaign_id'] = CRM_Core_BAO_Setting::getItem("org.civicrm.volunteer", "volunteer_project_default_campaign");
-    $defaults['loc_block_id'] = CRM_Core_BAO_Setting::getItem("org.civicrm.volunteer", "volunteer_project_default_locblock");
+    $defaults['is_active'] = civicrm_api3('Setting', 'getvalue', array(
+      'name' => 'volunteer_project_default_is_active',
+    ));
+    $defaults['campaign_id'] = civicrm_api3('Setting', 'getvalue', array(
+      'name' => 'volunteer_project_default_campaign',
+    ));
+    $defaults['loc_block_id'] = civicrm_api3('Setting', 'getvalue', array(
+      'name' => 'volunteer_project_default_locblock',
+    ));
 
     $coreDefaultProfile = array(
       "is_active" => "1",
@@ -682,7 +688,9 @@ class CRM_Volunteer_BAO_Project extends CRM_Volunteer_DAO_Project {
     );
 
     $profiles = array();
-    $profileByType = CRM_Core_BAO_Setting::getItem("org.civicrm.volunteer", "volunteer_project_default_profiles");
+    $profileByType = civicrm_api3('Setting', 'getvalue', array(
+      'name' => 'volunteer_project_default_profiles',
+    ));
 
     foreach($profileByType as $audience => $profileForType) {
       foreach ($profileForType as $profileId) {
