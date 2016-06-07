@@ -251,8 +251,12 @@ function civicrm_api3_volunteer_util_getbeneficiaries($params) {
  * @return array
  */
 function civicrm_api3_volunteer_util_getcampaigns($params) {
-  $filterType = CRM_Core_BAO_Setting::getItem("org.civicrm.volunteer", "volunteer_general_campaign_filter_type");
-  $filterList = CRM_Core_BAO_Setting::getItem("org.civicrm.volunteer", "volunteer_general_campaign_filter_list");
+  $filterType = civicrm_api3('Setting', 'getvalue', array(
+    'name' => 'volunteer_general_campaign_filter_type',
+  ));
+  $filterList = civicrm_api3('Setting', 'getvalue', array(
+    'name' => 'volunteer_general_campaign_filter_list',
+  ));
 
   $campaignParams = array(
     "options" => array("limit" => 0),
