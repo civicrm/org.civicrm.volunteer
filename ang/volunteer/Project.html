@@ -44,7 +44,7 @@
                 ng-options="key as value for (key , value) in locationBlocks" ng-model="project.loc_block_id">
           <option />
         </select>
-        <div id="crm-vol-location-block" class="crm-vol-extra-top" crm-ui-accordion="{title: ts('Edit Location'), collapsed: project.loc_block_id !==0}" ng-hide="!project.loc_block_id">
+        <div id="crm-vol-location-block" class="crm-vol-extra-top" crm-ui-accordion="{title: ts('Edit Location'), collapsed: project.loc_block_id !==0}" ng-hide="project.loc_block_id == null">
           <div class="status" ng-show="locBlock.count_loc_used > 0">{{ts("This location is used by other events/projects. Modifying location information will change values for all events/projects")}}</div>
           <fieldset class="crm-vol-location-address">
             <legend>{{ts("Address")}}</legend>
