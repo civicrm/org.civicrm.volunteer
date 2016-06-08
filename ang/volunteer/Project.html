@@ -112,21 +112,20 @@
       </div>
     </fieldset>
 
-    <div id="crm-vol-relationships-block" class="crm-vol-extra-top" crm-ui-accordion="{title: ts('Edit Relationships'), collapsed:1}">
-      <fieldset class="crm-vol-relationships" ng-show="userCanGetContactList" crm-ui-id-scope>
-        <legend>{{ts("Relationships")}}</legend>
-        <div ng-repeat="relType in relationship_types" crm-ui-field="{name: projectForm[relType.name], title: ts(relType.label)}" ng-class="'crm-vol-rel-' + relType.name">
-          <div ng-if="userCanGetContactList">
-            <input crm-ui-id="projectForm[relType.name]" crm-entityref="{entity: 'Contact', select: {allowClear:true, multiple: true}}" ng-model="relationships[relType.value]" />
-            <div class="description" ng-show="relType.description">{{relType.description}}</div>
-          </div>
-          <div ng-if="!userCanGetContactList">
-            <input crm-ui-id="projectForm[relType.name]" type="hidden" ng-model="relationships[relType.value]" />
-          </div>
-        </div>
+    <fieldset class="crm-vol-relationships" ng-show="userCanGetContactList" crm-ui-id-scope>
+      <legend>{{ts("Relationships")}}</legend>
 
-      </fieldset>
-    </div>
+      <div ng-repeat="relType in relationship_types" crm-ui-field="{name: projectForm[relType.name], title: ts(relType.label)}" ng-class="'crm-vol-rel-' + relType.name">
+        <div ng-if="userCanGetContactList">
+          <input crm-ui-id="projectForm[relType.name]" crm-entityref="{entity: 'Contact', select: {allowClear:true, multiple: true}}" ng-model="relationships[relType.value]" />
+          <div class="description" ng-show="relType.description">{{relType.description}}</div>
+        </div>
+        <div ng-if="!userCanGetContactList">
+          <input crm-ui-id="projectForm[relType.name]" type="hidden" ng-model="relationships[relType.value]" />
+        </div>
+      </div>
+
+    </fieldset>
 
     <fieldset class="crm-vol-profiles">
       <legend>{{ts("Volunteer Registration")}}</legend>
