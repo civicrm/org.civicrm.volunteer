@@ -153,6 +153,26 @@ function civicrm_api3_volunteer_util_getsupportingdata($params) {
     //Allow other extensions to modify the defaults
     CRM_Volunteer_Hook::projectDefaultSettings($defaults);
 
+    //NYCCAH-44 Make sure the logge din user has access to Contact:getlist
+    //before adding the Select2 Contact reference widgets
+    $canEditContactTypes = array();
+    foreach($defaults['relationships'] as $type => $contacts) {
+      $canEdit = true;
+      foreach($contacts as $contact) {
+        try {
+          //Get list can't take an IN param for id. It fails. so one at a time it is.
+          $getList = civicrm_api3("Contact", "getlist", array("id" => $contact, "check_permissions" => 1));
+          if ($getList['count'] < count($contacts)) {
+            $canEdit = false;
+          }
+        } catch (CRM_Core_Exception $e) {
+          $canEdit = false;
+        }
+      }
+      $canEditContactTypes[$type] = $canEdit;
+    }
+    $results['canEditContacts'] = $canEditContactTypes;
+
     $results['defaults'] = $defaults;
   }
 
