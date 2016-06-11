@@ -76,8 +76,10 @@
 
     var relationships = {};
     if(project.id == 0) {
-      project = _.extend(supporting_data.values.defaults, project);
-      relationships = supporting_data.values.defaults.relationships;
+      //Cloning these two objects so that their original values aren't subject to data-binding
+      project = _.extend(_.clone(supporting_data.values.defaults), project);
+      relationships = _.clone(supporting_data.values.defaults.relationships);
+      
       var originalRelationships = {};
       if (CRM.vars['org.civicrm.volunteer'].entityTable) {
         project.entity_table = CRM.vars['org.civicrm.volunteer'].entityTable;
