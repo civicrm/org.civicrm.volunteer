@@ -194,8 +194,8 @@ function _volunteerGetProjectRelationshipDefaults() {
 
   $contactId = CRM_Core_Session::getLoggedInContactID();
 
-  $defaults[$ownerType] = array($contactId);
-  $defaults[$managerType] = array($contactId);
+  $defaults[$ownerType] = array('contact_id' => $contactId);
+  $defaults[$managerType] = array('contact_id' => $contactId);
 
   $employerRelationshipTypeId = civicrm_api3('RelationshipType', 'getvalue', array(
     'return' => "id",
@@ -209,12 +209,19 @@ function _volunteerGetProjectRelationshipDefaults() {
       'relationship_type_id' => $employerRelationshipTypeId,
       'is_active' => 1,
     ));
-    $defaultBeneficiary = array($result);
+    $defaultBeneficiary = array('contact_id' => $result);
   } catch(Exception $e) {
     $domain = civicrm_api3('Domain', 'getsingle', array('current_domain' => 1));
-    $defaultBeneficiary = array($domain['contact_id']);
+    $defaultBeneficiary = array('contact_id' => $domain['contact_id']);
   }
   $defaults[$beneficiaryType] = $defaultBeneficiary;
+
+  foreach ($defaults as $type => $default) {
+    $defaults[$type]['can_be_read_by_current_user'] = CRM_Volunteer_BAO_ProjectContact::contactIsReadable($default['contact_id']);
+    // to match the format of existing projects, for which each relationship type
+    // could have more than one contact, wrap each relationship in an array
+    $defaults[$type] = array($defaults[$type]);
+  }
 
   return $defaults;
 }
