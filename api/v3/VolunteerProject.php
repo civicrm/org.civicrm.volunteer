@@ -221,6 +221,7 @@ function civicrm_api3_volunteer_project_removeprofile($params) {
  * Instead of the null values returned when using a crmEntityref
  * connected to the locBlock entity
  *
+ *
  * @param $params
  * @return array
  *
@@ -348,6 +349,8 @@ function _civicrm_api3_volunteer_project_getcaneditcontacts_spec(&$params) {
 /**
  * This function is used to determine if a user has the ability to
  * edit the contacts associated with this project.
+ *
+ * see: VOL-223
  *
  * @param $params
  */

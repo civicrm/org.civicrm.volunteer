@@ -153,7 +153,7 @@ function civicrm_api3_volunteer_util_getsupportingdata($params) {
     //Allow other extensions to modify the defaults
     CRM_Volunteer_Hook::projectDefaultSettings($defaults);
 
-    //NYCCAH-44 Make sure the logge din user has access to Contact:getlist
+    //VOL-223: Make sure the logged in user has access to Contact:getlist
     //before adding the Select2 Contact reference widgets
     $canEditContactTypes = array();
     foreach($defaults['relationships'] as $type => $contacts) {
