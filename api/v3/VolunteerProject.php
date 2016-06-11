@@ -196,7 +196,7 @@ function civicrm_api3_volunteer_project_delete($params) {
   }
 }
 
-function civicrm_api3_volunteer_project_delete_spec(&$params) {
+function _civicrm_api3_volunteer_project_delete_spec(&$params) {
   $params['id']['api.required'] = 1;
 }
 
