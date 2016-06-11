@@ -162,10 +162,10 @@ function civicrm_api3_volunteer_util_getsupportingdata($params) {
         try {
           //Get list can't take an IN param for id. It fails. so one at a time it is.
           $getList = civicrm_api3("Contact", "getlist", array("id" => $contact, "check_permissions" => 1));
-          if ($getList['count'] < count($contacts)) {
+          if ($getList['count'] == 0) {
             $canEdit = false;
           }
-        } catch (CRM_Core_Exception $e) {
+        } catch (Exception $e) {
           $canEdit = false;
         }
       }
