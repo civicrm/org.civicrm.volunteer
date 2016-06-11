@@ -54,11 +54,14 @@
           profile_status: function(crmProfiles) {
             return crmProfiles.load();
           },
-          // VOL-174
-          userCanGetContactList: function (crmApi) {
-            return crmApi('Contact', 'getlist').then(function(result) {
-              return (result.count > 1);
-            });
+          can_edit_contact_types: function(crmApi, $route) {
+            if ($route.current.params.projectId == 0) {
+              return false;
+            } else {
+              return crmApi('VolunteerProject', 'getcaneditcontacts', {
+                id: $route.current.params.projectId
+              });
+            }
           }
         }
       });
@@ -66,7 +69,7 @@
   );
 
 
-  angular.module('volunteer').controller('VolunteerProject', function($scope, $location, $q, $route, crmApi, crmUiAlert, crmUiHelp, countries, project, profile_status, campaigns, relationship_data, supporting_data, location_blocks, volBackbone, userCanGetContactList) {
+  angular.module('volunteer').controller('VolunteerProject', function($scope, $location, $q, $route, crmApi, crmUiAlert, crmUiHelp, countries, project, profile_status, campaigns, relationship_data, supporting_data, location_blocks, volBackbone, can_edit_contact_types) {
     // The ts() and hs() functions help load strings for this module.
     var ts = $scope.ts = CRM.ts('org.civicrm.volunteer');
     var hs = $scope.hs = crmUiHelp({file: 'CRM/Volunteer/Form/Volunteer'}); // See: templates/CRM/volunteer/Project.hlp
@@ -85,7 +88,9 @@
       if (CRM.vars['org.civicrm.volunteer'].entityTitle) {
         project.title = CRM.vars['org.civicrm.volunteer'].entityTitle;
       }
+      $scope.editContactType = supporting_data.values.canEditContacts;
     } else {
+      $scope.editContactType = can_edit_contact_types.values;
       $(relationship_data.values).each(function (index, relationship) {
         if (!relationships.hasOwnProperty(relationship.relationship_type_id)) {
           relationships[relationship.relationship_type_id] = [];
@@ -146,7 +151,7 @@
     $scope.project = project;
     $scope.profiles = $scope.project.profiles;
     $scope.relationships = $scope.project.project_contacts;
-    $scope.userCanGetContactList = userCanGetContactList;
+    $scope.showRelationshipBlock = _.reduce($scope.editContactType, function(a, b) {return (a || b); });
 
     $scope.refreshLocBlock = function() {
       if (!!$scope.project.loc_block_id) {
