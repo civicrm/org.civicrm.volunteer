@@ -60,7 +60,7 @@ function civicrm_api3_volunteer_project_create($params) {
       "entity_id" => $project->id,
       "entity_table" => "civicrm_volunteer_project",
       "options" => array("limit" => 0),
-  ));
+    ));
 
   foreach($profiles['values'] as $profile) {
     if(!in_array($profile['id'], $project->profileIds)) {
@@ -338,4 +338,37 @@ function civicrm_api3_volunteer_project_savelocblock($params) {
 
   return civicrm_api3_create_success($location['id'], "VolunteerProject", "SaveLocBlock", $params);
 
+}
+
+
+function _civicrm_api3_volunteer_project_getcaneditcontacts_spec(&$params) {
+  $params['id']['api.required'] = 1;
+}
+
+/**
+ * This function is used to determine if a user has the ability to
+ * edit the contacts associated with this project.
+ *
+ * @param $params
+ */
+function civicrm_api3_volunteer_project_getCanEditContacts($params) {
+  $result = civicrm_api3("VolunteerProjectContact", "get", array("project_id" => $params['id']));
+
+  $types = array();
+  foreach($result['values'] as $contact) {
+    $canEdit = true;
+    try {
+      //Get list can't take an IN param for id. It fails. so one at a time it is.
+      $getList = civicrm_api3("Contact", "getlist", array("id" => $contact['contact_id'], "check_permissions" => 1));
+      if ($getList['count'] == 0) {
+        $canEdit = false;
+      }
+    } catch (Exception $e) {
+      $canEdit = false;
+    }
+    $type = $contact['relationship_type_id'];
+    $types[$type] = (array_key_exists($type, $types)) ? ($types[$type] && $canEdit) : $canEdit;
+  }
+
+  return civicrm_api3_create_success($types, "VolunteerProject", "getCanEditContacts", $params);
 }
