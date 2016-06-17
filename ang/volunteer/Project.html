@@ -70,6 +70,7 @@
                 class="big crm-form-select"
                 crm-ui-id="projectForm.locBlock.country_id"
                 crm-ui-select="{allowClear: false}"
+                ng-change="locBlockDirty()"
                 ng-model="locBlock.address.country_id"
                 ng-options="k as v.name for (k, v) in countries">
               </select>
