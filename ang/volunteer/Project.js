@@ -184,8 +184,8 @@
     //Refresh as soon as we are up and running because we don't have this data yet.
     $scope.refreshLocBlock();
 
-    $scope.locBlockChanged = function() {
-      if($scope.project.loc_block_id == 0) {
+    $scope.$watch('project.loc_block_id', function (newValue) {
+      if (newValue == 0) {
         $scope.locBlock = {
           address: {
             country_id: _.findWhere(countries, {is_default: "1"}).id
@@ -199,7 +199,8 @@
         //Load the data from the server.
         $scope.refreshLocBlock();
       }
-    };
+    });
+
     $scope.locBlockDirty = function() {
       $scope.locBlockIsDirty = true;
     };

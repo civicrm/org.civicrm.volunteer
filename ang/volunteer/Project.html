@@ -40,7 +40,7 @@
 
       <div class="crm-vol-location" crm-ui-field='{name: "projectForm.locBlock", title: ts("Location")}'>
         <select class="big crm-form-select crm-vol-location-block-id"
-                ng-change="locBlockChanged()" crm-ui-select="{placeholder: '', allowClear:true}"
+                crm-ui-select="{placeholder: '', allowClear:true}"
                 ng-options="key as value for (key , value) in locationBlocks" ng-model="project.loc_block_id">
           <option />
         </select>
