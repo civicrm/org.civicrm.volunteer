@@ -174,7 +174,9 @@
           "id": $scope.project.loc_block_id
         }).then(function(result) {
           if(!result.is_error) {
+            $scope.locBlockUpdating = true;
             $scope.locBlock = result.values[0];
+            $scope.locBlockIsDirty = false;
           } else {
             CRM.alert(result.error);
           }
@@ -201,9 +203,15 @@
       }
     });
 
-    $scope.locBlockDirty = function() {
-      $scope.locBlockIsDirty = true;
-    };
+    //Watch the LocBlock and mark it if it as dirty if we modify it.
+    $scope.$watch('locBlock', function(newValue, oldValue) {
+      if ($scope.locBlockUpdating) {
+        $scope.locBlockUpdating = false;
+      } else {
+        $scope.locBlockIsDirty = true;
+      }
+      console.log("Dirty: ", $scope.locBlockIsDirty);
+    }, true);
 
     $scope.addProfile = function() {
       $scope.profiles.push({
