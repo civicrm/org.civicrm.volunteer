@@ -97,10 +97,17 @@
     // flatten the data a bit to make it easier to work with in the template
     _.each(volRelData, function (contacts, relTypeId) {
       relationships[relTypeId] = [];
-      showRelationshipType[relTypeId] = false;
+      showRelationshipType[relTypeId] = true;
       _.each(contacts, function (contact) {
         relationships[relTypeId].push(contact.contact_id);
-        showRelationshipType[relTypeId] = showRelationshipType[relTypeId] || contact.can_be_read_by_current_user;
+        //This reduces all contact permissions down to a single bool for the overall type
+        //We are doing a logical AND here so that if the user does not posses the permission
+        //to view one of the associated contacts, we do not show them the widget.
+        //This is because if we show the widget it will remove any contact they do not
+        //have permission to view. This would lead to a user editing a project, being able
+        //to see one of two beneficiaries, saving the project, and the beneficiary they
+        //could not see is removed silently from the project.
+        showRelationshipType[relTypeId] = showRelationshipType[relTypeId] && contact.can_be_read_by_current_user;
       });
     });
     project.project_contacts = relationships;
