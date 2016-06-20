@@ -174,7 +174,7 @@
           "id": $scope.project.loc_block_id
         }).then(function(result) {
           if(!result.is_error) {
-            $scope.locBlockUpdating = true;
+            $scope.locBlockSkipDirtyCheck = true;
             $scope.locBlock = result.values[0];
             $scope.locBlockIsDirty = false;
           } else {
@@ -205,12 +205,11 @@
 
     //Watch the LocBlock and mark it if it as dirty if we modify it.
     $scope.$watch('locBlock', function(newValue, oldValue) {
-      if ($scope.locBlockUpdating) {
-        $scope.locBlockUpdating = false;
+      if ($scope.locBlockSkipDirtyCheck) {
+        $scope.locBlockSkipDirtyCheck = false;
       } else {
         $scope.locBlockIsDirty = true;
       }
-      console.log("Dirty: ", $scope.locBlockIsDirty);
     }, true);
 
     $scope.addProfile = function() {
