@@ -53,12 +53,6 @@
           },
           profile_status: function(crmProfiles) {
             return crmProfiles.load();
-          },
-          // VOL-174
-          userCanGetContactList: function (crmApi) {
-            return crmApi('Contact', 'getlist').then(function(result) {
-              return (result.count > 1);
-            });
           }
         }
       });
@@ -66,16 +60,19 @@
   );
 
 
-  angular.module('volunteer').controller('VolunteerProject', function($scope, $location, $q, $route, crmApi, crmUiAlert, crmUiHelp, countries, project, profile_status, campaigns, relationship_data, supporting_data, location_blocks, volBackbone, userCanGetContactList) {
+  angular.module('volunteer').controller('VolunteerProject', function($scope, $location, $q, $route, crmApi, crmUiAlert, crmUiHelp, countries, project, profile_status, campaigns, relationship_data, supporting_data, location_blocks, volBackbone) {
     // The ts() and hs() functions help load strings for this module.
     var ts = $scope.ts = CRM.ts('org.civicrm.volunteer');
     var hs = $scope.hs = crmUiHelp({file: 'CRM/Volunteer/Form/Volunteer'}); // See: templates/CRM/volunteer/Project.hlp
 
+    var volRelData = {};
     var relationships = {};
+    var showRelationshipType = {};
     if(project.id == 0) {
-      project = _.extend(supporting_data.values.defaults, project);
-      relationships = supporting_data.values.defaults.relationships;
-      var originalRelationships = {};
+      //Cloning these two objects so that their original values aren't subject to data-binding
+      project = _.extend(_.clone(supporting_data.values.defaults), project);
+      volRelData = _.clone(supporting_data.values.defaults.relationships);
+
       if (CRM.vars['org.civicrm.volunteer'].entityTable) {
         project.entity_table = CRM.vars['org.civicrm.volunteer'].entityTable;
         project.entity_id = CRM.vars['org.civicrm.volunteer'].entityId;
@@ -87,14 +84,34 @@
       }
     } else {
       $(relationship_data.values).each(function (index, relationship) {
-        if (!relationships.hasOwnProperty(relationship.relationship_type_id)) {
-          relationships[relationship.relationship_type_id] = [];
+        if (!volRelData.hasOwnProperty(relationship.relationship_type_id)) {
+          volRelData[relationship.relationship_type_id] = [];
         }
-        relationships[relationship.relationship_type_id].push(relationship.contact_id);
+        volRelData[relationship.relationship_type_id].push({
+          contact_id: relationship.contact_id,
+          can_be_read_by_current_user: relationship.can_be_read_by_current_user
+        });
       });
-      var originalRelationships = _.clone(relationships);
     }
+
+    // flatten the data a bit to make it easier to work with in the template
+    _.each(volRelData, function (contacts, relTypeId) {
+      relationships[relTypeId] = [];
+      showRelationshipType[relTypeId] = true;
+      _.each(contacts, function (contact) {
+        relationships[relTypeId].push(contact.contact_id);
+        //This reduces all contact permissions down to a single bool for the overall type
+        //We are doing a logical AND here so that if the user does not posses the permission
+        //to view one of the associated contacts, we do not show them the widget.
+        //This is because if we show the widget it will remove any contact they do not
+        //have permission to view. This would lead to a user editing a project, being able
+        //to see one of two beneficiaries, saving the project, and the beneficiary they
+        //could not see is removed silently from the project.
+        showRelationshipType[relTypeId] = showRelationshipType[relTypeId] && contact.can_be_read_by_current_user;
+      });
+    });
     project.project_contacts = relationships;
+    $scope.showRelationshipType = showRelationshipType;
 
     if (CRM.vars['org.civicrm.volunteer'] && CRM.vars['org.civicrm.volunteer'].context) {
       $scope.formContext = CRM.vars['org.civicrm.volunteer'].context;
@@ -146,7 +163,8 @@
     $scope.project = project;
     $scope.profiles = $scope.project.profiles;
     $scope.relationships = $scope.project.project_contacts;
-    $scope.userCanGetContactList = userCanGetContactList;
+    // VOL-223: Used to determine visibility of relationship block
+    $scope.showRelationshipBlock = _.reduce($scope.showRelationshipType, function(a, b) {return (a || b); });
 
     $scope.refreshLocBlock = function() {
       if (!!$scope.project.loc_block_id) {
