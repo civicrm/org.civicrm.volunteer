@@ -320,9 +320,6 @@
     saveProject = function() {
       if ($scope.validateProject()) {
 
-        if($scope.project.loc_block_id == 0) {
-          $scope.locBlockIsDirty = true;
-        }
         return crmApi('VolunteerProject', 'create', $scope.project).then(function(result) {
           var projectId = result.values.id;
 
