@@ -61,6 +61,24 @@
 
 
   angular.module('volunteer').controller('VolunteerProject', function($scope, $location, $q, $route, crmApi, crmUiAlert, crmUiHelp, countries, project, profile_status, campaigns, relationship_data, supporting_data, location_blocks, volBackbone) {
+
+    /**
+     * We use custom "dirty" logic rather than rely on Angular's native
+     * functionality because we need to make a separate API call to
+     * create/update the locBlock object (a distinct entity from the project)
+     * if any of the locBlock fields have changed, regardless of whether other
+     * form elements are dirty.
+     */
+    $scope.locBlockIsDirty = false;
+
+    /**
+     * This flag allows the code to distinguish between user- and
+     * server-initiated changes to the locBlock fields. Without this flag, the
+     * changes made to the locBlock fields when a location is fetched from the
+     * server would cause the watch function to mark the locBlock dirty.
+     */
+    $scope.locBlockSkipDirtyCheck = false;
+
     // The ts() and hs() functions help load strings for this module.
     var ts = $scope.ts = CRM.ts('org.civicrm.volunteer');
     var hs = $scope.hs = crmUiHelp({file: 'CRM/Volunteer/Form/Volunteer'}); // See: templates/CRM/volunteer/Project.hlp
@@ -166,6 +184,14 @@
     // VOL-223: Used to determine visibility of relationship block
     $scope.showRelationshipBlock = _.reduce($scope.showRelationshipType, function(a, b) {return (a || b); });
 
+    /**
+     * Populates locBlock fields based on user selection of location.
+     *
+     * Makes an API request.
+     *
+     * @see $scope.locBlockIsDirty
+     * @see $scope.locBlockSkipDirtyCheck
+     */
     $scope.refreshLocBlock = function() {
       if (!!$scope.project.loc_block_id) {
         crmApi("VolunteerProject", "getlocblockdata", {
@@ -186,6 +212,11 @@
     //Refresh as soon as we are up and running because we don't have this data yet.
     $scope.refreshLocBlock();
 
+    /**
+     * If the user selects the option to create a new locBlock (id = 0), set
+     * some defaults and display the necessary fields. Otherwise, fetch the
+     * location data so we can display it for editing.
+     */
     $scope.$watch('project.loc_block_id', function (newValue) {
       if (newValue == 0) {
         $scope.locBlock = {
@@ -203,7 +234,10 @@
       }
     });
 
-    //Watch the LocBlock and mark it if it as dirty if we modify it.
+    /**
+     * @see $scope.locBlockIsDirty
+     * @see $scope.locBlockSkipDirtyCheck
+     */
     $scope.$watch('locBlock', function(newValue, oldValue) {
       if ($scope.locBlockSkipDirtyCheck) {
         $scope.locBlockSkipDirtyCheck = false;
