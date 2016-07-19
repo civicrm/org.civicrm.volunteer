@@ -43,7 +43,11 @@ class CRM_Volunteer_Page_Angular extends Civi\Angular\Page\Main {
       //have to side load ckeditor anymore
       $version = substr(CRM_Utils_System::version(), 0, 3);
       if($version <= 4.6) {
-        //crmUi depends on loading ckeditor, but ckeditor doesn't work with aggregation.
+        //crmUi depends on loading ckeditor, but ckeditor doesn't work properly with aggregation.
+
+        //Add a basepath so that CKEditor works when Drupal (or other extension/cms) does the aggregation
+        $basePath = $page->res->getUrl("civicrm") . "packages/ckeditor/";
+        $page->res->addScript("window.CKEDITOR_BASEPATH = '{$basePath}';", 119, $region, FALSE);
         $page->res->addScriptFile('civicrm', 'packages/ckeditor/ckeditor.js', 120, $region, FALSE);
       }
 
