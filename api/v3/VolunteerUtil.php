@@ -240,6 +240,10 @@ function civicrm_api3_volunteer_util_getbeneficiaries($params) {
     'return' => 'contact_id',
   ));
 
+  if (!$beneficiaries['count']) {
+    return array();
+  }
+
   $contactIds = array();
   foreach ($beneficiaries['values'] as $b) {
     array_push($contactIds, $b['contact_id']);
