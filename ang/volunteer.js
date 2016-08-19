@@ -31,47 +31,55 @@
     })
 
     .factory('volOppSearch', ['crmApi', '$location', '$route', function(crmApi, $location, $route) {
-      // search result is stored here
-      var result = {};
-
-      var getResult = function() {
-        return result;
-      };
+      //Search params and results are stored here and assigned by reference to the form
+      var volOppSearch = {};
+      volOppSearch.result = {};
+      volOppSearch.params = $route.current.params;
+      var proximity = {};
+      //This translates the url param complex objects into
+      //a format that Angular can assign to form objects
+      //VOL-240
+      _.each(volOppSearch.params, function(value, name) {
+        //If the key is part of proximity search
+        if (name.substring(0, 9) === "proximity") {
+          //Get just the key name
+          parsedName = name.replace(/proximity\[(.*)\]/g, "$1");
+          if (CRM.$.isNumeric(value)) {
+            //Angular cannot assign "100" to distance because
+            //It requires that the distance be numeric
+            //So when converting from a url param(string)
+            //parse the string into a number
+            proximity[parsedName] = parseFloat(value);
+          } else {
+            proximity[parsedName] = value;
+          }
+          //We don't need or want proximity[unit] as part of the params
+          //They should only be a sub-object under params.proximity
+          delete volOppSearch.params[name];
+        }
+      });
+      volOppSearch.params.proximity = proximity;
 
       var clearResult = function() {
-        result = {};
+        volOppSearch.result = {};
       };
 
-      var userSpecifiedSearchParams = {};
-
-      var getUserSpecifiedSearchParams = function() {
-        return userSpecifiedSearchParams;
-      };
-
-      var search = function(searchParams) {
+      volOppSearch.search = function() {
         clearResult();
 
-        // if no params are passed, get the data out of the URL
-        if (searchParams) {
-          userSpecifiedSearchParams = searchParams();
-        } else {
-          userSpecifiedSearchParams = $route.current.params;
-        }
+        //Update the URL for bookmarkability
+        //VOL-240: Using jQuery params because it properly handles complex objects (recursively)
+        //where $location.search improperly formats the url string into "proximity=[Object]"
+        $location.search(CRM.$.param(volOppSearch.params));
 
-        // update the URL for bookmarkability
-        $location.search(userSpecifiedSearchParams);
-
-        return crmApi('VolunteerNeed', 'getsearchresult', userSpecifiedSearchParams).then(function(data) {
-          result = data.values;
-          return getResult();
+        return crmApi('VolunteerNeed', 'getsearchresult', volOppSearch.params).then(function(data) {
+          volOppSearch.result = data.values;
         });
       };
 
-      return {
-        getResult: getResult,
-        getParams: getUserSpecifiedSearchParams,
-        search: search
-      };
+      volOppSearch.results = function results() { return volOppSearch.result; };
+
+      return volOppSearch;
 
     }])
 
