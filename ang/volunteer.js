@@ -77,6 +77,9 @@
         });
       };
 
+      //We are returning this as a function because there is a bug that causes
+      //the 'result' to be unbound on the client side (eg, the listing is never refreshed)
+      //this function acts as a closure and maintains binding
       volOppSearch.results = function results() { return result; };
 
       return volOppSearch;

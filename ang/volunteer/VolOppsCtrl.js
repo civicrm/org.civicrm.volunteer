@@ -105,12 +105,15 @@
      * @returns {Boolean}
      */
     var checkIsProximitySearch = function() {
-      return _.reduce($scope.searchParams.proximity, function(a, b, key) {
+      //Reduce the entire set of proximity params down to a single boolean.
+      return _.reduce($scope.searchParams.proximity, function(previous, value, key) {
+        //ignore "unit" by returning the previous value
         if ( key === "unit") {
-          return a;
+          return previous;
         } else {
-          return (a || !!b);
+          return (previous || !!value);
         }
+        //Initial Value
       }, false);
     };
 
