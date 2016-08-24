@@ -64,13 +64,34 @@
         result = {};
       };
 
+      /**
+       * Formats the search params for bookmarkable links.
+       *
+       * @return string
+       */
+      var buildQueryString = function () {
+        // clean up the URL by filtering out those params with falsy values
+        var cleanUpSearchParams = function (params) {
+          return _.transform(params, function (result, value, key) {
+            if (typeof value == 'object') {
+              result[key] = cleanUpSearchParams(value);
+            } else if (value) {
+              result[key] = value;
+            }
+          });
+        };
+        var searchParams = cleanUpSearchParams(volOppSearch.params);
+
+        // jQuery.param properly handles complex objects (recursively); if we don't do this,
+        // we end up with URLs like "proximity=[Object]"
+        return CRM.$.param(searchParams);
+      }
+
       volOppSearch.search = function() {
         clearResult();
 
         //Update the URL for bookmarkability
-        //VOL-240: Using jQuery params because it properly handles complex objects (recursively)
-        //where $location.search improperly formats the url string into "proximity=[Object]"
-        $location.search(CRM.$.param(volOppSearch.params));
+        $location.search(buildQueryString());
 
         return crmApi('VolunteerNeed', 'getsearchresult', volOppSearch.params).then(function(data) {
           result = data.values;
