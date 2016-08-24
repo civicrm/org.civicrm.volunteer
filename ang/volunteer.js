@@ -33,7 +33,7 @@
     .factory('volOppSearch', ['crmApi', '$location', '$route', function(crmApi, $location, $route) {
       //Search params and results are stored here and assigned by reference to the form
       var volOppSearch = {};
-      volOppSearch.result = {};
+      var result = {};
       volOppSearch.params = $route.current.params;
       var proximity = {};
       //This translates the url param complex objects into
@@ -61,7 +61,7 @@
       volOppSearch.params.proximity = proximity;
 
       var clearResult = function() {
-        volOppSearch.result = {};
+        result = {};
       };
 
       volOppSearch.search = function() {
@@ -73,11 +73,11 @@
         $location.search(CRM.$.param(volOppSearch.params));
 
         return crmApi('VolunteerNeed', 'getsearchresult', volOppSearch.params).then(function(data) {
-          volOppSearch.result = data.values;
+          result = data.values;
         });
       };
 
-      volOppSearch.results = function results() { return volOppSearch.result; };
+      volOppSearch.results = function results() { return result; };
 
       return volOppSearch;
 
