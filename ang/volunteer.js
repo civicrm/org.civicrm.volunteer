@@ -34,31 +34,52 @@
       //Search params and results are stored here and assigned by reference to the form
       var volOppSearch = {};
       var result = {};
-      volOppSearch.params = $route.current.params;
-      var proximity = {};
-      //This translates the url param complex objects into
-      //a format that Angular can assign to form objects
-      //VOL-240
-      _.each(volOppSearch.params, function(value, name) {
-        //If the key is part of proximity search
-        if (name.substring(0, 9) === "proximity") {
-          //Get just the key name
-          parsedName = name.replace(/proximity\[(.*)\]/g, "$1");
-          if (CRM.$.isNumeric(value)) {
-            //Angular cannot assign "100" to distance because
-            //It requires that the distance be numeric
-            //So when converting from a url param(string)
-            //parse the string into a number
-            proximity[parsedName] = parseFloat(value);
+
+      /**
+       * This translates the url params with nested key names
+       * into a complex object format that Angular can assign to form objects
+       * VOL-240
+       *
+       * @param params
+       * @returns complex object
+       */
+      var parseQueryParams = function(params) {
+        var returnParams = {};
+        _.each(params, function(value, name) {
+          //Get the base name. will return whole key if no mathing bracket is found.
+          var basename = name.replace(/([^\[]*)\[.*/g, "$1");
+          //If we have subkeys
+          if (basename.length < name.length) {
+            var tmp = returnParams[basename] || {};
+            //This gives us an array of the key of each level
+            var path = name.replace(basename + "[", "").slice(0, -1).split("][");
+            var ptr = tmp;
+            var last = path.length - 1;
+            for(var i in path) {
+              //Set the value
+              if (i == last) {
+                //VOL-240: Type juggling to keep angular's numeric form rules happy
+                ptr[path[i]] = (CRM.$.isNumeric(value)) ? parseFloat(value) : value;
+              } else {
+                //If the path doesn't exist, create it.
+                if(!ptr.hasOwnProperty(path[i])) {
+                  ptr[path[i]] = {};
+                }
+                //Move the Pointer
+                ptr = ptr[path[i]];
+              }
+            }
+            //Set the value in our return object.
+            returnParams[basename] = tmp;
           } else {
-            proximity[parsedName] = value;
+            //VOL-240: Type juggling to keep angular's numeric form rules happy
+            returnParams[basename] = (CRM.$.isNumeric(value)) ? parseFloat(value) : value;
           }
-          //We don't need or want proximity[unit] as part of the params
-          //They should only be a sub-object under params.proximity
-          delete volOppSearch.params[name];
-        }
-      });
-      volOppSearch.params.proximity = proximity;
+        });
+        return returnParams;
+      };
+
+      volOppSearch.params = parseQueryParams($route.current.params);
 
       var clearResult = function() {
         result = {};
