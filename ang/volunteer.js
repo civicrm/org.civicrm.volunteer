@@ -31,47 +31,104 @@
     })
 
     .factory('volOppSearch', ['crmApi', '$location', '$route', function(crmApi, $location, $route) {
-      // search result is stored here
+      //Search params and results are stored here and assigned by reference to the form
+      var volOppSearch = {};
       var result = {};
 
-      var getResult = function() {
-        return result;
+      /**
+       * This translates the url params with nested key names
+       * into a complex object format that Angular can assign to form objects
+       * VOL-240
+       *
+       * @param params
+       * @returns complex object
+       */
+      var parseQueryParams = function(params) {
+        var returnParams = {};
+        _.each(params, function(value, name) {
+          //Get the base name. will return whole key if no mathing bracket is found.
+          var basename = name.replace(/([^\[]*)\[.*/g, "$1");
+          //If we have subkeys
+          if (basename.length < name.length) {
+            var tmp = returnParams[basename] || {};
+            //This gives us an array of the key of each level
+            var path = name.replace(basename + "[", "").slice(0, -1).split("][");
+            var ptr = tmp;
+            var last = path.length - 1;
+            for(var i in path) {
+              //Set the value
+              if (i == last) {
+                ptr[path[i]] = value;
+              } else {
+                //If the path doesn't exist, create it.
+                if(!ptr.hasOwnProperty(path[i])) {
+                  ptr[path[i]] = {};
+                }
+                //Move the Pointer
+                ptr = ptr[path[i]];
+              }
+            }
+            //Set the value in our return object.
+            returnParams[basename] = tmp;
+          } else {
+            returnParams[basename] = value;
+          }
+        });
+
+        // The radius field is of type number; Angular errors if the value is a string
+        if (returnParams['proximity']['radius']) {
+          returnParams['proximity']['radius'] = parseFloat(returnParams['proximity']['radius']);
+        }
+
+        return returnParams;
       };
+
+      volOppSearch.params = parseQueryParams($route.current.params);
 
       var clearResult = function() {
         result = {};
       };
 
-      var userSpecifiedSearchParams = {};
+      /**
+       * Formats the search params for bookmarkable links.
+       *
+       * @return string
+       */
+      var buildQueryString = function () {
+        // clean up the URL by filtering out those params with falsy values
+        var cleanUpSearchParams = function (params) {
+          return _.transform(params, function (result, value, key) {
+            if (typeof value == 'object') {
+              result[key] = cleanUpSearchParams(value);
+            } else if (value) {
+              result[key] = value;
+            }
+          });
+        };
+        var searchParams = cleanUpSearchParams(volOppSearch.params);
 
-      var getUserSpecifiedSearchParams = function() {
-        return userSpecifiedSearchParams;
-      };
+        // jQuery.param properly handles complex objects (recursively); if we don't do this,
+        // we end up with URLs like "proximity=[Object]"
+        return CRM.$.param(searchParams);
+      }
 
-      var search = function(searchParams) {
+      volOppSearch.search = function() {
         clearResult();
 
-        // if no params are passed, get the data out of the URL
-        if (searchParams) {
-          userSpecifiedSearchParams = searchParams();
-        } else {
-          userSpecifiedSearchParams = $route.current.params;
-        }
+        //Update the URL for bookmarkability
+        $location.search(buildQueryString());
 
-        // update the URL for bookmarkability
-        $location.search(userSpecifiedSearchParams);
-
-        return crmApi('VolunteerNeed', 'getsearchresult', userSpecifiedSearchParams).then(function(data) {
+        return crmApi('VolunteerNeed', 'getsearchresult', volOppSearch.params).then(function(data) {
           result = data.values;
-          return getResult();
         });
       };
 
-      return {
-        getResult: getResult,
-        getParams: getUserSpecifiedSearchParams,
-        search: search
-      };
+      //We are returning this as a function because there is a bug that causes
+      //the 'result' to be unbound on the client side (eg, the listing is never refreshed)
+      //this function acts as a closure and maintains binding
+      volOppSearch.results = function results() { return result; };
+
+      return volOppSearch;
 
     }])
 

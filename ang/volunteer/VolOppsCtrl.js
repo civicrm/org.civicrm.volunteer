@@ -59,8 +59,8 @@
 
     $scope.countries = countries;
     $scope.roles = supporting_data.values.roles;
-    $scope.searchParams = volOppSearch.getParams;
-    $scope.volOppData = volOppSearch.getResult;
+    $scope.searchParams = volOppSearch.params;
+    $scope.volOppData = volOppSearch.results;
 
     $scope.checkout = function () {
       if ($route.current.params.hasOwnProperty('dest') && $route.current.params.dest) {
@@ -98,23 +98,35 @@
 
     /**
      * Returns true if a proximity search has been started; else false.
+     * This function ignores units because they shouldn't be used to calculate
+     * if a proximity search is started. Because otherwise units is marked as required
+     * and there is no way to stop seraching by proximity
      *
      * @returns {Boolean}
      */
-    $scope.isProximitySearch = function () {
-      var result = false;
-      $('.crm-vol-proximity input').each(function() {
-        var val = $(this).val();
-        result = (val != '' && val != '?' );
-
-        // a single populated field is enough to make it a proximity search,
-        // so we can break the loop
-        if (result) {
-          return false;
+    var checkIsProximitySearch = function() {
+      //Reduce the entire set of proximity params down to a single boolean.
+      return _.reduce($scope.searchParams.proximity, function(previous, value, key) {
+        //ignore "unit" by returning the previous value
+        if ( key === "unit") {
+          return previous;
+        } else {
+          return (previous || !!value);
         }
-      });
-      return result;
+        //Initial Value
+      }, false);
     };
+
+    //Make Proximity Search status available to scope
+    $scope.isProximitySearch = checkIsProximitySearch();
+
+    //Watch the proximity search params only and update the
+    //isProximitySearch flag when the params change.
+    //Using a watcher here rather than passing a function
+    //to scope keeps the number of iterations to a minimum
+    $scope.$watch('searchParams.proximity', function(){
+      $scope.isProximitySearch = checkIsProximitySearch();
+    }, true);
 
     $scope.showSearch = function() {
       $scope.hideSearch = false;
@@ -122,9 +134,17 @@
     };
 
     $scope.search = function () {
+      if (!$scope.isProximitySearch) {
+        //Set the proximity object to empty because if we
+        //pass an object with empty keys to search() the backend
+        //returns an error that distance, units and postal code
+        //are all required, even though the user is not attempting
+        //to do a proximity search.
+        $scope.searchParams.proximity = {};
+      }
       return crmStatus(
         {start: ts('Searching...'), success: ts('Search complete')},
-        volOppSearch.search($scope.searchParams)
+        volOppSearch.search()
       );
     };
 
