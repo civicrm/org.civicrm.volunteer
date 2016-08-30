@@ -58,8 +58,7 @@
             for(var i in path) {
               //Set the value
               if (i == last) {
-                //VOL-240: Type juggling to keep angular's numeric form rules happy
-                ptr[path[i]] = (CRM.$.isNumeric(value)) ? parseFloat(value) : value;
+                ptr[path[i]] = value;
               } else {
                 //If the path doesn't exist, create it.
                 if(!ptr.hasOwnProperty(path[i])) {
@@ -72,10 +71,15 @@
             //Set the value in our return object.
             returnParams[basename] = tmp;
           } else {
-            //VOL-240: Type juggling to keep angular's numeric form rules happy
-            returnParams[basename] = (CRM.$.isNumeric(value)) ? parseFloat(value) : value;
+            returnParams[basename] = value;
           }
         });
+
+        // The radius field is of type number; Angular errors if the value is a string
+        if (returnParams['proximity']['radius']) {
+          returnParams['proximity']['radius'] = parseFloat(returnParams['proximity']['radius']);
+        }
+
         return returnParams;
       };
 
