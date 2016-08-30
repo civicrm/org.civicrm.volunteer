@@ -8,8 +8,8 @@
     <author>Ginkgo Street Labs; CiviCRM, LLC; and the CiviCRM community</author>
     <email>inquire@ginkgostreet.com</email>
   </maintainer>
-  <releaseDate>2016-06-07</releaseDate>
-  <version>4.6-2.1.1</version>
+  <releaseDate>2016-08-10</releaseDate>
+  <version>4.6-2.1.2</version>
   <develStage>stable</develStage>
   <compatibility>
     <ver>4.6</ver>

@@ -216,11 +216,17 @@ function _volunteerGetProjectRelationshipDefaults() {
   }
   $defaults[$beneficiaryType] = $defaultBeneficiary;
 
-  foreach ($defaults as $type => $default) {
-    $defaults[$type]['can_be_read_by_current_user'] = CRM_Volunteer_BAO_ProjectContact::contactIsReadable($default['contact_id']);
-    // to match the format of existing projects, for which each relationship type
-    // could have more than one contact, wrap each relationship in an array
-    $defaults[$type] = array($defaults[$type]);
+  //Re-Format the defaults into the expected structure
+  //each type should be an array of arrays, each one
+  //containing two keys, one for contact_id, and one for read permissions
+  //$defaults['type'] => array( array('contact_id' => ..., 'can_be_read_by_current_user' => ...) )git 
+  foreach ($defaults as $type => &$contacts) {
+    foreach($contacts as &$contact) {
+      if(!is_array($contact)) {
+        $contact = array("contact_id" => $contact);
+      }
+      $contact['can_be_read_by_current_user'] = CRM_Volunteer_BAO_ProjectContact::contactIsReadable($contact['contact_id']);
+    }
   }
 
   return $defaults;
@@ -239,6 +245,10 @@ function civicrm_api3_volunteer_util_getbeneficiaries($params) {
     'relationship_type_id' => 'volunteer_beneficiary',
     'return' => 'contact_id',
   ));
+
+  if (!$beneficiaries['count']) {
+    return array();
+  }
 
   $contactIds = array();
   foreach ($beneficiaries['values'] as $b) {

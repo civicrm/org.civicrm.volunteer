@@ -1,11 +1,11 @@
 <!--
 Controller: VolOppsCtrl
-Required vars: volOppData, searchParams
+Required vars: volOppData(), searchParams
 -->
 
 <div class="crm-container">
   <div crm-ui-debug="volOppData()"></div>
-  <div crm-ui-debug="searchParams()"></div>
+  <div crm-ui-debug="searchParams"></div>
   <div crm-ui-debug="proximityUnits"></div>
   <div crm-ui-debug="countries"></div>
 
@@ -27,9 +27,9 @@ Required vars: volOppData, searchParams
       <div class="crm-block ui-tabs ui-widget ui-widget-content ui-corner-all">
         <div class="crm-group" crm-ui-id-scope>
           <div crm-ui-field="{name: 'volOppSearchForm.date_start', title: ts('Between')}" class="crm-vol-opp-time">
-            <input crm-ui-id="volOppSearchForm.date_start" crm-ui-datepicker="{time: false}" ng-model="searchParams().date_start" />
+            <input crm-ui-id="volOppSearchForm.date_start" crm-ui-datepicker="{time: false}" ng-model="searchParams.date_start" />
             <label crm-ui-for="volOppSearchForm.date_end">and</label>
-            <input crm-ui-id="volOppSearchForm.date_end" crm-ui-datepicker="{time: false}" ng-model="searchParams().date_end" />
+            <input crm-ui-id="volOppSearchForm.date_end" crm-ui-datepicker="{time: false}" ng-model="searchParams.date_end" />
           </div>
 
           <div crm-ui-field="{name: 'volOppSearchForm.role_id', title: ts('Role')}" class="crm-vol-opp-role">
@@ -39,7 +39,7 @@ Required vars: volOppData, searchParams
               type="text"
               multiple="multiple"
               name="role_id"
-              ng-model="searchParams().role_id"
+              ng-model="searchParams.role_id"
               ng-options="key as value for (key , value) in  roles"
               class="big crm-form-text">
               <option />
@@ -60,25 +60,25 @@ Required vars: volOppData, searchParams
               crm-ui-id="volOppSearchForm.beneficiary"
               type="text"
               name="beneficiary"
-              ng-model="searchParams().beneficiary"
+              ng-model="searchParams.beneficiary"
               class="big crm-form-text"
             />
           </div>
         </div>
-        <div class="crm-vol-proximity" crm-ui-accordion="{title: ts('Search by Location'), collapsed: true}">
+        <div class="crm-vol-proximity" crm-ui-accordion="{title: ts('Search by Location'), collapsed: !isProximitySearch}">
           <div crm-ui-field="{name: 'volOppSearchForm.radius', title: ts('Within')}" class="crm-vol-opp-radius">
             <input
               class="four crm-form-text"
               crm-ui-id="volOppSearchForm.radius"
-              ng-model="searchParams().proximity.radius"
-              ng-required="isProximitySearch()"
+              ng-model="searchParams.proximity.radius"
+              ng-required="isProximitySearch"
               type="number"
             />
             <select
               crm-ui-id="volOppSearchForm.unit"
-              ng-model="searchParams().proximity.unit"
+              ng-model="searchParams.proximity.unit"
               ng-options="option.value as option.label for option in proximityUnits"
-              ng-required="isProximitySearch()">
+              ng-required="isProximitySearch">
             </select>
             <label crm-ui-for="volOppSearchForm.unit">of:</label>
           </div>
@@ -86,7 +86,7 @@ Required vars: volOppData, searchParams
             <input
               class="crm-form-text"
               crm-ui-id="volOppSearchForm.street_address"
-              ng-model="searchParams().proximity.street_address"
+              ng-model="searchParams.proximity.street_address"
               type="text"
             />
           </div>
@@ -94,18 +94,16 @@ Required vars: volOppData, searchParams
             <input
               class="crm-form-text"
               crm-ui-id="volOppSearchForm.city"
-              ng-model="searchParams().proximity.city"
+              ng-model="searchParams.proximity.city"
               type="text"
             />
           </div>
-          <div
-            crm-ui-field="{name: 'volOppSearchForm.postal_code', title: ts('Postal Code')}"
-            ng-required="isProximitySearch()" class="crm-vol-opp-postal"
-          >
+          <div crm-ui-field="{name: 'volOppSearchForm.postal_code', title: ts('Postal Code')}" class="crm-vol-opp-postal">
             <input
               class="crm-form-text"
               crm-ui-id="volOppSearchForm.postal_code"
-              ng-model="searchParams().proximity.postal_code"
+              ng-model="searchParams.proximity.postal_code"
+              ng-required="isProximitySearch"
               type="text"
             />
           </div>
@@ -114,9 +112,9 @@ Required vars: volOppData, searchParams
               class="big crm-form-select"
               crm-ui-id="volOppSearchForm.country"
               crm-ui-select="{placeholder: ts('Select Country'), allowClear:true}"
-              ng-model="searchParams().proximity.country"
+              ng-model="searchParams.proximity.country"
               ng-options="k as v.name for (k, v) in countries"
-              ng-required="isProximitySearch()">
+              ng-required="isProximitySearch">
             </select>
           </div>
         </div>
