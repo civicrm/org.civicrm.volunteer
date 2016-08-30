@@ -76,7 +76,7 @@
         });
 
         // The radius field is of type number; Angular errors if the value is a string
-        if (returnParams['proximity']['radius']) {
+        if (returnParams['proximity'] && returnParams['proximity']['radius']) {
           returnParams['proximity']['radius'] = parseFloat(returnParams['proximity']['radius']);
         }
 
