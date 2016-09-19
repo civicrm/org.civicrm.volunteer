@@ -390,7 +390,7 @@ class CRM_Volunteer_Form_VolunteerSignUp extends CRM_Core_Form {
     //Process Additional Volunteers
     $additionalVolunteers = $this->processAdditionalVolunteers($values);
     foreach($additionalVolunteers as $additionalVolunteerCID) {
-      $projectNeeds = $this->createVolunteerActivity($additionalVolunteerCID);
+      $projectNeeds = $this->createVolunteerActivity($additionalVolunteerCID, $activityValues);
       $this->sendVolunteerConfirmationEmail($additionalVolunteerCID, $projectNeeds);
     }
 
