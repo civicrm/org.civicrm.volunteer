@@ -303,7 +303,7 @@ class CRM_Volunteer_Form_VolunteerSignUp extends CRM_Core_Form {
 
     $this->addButtons(array(
       array(
-        'type' => 'submit',
+        'type' => 'done',
         'name' => ts('Submit', array('domain' => 'org.civicrm.volunteer')),
         'isDefault' => TRUE,
       ),
@@ -397,7 +397,7 @@ class CRM_Volunteer_Form_VolunteerSignUp extends CRM_Core_Form {
 
     $statusMsg = ts('You are scheduled to volunteer. Thank you!', array('domain' => 'org.civicrm.volunteer'));
     CRM_Core_Session::setStatus($statusMsg, '', 'success');
-    CRM_Utils_System::redirect($this->_destination);
+    CRM_Core_Session::singleton()->pushUserContext($this->_destination);
   }
 
 
