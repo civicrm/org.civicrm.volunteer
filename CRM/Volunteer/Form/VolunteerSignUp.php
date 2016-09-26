@@ -95,7 +95,7 @@ class CRM_Volunteer_Form_VolunteerSignUp extends CRM_Core_Form {
    *
    * @var int
    */
-  private $_primary_volunteer_id;
+  protected $_primary_volunteer_id;
 
   /**
    * The volunteer projects associated with this form, keyed by project ID.
