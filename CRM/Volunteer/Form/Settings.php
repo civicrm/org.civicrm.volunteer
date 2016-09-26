@@ -135,6 +135,30 @@ class CRM_Volunteer_Form_Settings extends CRM_Core_Form {
       array("placeholder" => ts("- none -", array('domain' => 'org.civicrm.volunteer')), "multiple" => "multiple", "class" => "crm-select2")
     );
 
+
+    // hack for 4.6/4.7 compatibility
+    if (method_exists($this, 'addWysiwyg')) {
+      $this->addWysiwyg(
+        'volunteer_general_project_settings_help_text',
+        ts("Help text for the project settings screen", array('domain' => 'org.civicrm.volunteer')),
+        array()
+      );
+    } else {
+      $this->add(
+        'wysiwyg',
+        'volunteer_general_project_settings_help_text',
+        ts("Help text for the project settings screen", array('domain' => 'org.civicrm.volunteer')),
+        array()
+      );
+    }
+
+    //Add field for Displaying project location to opportunities page
+    $this->addYesNo(
+      'volunteer_general_show_project_location_public',
+      ts('Display Project Location', array('domain' => 'org.civicrm.volunteer'))
+    );
+
+
     $this->addButtons(array(
       array(
         'type' => 'submit',
@@ -188,6 +212,8 @@ class CRM_Volunteer_Form_Settings extends CRM_Core_Form {
     //General Settings
     $defaults['volunteer_general_campaign_filter_type'] = CRM_Utils_Array::value('volunteer_general_campaign_filter_type', $this->_settings);
     $defaults['volunteer_general_campaign_filter_list'] = CRM_Utils_Array::value('volunteer_general_campaign_filter_list', $this->_settings);
+    $defaults['volunteer_general_project_settings_help_text'] = CRM_Utils_Array::value('volunteer_general_project_settings_help_text', $this->settings);
+    $defaults['volunteer_general_show_project_location_public'] = CRM_Utils_Array::value('volunteer_general_show_project_location_public', $this->_settings);
 
     return $defaults;
   }
@@ -219,6 +245,10 @@ class CRM_Volunteer_Form_Settings extends CRM_Core_Form {
     ));
 
     civicrm_api3('Setting', 'create', array(
+      "volunteer_general_project_settings_help_text" => CRM_Utils_Array::value('volunteer_general_project_settings_help_text', $values),
+    ));
+
+    civicrm_api3('Setting', 'create', array(
       "volunteer_project_default_campaign" => CRM_Utils_Array::value('volunteer_project_default_campaign', $values)
     ));
     civicrm_api3('Setting', 'create', array(
@@ -240,6 +270,11 @@ class CRM_Volunteer_Form_Settings extends CRM_Core_Form {
     ));
     civicrm_api3('Setting', 'create', array(
       "volunteer_general_campaign_filter_list" => CRM_Utils_Array::value('volunteer_general_campaign_filter_list', $values, array())
+    ));
+
+    //Display Project Location
+    civicrm_api3('Setting', 'create', array(
+      "volunteer_general_show_project_location_public" => CRM_Utils_Array::value('volunteer_general_show_project_location_public', $values, false)
     ));
 
     CRM_Core_Session::setStatus(ts("Changes Saved", array('domain' => 'org.civicrm.volunteer')), "Saved", "success");

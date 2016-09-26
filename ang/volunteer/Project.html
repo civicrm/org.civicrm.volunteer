@@ -9,10 +9,9 @@
   <div crm-ui-debug="relationships"></div>
   <div id="backboneIncludes"></div>
 
+  <div class="help" ng-show="supporting_data.volunteer_general_project_settings_help_text"
+       ng-bind-html="supporting_data.volunteer_general_project_settings_help_text"></div>
   <form class="crm-form-block" name="projectForm" crm-ui-id-scope>
-
-    <!-- temporarily hiding this as I'm not sure the intent and it looks unfinished -->
-    <div class="help" ng-hide="1"></div>
 
     <fieldset class="crm-vol-project-settings" crm-ui-id-scope>
       <legend>{{ts("Project Settings")}}</legend>
@@ -44,7 +43,7 @@
                 ng-options="key as value for (key , value) in locationBlocks" ng-model="project.loc_block_id">
           <option />
         </select>
-        <div id="crm-vol-location-block" class="crm-vol-extra-top" crm-ui-accordion="{title: ts('Edit Location'), collapsed: project.loc_block_id !==0}" ng-hide="!project.loc_block_id">
+        <div id="crm-vol-location-block" class="crm-vol-extra-top" crm-ui-accordion="{title: ts('Edit Location'), collapsed: project.loc_block_id !==0}" ng-hide="project.loc_block_id == null">
           <div class="status" ng-show="locBlock.count_loc_used > 0">{{ts("This location is used by other events/projects. Modifying location information will change values for all events/projects")}}</div>
           <fieldset class="crm-vol-location-address">
             <legend>{{ts("Address")}}</legend>

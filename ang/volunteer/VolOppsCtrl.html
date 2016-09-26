@@ -204,6 +204,7 @@ Required vars: volOppData(), searchParams
       <thead>
       <tr role="row">
         <th class="ui-state-default crm-vol-opp-project">{{ts('Project')}}</th>
+        <th ng-if="showLocationColumn" class="ui-state-default crm-vol-opp-beneficiary">{{ts('Location')}}</th>
         <th class="ui-state-default crm-vol-opp-beneficiary">{{ts('With')}}</th>
         <th class="ui-state-default crm-vol-opp-role">{{ts('Role')}}</th>
         <th class="ui-state-default crm-vol-opp-time">{{ts('Time')}}</th>
@@ -220,6 +221,7 @@ Required vars: volOppData(), searchParams
               ng-click="showProjectDescription(need.project)">
             </span>
         </td>
+        <td  ng-if="showLocationColumn" class="crm-vol-opp-time">{{formatLocation(need.project.location)}}</td>
         <td class="crm-vol-opp-beneficiary">
           <span class="beneficiary" ng-repeat="ben in need.project.beneficiaries">{{ben.display_name}}</span>
         </td>

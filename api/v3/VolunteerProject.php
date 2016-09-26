@@ -49,7 +49,7 @@ function civicrm_api3_volunteer_project_create($params) {
 
   //Create a locBlock if we need to
   if(array_key_exists("loc_block_id", $params) && $params['loc_block_id'] == 0) {
-    $locBlock = civicrm_api3("LocBlock", "create");
+    $locBlock = civicrm_api3("LocBlock", "create", ['address_id'=> 1]);
     $params['loc_block_id'] = $locBlock['id'];
   }
 

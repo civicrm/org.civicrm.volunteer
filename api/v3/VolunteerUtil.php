@@ -142,6 +142,9 @@ function civicrm_api3_volunteer_util_getsupportingdata($params) {
     $results['relationship_types'] = $relTypes['values'];
 
     $results['phone_types'] = CRM_Core_OptionGroup::values("phone_type", FALSE, FALSE, TRUE);
+    $results['volunteer_general_project_settings_help_text'] = civicrm_api3('Setting', 'getvalue', array(
+      'name' => "volunteer_general_project_settings_help_text",
+    ));
 
     //Fetch the Defaults from saved settings.
     $defaults = CRM_Volunteer_BAO_Project::composeDefaultSettingsArray();
@@ -158,6 +161,9 @@ function civicrm_api3_volunteer_util_getsupportingdata($params) {
 
   if ($controller === 'VolOppsCtrl') {
     $results['roles'] = CRM_Core_OptionGroup::values('volunteer_role', FALSE, FALSE, TRUE);
+    $results['show_location'] = civicrm_api3('Setting', 'getvalue', array(
+      'name' => 'volunteer_general_show_project_location_public',
+    ));
   }
 
   $results['use_profile_editor'] = CRM_Volunteer_Permission::check(array("access CiviCRM","profile listings and forms"));

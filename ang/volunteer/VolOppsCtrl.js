@@ -57,6 +57,9 @@
     }
 
 
+    //VOL-216: Conditionally show a location column
+    $scope.showLocationColumn = supporting_data.values.show_location || false;
+
     $scope.countries = countries;
     $scope.roles = supporting_data.values.roles;
     $scope.searchParams = volOppSearch.params;
@@ -232,6 +235,29 @@
         }
       });
     }
+
+    //This function is used to visually format address/location data
+    $scope.formatLocation = function(location) {
+      var locString = "";
+
+      if (location.street_address) {
+        locString = locString + location.street_address + ", ";
+      }
+
+      if (location.city) {
+        locString = locString + location.city + ", ";
+      }
+
+      if (location.state_province) {
+        locString = locString + location.state_province;
+      }
+
+      if(!locString && location.postal_code) {
+        locString = location.postal_code;
+      }
+
+      return locString;
+    };
   });
 
 })(angular, CRM.$, CRM._);
