@@ -264,6 +264,7 @@ class CRM_Volunteer_Form_VolunteerSignUp extends CRM_Core_Form {
       ));
 
       $projectDetails['beneficiaries'] = array();
+      $projectDetails['campaign_id'] = $volProjectDetails['campaign_id'];
       $projectDetails['description'] = $volProjectDetails['description'];
       $projectDetails['entity_id'] = $volProjectDetails['entity_id'];
       $projectDetails['profiles'] = $volProjectDetails['profiles'];
