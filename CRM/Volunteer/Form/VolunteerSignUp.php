@@ -95,7 +95,7 @@ class CRM_Volunteer_Form_VolunteerSignUp extends CRM_Core_Form {
    *
    * @var int
    */
-  private $_primary_volunteer_id;
+  protected $_primary_volunteer_id;
 
   /**
    * The volunteer projects associated with this form, keyed by project ID.
@@ -264,6 +264,7 @@ class CRM_Volunteer_Form_VolunteerSignUp extends CRM_Core_Form {
       ));
 
       $projectDetails['beneficiaries'] = array();
+      $projectDetails['campaign_id'] = $volProjectDetails['campaign_id'];
       $projectDetails['description'] = $volProjectDetails['description'];
       $projectDetails['entity_id'] = $volProjectDetails['entity_id'];
       $projectDetails['profiles'] = $volProjectDetails['profiles'];
@@ -302,7 +303,7 @@ class CRM_Volunteer_Form_VolunteerSignUp extends CRM_Core_Form {
 
     $this->addButtons(array(
       array(
-        'type' => 'submit',
+        'type' => 'done',
         'name' => ts('Submit', array('domain' => 'org.civicrm.volunteer')),
         'isDefault' => TRUE,
       ),
@@ -396,7 +397,7 @@ class CRM_Volunteer_Form_VolunteerSignUp extends CRM_Core_Form {
 
     $statusMsg = ts('You are scheduled to volunteer. Thank you!', array('domain' => 'org.civicrm.volunteer'));
     CRM_Core_Session::setStatus($statusMsg, '', 'success');
-    CRM_Utils_System::redirect($this->_destination);
+    CRM_Core_Session::singleton()->pushUserContext($this->_destination);
   }
 
 
