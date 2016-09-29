@@ -253,7 +253,7 @@ class CRM_Volunteer_Form_VolunteerSignUp extends CRM_Core_Form {
    */
   function fetchProjectDetails() {
     foreach ($this->_projects as $projectId => &$projectDetails) {
-      $volProjectDetails = civicrm_api3('VolunteerProject', 'getsingle', array(
+      $projectDetails = civicrm_api3('VolunteerProject', 'getsingle', array(
         'id' => $projectId,
         'api.VolunteerProjectContact.get' => array(
           'relationship_type_id' => 'volunteer_beneficiary',
@@ -264,15 +264,10 @@ class CRM_Volunteer_Form_VolunteerSignUp extends CRM_Core_Form {
       ));
 
       $projectDetails['beneficiaries'] = array();
-      $projectDetails['campaign_id'] = $volProjectDetails['campaign_id'];
-      $projectDetails['description'] = $volProjectDetails['description'];
-      $projectDetails['entity_id'] = $volProjectDetails['entity_id'];
-      $projectDetails['profiles'] = $volProjectDetails['profiles'];
-      $projectDetails['title'] = $volProjectDetails['title'];
-
-      foreach ($volProjectDetails['api.VolunteerProjectContact.get']['values'] as $beneficiary) {
+      foreach ($projectDetails['api.VolunteerProjectContact.get']['values'] as $beneficiary) {
         $projectDetails['beneficiaries'][] = $beneficiary['api.Contact.getvalue'];
       }
+      unset($projectDetails['api.VolunteerProjectContact.get']);
     }
   }
 
