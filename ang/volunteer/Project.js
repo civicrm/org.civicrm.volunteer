@@ -112,6 +112,11 @@
       });
     }
 
+    // start with the assumption that all relationship fields will be displayed
+    _.each(supporting_data.values.relationship_types, function(v, k) {
+      showRelationshipType[v.value] = true;
+    });
+
     // flatten the data a bit to make it easier to work with in the template
     _.each(volRelData, function (contacts, relTypeId) {
       relationships[relTypeId] = [];
