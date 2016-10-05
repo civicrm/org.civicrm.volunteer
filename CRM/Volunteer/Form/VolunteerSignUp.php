@@ -380,14 +380,7 @@ class CRM_Volunteer_Form_VolunteerSignUp extends CRM_Core_Form {
     $this->_primary_volunteer_id = $this->processContactProfileData($contactValues, $profileFields, $cid);
     $projectNeeds = $this->createVolunteerActivity($this->_primary_volunteer_id, $activityValues);
     $this->sendVolunteerConfirmationEmail($this->_primary_volunteer_id, $projectNeeds);
-
-    //Process Additional Volunteers
-    $additionalVolunteers = $this->processAdditionalVolunteers($values);
-    foreach ($additionalVolunteers as $additionalVolunteerCID) {
-      // TODO: fetch profile data, etc. for secondary vols
-      $projectNeeds = $this->createVolunteerActivity($additionalVolunteerCID, array()/* $activityValues */);
-      $this->sendVolunteerConfirmationEmail($additionalVolunteerCID, $projectNeeds);
-    }
+    $this->processAdditionalVolunteers($values);
 
     $statusMsg = ts('You are scheduled to volunteer. Thank you!', array('domain' => 'org.civicrm.volunteer'));
     CRM_Core_Session::setStatus($statusMsg, '', 'success');
@@ -536,35 +529,35 @@ class CRM_Volunteer_Form_VolunteerSignUp extends CRM_Core_Form {
 
 
   /**
-   * This function takes the profile data submitted by the user, loops
-   * and delegates the data to processProfileData.
+   * Saves the contact and activity records for additional volunteers and sends
+   * confirmation email.
    *
    * @param array $data
    *   The form data that was submitted
-   *
-   * @return array
-   *   An array of the contact IDs created by processing the list of contact IDs
    */
   function processAdditionalVolunteers(array $data) {
-    $cids = array();
-
     $qty = CRM_Utils_Array::value('additionalVolunteerQuantity', $data, 0);
     $qty = CRM_Utils_Type::validate($qty, 'Integer', FALSE);
 
     if ($qty === NULL) {
-      return $cids;
+      return;
     }
 
     $profileFields = $this->getProfileFields($this->getAdditionalVolunteerProfileIDs());
+    $profileFieldsByType = array_reduce($profileFields, array($this, 'reduceByType'), array());
 
     $index = 0;
-    while($index < $qty) {
-      $profileData = CRM_Utils_Array::value('additionalVolunteers_'.$index, $data, array());
-      $cids[] = $this->processContactProfileData($profileData, $profileFields);
+    while ($index < $qty) {
+      $profileData = CRM_Utils_Array::value('additionalVolunteers_' . $index, $data, array());
+      $activityData = array_intersect_key($profileData, $profileFieldsByType['Activity']);
+      $contactData = array_diff($profileData, $activityData);
+
+      $cid = $this->processContactProfileData($contactData, $profileFields);
+      $projectNeeds = $this->createVolunteerActivity($cid, $activityData);
+      $this->sendVolunteerConfirmationEmail($cid, $projectNeeds);
+
       $index++;
     }
-
-    return $cids;
   }
 
   /**
