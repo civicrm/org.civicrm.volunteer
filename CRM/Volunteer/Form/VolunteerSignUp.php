@@ -376,17 +376,25 @@ class CRM_Volunteer_Form_VolunteerSignUp extends CRM_Core_Form {
     foreach ($this->getPrimaryVolunteerProfileIDs() as $profileID) {
       $profileFields += CRM_Core_BAO_UFGroup::getFields($profileID);
     }
-    $profileValues = array_intersect_key($values, $profileFields);
-    $activityValues = array_diff_key($values, $profileValues);
+    $profileFieldsByFieldType = array_reduce($profileFields, function ($carry, $item) {
+      $fieldName = $item['name'];
+      $fieldType = $item['field_type'];
+      $carry[$fieldType][$fieldName] = $item;
+      return $carry;
+    }, array());
 
-    $this->_primary_volunteer_id = $this->processProfileData($profileValues, $profileFields, $cid);
+    $activityValues = array_intersect_key($values, $profileFieldsByFieldType['Activity']);
+    $profileValues = array_diff($values, $activityValues);
+
+    $this->_primary_volunteer_id = $this->processContactProfileData($profileValues, $profileFields, $cid);
     $projectNeeds = $this->createVolunteerActivity($this->_primary_volunteer_id, $activityValues);
     $this->sendVolunteerConfirmationEmail($this->_primary_volunteer_id, $projectNeeds);
 
     //Process Additional Volunteers
     $additionalVolunteers = $this->processAdditionalVolunteers($values);
-    foreach($additionalVolunteers as $additionalVolunteerCID) {
-      $projectNeeds = $this->createVolunteerActivity($additionalVolunteerCID, $activityValues);
+    foreach ($additionalVolunteers as $additionalVolunteerCID) {
+      // TODO: fetch profile data, etc. for secondary vols
+      $projectNeeds = $this->createVolunteerActivity($additionalVolunteerCID, array()/* $activityValues */);
       $this->sendVolunteerConfirmationEmail($additionalVolunteerCID, $projectNeeds);
     }
 
@@ -492,7 +500,7 @@ class CRM_Volunteer_Form_VolunteerSignUp extends CRM_Core_Form {
    * @return int
    *   The contact id of the user for whom this data was saved (This can be a new contact)
    */
-  function processProfileData(array $profileValues, array $profileFields, $cid = null) {
+  private function processContactProfileData(array $profileValues, array $profileFields, $cid = null) {
     // Search for duplicate
     if (!$cid) {
       $dedupeParams = CRM_Dedupe_Finder::formatParams($profileValues, 'Individual');
@@ -540,7 +548,7 @@ class CRM_Volunteer_Form_VolunteerSignUp extends CRM_Core_Form {
     $index = 0;
     while($index < $qty) {
       $profileData = CRM_Utils_Array::value('additionalVolunteers_'.$index, $data, array());
-      $cids[] = $this->processProfileData($profileData, $profileFields);
+      $cids[] = $this->processContactProfileData($profileData, $profileFields);
       $index++;
     }
 
