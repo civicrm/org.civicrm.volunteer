@@ -375,7 +375,7 @@ class CRM_Volunteer_Form_VolunteerSignUp extends CRM_Core_Form {
     $profileFields = $this->getProfileFields($this->getPrimaryVolunteerProfileIDs());
     $profileFieldsByType = array_reduce($profileFields, array($this, 'reduceByType'), array());
     $activityValues = array_intersect_key($values, $profileFieldsByType['Activity']);
-    $contactValues = array_diff($values, $activityValues);
+    $contactValues = array_diff_key($values, $activityValues);
 
     $this->_primary_volunteer_id = $this->processContactProfileData($contactValues, $profileFields, $cid);
     $projectNeeds = $this->createVolunteerActivity($this->_primary_volunteer_id, $activityValues);
@@ -550,7 +550,7 @@ class CRM_Volunteer_Form_VolunteerSignUp extends CRM_Core_Form {
     while ($index < $qty) {
       $profileData = CRM_Utils_Array::value('additionalVolunteers_' . $index, $data, array());
       $activityData = array_intersect_key($profileData, $profileFieldsByType['Activity']);
-      $contactData = array_diff($profileData, $activityData);
+      $contactData = array_diff_key($profileData, $activityData);
 
       $cid = $this->processContactProfileData($contactData, $profileFields);
       $projectNeeds = $this->createVolunteerActivity($cid, $activityData);
