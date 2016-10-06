@@ -14,14 +14,14 @@
   <div class="crm-volunteer-signup-summary">
     <table>
       <tr>
-        <th>{ts domain='org.civicrm.volunteer'}Project Title{/ts}</th>
-        <th>{ts domain='org.civicrm.volunteer'}Project Beneficiaries{/ts}</th>
-        <th>{ts domain='org.civicrm.volunteer'}Role{/ts}</th>
-        <th>{ts domain='org.civicrm.volunteer'}Date and Time{/ts}</th>
+        <th class="crm-vol-opp-project">{ts domain='org.civicrm.volunteer'}Project Title{/ts}</th>
+        <th class="crm-vol-opp-beneficiary">{ts domain='org.civicrm.volunteer'}Project Beneficiaries{/ts}</th>
+        <th class="crm-vol-opp-role">{ts domain='org.civicrm.volunteer'}Role{/ts}</th>
+        <th class="crm-vol-opp-time">{ts domain='org.civicrm.volunteer'}Date and Time{/ts}</th>
       </tr>
       {foreach from=$volunteerNeeds key=key item=volunteerNeed}
         <tr>
-          <td>
+          <td class="crm-vol-opp-project">
             {$volunteerNeed.project.title}
             {if $volunteerNeed.project.description}
               <span class="icon ui-icon-comment crm-vol-description">
@@ -29,14 +29,14 @@
               </span>
             {/if}
           </td>
-          <td>{$volunteerNeed.project.beneficiaries}</td>
-          <td>
+          <td class="crm-vol-opp-beneficiary">{$volunteerNeed.project.beneficiaries}</td>
+          <td class="crm-vol-opp-role">
             {$volunteerNeed.role_label}
             {if $volunteerNeed.role_description}
               <span class="icon ui-icon-comment crm-vol-description">{$volunteerNeed.role_description}</span>
             {/if}
           </td>
-          <td>{$volunteerNeed.display_time}</td>
+          <td class="crm-vol-opp-time">{$volunteerNeed.display_time}</td>
         </tr>
       {/foreach}
     </table>
