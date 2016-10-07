@@ -33,7 +33,9 @@
           <td class="crm-vol-opp-role">
             {$volunteerNeed.role_label}
             {if $volunteerNeed.role_description}
-              <span class="icon ui-icon-comment crm-vol-description">{$volunteerNeed.role_description}</span>
+              <span class="icon ui-icon-comment crm-vol-description">
+                <div class="vol-role-description-wrapper">{$volunteerNeed.role_description}</div>
+              </span>
             {/if}
           </td>
           <td class="crm-vol-opp-time">{$volunteerNeed.display_time}</td>
