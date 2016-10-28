@@ -71,6 +71,8 @@
     $scope.campaigns = campaigns;
     $scope.needBase = CRM.url("civicrm/volunteer/need");
     $scope.assignBase = CRM.url("civicrm/volunteer/assign");
+    $scope.urlPublicVolOppSearch = CRM.url('civicrm/vol/', '', 'front') + '#/volunteer/opportunities';
+    $scope.canAccessAllProjects = CRM.checkPerm('edit all volunteer projects') || CRM.checkPerm('delete all volunteer projects');
 
     $scope.associatedEntityTitle = function(project) {
       if (project.entity_attributes && project.entity_attributes.title) {
