@@ -143,26 +143,6 @@ class CRM_Volunteer_Form_VolunteerReport extends CRM_Report_Form {
           ),
         ),
       ),
-      'civicrm_phone' => array(
-        'dao' => 'CRM_Core_DAO_Phone',
-        'fields' => array(
-          'contact_assignee_phone' => array(
-            'name' => 'phone',
-            'title' => ts('Volunteer Phone', array('domain' => 'org.civicrm.volunteer')),
-            'alias' => 'civicrm_phone_assignee',
-          ),
-          'contact_source_phone' => array(
-            'name' => 'phone',
-            'title' => ts('Source Contact Phone', array('domain' => 'org.civicrm.volunteer')),
-            'alias' => 'civicrm_phone_source',
-          ),
-          'contact_target_phone' => array(
-            'name' => 'phone',
-            'title' => ts('Target Contact Phone', array('domain' => 'org.civicrm.volunteer')),
-            'alias' => 'civicrm_phone_target',
-          ),
-        ),
-      ),
       'civicrm_activity' => array(
         'dao' => 'CRM_Activity_DAO_Activity',
         'fields' => array(
@@ -299,6 +279,44 @@ class CRM_Volunteer_Form_VolunteerReport extends CRM_Report_Form {
       ),
     );
 
+    // forgive me for this terrible hack
+    $phoneTypes = CRM_Core_BAO_Phone::buildOptions('phone_type_id');
+    $activityRoles = array(
+      'assignee' => array(
+        '_actvityContactCorrelate' => 'civicrm_activity_assignment',
+        'alias' => 'phone_assignee',
+        'label' => ts('Volunteer Phone', array('domain' => 'org.civicrm.volunteer')),
+      ),
+      'source' => array(
+        '_actvityContactCorrelate' => 'civicrm_activity_source',
+        'alias' => 'phone_source',
+        'label' => ts('Source Contact Phone', array('domain' => 'org.civicrm.volunteer')),
+      ),
+      'target' => array(
+        '_actvityContactCorrelate' => 'civicrm_activity_source',
+        'alias' => 'phone_target',
+        'label' => ts('Target Contact Phone', array('domain' => 'org.civicrm.volunteer')),
+      ),
+    );
+
+    foreach ($activityRoles as $roleKey => $role) {
+      $table = "phone_{$roleKey}";
+      $this->_columns[$table] = array(
+        '_actvityContactCorrelate' => $role['_actvityContactCorrelate'],
+        'alias' => $role['alias'],
+        'dao' => 'CRM_Core_DAO_Phone',
+        'fields' => array(),
+      );
+
+      foreach ($phoneTypes as $phoneKey => $label) {
+        $this->_columns[$table]['fields']["{$table}_type{$phoneKey}"] = array(
+          'alias' => "{$table}_civireport_type{$phoneKey}",
+          'name' => 'phone',
+          'title' => "{$role['label']} - {$label}",
+        );
+      }
+    }
+
     $this->_groupFilter = TRUE;
     $this->_tagFilter = TRUE;
     parent::__construct();
@@ -400,19 +418,30 @@ class CRM_Volunteer_Form_VolunteerReport extends CRM_Report_Form {
                    ON {$this->_aliases['civicrm_activity_assignment']}.contact_id = civicrm_email_assignee.contact_id AND
                       civicrm_email_assignee.is_primary = 1 ";
     }
-    if ($this->isTableSelected('civicrm_phone')) {
+
+    $this->addPhoneFromClause();
+  }
+
+  function addPhoneFromClause() {
+    $selectedPhoneFields = array();
+    foreach (array_keys($this->getSelectColumns()) as $field) {
+      if (strpos($field, 'phone_') === 0) {
+        $parts = explode('_', $field);
+        $selectedPhoneFields[$field] = array(
+          'activityRole' => $parts[1],
+          'phoneTypeId' => substr($field, -1),
+        );
+      }
+    }
+
+    foreach ($selectedPhoneFields as $selectionData) {
+      $phoneTable = 'phone_' . $selectionData['activityRole'];
+      $phoneAlias = $this->_aliases[$phoneTable] . '_type' . $selectionData['phoneTypeId'];
+      $activityTable = $this->_columns[$phoneTable]['_actvityContactCorrelate'];
       $this->_from .= "
-            LEFT JOIN civicrm_phone civicrm_phone_source
-                   ON {$this->_aliases['civicrm_activity_source']}.contact_id = civicrm_phone_source.contact_id AND
-                      civicrm_phone_source.is_primary = 1
-
-            LEFT JOIN civicrm_phone civicrm_phone_target
-                   ON {$this->_aliases['civicrm_activity_target']}.contact_id = civicrm_phone_target.contact_id AND
-                      civicrm_phone_target.is_primary = 1
-
-            LEFT JOIN civicrm_phone civicrm_phone_assignee
-                   ON {$this->_aliases['civicrm_activity_assignment']}.contact_id = civicrm_phone_assignee.contact_id AND
-                      civicrm_phone_assignee.is_primary = 1 ";
+            LEFT JOIN civicrm_phone $phoneAlias
+                   ON {$this->_aliases[$activityTable]}.contact_id = $phoneAlias.contact_id AND
+                      $phoneAlias.phone_type_id = {$selectionData['phoneTypeId']} ";
     }
   }
 
