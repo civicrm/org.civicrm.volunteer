@@ -4,6 +4,13 @@
   <div crm-ui-debug="projects"></div>
   <div crm-ui-debug="searchParams"></div>
 
+  <div class="help" ng-show="!canAccessAllProjects">
+    <p>
+      {{ts("This page displays only the volunteer projects which you have access to edit.")}}
+      <!-- not translated because HTML tags in a ts() choke Angular -->
+      For a list of all volunteer opportunities on the site, visit the <a href="{{urlPublicVolOppSearch}}">public search form</a>.
+    </p>
+  </div>
   <div class="crm-form-block">
     <div class="crm-vol-widgets crm-vol-manage-widgets"></div>
     <div class="clear"></div>

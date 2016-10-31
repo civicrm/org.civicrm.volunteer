@@ -58,7 +58,7 @@
 
   angular.module('volunteer').controller('VolunteerProjects', function ($scope, crmApi, crmStatus, crmUiHelp, projectData, $location, volunteerBackbone, beneficiaries, campaigns, $window) {
     // The ts() and hs() functions help load strings for this module.
-    var ts = $scope.ts = CRM.ts('volunteer');
+    var ts = $scope.ts = CRM.ts('org.civicrm.volunteer');
     var hs = $scope.hs = crmUiHelp({file: 'CRM/volunteer/Projects'}); // See: templates/CRM/volunteer/Projects.hlp
 
     $scope.searchParams = {
@@ -71,6 +71,8 @@
     $scope.campaigns = campaigns;
     $scope.needBase = CRM.url("civicrm/volunteer/need");
     $scope.assignBase = CRM.url("civicrm/volunteer/assign");
+    $scope.urlPublicVolOppSearch = CRM.url('civicrm/vol/', '', 'front') + '#/volunteer/opportunities';
+    $scope.canAccessAllProjects = CRM.checkPerm('edit all volunteer projects') || CRM.checkPerm('delete all volunteer projects');
 
     $scope.associatedEntityTitle = function(project) {
       if (project.entity_attributes && project.entity_attributes.title) {
