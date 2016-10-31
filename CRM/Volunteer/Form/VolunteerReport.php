@@ -35,7 +35,8 @@
 class CRM_Volunteer_Form_VolunteerReport extends CRM_Report_Form {
 
   protected $_customGroupExtends = array(
-    'Activity'
+    'Activity',
+    'Individual',
   );
 
   function __construct() {
