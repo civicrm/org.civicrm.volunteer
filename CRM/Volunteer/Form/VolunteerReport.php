@@ -123,6 +123,23 @@ class CRM_Volunteer_Form_VolunteerReport extends CRM_Report_Form {
         ),
         'alias' => 'civicrm_contact_assignee',
       ),
+      'civicrm_contact_organization' => array(
+        'dao' => 'CRM_Contact_DAO_Contact',
+        'fields' => array(
+          'organization_id' => array(
+            'name' => 'id',
+            'no_display' => TRUE,
+          ),
+          'organization_name' => array(
+            'title' => ts('Employer', array('domain' => 'org.civicrm.volunteer')),
+          ),
+        ),
+        'order_bys' => array(
+          'organization_name' => array(
+            'title' => ts('Employer', array('domain' => 'org.civicrm.volunteer')),
+          ),
+        ),
+      ),
       'civicrm_email' => array(
         'dao' => 'CRM_Core_DAO_Email',
         'fields' => array(
@@ -323,6 +340,11 @@ class CRM_Volunteer_Form_VolunteerReport extends CRM_Report_Form {
   }
 
   function select() {
+    // Require the contact ID if the employer is selected so we can hyperlink to the record.
+    if ($this->isTableSelected('civicrm_contact_organization')) {
+      $this->_columns['civicrm_contact_organization']['fields']['organization_id']['required'] = TRUE;
+    }
+
     $select = array();
     $seperator = CRM_CORE_DAO::VALUE_SEPARATOR;
     $this->_columnHeaders = array();
@@ -420,6 +442,7 @@ class CRM_Volunteer_Form_VolunteerReport extends CRM_Report_Form {
     }
 
     $this->addPhoneFromClause();
+    $this->addEmployerClause();
   }
 
   function addPhoneFromClause() {
@@ -442,6 +465,26 @@ class CRM_Volunteer_Form_VolunteerReport extends CRM_Report_Form {
             LEFT JOIN civicrm_phone $phoneAlias
                    ON {$this->_aliases[$activityTable]}.contact_id = $phoneAlias.contact_id AND
                       $phoneAlias.phone_type_id = {$selectionData['phoneTypeId']} ";
+    }
+  }
+
+  function addEmployerClause() {
+    if ($this->isTableSelected('civicrm_contact_organization')) {
+      $relationshipTypeId = civicrm_api3('RelationshipType', 'getvalue', array(
+        'contact_type_b' => 'Organization',
+        'contact_type_a' => 'Individual',
+        'name_a_b' => 'Employee of',
+        'name_b_a' => 'Employer of',
+        'return' => 'id',
+      ));
+
+      $this->_from .= "
+            LEFT JOIN civicrm_relationship employer_rel
+                   ON employer_rel.contact_id_a = {$this->_columns['civicrm_activity_assignment']['fields']['contact_id']['dbAlias']}
+                     AND employer_rel.is_active = 1
+                     AND employer_rel.relationship_type_id = $relationshipTypeId
+            LEFT JOIN civicrm_contact {$this->_aliases['civicrm_contact_organization']}
+                   ON {$this->_aliases['civicrm_contact_organization']}.id = employer_rel.contact_id_b ";
     }
   }
 
@@ -572,7 +615,6 @@ class CRM_Volunteer_Form_VolunteerReport extends CRM_Report_Form {
   }
 
   function postProcess() {
-
     $this->buildACLClause(array('civicrm_contact_source', 'contact_civireport', 'civicrm_contact_assignee'));
     parent::postProcess();
   }
@@ -595,6 +637,17 @@ class CRM_Volunteer_Form_VolunteerReport extends CRM_Report_Form {
     }
 
     foreach ($rows as $rowNum => $row) {
+      if (array_key_exists('civicrm_contact_organization_organization_name', $row)) {
+        if ($value = $row['civicrm_contact_organization_organization_id']) {
+          if ($viewLinks) {
+            $url = CRM_Utils_System::url("civicrm/contact/view", 'reset=1&cid=' . $value, $this->_absoluteUrl);
+            $rows[$rowNum]['civicrm_contact_organization_organization_name_link'] = $url;
+            $rows[$rowNum]['civicrm_contact_organization_organization_name_hover'] = $onHover;
+          }
+          $entryFound = TRUE;
+        }
+      }
+
       if (array_key_exists('civicrm_contact_contact_source', $row)) {
         if ($value = $row['civicrm_activity_assignment_contact_id']) {
           if ($viewLinks) {
