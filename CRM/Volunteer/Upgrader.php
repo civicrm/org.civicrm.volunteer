@@ -384,6 +384,17 @@ class CRM_Volunteer_Upgrader extends CRM_Volunteer_Upgrader_Base {
   }
 
   /**
+   * Unimplemented stub.
+   *
+   * This method can be used for any post-install tasks. For example, if a step
+   * of your installation depends on accessing an entity that is itself
+   * created during the installation (e.g., a setting or a managed entity), do
+   * so here to avoid order of operation problems.
+   *
+  public function postInstall() {
+  }
+
+  /**
    * Example: Run a simple query when a module is enabled
    *
   public function enable() {

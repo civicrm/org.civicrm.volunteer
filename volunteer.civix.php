@@ -56,6 +56,20 @@ function _volunteer_civix_civicrm_install() {
 }
 
 /**
+ * Implements hook_civicrm_postInstall().
+ *
+ * @link http://wiki.civicrm.org/confluence/display/CRMDOC/hook_civicrm_postInstall
+ */
+function _volunteer_civix_civicrm_postInstall() {
+  _volunteer_civix_civicrm_config();
+  if ($upgrader = _volunteer_civix_upgrader()) {
+    if (is_callable(array($upgrader, 'onPostInstall'))) {
+      $upgrader->onPostInstall();
+    }
+  }
+}
+
+/**
  * Implements hook_civicrm_uninstall().
  *
  * @link http://wiki.civicrm.org/confluence/display/CRMDOC/hook_civicrm_uninstall
@@ -212,14 +226,14 @@ function _volunteer_civix_civicrm_caseTypes(&$caseTypes) {
 }
 
 /**
-* (Delegated) Implements hook_civicrm_angularModules().
-*
-* Find any and return any files matching "ang/*.ang.php"
-*
-* Note: This hook only runs in CiviCRM 4.5+.
-*
-* @link http://wiki.civicrm.org/confluence/display/CRMDOC/hook_civicrm_angularModules
-*/
+ * (Delegated) Implements hook_civicrm_angularModules().
+ *
+ * Find any and return any files matching "ang/*.ang.php"
+ *
+ * Note: This hook only runs in CiviCRM 4.5+.
+ *
+ * @link http://wiki.civicrm.org/confluence/display/CRMDOC/hook_civicrm_angularModules
+ */
 function _volunteer_civix_civicrm_angularModules(&$angularModules) {
   if (!is_dir(__DIR__ . '/ang')) {
     return;
@@ -259,24 +273,17 @@ function _volunteer_civix_glob($pattern) {
  * @param array $menu - menu hierarchy
  * @param string $path - path where insertion should happen (ie. Administer/System Settings)
  * @param array $item - menu you need to insert (parent/child attributes will be filled for you)
- * @param int $parentId - used internally to recurse in the menu structure
  */
-function _volunteer_civix_insert_navigation_menu(&$menu, $path, $item, $parentId = NULL) {
-  static $navId;
-
+function _volunteer_civix_insert_navigation_menu(&$menu, $path, $item) {
   // If we are done going down the path, insert menu
   if (empty($path)) {
-    if (!$navId) $navId = CRM_Core_DAO::singleValueQuery("SELECT max(id) FROM civicrm_navigation");
-    $navId ++;
-    $menu[$navId] = array (
-      'attributes' => array_merge($item, array(
+    $menu[] = array(
+      'attributes' => array_merge(array(
         'label'      => CRM_Utils_Array::value('name', $item),
         'active'     => 1,
-        'parentID'   => $parentId,
-        'navID'      => $navId,
-      ))
+      ), $item),
     );
-    return true;
+    return TRUE;
   }
   else {
     // Find an recurse into the next level down
@@ -290,6 +297,49 @@ function _volunteer_civix_insert_navigation_menu(&$menu, $path, $item, $parentId
       }
     }
     return $found;
+  }
+}
+
+/**
+ * (Delegated) Implements hook_civicrm_navigationMenu().
+ */
+function _volunteer_civix_navigationMenu(&$nodes) {
+  if (!is_callable(array('CRM_Core_BAO_Navigation', 'fixNavigationMenu'))) {
+    _volunteer_civix_fixNavigationMenu($nodes);
+  }
+}
+
+/**
+ * Given a navigation menu, generate navIDs for any items which are
+ * missing them.
+ */
+function _volunteer_civix_fixNavigationMenu(&$nodes) {
+  $maxNavID = 1;
+  array_walk_recursive($nodes, function($item, $key) use (&$maxNavID) {
+    if ($key === 'navID') {
+      $maxNavID = max($maxNavID, $item);
+    }
+    });
+  _volunteer_civix_fixNavigationMenuItems($nodes, $maxNavID, NULL);
+}
+
+function _volunteer_civix_fixNavigationMenuItems(&$nodes, &$maxNavID, $parentID) {
+  $origKeys = array_keys($nodes);
+  foreach ($origKeys as $origKey) {
+    if (!isset($nodes[$origKey]['attributes']['parentID']) && $parentID !== NULL) {
+      $nodes[$origKey]['attributes']['parentID'] = $parentID;
+    }
+    // If no navID, then assign navID and fix key.
+    if (!isset($nodes[$origKey]['attributes']['navID'])) {
+      $newKey = ++$maxNavID;
+      $nodes[$origKey]['attributes']['navID'] = $newKey;
+      $nodes[$newKey] = $nodes[$origKey];
+      unset($nodes[$origKey]);
+      $origKey = $newKey;
+    }
+    if (isset($nodes[$origKey]['child']) && is_array($nodes[$origKey]['child'])) {
+      _volunteer_civix_fixNavigationMenuItems($nodes[$origKey]['child'], $maxNavID, $nodes[$origKey]['attributes']['navID']);
+    }
   }
 }
 
