@@ -392,6 +392,9 @@ class CRM_Volunteer_Form_Settings extends CRM_Core_Form {
       $result = civicrm_api3('OptionValue', 'get', array(
         'is_active' => 1,
         'option_group_id' => "volunteer_project_relationship",
+        'options' => array(
+          'limit' => 0,
+        )
       ));
       $this->projectRelationshipTypes = $result['values'];
     }
