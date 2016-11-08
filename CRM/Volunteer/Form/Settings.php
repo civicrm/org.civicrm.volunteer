@@ -55,7 +55,9 @@ class CRM_Volunteer_Form_Settings extends CRM_Core_Form {
   }
 
   function buildQuickForm() {
-    // add form elements
+    $ccr = CRM_Core_Resources::singleton();
+    $ccr->addScriptFile('org.civicrm.volunteer', 'js/CRM_Volunteer_Form_Settings.js');
+    $ccr->addStyleFile('org.civicrm.volunteer', 'css/CRM_Volunteer_Form_Settings.css');
 
     $this->_fieldDescriptions = array();
     $this->_helpIcons = array();

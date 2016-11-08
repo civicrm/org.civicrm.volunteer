@@ -12,7 +12,7 @@
             <div class="help">{$helpText.$groupName}</div>
         {/if}
         {foreach from=$elementNames item=elementName}
-            <div class="crm-section">
+            <div class="crm-section {$form.$elementName.name}">
                 <div class="label">
                     {$form.$elementName.label}
                 </div>
