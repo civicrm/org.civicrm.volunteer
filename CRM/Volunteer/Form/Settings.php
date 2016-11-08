@@ -57,8 +57,8 @@ class CRM_Volunteer_Form_Settings extends CRM_Core_Form {
           "placeholder" => ts("- none -", array('domain' => 'org.civicrm.volunteer')),
           "multiple" => "multiple",
           "class" => "crm-select2",
-          "fieldGroup" => "Default Project Settings"
-        )
+          "data-fieldgroup" => "Default Project Settings"
+          )
       );
     }
 
@@ -94,15 +94,7 @@ class CRM_Volunteer_Form_Settings extends CRM_Core_Form {
       false
     );
 
-    /*
-        $this->add(
-          'text',
-          'volunteer_project_default_contacts',
-          ts('Default Associated Contacts', array('domain' => 'org.civicrm.volunteer')),
-          array("size" => 35),
-          true // is required,
-        );
-        */
+    $this->addProjectRelationshipFields();
 
     /*** Fields for Campaign Whitelist/Blacklist ***/
     $this->add(
@@ -147,6 +139,36 @@ class CRM_Volunteer_Form_Settings extends CRM_Core_Form {
     $this->buildHelpText();
     $this->buildFieldDescriptions();
     parent::buildQuickForm();
+  }
+
+  private function addProjectRelationshipFields() {
+    $result = civicrm_api3('OptionValue', 'get', array(
+      'is_active' => 1,
+      'option_group_id' => "volunteer_project_relationship",
+    ));
+    $props = array(
+      'multiple' => TRUE,
+      'data-fieldgroup' => "Default Project Settings",
+    );
+    $types = array(
+      'self' => 'Self',
+      'relationship' => 'Related Contact(s)',
+      'contact' => 'Specific Contact(s)',
+    );
+    foreach ($result['values'] as $data) {
+      $name = $data['name'];
+      $this->addRadio("volunteer_project_default_contacts_type_$name", $data['label'], $types, array("data-fieldgroup" => "Default Project Settings",), NULL, TRUE);
+
+      // EntityRef is not used because a select list not easily obtainable through a single API call is needed
+      $this->add('select', "volunteer_project_default_contacts_relationship_$name", $data['label'], $this->getValidRelationships(), false, // is required,
+          array(
+        'class' => 'crm-select2',
+        'data-fieldgroup' => 'Default Project Settings'
+          )
+      );
+
+      $this->addEntityRef("volunteer_project_default_contacts_contact_$name", $data['label'], $props);
+    }
   }
 
   /**
@@ -269,13 +291,7 @@ class CRM_Volunteer_Form_Settings extends CRM_Core_Form {
     $elementGroups = array();
 
     foreach ($this->_elements as $element) {
-      $name = $element->getName();
-      $groupName = $element->getAttribute("fieldGroup");
-
-      if (empty($groupName)) {
-        $groupName = CRM_Utils_Array::value($name, $this->_settingsMetadata);
-        $groupName = $groupName['group_name'];
-      }
+      $groupName = $this->getGroupName($element);
 
       $label = $element->getLabel();
       if (!empty($label)) {
@@ -284,11 +300,67 @@ class CRM_Volunteer_Form_Settings extends CRM_Core_Form {
           $elementGroups[$groupName] = array();
         }
 
-        $elementGroups[$groupName][] = $name;
+        $elementGroups[$groupName][] = $element->getName();
       }
     }
 
     return $elementGroups;
+  }
+
+  /**
+   * Helper method for getting the group name for a field/element.
+   *
+   * @param HTML_QuickForm_element $element
+   * @return mixed
+   *   String or NULL
+   */
+  private function getGroupName(HTML_QuickForm_element $element) {
+    $groupName = NULL;
+
+    // radios and checkboxes are nested inside HTML_QuickForm_group objects;
+    // check *their* elements for the data-fieldgroup attribute
+    if (is_a($element, 'HTML_QuickForm_group')) {
+      if ($first = CRM_Utils_Array::value(0, $element->_elements)) {
+        $groupName = $first->getAttribute("data-fieldgroup");
+      }
+    }
+    else {
+      $groupName = $element->getAttribute("data-fieldgroup");
+    }
+
+    // otherwise fallback to settings metadata
+    if (empty($groupName)) {
+      $groupName = CRM_Utils_Array::value($element->getName(), $this->_settingsMetadata);
+      $groupName = $groupName['group_name'];
+    }
+
+    return $groupName;
+  }
+
+  private function getValidRelationships() {
+    $validRelationships = array();
+
+    $commonParams = array(
+      'is_active' => 1,
+      'options' => array(
+        'limit' => 0,
+      )
+    );
+    $apiContactA = civicrm_api3('RelationshipType', 'get', $commonParams + array(
+      'contact_type_a' => "Individual",
+    ));
+    foreach ($apiContactA['values'] as $id => $data) {
+      $validRelationships["{$id}_a"] = $data['label_a_b'];
+    }
+
+    $apiContactB = civicrm_api3('RelationshipType', 'get', $commonParams + array(
+      'contact_type_b' => "Individual",
+    ));
+    foreach ($apiContactB['values'] as $id => $data) {
+      $validRelationships["{$id}_b"] = $data['label_b_a'];
+    }
+
+    return $validRelationships;
   }
 
 }
