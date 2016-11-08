@@ -167,7 +167,7 @@ class CRM_Volunteer_Form_Settings extends CRM_Core_Form {
       $this->addRadio("volunteer_project_default_contacts_mode_$name", $data['label'], $this->getProjectRelationshipSettingModes(), array("data-fieldgroup" => "Default Project Settings",), NULL, TRUE);
 
       // EntityRef is not used because a select list not easily obtainable through a single API call is needed
-      $this->add('select', "volunteer_project_default_contacts_relationship_$name", $data['label'], $this->getValidRelationshipTypes(), false, // is required,
+      $this->add('select', "volunteer_project_default_contacts_relationship_$name", ts('Default to Contact(s) Having this Relationship with the Acting User', array('domain' => 'org.civicrm.volunteer')), $this->getValidRelationshipTypes(), false, // is required,
           array(
         'class' => 'crm-select2',
         'data-fieldgroup' => 'Default Project Settings',
@@ -175,7 +175,7 @@ class CRM_Volunteer_Form_Settings extends CRM_Core_Form {
           )
       );
 
-      $this->addEntityRef("volunteer_project_default_contacts_contact_$name", $data['label'], array(
+      $this->addEntityRef("volunteer_project_default_contacts_contact_$name", ts('Default to Selected Contact(s)', array('domain' => 'org.civicrm.volunteer')), array(
         'multiple' => TRUE,
         'data-fieldgroup' => "Default Project Settings",
       ));
