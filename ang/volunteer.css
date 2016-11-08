@@ -154,3 +154,6 @@ span.crm-button-text {
   background: rgba(255, 255, 0, 0.1);
 }
 
+#crm-vol-form-textarea-wrapper {
+  clear: left;
+}
