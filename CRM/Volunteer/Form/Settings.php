@@ -170,7 +170,8 @@ class CRM_Volunteer_Form_Settings extends CRM_Core_Form {
       $this->add('select', "volunteer_project_default_contacts_relationship_$name", $data['label'], $this->getValidRelationshipTypes(), false, // is required,
           array(
         'class' => 'crm-select2',
-        'data-fieldgroup' => 'Default Project Settings'
+        'data-fieldgroup' => 'Default Project Settings',
+        'placeholder' => TRUE,
           )
       );
 
