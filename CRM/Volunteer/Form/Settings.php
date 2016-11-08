@@ -283,9 +283,8 @@ class CRM_Volunteer_Form_Settings extends CRM_Core_Form {
       "volunteer_project_default_is_active" => CRM_Utils_Array::value('volunteer_project_default_is_active', $values, 0)
     ));
 
-    // Todo: Create Composite data structure like we do for profiles
     civicrm_api3('Setting', 'create', array(
-      "volunteer_project_default_contacts" => CRM_Utils_Array::value('volunteer_project_default_contacts', $values)
+      'volunteer_project_default_contacts' => $this->formatDefaultContacts()
     ));
 
     //Whitelist/Blacklist settings
@@ -428,6 +427,37 @@ class CRM_Volunteer_Form_Settings extends CRM_Core_Form {
       }
     }
     return $this->validRelationshipTypes;
+  }
+
+  /**
+   * Creates a composite data structure for the default contact fields.
+   *
+   * This is the format in which this data is stored in the database.
+   *
+   * @return array
+   */
+  private function formatDefaultContacts() {
+    $store = array();
+    $values = $this->exportValues();
+
+    foreach ($this->getProjectRelationshipTypes() as $relTypeData) {
+      $name = $relTypeData['name'];
+      $mode = $values["volunteer_project_default_contacts_mode_{$name}"];
+
+      $store[$name] = array(
+        'mode' => $mode,
+      );
+
+      if ($mode === 'self') {
+        $store[$name]['value'] = TRUE;
+      }
+      else {
+        $fieldName = "volunteer_project_default_contacts_{$mode}_{$name}";
+        $store[$name]['value'] = $values[$fieldName];
+      }
+    }
+
+    return $store;
   }
 
 }
