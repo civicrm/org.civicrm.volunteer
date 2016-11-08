@@ -217,6 +217,17 @@ class CRM_Volunteer_Form_Settings extends CRM_Core_Form {
       $defaults["volunteer_project_default_profiles_" . $audience['type']] = CRM_Utils_Array::value($audience['type'], $profiles, array());
     }
 
+    // Break out contact defaults into their own fields
+    $defaultContacts = CRM_Utils_Array::value('volunteer_project_default_contacts', $this->_settings);
+    foreach ($defaultContacts as $name => $data) {
+      $mode = $data['mode'];
+      $defaults["volunteer_project_default_contacts_mode_{$name}"] = $mode;
+
+      if ($mode !== 'self') {
+        $defaults["volunteer_project_default_contacts_{$mode}_{$name}"] = $data['value'];
+      }
+    }
+
     //General Settings
     $defaults['volunteer_general_campaign_filter_type'] = CRM_Utils_Array::value('volunteer_general_campaign_filter_type', $this->_settings);
     $defaults['volunteer_general_campaign_filter_list'] = CRM_Utils_Array::value('volunteer_general_campaign_filter_list', $this->_settings);
@@ -449,6 +460,7 @@ class CRM_Volunteer_Form_Settings extends CRM_Core_Form {
       );
 
       if ($mode === 'self') {
+        // For interface consistency we supply a 'value' key though it isn't strictly needed.
         $store[$name]['value'] = TRUE;
       }
       else {
