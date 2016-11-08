@@ -13,12 +13,32 @@ class CRM_Volunteer_Form_Settings extends CRM_Core_Form {
   protected $_helpIcons = array();
 
   /**
+   * The configured volunteer project relationship types.
+   *
+   * Do not access this property directly. Use $this->getProjectRelationshipTypes
+   * instead.
+   *
+   * @var array
+   */
+  private $projectRelationshipTypes = array();
+
+  /**
    * All settings, as fetched via API, keyed by setting name.
    *
    * @var array
    */
   protected $_settings = array();
   protected $_settingsMetadata = array();
+
+  /**
+   * Relationships that can be made with an Individual on one end or the other.
+   *
+   * Do not access this property directly. Use $this->getValidRelationshipTypes()
+   * instead.
+   *
+   * @var array
+   */
+  private $validRelationshipTypes = array();
 
   function preProcess() {
     parent::preProcess();
@@ -142,32 +162,22 @@ class CRM_Volunteer_Form_Settings extends CRM_Core_Form {
   }
 
   private function addProjectRelationshipFields() {
-    $result = civicrm_api3('OptionValue', 'get', array(
-      'is_active' => 1,
-      'option_group_id' => "volunteer_project_relationship",
-    ));
-    $props = array(
-      'multiple' => TRUE,
-      'data-fieldgroup' => "Default Project Settings",
-    );
-    $types = array(
-      'self' => 'Self',
-      'relationship' => 'Related Contact(s)',
-      'contact' => 'Specific Contact(s)',
-    );
-    foreach ($result['values'] as $data) {
+    foreach ($this->getProjectRelationshipTypes() as $data) {
       $name = $data['name'];
-      $this->addRadio("volunteer_project_default_contacts_type_$name", $data['label'], $types, array("data-fieldgroup" => "Default Project Settings",), NULL, TRUE);
+      $this->addRadio("volunteer_project_default_contacts_mode_$name", $data['label'], $this->getProjectRelationshipSettingModes(), array("data-fieldgroup" => "Default Project Settings",), NULL, TRUE);
 
       // EntityRef is not used because a select list not easily obtainable through a single API call is needed
-      $this->add('select', "volunteer_project_default_contacts_relationship_$name", $data['label'], $this->getValidRelationships(), false, // is required,
+      $this->add('select', "volunteer_project_default_contacts_relationship_$name", $data['label'], $this->getValidRelationshipTypes(), false, // is required,
           array(
         'class' => 'crm-select2',
         'data-fieldgroup' => 'Default Project Settings'
           )
       );
 
-      $this->addEntityRef("volunteer_project_default_contacts_contact_$name", $data['label'], $props);
+      $this->addEntityRef("volunteer_project_default_contacts_contact_$name", $data['label'], array(
+        'multiple' => TRUE,
+        'data-fieldgroup' => "Default Project Settings",
+      ));
     }
   }
 
@@ -330,37 +340,72 @@ class CRM_Volunteer_Form_Settings extends CRM_Core_Form {
 
     // otherwise fallback to settings metadata
     if (empty($groupName)) {
-      $groupName = CRM_Utils_Array::value($element->getName(), $this->_settingsMetadata);
-      $groupName = $groupName['group_name'];
+      $setting = CRM_Utils_Array::value($element->getName(), $this->_settingsMetadata);
+      $groupName = $setting['group_name'];
     }
 
     return $groupName;
   }
 
-  private function getValidRelationships() {
-    $validRelationships = array();
+  /**
+   * Getter for projectRelationshipTypes.
+   *
+   * @return array
+   */
+  public function getProjectRelationshipTypes() {
+    if (empty($this->projectRelationshipTypes)) {
+      $result = civicrm_api3('OptionValue', 'get', array(
+        'is_active' => 1,
+        'option_group_id' => "volunteer_project_relationship",
+      ));
+      $this->projectRelationshipTypes = $result['values'];
+    }
 
-    $commonParams = array(
-      'is_active' => 1,
-      'options' => array(
-        'limit' => 0,
-      )
+    return $this->projectRelationshipTypes;
+  }
+
+  /**
+   * Returns an array of modes for specifying project relationship defaults.
+   *
+   * @return array
+   */
+  public function getProjectRelationshipSettingModes() {
+    return array(
+      'self' => ts('Self', array('domain' => 'org.civicrm.volunteer')),
+      'relationship' => ts('Related Contact(s)', array('domain' => 'org.civicrm.volunteer')),
+      'contact' => ts('Specific Contact(s)', array('domain' => 'org.civicrm.volunteer')),
     );
-    $apiContactA = civicrm_api3('RelationshipType', 'get', $commonParams + array(
-      'contact_type_a' => "Individual",
-    ));
-    foreach ($apiContactA['values'] as $id => $data) {
-      $validRelationships["{$id}_a"] = $data['label_a_b'];
-    }
+  }
 
-    $apiContactB = civicrm_api3('RelationshipType', 'get', $commonParams + array(
-      'contact_type_b' => "Individual",
-    ));
-    foreach ($apiContactB['values'] as $id => $data) {
-      $validRelationships["{$id}_b"] = $data['label_b_a'];
-    }
+  /**
+   * Gets relationships that can be made with an Individual on one end or
+   * the other.
+   *
+   * @return array
+   */
+  private function getValidRelationshipTypes() {
+    if (empty($this->validRelationshipTypes)) {
+      $commonParams = array(
+        'is_active' => 1,
+        'options' => array(
+          'limit' => 0,
+        )
+      );
+      $apiContactA = civicrm_api3('RelationshipType', 'get', $commonParams + array(
+        'contact_type_a' => "Individual",
+      ));
+      foreach ($apiContactA['values'] as $id => $data) {
+        $this->validRelationshipTypes["{$id}_a"] = $data['label_a_b'];
+      }
 
-    return $validRelationships;
+      $apiContactB = civicrm_api3('RelationshipType', 'get', $commonParams + array(
+        'contact_type_b' => "Individual",
+      ));
+      foreach ($apiContactB['values'] as $id => $data) {
+        $this->validRelationshipTypes["{$id}_b"] = $data['label_b_a'];
+      }
+    }
+    return $this->validRelationshipTypes;
   }
 
 }
