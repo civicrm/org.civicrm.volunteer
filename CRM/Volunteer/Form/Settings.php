@@ -64,11 +64,11 @@ class CRM_Volunteer_Form_Settings extends CRM_Core_Form {
 
     $profiles = civicrm_api3('UFGroup', 'get', array("return" => "title", "sequential" => 1, 'options' => array('limit' => 0)));
     $profileList = array();
-    foreach($profiles['values'] as $profile) {
+    foreach ($profiles['values'] as $profile) {
       $profileList[$profile['id']] = $profile['title'];
     }
 
-    foreach(CRM_Volunteer_BAO_Project::getProjectProfileAudienceTypes() as $audience) {
+    foreach (CRM_Volunteer_BAO_Project::getProjectProfileAudienceTypes() as $audience) {
       $this->add(
         'select',
         'volunteer_project_default_profiles_' . $audience['type'],
@@ -80,13 +80,13 @@ class CRM_Volunteer_Form_Settings extends CRM_Core_Form {
           "multiple" => "multiple",
           "class" => "crm-select2",
           "data-fieldgroup" => "Default Project Settings"
-          )
+        )
       );
     }
 
     $campaigns = civicrm_api3('VolunteerUtil', 'getcampaigns', array());
     $campaignList = array();
-    foreach($campaigns['values'] as $campaign) {
+    foreach ($campaigns['values'] as $campaign) {
       $campaignList[$campaign['id']] = $campaign['title'];
     }
     $this->add(
@@ -118,7 +118,7 @@ class CRM_Volunteer_Form_Settings extends CRM_Core_Form {
 
     $this->addProjectRelationshipFields();
 
-    /*** Fields for Campaign Whitelist/Blacklist ***/
+    /*     * * Fields for Campaign Whitelist/Blacklist ** */
     $this->add(
       'select',
       'volunteer_general_campaign_filter_type',
@@ -136,7 +136,7 @@ class CRM_Volunteer_Form_Settings extends CRM_Core_Form {
       'return' => "value,label",
     ));
     $campaignTypes = array();
-    foreach($results['values'] as $campaignType) {
+    foreach ($results['values'] as $campaignType) {
       $campaignTypes[$campaignType['value']] = $campaignType['label'];
     }
 
@@ -146,7 +146,11 @@ class CRM_Volunteer_Form_Settings extends CRM_Core_Form {
       ts('Campaign Type(s)', array('domain' => 'org.civicrm.volunteer')),
       $campaignTypes,
       false, // is required,
-      array("placeholder" => ts("- none -", array('domain' => 'org.civicrm.volunteer')), "multiple" => "multiple", "class" => "crm-select2")
+      array(
+        "placeholder" => ts("- none -", array('domain' => 'org.civicrm.volunteer')),
+        "multiple" => "multiple",
+        "class" => "crm-select2"
+      )
     );
 
     $this->addButtons(array(
@@ -166,21 +170,37 @@ class CRM_Volunteer_Form_Settings extends CRM_Core_Form {
   private function addProjectRelationshipFields() {
     foreach ($this->getProjectRelationshipTypes() as $data) {
       $name = $data['name'];
-      $this->addRadio("volunteer_project_default_contacts_mode_$name", $data['label'], $this->getProjectRelationshipSettingModes(), array("data-fieldgroup" => "Default Project Settings",), NULL, TRUE);
-
-      // EntityRef is not used because a select list not easily obtainable through a single API call is needed
-      $this->add('select', "volunteer_project_default_contacts_relationship_$name", ts('Default to Contact(s) Having this Relationship with the Acting User', array('domain' => 'org.civicrm.volunteer')), $this->getValidRelationshipTypes(), false, // is required,
-          array(
-        'class' => 'crm-select2',
-        'data-fieldgroup' => 'Default Project Settings',
-        'placeholder' => TRUE,
-          )
+      $this->addRadio(
+        "volunteer_project_default_contacts_mode_$name",
+        $data['label'],
+        $this->getProjectRelationshipSettingModes(),
+        array("data-fieldgroup" => "Default Project Settings",),
+        NULL,
+        TRUE
       );
 
-      $this->addEntityRef("volunteer_project_default_contacts_contact_$name", ts('Default to Selected Contact(s)', array('domain' => 'org.civicrm.volunteer')), array(
-        'multiple' => TRUE,
-        'data-fieldgroup' => "Default Project Settings",
-      ));
+      // EntityRef is not used because a select list not easily obtainable through a single API call is needed
+      $this->add(
+        'select',
+        "volunteer_project_default_contacts_relationship_$name",
+        ts('Default to Contact(s) Having this Relationship with the Acting User', array('domain' => 'org.civicrm.volunteer')),
+        $this->getValidRelationshipTypes(),
+        false, // is required,
+        array(
+          'class' => 'crm-select2',
+          'data-fieldgroup' => 'Default Project Settings',
+          'placeholder' => TRUE,
+        )
+      );
+
+      $this->addEntityRef(
+        "volunteer_project_default_contacts_contact_$name",
+        ts('Default to Selected Contact(s)', array('domain' => 'org.civicrm.volunteer')),
+        array(
+          'multiple' => TRUE,
+          'data-fieldgroup' => "Default Project Settings",
+        )
+      );
     }
   }
 
@@ -195,7 +215,6 @@ class CRM_Volunteer_Form_Settings extends CRM_Core_Form {
   }
 
   private function buildFieldDescriptions() {
-
     foreach ($this->_elements as $element) {
       $name = $element->getName();
       $helpText = $this->getSettingMetadata($name, "help_text");
@@ -214,9 +233,9 @@ class CRM_Volunteer_Form_Settings extends CRM_Core_Form {
     $defaults['volunteer_project_default_campaign'] = CRM_Utils_Array::value('volunteer_project_default_campaign', $this->_settings);
     $defaults['volunteer_project_default_locblock'] = CRM_Utils_Array::value('volunteer_project_default_locblock', $this->_settings);
 
-    //Break the profiles out into their own fields
+    // Break the profiles out into their own fields
     $profiles = CRM_Utils_Array::value('volunteer_project_default_profiles', $this->_settings);
-    foreach(CRM_Volunteer_BAO_Project::getProjectProfileAudienceTypes() as $audience) {
+    foreach (CRM_Volunteer_BAO_Project::getProjectProfileAudienceTypes() as $audience) {
       $defaults["volunteer_project_default_profiles_" . $audience['type']] = CRM_Utils_Array::value($audience['type'], $profiles, array());
     }
 
@@ -278,7 +297,7 @@ class CRM_Volunteer_Form_Settings extends CRM_Core_Form {
     //Compose the profiles before we save tem.
     $profiles = array();
 
-    foreach(CRM_Volunteer_BAO_Project::getProjectProfileAudienceTypes() as $audience) {
+    foreach (CRM_Volunteer_BAO_Project::getProjectProfileAudienceTypes() as $audience) {
       $profiles[$audience['type']] = CRM_Utils_Array::value('volunteer_project_default_profiles_' . $audience['type'], $values);
     }
 
@@ -322,7 +341,9 @@ class CRM_Volunteer_Form_Settings extends CRM_Core_Form {
    * @return bool|mixed
    */
   function getSettingMetadata($settingName, $attr) {
-    if (!$settingName || !$attr) { return false; }
+    if (!$settingName || !$attr) {
+      return false;
+    }
     $setting = CRM_Utils_Array::value($settingName, $this->_settingsMetadata, array());
     return CRM_Utils_Array::value($attr, $setting);
   }
@@ -341,7 +362,7 @@ class CRM_Volunteer_Form_Settings extends CRM_Core_Form {
       $label = $element->getLabel();
       if (!empty($label)) {
 
-        if(!array_key_exists($groupName, $elementGroups)) {
+        if (!array_key_exists($groupName, $elementGroups)) {
           $elementGroups[$groupName] = array();
         }
 
