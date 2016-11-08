@@ -225,15 +225,37 @@ class CRM_Volunteer_Form_Settings extends CRM_Core_Form {
   }
 
   function validate() {
-    parent::validate();
-
     $values = $this->exportValues();
-    if($values['volunteer_general_campaign_filter_type'] == "whitelist" &&
-      empty($values['volunteer_general_campaign_filter_list'])) {
+
+    // This is not true validation; just a warning for a configuration that most
+    // users are not likely to want.
+    if ($values['volunteer_general_campaign_filter_type'] == "whitelist" &&
+        empty($values['volunteer_general_campaign_filter_list'])
+    ) {
       CRM_Core_Session::setStatus(ts("Your whitelist of campaign types is empty. As a result, no campaigns will be available for Volunteer Projects.", array('domain' => 'org.civicrm.volunteer')), "Warning", "warning");
     }
 
-    return TRUE;
+    foreach ($this->getProjectRelationshipTypes() as $relTypeData) {
+      $name = $relTypeData['name'];
+      $selectedMode = CRM_Utils_Array::value("volunteer_project_default_contacts_mode_{$name}", $values);
+
+      // skip this check if user did not select a mode; that field is required
+      // and there's no sense displaying two messages for the same error
+      if (!$selectedMode) {
+        continue;
+      }
+
+      $fieldName = "volunteer_project_default_contacts_{$selectedMode}_{$name}";
+      // unless 'self' is the mode, some other value needs to have been selected
+      if ($selectedMode !== 'self' && empty($values[$fieldName])) {
+        $this->_errors[$fieldName] = ts("%1 is a required field.", array(
+          1 => $relTypeData['label'],
+          'domain' => 'org.civicrm.volunteer',
+        ));
+      }
+    }
+
+    return parent::validate();
   }
 
   function postProcess() {
