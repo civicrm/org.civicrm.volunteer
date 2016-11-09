@@ -85,7 +85,6 @@
 
     var volRelData = {};
     var relationships = {};
-    var showRelationshipType = {};
     if(project.id == 0) {
       //Cloning these two objects so that their original values aren't subject to data-binding
       project = _.extend(_.clone(supporting_data.values.defaults), project);
@@ -112,29 +111,14 @@
       });
     }
 
-    // start with the assumption that all relationship fields will be displayed
-    _.each(supporting_data.values.relationship_types, function(v, k) {
-      showRelationshipType[v.value] = true;
-    });
-
     // flatten the data a bit to make it easier to work with in the template
     _.each(volRelData, function (contacts, relTypeId) {
       relationships[relTypeId] = [];
-      showRelationshipType[relTypeId] = true;
       _.each(contacts, function (contact) {
         relationships[relTypeId].push(contact.contact_id);
-        //This reduces all contact permissions down to a single bool for the overall type
-        //We are doing a logical AND here so that if the user does not posses the permission
-        //to view one of the associated contacts, we do not show them the widget.
-        //This is because if we show the widget it will remove any contact they do not
-        //have permission to view. This would lead to a user editing a project, being able
-        //to see one of two beneficiaries, saving the project, and the beneficiary they
-        //could not see is removed silently from the project.
-        showRelationshipType[relTypeId] = showRelationshipType[relTypeId] && contact.can_be_read_by_current_user;
       });
     });
     project.project_contacts = relationships;
-    $scope.showRelationshipType = showRelationshipType;
 
     if (CRM.vars['org.civicrm.volunteer'] && CRM.vars['org.civicrm.volunteer'].context) {
       $scope.formContext = CRM.vars['org.civicrm.volunteer'].context;
@@ -186,8 +170,7 @@
     $scope.project = project;
     $scope.profiles = $scope.project.profiles;
     $scope.relationships = $scope.project.project_contacts;
-    // VOL-223: Used to determine visibility of relationship block
-    $scope.showRelationshipBlock = _.reduce($scope.showRelationshipType, function(a, b) {return (a || b); });
+    $scope.showRelationshipBlock = CRM.checkPerm('edit volunteer project relationships');
 
     /**
      * Populates locBlock fields based on user selection of location.
