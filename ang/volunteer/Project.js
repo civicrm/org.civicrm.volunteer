@@ -83,12 +83,11 @@
     var ts = $scope.ts = CRM.ts('org.civicrm.volunteer');
     var hs = $scope.hs = crmUiHelp({file: 'CRM/Volunteer/Form/Volunteer'}); // See: templates/CRM/volunteer/Project.hlp
 
-    var volRelData = {};
     var relationships = {};
     if(project.id == 0) {
       //Cloning these two objects so that their original values aren't subject to data-binding
       project = _.extend(_.clone(supporting_data.values.defaults), project);
-      volRelData = _.clone(supporting_data.values.defaults.relationships);
+      relationships = _.clone(supporting_data.values.defaults.relationships);
 
       if (CRM.vars['org.civicrm.volunteer'].entityTable) {
         project.entity_table = CRM.vars['org.civicrm.volunteer'].entityTable;
@@ -101,23 +100,13 @@
       }
     } else {
       $(relationship_data.values).each(function (index, relationship) {
-        if (!volRelData.hasOwnProperty(relationship.relationship_type_id)) {
-          volRelData[relationship.relationship_type_id] = [];
+        if (!relationships.hasOwnProperty(relationship.relationship_type_id)) {
+          relationships[relationship.relationship_type_id] = [];
         }
-        volRelData[relationship.relationship_type_id].push({
-          contact_id: relationship.contact_id,
-          can_be_read_by_current_user: relationship.can_be_read_by_current_user
-        });
+        relationships[relationship.relationship_type_id].push(relationship.contact_id);
       });
     }
 
-    // flatten the data a bit to make it easier to work with in the template
-    _.each(volRelData, function (contacts, relTypeId) {
-      relationships[relTypeId] = [];
-      _.each(contacts, function (contact) {
-        relationships[relTypeId].push(contact.contact_id);
-      });
-    });
     project.project_contacts = relationships;
 
     if (CRM.vars['org.civicrm.volunteer'] && CRM.vars['org.civicrm.volunteer'].context) {

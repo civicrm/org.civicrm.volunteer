@@ -704,13 +704,41 @@ class CRM_Volunteer_BAO_Project extends CRM_Volunteer_DAO_Project {
 
     $defaults['profiles'] = $profiles;
 
+    $optionMap = CRM_Core_OptionGroup::values("volunteer_project_relationship", true, FALSE, FALSE, NULL, 'name');
+    $projectContactsSetting = civicrm_api3('Setting', 'getvalue', array(
+      'name' => 'volunteer_project_default_contacts',
+    ));
 
-    //Todo VOL-202: Handle ProjectContacts/Relationship Defaults
-    //We should implement "tokens" such as [employer] and [self] so the
-    //defaults can be relative to the user creating the project.
-    //When this is implemented, the defaults should be such that if
-    //the user takes no action it replicates what is in
-    //VolunteerUtil::getSupportingData()
+    $defaults['relationships'] = array();
+    foreach ($projectContactsSetting as $optionName => $defaultConfig) {
+      switch (CRM_Utils_Array::value('mode', $defaultConfig)) {
+        case 'contact':
+          $contactIds = explode(',', $defaultConfig['value']);
+          break;
+        case 'relationship':
+          list($relationshipTypeId, $direction) = explode('_', $defaultConfig['value']);
+          $reverseDirection = ($direction === 'a' ? 'b' : 'a');
+          $api = civicrm_api3('Relationship', 'get', array(
+            "contact_id_{$direction}" => 'user_contact_id',
+            'is_active' => 1,
+            'options' => array('limit' => 0),
+            'relationship_type_id' => $relationshipTypeId,
+          ));
+
+          $contactIds = array();
+          foreach ($api['values'] as $r) {
+            $contactIds[] = $r["contact_id_{$reverseDirection}"];
+          }
+
+          break;
+        case 'self':
+          $contactIds = array(CRM_Core_Session::getLoggedInContactID());
+          break;
+      }
+
+      $optionValue = $optionMap[$optionName];
+      $defaults['relationships'][$optionValue] = $contactIds;
+    }
 
     return $defaults;
   }

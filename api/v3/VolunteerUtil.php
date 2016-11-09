@@ -146,10 +146,6 @@ function civicrm_api3_volunteer_util_getsupportingdata($params) {
     //Fetch the Defaults from saved settings.
     $defaults = CRM_Volunteer_BAO_Project::composeDefaultSettingsArray();
 
-    //StopGap because the interface for contacts didn't fit into scope
-    if(!array_key_exists("relationships", $defaults)) {
-      $defaults['relationships'] = _volunteerGetProjectRelationshipDefaults();
-    }
     //Allow other extensions to modify the defaults
     CRM_Volunteer_Hook::projectDefaultSettings($defaults);
 
@@ -171,59 +167,6 @@ function civicrm_api3_volunteer_util_getsupportingdata($params) {
 
 
   return civicrm_api3_create_success($results, "VolunteerUtil", "getsupportingdata", $params);
-}
-
-/**
- * Helper function to get the default project relationships for a new project.
- *
- * @return array
- */
-function _volunteerGetProjectRelationshipDefaults() {
-  $defaults = array();
-
-  $relTypes = CRM_Core_OptionGroup::values("volunteer_project_relationship", true, FALSE, FALSE, NULL, 'name');
-  $ownerType = $relTypes['volunteer_owner'];
-  $managerType = $relTypes['volunteer_manager'];
-  $beneficiaryType = $relTypes['volunteer_beneficiary'];
-
-  $contactId = CRM_Core_Session::getLoggedInContactID();
-
-  $defaults[$ownerType] = array('contact_id' => $contactId);
-  $defaults[$managerType] = array('contact_id' => $contactId);
-
-  $employerRelationshipTypeId = civicrm_api3('RelationshipType', 'getvalue', array(
-    'return' => "id",
-    'name_b_a' => "Employer of",
-  ));
-
-  try {
-    $result = civicrm_api3('Relationship', 'getvalue', array(
-      'return' => "contact_id_b",
-      'contact_id_a' => $contactId,
-      'relationship_type_id' => $employerRelationshipTypeId,
-      'is_active' => 1,
-    ));
-    $defaultBeneficiary = array('contact_id' => $result);
-  } catch(Exception $e) {
-    $domain = civicrm_api3('Domain', 'getsingle', array('current_domain' => 1));
-    $defaultBeneficiary = array('contact_id' => $domain['contact_id']);
-  }
-  $defaults[$beneficiaryType] = $defaultBeneficiary;
-
-  //Re-Format the defaults into the expected structure
-  //each type should be an array of arrays, each one
-  //containing two keys, one for contact_id, and one for read permissions
-  //$defaults['type'] => array( array('contact_id' => ..., 'can_be_read_by_current_user' => ...) )git 
-  foreach ($defaults as $type => &$contacts) {
-    foreach($contacts as &$contact) {
-      if(!is_array($contact)) {
-        $contact = array("contact_id" => $contact);
-      }
-      $contact['can_be_read_by_current_user'] = CRM_Volunteer_BAO_ProjectContact::contactIsReadable($contact['contact_id']);
-    }
-  }
-
-  return $defaults;
 }
 
 /**
