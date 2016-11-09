@@ -170,6 +170,7 @@
     $scope.project = project;
     $scope.profiles = $scope.project.profiles;
     $scope.relationships = $scope.project.project_contacts;
+    $scope.showProfileBlock = CRM.checkPerm('edit volunteer registration profiles');
     $scope.showRelationshipBlock = CRM.checkPerm('edit volunteer project relationships');
 
     /**
