@@ -262,6 +262,11 @@
       var hasPrimaryProfileType = false;
       var valid = true;
 
+      // VOL-263: If the profiles aren't displayed, then there's no validation to do.
+      if (!CRM.checkPerm('edit volunteer registration profiles')) {
+        return valid;
+      }
+
       $.each($scope.profiles, function (index, data) {
         if(!data.uf_group_id) {
           CRM.alert(ts("Please select at least one profile, and remove empty selections"), "Required", 'error');
@@ -318,6 +323,11 @@
    */
     validateRelationships = function() {
       var isValid = true;
+
+      // VOL-263: If the relationships aren't displayed, then there's no validation to do.
+      if (!CRM.checkPerm('edit volunteer project relationships')) {
+        return isValid;
+      }
 
       var requiredRelationshipTypes = ['volunteer_beneficiary', 'volunteer_manager', 'volunteer_owner'];
 
