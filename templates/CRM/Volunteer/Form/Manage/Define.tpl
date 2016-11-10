@@ -130,7 +130,7 @@
   <tr id="crm-vol-define-add-row">
     <td colspan="8">
       <select class="crm-form-select crm-action-menu action-icon-plus" id="crm-vol-define-add-need">
-        <option value="">{ts domain='org.civicrm.volunteer'}Create new{/ts}</option>
+        <option value="">{ts domain='org.civicrm.volunteer'}New Opportunity{/ts}</option>
         {crmAPI var='result' entity='VolunteerNeed' action='getoptions' field='role_id' sequential=0}
         {foreach from=$result.values item=VolunteerNeed key=id}
           <option value="{$id}">{$VolunteerNeed}</option>
