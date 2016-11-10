@@ -43,9 +43,19 @@
             });
           },
           relationship_data: function(crmApi, $route) {
-            return crmApi('VolunteerProjectContact', 'get', {
+            var params = {
               "sequential": 1,
               "project_id": $route.current.params.projectId
+            };
+            return crmApi('VolunteerProjectContact', 'get', params).then(function(result) {
+              var relationships = {};
+              $(result.values).each(function (index, vpc) {
+                if (!relationships.hasOwnProperty(vpc.relationship_type_id)) {
+                  relationships[vpc.relationship_type_id] = [];
+                }
+                relationships[vpc.relationship_type_id].push(vpc.contact_id);
+              });
+              return relationships;
             });
           },
           location_blocks: function(crmApi) {
@@ -84,28 +94,28 @@
     var hs = $scope.hs = crmUiHelp({file: 'CRM/Volunteer/Form/Volunteer'}); // See: templates/CRM/volunteer/Project.hlp
 
     var relationships = {};
-    if(project.id == 0) {
-      //Cloning these two objects so that their original values aren't subject to data-binding
-      project = _.extend(_.clone(supporting_data.values.defaults), project);
-      relationships = _.clone(supporting_data.values.defaults.relationships);
 
-      if (CRM.vars['org.civicrm.volunteer'].entityTable) {
-        project.entity_table = CRM.vars['org.civicrm.volunteer'].entityTable;
-        project.entity_id = CRM.vars['org.civicrm.volunteer'].entityId;
-      }
-      //For an associated Entity, make the title of the project default to
-      //The title of the entity
-      if (CRM.vars['org.civicrm.volunteer'].entityTitle) {
-        project.title = CRM.vars['org.civicrm.volunteer'].entityTitle;
-      }
-    } else {
-      $(relationship_data.values).each(function (index, relationship) {
-        if (!relationships.hasOwnProperty(relationship.relationship_type_id)) {
-          relationships[relationship.relationship_type_id] = [];
+    setFormDefaults = function() {
+      if(project.id == 0) {
+        // Cloning is used so that the defaults aren't subject to data-binding (i.e., by user action in the form)
+        project = _.extend(_.clone(supporting_data.values.defaults), project);
+        relationships = _.clone(supporting_data.values.defaults.relationships);
+
+        if (CRM.vars['org.civicrm.volunteer'].entityTable) {
+          project.entity_table = CRM.vars['org.civicrm.volunteer'].entityTable;
+          project.entity_id = CRM.vars['org.civicrm.volunteer'].entityId;
         }
-        relationships[relationship.relationship_type_id].push(relationship.contact_id);
-      });
-    }
+        // For an associated Entity, make the title of the project default to
+        // the title of the entity
+        if (CRM.vars['org.civicrm.volunteer'].entityTitle) {
+          project.title = CRM.vars['org.civicrm.volunteer'].entityTitle;
+        }
+      } else {
+        relationships = relationship_data;
+      }
+    };
+
+    setFormDefaults();
 
     project.project_contacts = relationships;
 
