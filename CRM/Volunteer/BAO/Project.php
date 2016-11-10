@@ -703,13 +703,27 @@ class CRM_Volunteer_BAO_Project extends CRM_Volunteer_DAO_Project {
     }
 
     $defaults['profiles'] = $profiles;
+    $defaults['relationships'] = self::getDefaultProjectContacts();
 
-    $optionMap = CRM_Core_OptionGroup::values("volunteer_project_relationship", true, FALSE, FALSE, NULL, 'name');
+    return $defaults;
+  }
+
+  /**
+   * Get default contacts for a new Volunteer Project.
+   *
+   * @return array
+   *   An array of the default contact IDs for a project, keyed by the type of
+   *   volunteer project relationship. The type is represented as an INT, the
+   *   value of the option in the volunteer_project_relationship option group.
+   */
+  public static function getDefaultProjectContacts() {
+    $defaults = array();
+    $optionMap = CRM_Core_OptionGroup::values("volunteer_project_relationship", TRUE, FALSE, FALSE, NULL, 'name');
     $projectContactsSetting = civicrm_api3('Setting', 'getvalue', array(
       'name' => 'volunteer_project_default_contacts',
     ));
 
-    $defaults['relationships'] = array();
+    // the array of settings is keyed by the name of the volunteer project relationship
     foreach ($projectContactsSetting as $optionName => $defaultConfig) {
       switch (CRM_Utils_Array::value('mode', $defaultConfig)) {
         case 'contact':
@@ -737,7 +751,7 @@ class CRM_Volunteer_BAO_Project extends CRM_Volunteer_DAO_Project {
       }
 
       $optionValue = $optionMap[$optionName];
-      $defaults['relationships'][$optionValue] = $contactIds;
+      $defaults[$optionValue] = $contactIds;
     }
 
     return $defaults;
