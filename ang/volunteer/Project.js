@@ -275,6 +275,11 @@
         return valid;
       }
 
+      if ($scope.profiles.length === 0) {
+        CRM.alert(ts("You must select at least one Profile"), "Required");
+        return false;
+      }
+
       $.each($scope.profiles, function (index, data) {
         if(!data.uf_group_id) {
           CRM.alert(ts("Please select at least one profile, and remove empty selections"), "Required", 'error');
@@ -309,11 +314,6 @@
 
       if(!$scope.project.title) {
         CRM.alert(ts("Title is a required field"), "Required");
-        valid = false;
-      }
-
-      if ($scope.profiles.length === 0) {
-        CRM.alert(ts("You must select at least one Profile"), "Required");
         valid = false;
       }
 
