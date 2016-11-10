@@ -117,7 +117,11 @@
 
     setFormDefaults();
 
-    project.project_contacts = relationships;
+    // If the user doesn't have this permission, there is no sense in assigning
+    // relationship data to the model or submitting it to the API.
+    if (CRM.checkPerm('edit volunteer project relationships')) {
+      project.project_contacts = relationships;
+    }
 
     if (CRM.vars['org.civicrm.volunteer'] && CRM.vars['org.civicrm.volunteer'].context) {
       $scope.formContext = CRM.vars['org.civicrm.volunteer'].context;
@@ -154,6 +158,11 @@
     $scope.locationBlocks[0] = "Create a new Location";
     $scope.locBlock = {};
 
+    // If the user doesn't have this permission, there is no sense in keeping
+    // profile data on the model or submitting it to the API.
+    if (!CRM.checkPerm('edit volunteer registration profiles')) {
+      project.profiles = [];
+    }
     $.each(project.profiles, function (key, data) {
       if(data.module_data && typeof(data.module_data) === "string") {
         data.module_data = JSON.parse(data.module_data);
