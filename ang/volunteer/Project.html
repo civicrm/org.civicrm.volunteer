@@ -114,22 +114,17 @@
       </div>
     </fieldset>
 
-    <fieldset class="crm-vol-relationships" ng-show="showRelationshipBlock" crm-ui-id-scope>
+    <fieldset class="crm-vol-relationships" ng-if="showRelationshipBlock" crm-ui-id-scope>
       <legend>{{ts("Relationships")}}</legend>
-
       <div ng-repeat="relType in relationship_types">
-        <div ng-if="showRelationshipType[relType.value]" crm-ui-field="{name: projectForm[relType.name], title: ts(relType.label)}" ng-class="'crm-vol-rel-' + relType.name">
+        <div crm-ui-field="{name: projectForm[relType.name], title: ts(relType.label)}" ng-class="'crm-vol-rel-' + relType.name">
           <input crm-ui-id="projectForm[relType.name]" crm-entityref="{entity: 'Contact', select: {allowClear:true, multiple: true}}" ng-model="relationships[relType.value]" />
           <div class="description" ng-show="relType.description">{{relType.description}}</div>
         </div>
-        <div ng-if="!showRelationshipType[relType.value]">
-          <input crm-ui-id="projectForm[relType.name]" type="hidden" ng-model="relationships[relType.value]" />
-        </div>
       </div>
-
     </fieldset>
 
-    <fieldset class="crm-vol-profiles">
+    <fieldset class="crm-vol-profiles" ng-if="showProfileBlock">
       <legend>{{ts("Volunteer Registration")}}</legend>
       <div class="help">
         <p>

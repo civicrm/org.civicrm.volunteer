@@ -1,0 +1,23 @@
+/* Default follow-up fields to hidden; they will be toggled by the mode radios */
+.crm-section[class*="volunteer_project_default_contacts_"] {
+  display: none;
+}
+
+/* Indent follow-up fields so they are clearly children of the mode radios  */
+.crm-section[class*="volunteer_project_default_contacts_"] .label {
+  padding-left: 17%;
+}
+.crm-section[class*="volunteer_project_default_contacts_"] .content {
+  margin-left: 38%;
+}
+
+/* Keep mode radio buttons at CiviCRM defaults */
+.crm-section[class*="volunteer_project_default_contacts_mode_"] {
+  display: block;
+}
+.crm-section[class*="volunteer_project_default_contacts_mode_"] .label {
+  padding-left: 0;
+}
+.crm-section[class*="volunteer_project_default_contacts_mode_"] .content {
+  margin-left: 19%;
+}

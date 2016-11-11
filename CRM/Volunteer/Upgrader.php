@@ -376,6 +376,18 @@ class CRM_Volunteer_Upgrader extends CRM_Volunteer_Upgrader_Base {
     return !is_a($query, 'DB_Error');
   }
 
+  /**
+   * Notify administrators of new permissions.
+   */
+  public function upgrade_2200() {
+    $this->ctx->log->info('Applying update 2200 - CiviVolunteer Upgrade Notice');
+
+    $message = ts('This upgrade introduces two new permissions ("Edit Volunteer Project Relationships" and "Edit Volunteer Registration Profiles"). Grant these to allow users more control over the volunteer project create/edit workflow. Revoke them to streamline the process. Volunteer projects created by users lacking these privileges will use the defaults set by the system administrator.', array('domain' => 'org.civicrm.volunteer'));
+    $title = ts('CiviVolunteer Upgrade Notice', array('domain' => 'org.civicrm.volunteer'));
+    CRM_Core_Session::setStatus($message, $title, 'info', array('expires' => 0));
+    return TRUE;
+  }
+
   public function uninstall() {
     civicrm_api3('CustomGroup', 'get', array(
       'name' => array('IN' => array('CiviVolunteer', 'Volunteer_Information', 'volunteer_commendation')),

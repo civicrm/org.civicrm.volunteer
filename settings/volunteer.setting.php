@@ -72,7 +72,11 @@ return array(
     'group' => 'org.civicrm.volunteer',
     'name' => 'volunteer_project_default_contacts',
     'type' => 'Array',
-    'default' => '',
+    'default' => array(
+      "volunteer_owner" => array("mode" => "self", "value" => "1"),
+      "volunteer_manager" => array("mode" => "self", "value" => "1"),
+      "volunteer_beneficiary" => array("mode" => "relationship", "value" => "5_a"),
+    ),
     'add' => '4.5',
     'is_domain' => 1,
     'is_contact' => 0,

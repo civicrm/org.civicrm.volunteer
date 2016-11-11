@@ -37,30 +37,4 @@ class CRM_Volunteer_BAO_ProjectContact extends CRM_Volunteer_DAO_ProjectContact 
 
   const RELATIONSHIP_OPTION_GROUP = 'volunteer_project_relationship';
 
-  /**
-   * Helper function to determine whether or not the current user can read a
-   * given contact.
-   *
-   * @param mixed $contactId
-   *   Int or int-like string representing the contact ID.
-   * @return boolean
-   */
-  static function contactIsReadable($contactId) {
-    $contactIsReadable = TRUE;
-    try {
-      // Getlist fails given an IN param for id, so one at a time it is.
-      $getList = civicrm_api3("Contact", "getlist", array(
-        "id" => $contactId,
-        "check_permissions" => 1
-      ));
-      if ($getList['count'] == 0) {
-        $contactIsReadable = FALSE;
-      }
-    }
-    catch (Exception $e) {
-      $contactIsReadable = FALSE;
-    }
-    return $contactIsReadable;
-  }
-
 }

@@ -41,6 +41,14 @@ class CRM_Volunteer_Permission extends CRM_Core_Permission {
         $prefix . ts('delete all volunteer projects', array('domain' => 'org.civicrm.volunteer')),
         ts('Delete any volunteer project record, regardless of ownership', array('domain' => 'org.civicrm.volunteer')),
       ),
+      'edit volunteer project relationships' => array(
+        $prefix . ts('edit volunteer project relationships', array('domain' => 'org.civicrm.volunteer')),
+        ts('Override system-wide default project relationships for a particular volunteer project', array('domain' => 'org.civicrm.volunteer')),
+      ),
+      'edit volunteer registration profiles' => array(
+        $prefix . ts('edit volunteer registration profiles', array('domain' => 'org.civicrm.volunteer')),
+        ts('Override system-wide default registration profiles for a particular volunteer project', array('domain' => 'org.civicrm.volunteer')),
+      ),
     );
   }
 
