@@ -169,6 +169,35 @@ class CRM_Volunteer_BAO_Project extends CRM_Volunteer_DAO_Project {
   }
 
   /**
+   * Helper method to supply default values to a project missing properties.
+   *
+   * @param array $params
+   *   Parameters for project create.
+   * @return array
+   */
+  public static function supplyDefaults(array $params) {
+    $defaults = self::composeDefaultSettingsArray();
+
+    if (!array_key_exists('campaign_id', $params)) {
+      $params['campaign_id'] = $defaults['campaign_id'];
+    }
+    if (!array_key_exists('is_active', $params)) {
+      $params['is_active'] = $defaults['is_active'];
+    }
+    if (!array_key_exists('loc_block_id', $params)) {
+      $params['loc_block_id'] = $defaults['loc_block_id'];
+    }
+    if (!array_key_exists('profiles', $params)) {
+      $params['profiles'] = $defaults['profiles'];
+    }
+    if (!array_key_exists('project_contacts', $params)) {
+      $params['project_contacts'] = $defaults['relationships'];
+    }
+
+    return $params;
+  }
+
+  /**
    * Create a Volunteer Project
    *
    * Takes an associative array and creates a Project object. This method is
@@ -210,29 +239,21 @@ class CRM_Volunteer_BAO_Project extends CRM_Volunteer_DAO_Project {
       CRM_Core_Error::fatal('Not enough data to create volunteer project object.');
     }
 
-    // default to active unless explicitly turned off
-    $params['is_active'] = CRM_Utils_Array::value('is_active', $params, TRUE);
+    // Defaults only matter in the case of a create; in the case of an edit we
+    // assume replacement params have been passed or that no change is desired.
+    if ($op === CRM_Core_Action::ADD) {
+      $params = self::supplyDefaults($params);
+    }
 
     $project = new CRM_Volunteer_BAO_Project();
     $project->copyValues($params);
 
     $project->save();
 
-    $projectContacts = CRM_Utils_Array::value('project_contacts', $params, array());
-    $profiles = CRM_Utils_Array::value('profiles', $params, array());
-
-    // Defaults only matter in the case of a create; in the case of an edit we
-    // assume replacement params have been passed or that no change is desired.
-    if ($op === CRM_Core_Action::ADD) {
-      $defaults = self::composeDefaultSettingsArray();
-      $projectContacts = empty($projectContacts) ? $defaults['relationships'] : $projectContacts;
-      $profiles = empty($profiles) ? $defaults['profiles'] : $profiles;
-    }
-
     // If updating, treat profile and project contact relationship params as
     // replacement data. Start by deleting existing relationships.
-    $updateVPC = ($op === CRM_Core_Action::UPDATE) && !empty($projectContacts) && CRM_Volunteer_Permission::check('edit volunteer project relationships');
-    $updateProfiles = ($op === CRM_Core_Action::UPDATE) && !empty($profiles) && CRM_Volunteer_Permission::check('edit volunteer registration profiles');
+    $updateVPC = ($op === CRM_Core_Action::UPDATE) && !empty($params['project_contacts']) && CRM_Volunteer_Permission::check('edit volunteer project relationships');
+    $updateProfiles = ($op === CRM_Core_Action::UPDATE) && !empty($params['profiles']) && CRM_Volunteer_Permission::check('edit volunteer registration profiles');
     if ($updateVPC) {
       civicrm_api3('VolunteerProjectContact', 'get', array(
         'options' => array('limit' => 0),
@@ -253,7 +274,7 @@ class CRM_Volunteer_BAO_Project extends CRM_Volunteer_DAO_Project {
     }
 
     if ($updateVPC || CRM_Core_Action::ADD) {
-      foreach ($projectContacts as $relationshipType => $contactIds) {
+      foreach ($params['project_contacts'] as $relationshipType => $contactIds) {
         $contactIds = array_unique(self::validateContactFormat($contactIds));
         foreach ($contactIds as $id) {
           civicrm_api3('VolunteerProjectContact', 'create', array(
@@ -265,7 +286,7 @@ class CRM_Volunteer_BAO_Project extends CRM_Volunteer_DAO_Project {
       }
     }
     if ($updateProfiles || CRM_Core_Action::ADD) {
-      foreach ($profiles as $profile) {
+      foreach ($params['profiles'] as $profile) {
         $profile['is_active'] = 1;
         $profile['module'] = "CiviVolunteer";
         $profile['entity_table'] = "civicrm_volunteer_project";

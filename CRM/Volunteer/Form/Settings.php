@@ -209,8 +209,11 @@ class CRM_Volunteer_Form_Settings extends CRM_Core_Form {
    */
   private function buildHelpText() {
     $newProjectUrl = CRM_Utils_System::url('civicrm/vol/', NULL, FALSE, 'volunteer/manage/0');
+    $helpText = '<p>' . ts('The values set in this section will be used as defaults for volunteer projects in both the form and data layers.', array('domain' => 'org.civicrm.volunteer')) . '</p>';
+    $helpText .= '<p>' . ts('Streamline creation of new volunteer projects by selecting the options you choose most. The <a href="%1">New Project screen</a> will open with these settings already selected. These values will also be used for projects created through API unless other values are specified.', array(1 => $newProjectUrl, 'domain' => 'org.civicrm.volunteer')) . '</p>';
+    $helpText .= '<p>' . ts('Note: Projects created by users who do not have the "edit volunteer project relationships" or "edit volunteer registration profiles" permissions will always use the defaults for those fields.', array('domain' => 'org.civicrm.volunteer')) . '</p>';
     $this->assign('helpText', array(
-      'Default Project Settings' => ts('Streamline creating new volunteer projects by selecting the options you choose most. The <a href="%1">New Project screen</a> will open with these settings already selected.', array(1 => $newProjectUrl, 'domain' => 'org.civicrm.volunteer')),
+      'Default Project Settings' => $helpText,
     ));
   }
 

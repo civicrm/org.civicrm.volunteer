@@ -66,7 +66,6 @@ function civicrm_api3_volunteer_project_create($params) {
  */
 function _civicrm_api3_volunteer_project_create_spec(&$params) {
   $params['title']['api.required'] = 1;
-  $params['is_active']['api.default'] = 1;
   $params['project_contacts'] = array(
     'title' => 'Project Contacts',
     'description' => 'Create or replace the project contact associations with
