@@ -55,37 +55,6 @@ function civicrm_api3_volunteer_project_create($params) {
 
   $project = CRM_Volunteer_BAO_Project::create($params);
 
-  $profiles = civicrm_api3("UFJoin", "get",
-    array(
-      "entity_id" => $project->id,
-      "entity_table" => "civicrm_volunteer_project",
-      "options" => array("limit" => 0),
-    ));
-
-  foreach($profiles['values'] as $profile) {
-    if(!in_array($profile['id'], $project->profileIds)) {
-      // CRM-17222
-      //$result = civicrm_api3("UFJoin", "delete", array("id" => $profile['id']));
-      civicrm_api3("VolunteerProject", "removeprofile", array("id" => $profile['id']));
-    }
-  }
-
-  //Cleanup Project Contacts
-  if(array_key_exists("project_contacts", $params)) {
-    $allProjectContacts = civicrm_api3("VolunteerProjectContact", "get", array(
-      'options' => array('limit' => 0),
-      'project_id' => $project->id,
-      'sequential' => 1,
-    ));
-
-    foreach ($allProjectContacts['values'] as $contact) {
-      $relType = $contact['relationship_type_id'];
-      if (!array_key_exists($relType, $project->contacts) || !in_array($contact['contact_id'], $project->contacts[$relType])) {
-        civicrm_api3("VolunteerProjectContact", "delete", array("id" => $contact['id']));
-      }
-    }
-  }
-
   return civicrm_api3_create_success($project->toArray(), $params, 'VolunteerProject', 'create');
 }
 
@@ -100,8 +69,17 @@ function _civicrm_api3_volunteer_project_create_spec(&$params) {
   $params['is_active']['api.default'] = 1;
   $params['project_contacts'] = array(
     'title' => 'Project Contacts',
-    'description' => 'Array of [volunteer relationship type] => [contact IDs].
+    'description' => 'Create or replace the project contact associations with
+      this project. Array of [volunteer relationship type] => [contact IDs].
       See CRM_Volunteer_BAO_Project::create().',
+    'type' => CRM_Utils_Type::T_STRING,
+  );
+  $params['profiles'] = array(
+    'title' => 'Profiles',
+    'description' => 'Create or replace the profile associations with
+      this project. Array of arrays, where each child array is a set of
+      parameters that could be passed to api.UFJoin.create. See
+      CRM_Volunteer_BAO_Project::create().',
     'type' => CRM_Utils_Type::T_STRING,
   );
 }

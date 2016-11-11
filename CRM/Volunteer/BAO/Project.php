@@ -191,21 +191,29 @@ class CRM_Volunteer_BAO_Project extends CRM_Volunteer_DAO_Project {
   /**
    * Create a Volunteer Project
    *
-   * Takes an associative array and creates a Project object. This function is
-   * invoked from within the web form layer and also from the API layer. Allows
-   * the creation of project contacts, e.g.:
+   * Takes an associative array and creates a Project object. This method is
+   * invoked from the API layer.
    *
-   * $params['project_contacts'] = array(
-   *   $relationship_type_name_or_id => $arr_contact_ids,
-   * );
+   * As a convenience, this method also allows creation of ancillary entities
+   * for relating the Project to Contacts and Profiles. Specifying these
+   * relationships during project edit is a replacement operation; pre-existing
+   * associations will be deleted. For finer-grained control over these
+   * relationships, instead use api.VolunteerProjectContact and api.UFJoin,
+   * respectively.
    *
-   * @param array   $params      an assoc array of name/value pairs
+   * To associate Contacts with a Project:
+   *   $params['project_contacts'] = array(
+   *     $relationship_type_name_or_id => $arr_contact_ids,
+   *   );
+   * To associate Profiles with a Project:
+   *   $params['profiles'] = array($paramsToUFJoinCreate1, $paramsToUFJoinCreate2);
+   *
+   * @param array $params
+   *   an assoc array of name/value pairs
    *
    * @return CRM_Volunteer_BAO_Project object
-   * @access public
-   * @static
    */
-  static function create(array $params) {
+  public static function create(array $params) {
     $projectId = CRM_Utils_Array::value('id', $params);
     $op = empty($projectId) ? CRM_Core_Action::ADD : CRM_Core_Action::UPDATE;
 
@@ -230,13 +238,44 @@ class CRM_Volunteer_BAO_Project extends CRM_Volunteer_DAO_Project {
 
     $project->save();
 
-    $existingContacts = CRM_Volunteer_BAO_Project::getContactsNestedByRelationship($project->id);
     $projectContacts = CRM_Utils_Array::value('project_contacts', $params, array());
-    foreach ($projectContacts as $relationshipType => &$contactIds) {
-      $contactIds = CRM_Volunteer_BAO_Project::validateContactFormat($contactIds);
+    $profiles = CRM_Utils_Array::value('profiles', $params, array());
 
-      foreach ($contactIds as $id) {
-        if(!array_key_exists($relationshipType, $existingContacts) || !in_array($id, $existingContacts[$relationshipType])) {
+    // Defaults only matter in the case of a create; in the case of an edit we
+    // assume replacement params have been passed or that no change is desired.
+    if ($op === CRM_Core_Action::ADD) {
+      $defaults = self::composeDefaultSettingsArray();
+      $projectContacts = empty($projectContacts) ? $defaults['relationships'] : $projectContacts;
+      $profiles = empty($profiles) ? $defaults['profiles'] : $profiles;
+    }
+
+    // If updating, treat profile and project contact relationship params as
+    // replacement data. Start by deleting existing relationships.
+    $updateVPC = ($op === CRM_Core_Action::UPDATE) && !empty($projectContacts) && CRM_Volunteer_Permission::check('edit volunteer project relationships');
+    $updateProfiles = ($op === CRM_Core_Action::UPDATE) && !empty($profiles) && CRM_Volunteer_Permission::check('edit volunteer registration profiles');
+    if ($updateVPC) {
+      civicrm_api3('VolunteerProjectContact', 'get', array(
+        'options' => array('limit' => 0),
+        'project_id' => $project->id,
+        'api.VolunteerProjectContact.delete' => array(),
+      ));
+    }
+    if ($updateProfiles) {
+      civicrm_api3("UFJoin", "get", array(
+        'entity_id' => $project->id,
+        'entity_table' => 'civicrm_volunteer_project',
+        'options' => array('limit' => 0),
+        // CRM-17222: For compatibility with CiviCRM 4.6, we use our custom API.
+        // When support for 4.6 is dropped, we can use core's api.UFJoin.delete.
+        // 'api.UFJoin.delete' => array(),
+        'api.VolunteerProject.removeprofile' => array(),
+      ));
+    }
+
+    if ($updateVPC || CRM_Core_Action::ADD) {
+      foreach ($projectContacts as $relationshipType => $contactIds) {
+        $contactIds = array_unique(self::validateContactFormat($contactIds));
+        foreach ($contactIds as $id) {
           civicrm_api3('VolunteerProjectContact', 'create', array(
             'contact_id' => $id,
             'project_id' => $project->id,
@@ -245,21 +284,16 @@ class CRM_Volunteer_BAO_Project extends CRM_Volunteer_DAO_Project {
         }
       }
     }
-
-    $project->contacts = $projectContacts;
-
-    $profiles = CRM_Utils_Array::value('profiles', $params, array());
-    foreach ($profiles as $profile) {
-      $profile['is_active'] = 1;
-      $profile['module'] = "CiviVolunteer";
-      $profile['entity_table'] = "civicrm_volunteer_project";
-      $profile['entity_id'] = $project->id;
-      if (is_array($profile['module_data'])) {
-        $profile['module_data'] = json_encode($profile['module_data']);
-      }
-      $result = civicrm_api3('UFJoin', 'create', $profile);
-      if ($result['is_error'] == 0) {
-        $project->profileIds[] = $result['values'][0]['id'];
+    if ($updateProfiles || CRM_Core_Action::ADD) {
+      foreach ($profiles as $profile) {
+        $profile['is_active'] = 1;
+        $profile['module'] = "CiviVolunteer";
+        $profile['entity_table'] = "civicrm_volunteer_project";
+        $profile['entity_id'] = $project->id;
+        if (is_array($profile['module_data'])) {
+          $profile['module_data'] = json_encode($profile['module_data']);
+        }
+        civicrm_api3('UFJoin', 'create', $profile);
       }
     }
 
