@@ -1,11 +1,13 @@
 <?php
 
-require_once 'CiviTest/CiviUnitTestCase.php';
+use Civi\Test\HeadlessInterface;
+use Civi\Test\HookInterface;
+use Civi\Test\TransactionalInterface;
 
 /**
  * Abstract class for Volunteer tests
  */
-abstract class VolunteerTestAbstract extends CiviUnitTestCase {
+abstract class VolunteerTestAbstract extends \PHPUnit_Framework_TestCase implements HeadlessInterface, HookInterface, TransactionalInterface {
 
   /**
    * Ensure that, if the database is repopulated, CiviVolunteer's install
@@ -49,4 +51,13 @@ abstract class VolunteerTestAbstract extends CiviUnitTestCase {
 
     return TRUE;
   }
+
+  public function setUpHeadless() {
+    // Civi\Test has many helpers, like install(), uninstall(), sql(), and sqlFile().
+    // See: https://github.com/civicrm/org.civicrm.testapalooza/blob/master/civi-test.md
+    return \Civi\Test::headless()
+            ->installMe(__DIR__)
+            ->apply();
+  }
+
 }
