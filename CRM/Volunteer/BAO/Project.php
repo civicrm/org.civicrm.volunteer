@@ -759,7 +759,7 @@ class CRM_Volunteer_BAO_Project extends CRM_Volunteer_DAO_Project {
           }
 
           break;
-        case 'self':
+        case 'acting_contact':
           $contactIds = array(CRM_Core_Session::getLoggedInContactID());
           break;
       }

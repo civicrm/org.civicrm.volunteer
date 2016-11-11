@@ -183,7 +183,7 @@ class CRM_Volunteer_Form_Settings extends CRM_Core_Form {
       $this->add(
         'select',
         "volunteer_project_default_contacts_relationship_$name",
-        ts('Default to Contact(s) Having this Relationship with the Acting User', array('domain' => 'org.civicrm.volunteer')),
+        ts('Default to Contact(s) Having this Relationship with the Acting Contact', array('domain' => 'org.civicrm.volunteer')),
         $this->getValidRelationshipTypes(),
         false, // is required,
         array(
@@ -245,7 +245,7 @@ class CRM_Volunteer_Form_Settings extends CRM_Core_Form {
       $mode = $data['mode'];
       $defaults["volunteer_project_default_contacts_mode_{$name}"] = $mode;
 
-      if ($mode !== 'self') {
+      if ($mode !== 'acting_contact') {
         $defaults["volunteer_project_default_contacts_{$mode}_{$name}"] = $data['value'];
       }
     }
@@ -279,8 +279,8 @@ class CRM_Volunteer_Form_Settings extends CRM_Core_Form {
       }
 
       $fieldName = "volunteer_project_default_contacts_{$selectedMode}_{$name}";
-      // unless 'self' is the mode, some other value needs to have been selected
-      if ($selectedMode !== 'self' && empty($values[$fieldName])) {
+      // unless 'acting_contact' is the mode, some other value needs to have been selected
+      if ($selectedMode !== 'acting_contact' && empty($values[$fieldName])) {
         $this->_errors[$fieldName] = ts("%1 is a required field.", array(
           1 => $relTypeData['label'],
           'domain' => 'org.civicrm.volunteer',
@@ -430,7 +430,7 @@ class CRM_Volunteer_Form_Settings extends CRM_Core_Form {
    */
   public function getProjectRelationshipSettingModes() {
     return array(
-      'self' => ts('Self', array('domain' => 'org.civicrm.volunteer')),
+      'acting_contact' => ts('Acting Contact', array('domain' => 'org.civicrm.volunteer')),
       'relationship' => ts('Related Contact(s)', array('domain' => 'org.civicrm.volunteer')),
       'contact' => ts('Specific Contact(s)', array('domain' => 'org.civicrm.volunteer')),
     );
@@ -486,7 +486,7 @@ class CRM_Volunteer_Form_Settings extends CRM_Core_Form {
         'mode' => $mode,
       );
 
-      if ($mode === 'self') {
+      if ($mode === 'acting_contact') {
         // For interface consistency we supply a 'value' key though it isn't strictly needed.
         $store[$name]['value'] = TRUE;
       }
