@@ -1,7 +1,5 @@
 <?php
 
-require_once 'VolunteerTestAbstract.php';
-
 /**
  * Test class for Volunteer Project API - volunteer_project
  */
