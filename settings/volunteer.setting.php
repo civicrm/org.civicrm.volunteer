@@ -73,8 +73,8 @@ return array(
     'name' => 'volunteer_project_default_contacts',
     'type' => 'Array',
     'default' => array(
-      "volunteer_owner" => array("mode" => "self", "value" => "1"),
-      "volunteer_manager" => array("mode" => "self", "value" => "1"),
+      "volunteer_owner" => array("mode" => "acting_contact", "value" => "1"),
+      "volunteer_manager" => array("mode" => "acting_contact", "value" => "1"),
       "volunteer_beneficiary" => array("mode" => "relationship", "value" => "5_a"),
     ),
     'add' => '4.5',
