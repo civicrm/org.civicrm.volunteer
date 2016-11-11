@@ -108,7 +108,6 @@ function civicrm_api3_volunteer_project_contact_get($params) {
 
         $projectContact['relationship_type_label'] = $optionValue['label'];
         $projectContact['relationship_type_name'] = $optionValue['name'];
-        $projectContact['can_be_read_by_current_user'] = CRM_Volunteer_BAO_ProjectContact::contactIsReadable($projectContact['contact_id']);
       }
     }
   }
