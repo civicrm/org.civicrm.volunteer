@@ -250,10 +250,22 @@ class CRM_Volunteer_BAO_Project extends CRM_Volunteer_DAO_Project {
 
     $project->save();
 
+    // Prevent updates for unpermissioned users.
+    $hasEditVPC = CRM_Volunteer_Permission::check('edit volunteer project relationships');
+    $hasEditProfiles = CRM_Volunteer_Permission::check('edit volunteer registration profiles');
+    if ($op === CRM_Core_Action::UPDATE) {
+      if (!$hasEditVPC) {
+        unset($params['project_contacts']);
+      }
+      if (!$hasEditProfiles) {
+        unset($params['profiles']);
+      }
+    }
+
     // If updating, treat profile and project contact relationship params as
     // replacement data. Start by deleting existing relationships.
-    $updateVPC = ($op === CRM_Core_Action::UPDATE) && !empty($params['project_contacts']) && CRM_Volunteer_Permission::check('edit volunteer project relationships');
-    $updateProfiles = ($op === CRM_Core_Action::UPDATE) && !empty($params['profiles']) && CRM_Volunteer_Permission::check('edit volunteer registration profiles');
+    $updateVPC = ($op === CRM_Core_Action::UPDATE) && !empty($params['project_contacts']) && $hasEditVPC;
+    $updateProfiles = ($op === CRM_Core_Action::UPDATE) && !empty($params['profiles']) && $hasEditProfiles;
     if ($updateVPC) {
       civicrm_api3('VolunteerProjectContact', 'get', array(
         'options' => array('limit' => 0),
