@@ -299,6 +299,11 @@ class CRM_Volunteer_BAO_Project extends CRM_Volunteer_DAO_Project {
         if (is_array($profile['module_data'])) {
           $profile['module_data'] = json_encode($profile['module_data']);
         }
+
+        // Since we delete then recreate the ufjoins, drop the ID from the params
+        // or else CiviCRM tries to update a nonexistent record and fails silently
+        unset($profile['id']);
+
         civicrm_api3('UFJoin', 'create', $profile);
       }
     }
