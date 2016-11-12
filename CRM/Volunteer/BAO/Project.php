@@ -269,7 +269,12 @@ class CRM_Volunteer_BAO_Project extends CRM_Volunteer_DAO_Project {
         // CRM-17222: For compatibility with CiviCRM 4.6, we use our custom API.
         // When support for 4.6 is dropped, we can use core's api.UFJoin.delete.
         // 'api.UFJoin.delete' => array(),
-        'api.VolunteerProject.removeprofile' => array(),
+        'api.VolunteerProject.removeprofile' => array(
+          // For some reason, the ID param implicit in chained API calls is not
+          // getting passed, so we specify it manually. Since the API is
+          // deprecated, this short-term solution is good enough.
+          'id' => '$value.id',
+        ),
       ));
     }
 
