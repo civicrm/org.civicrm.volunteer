@@ -187,10 +187,10 @@ class CRM_Volunteer_BAO_Project extends CRM_Volunteer_DAO_Project {
     if (!array_key_exists('loc_block_id', $params)) {
       $params['loc_block_id'] = $defaults['loc_block_id'];
     }
-    if (!array_key_exists('profiles', $params)) {
+    if (!array_key_exists('profiles', $params) || !CRM_Volunteer_Permission::check('edit volunteer registration profiles')) {
       $params['profiles'] = $defaults['profiles'];
     }
-    if (!array_key_exists('project_contacts', $params)) {
+    if (!array_key_exists('project_contacts', $params) || !CRM_Volunteer_Permission::check('edit volunteer project relationships')) {
       $params['project_contacts'] = $defaults['relationships'];
     }
 
