@@ -161,13 +161,14 @@
     // If the user doesn't have this permission, there is no sense in keeping
     // profile data on the model or submitting it to the API.
     if (!CRM.checkPerm('edit volunteer registration profiles')) {
-      project.profiles = [];
+      delete project.profiles;
+    } else {
+      $.each(project.profiles, function (key, data) {
+        if(data.module_data && typeof(data.module_data) === "string") {
+          data.module_data = JSON.parse(data.module_data);
+        }
+      });
     }
-    $.each(project.profiles, function (key, data) {
-      if(data.module_data && typeof(data.module_data) === "string") {
-        data.module_data = JSON.parse(data.module_data);
-      }
-    });
 
     $scope.campaigns = campaigns;
     $scope.relationship_types = supporting_data.values.relationship_types;
