@@ -277,7 +277,8 @@ class CRM_Volunteer_Upgrader extends CRM_Volunteer_Upgrader_Base {
     $this->ctx->log->info('Applying update 1400 - creating volunteer contact subtype and related custom fields');
     $this->createVolunteerContactType();
     $volContactTypeCustomGroupID = $this->createVolunteerContactCustomGroup();
-    $this->createVolunteerContactCustomFields($volContactTypeCustomGroupID);
+    $customFieldId = $this->createVolunteerContactCustomFields($volContactTypeCustomGroupID);
+    _volunteer_update_slider_fields(array(CRM_Core_Action::ADD => $customFieldId));
     return TRUE;
   }
 
@@ -396,14 +397,20 @@ class CRM_Volunteer_Upgrader extends CRM_Volunteer_Upgrader_Base {
   }
 
   /**
-   * Unimplemented stub.
+   * Perform post-install tasks.
    *
-   * This method can be used for any post-install tasks. For example, if a step
-   * of your installation depends on accessing an entity that is itself
-   * created during the installation (e.g., a setting or a managed entity), do
-   * so here to avoid order of operation problems.
-   *
+   * See VOL-237. Avoid order of operation problems by assigning a value to the
+   * slider_widget_fields setting after the install, which is responsible for
+   * creating both the setting and the custom field whose ID is used in the
+   * initial value.
+   */
   public function postInstall() {
+    $customFieldId = civicrm_api3('customField', 'getvalue', array(
+      'custom_group_id' => 'Volunteer_Information',
+      'name' => 'camera_skill_level',
+      'return' => 'id',
+    ));
+    _volunteer_update_slider_fields(array(CRM_Core_Action::ADD => $customFieldId));
   }
 
   /**
@@ -629,6 +636,8 @@ class CRM_Volunteer_Upgrader extends CRM_Volunteer_Upgrader_Base {
 
   /**
    * @param int $customGroupID The group to which the field should be added
+   * @return String
+   *   Int-like string representing the ID of the just created custom field
    * @throws CRM_Core_Exception
    */
   public function createVolunteerContactCustomFields($customGroupID) {
@@ -688,7 +697,7 @@ class CRM_Volunteer_Upgrader extends CRM_Volunteer_Upgrader_Base {
       ));
     }
 
-    _volunteer_update_slider_fields(array(CRM_Core_Action::ADD => $customFieldId));
+    return $customFieldId;
   }
 
   /**
