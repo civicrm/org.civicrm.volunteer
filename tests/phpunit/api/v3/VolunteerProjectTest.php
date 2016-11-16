@@ -1,17 +1,13 @@
 <?php
 
+require_once __DIR__ . '/../../VolunteerTestAbstract.php';
+
 /**
  * Test class for Volunteer Project API - volunteer_project
+ *
+ * @group headless
  */
 class api_v3_VolunteerProjectTest extends VolunteerTestAbstract {
-
-  /**
-   * Clean table civicrm_volunteer_project
-   */
-  function setUp() {
-    $this->quickCleanup(array('civicrm_volunteer_project'));
-    parent::setUp();
-  }
 
   /**
    * Test simple create via API
@@ -24,8 +20,16 @@ class api_v3_VolunteerProjectTest extends VolunteerTestAbstract {
       'title' => 'Unit Testing for CiviVolunteer (How Meta)',
     );
 
-    $this->callAPIAndDocument('VolunteerProject', 'create', $params, __FUNCTION__, __FILE__);
+    $api = civicrm_api3('VolunteerProject', 'create', $params);
+    $this->assertTrue(is_numeric($api['id']));
+    $this->assertTrue($api['id'] > 0);
+
+    $project = new CRM_Volunteer_BAO_Project();
+    $project->copyValues($params);
+    $this->assertEquals(1, $project->find());
   }
+
+  // TESTS BELOW HAVE NOT BEEN PORTED TO PHPUnit_Framework_TestCase CLASS YET
 
   /**
    * Tests the project_contacts parameter to the create API, i.e., tests the
@@ -79,4 +83,5 @@ class api_v3_VolunteerProjectTest extends VolunteerTestAbstract {
 
     $this->callAPIAndDocument('VolunteerProject', 'get', array('id' => $project->id), __FUNCTION__, __FILE__);
   }
+
 }
