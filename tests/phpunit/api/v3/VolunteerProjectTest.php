@@ -9,6 +9,36 @@ require_once __DIR__ . '/../../VolunteerTestAbstract.php';
  */
 class api_v3_VolunteerProjectTest extends VolunteerTestAbstract {
 
+  private $contactIds;
+
+  public function setUp() {
+    parent::setUp();
+    $this->createContacts();
+  }
+
+  private function createContacts() {
+    $api = civicrm_api3('Contact', 'create', array(
+      'contact_type' => 'Individual',
+      'first_name' => '1',
+      'last_name' => 'Owner',
+    ));
+    $this->contactIds['owner1'] = $api['id'];
+
+    $api = civicrm_api3('Contact', 'create', array(
+      'contact_type' => 'Individual',
+      'first_name' => '1',
+      'last_name' => 'Manager',
+    ));
+    $this->contactIds['manager1'] = $api['id'];
+
+    $api = civicrm_api3('Contact', 'create', array(
+      'contact_type' => 'Individual',
+      'first_name' => '2',
+      'last_name' => 'Manager',
+    ));
+    $this->contactIds['manager2'] = $api['id'];
+  }
+
   /**
    * Test simple create via API
    */
@@ -29,34 +59,25 @@ class api_v3_VolunteerProjectTest extends VolunteerTestAbstract {
     $this->assertEquals(1, $project->find());
   }
 
-  // TESTS BELOW HAVE NOT BEEN PORTED TO PHPUnit_Framework_TestCase CLASS YET
-
   /**
    * Tests the project_contacts parameter to the create API, i.e., tests the
    * ability to specify at project creation the contacts related to the project.
    */
   function testCreateProjectWithContacts() {
-    $contactId1 = $this->individualCreate();
-    $contactId2 = $this->individualCreate();
-    $contactId3 = $this->individualCreate();
-
     $projectContacts = array(
-      'volunteer_owner' => array($contactId1),
-      'volunteer_manager' => array($contactId2, $contactId3),
+      'volunteer_owner' => array($this->contactIds['owner1']),
+      'volunteer_manager' => array($this->contactIds['manager1'], $this->contactIds['manager2']),
     );
 
     $params = array(
-      'entity_id' => 1,
-      'entity_table' => 'civicrm_event',
-      'is_active' => 1,
       'project_contacts' => $projectContacts,
       'title' => 'Unit Testing for CiviVolunteer (How Meta)',
     );
 
-    $this->callAPIAndDocument('VolunteerProject', 'create', $params, __FUNCTION__, __FILE__);
+    $project = civicrm_api3('VolunteerProject', 'create', $params);
 
     $bao = new CRM_Volunteer_BAO_ProjectContact();
-    $bao->project_id = 1;
+    $bao->project_id = $project['id'];
     $bao->relationship_type_id = CRM_Core_OptionGroup::getValue(CRM_Volunteer_BAO_ProjectContact::RELATIONSHIP_OPTION_GROUP, 'volunteer_owner', 'name');
     $this->assertEquals(count($projectContacts['volunteer_owner']), $bao->find());
 
@@ -68,20 +89,26 @@ class api_v3_VolunteerProjectTest extends VolunteerTestAbstract {
    * Test simple delete via API
    */
   function testDeleteProjectByID() {
-    $project = CRM_Core_DAO::createTestObject('CRM_Volunteer_BAO_Project');
+    $project = CRM_Core_DAO::createTestObject('CRM_Volunteer_BAO_Project', array('title' => 'Delete Me'));
     $this->assertObjectHasAttribute('id', $project, 'Failed to prepopulate Volunteer Project');
 
-    $this->callAPIAndDocument('VolunteerProject', 'delete', array('id' => $project->id), __FUNCTION__, __FILE__);
+    civicrm_api3('VolunteerProject', 'delete', array('id' => $project->id));
+
+    $projectSearch = new CRM_Volunteer_BAO_Project();
+    $params = array('id' => $project->id);
+    $projectSearch->copyValues($params);
+    $this->assertEquals(0, $project->find());
   }
 
   /**
    * Test simple get via API
    */
   function testGetProjectByID() {
-    $project = CRM_Core_DAO::createTestObject('CRM_Volunteer_BAO_Project');
+    $project = CRM_Core_DAO::createTestObject('CRM_Volunteer_BAO_Project', array('title' => 'Get Me'));
     $this->assertObjectHasAttribute('id', $project, 'Failed to prepopulate Volunteer Project');
 
-    $this->callAPIAndDocument('VolunteerProject', 'get', array('id' => $project->id), __FUNCTION__, __FILE__);
+    $result = civicrm_api3('VolunteerProject', 'get', array('id' => $project->id));
+    $this->assertEquals(1, $result['count']);
   }
 
 }
