@@ -9,11 +9,20 @@ require_once __DIR__ . '/../../VolunteerTestAbstract.php';
  */
 class api_v3_VolunteerProjectTest extends VolunteerTestAbstract {
 
+  private $campaignIds;
   private $contactIds;
+  private $defaults;
 
-  public function setUp() {
-    parent::setUp();
+  public function setUpHeadless() {
+    parent::setUpHeadless();
     $this->createContacts();
+    $this->createCampaigns();
+    $this->setProjectDefaults();
+  }
+
+  function setUp() {
+    parent::setUp();
+    $this->defaults = CRM_Volunteer_BAO_Project::composeDefaultSettingsArray();
   }
 
   private function createContacts() {
@@ -37,6 +46,24 @@ class api_v3_VolunteerProjectTest extends VolunteerTestAbstract {
       'last_name' => 'Manager',
     ));
     $this->contactIds['manager2'] = $api['id'];
+  }
+
+  private function createCampaigns() {
+    $api = civicrm_api3('Campaign', 'create', array(
+      'title' => 'first',
+    ));
+    $this->campaignIds['first'] = $api['id'];
+
+    $api = civicrm_api3('Campaign', 'create', array(
+      'title' => 'second',
+    ));
+    $this->campaignIds['second'] = $api['id'];
+  }
+
+  private function setProjectDefaults() {
+    civicrm_api3('Setting', 'create', array(
+      'volunteer_project_default_campaign' => $this->campaignIds['first'],
+    ));
   }
 
   /**
@@ -109,6 +136,279 @@ class api_v3_VolunteerProjectTest extends VolunteerTestAbstract {
 
     $result = civicrm_api3('VolunteerProject', 'get', array('id' => $project->id));
     $this->assertEquals(1, $result['count']);
+  }
+
+  private function compareProjectEntityFields($expected, $actual) {
+    foreach (array('is_active', 'campaign_id', 'loc_block_id') as $field) {
+      $this->assertEquals($expected[$field], $actual[$field]);
+    }
+  }
+
+  private function compareProfilesToDefaults($projectId) {
+    $projectProfiles = civicrm_api3('UFJoin', 'get', array(
+      'entity_id' => $projectId,
+      'entity_table' => 'civicrm_volunteer_project',
+    ));
+
+    $defaultProfileIds = array();
+    foreach ($this->defaults['profiles'] as $profile) {
+      $defaultProfileIds[] = $profile['uf_group_id'];
+    }
+    $defaultProfileIds = array_unique($defaultProfileIds);
+    sort($defaultProfileIds);
+
+    $createdProfileIds = array();
+    foreach ($projectProfiles['values'] as $p) {
+      $createdProfileIds[] = $p['uf_group_id'];
+    }
+    $createdProfileIds = array_unique($createdProfileIds);
+    sort($createdProfileIds);
+
+    $this->assertEquals($defaultProfileIds, $createdProfileIds);
+  }
+
+  private function compareContactsToDefaults($projectId) {
+    $api = civicrm_api3('VolunteerProjectContact', 'get', array(
+      'project_id' => $projectId,
+    ));
+
+    // Format the API result in the same manner as the defaults
+    $contacts = array();
+    foreach ($api['values'] as $value) {
+      $cid = (int) $value['contact_id'];
+      $relationshipTypeId = (int) $value['relationship_type_id'];
+
+      if (!array_key_exists($relationshipTypeId, $contacts)) {
+        $contacts[$relationshipTypeId] = array();
+      }
+
+      if (!in_array($cid, $contacts[$relationshipTypeId])) {
+        $contacts[$relationshipTypeId][] = $cid;
+      }
+    }
+
+    // remove empty arrays to facilitate comparison
+    $defaults = array();
+    foreach ($this->defaults['relationships'] as $relTypeId => $arr) {
+      if (!empty($arr)) {
+        $defaults[$relTypeId] = $arr;
+      }
+    }
+
+    $this->assertEquals($defaults, $contacts);
+  }
+
+  /**
+   * Action: create project with just a title. Expectation: defaults applied to
+   * nonspecified fields.
+   */
+  function testAdminProjectDefaultsDuringCreate() {
+    $api = civicrm_api3('VolunteerProject', 'create', array(
+      'check_permissions' => 1,
+      'title' => 'Unit Testing for CiviVolunteer (How Meta)',
+    ));
+
+    $bao = new CRM_Volunteer_BAO_Project();
+    $projectArr = $bao->retrieveByID($api['id'])->toArray();
+    $this->compareProjectEntityFields($this->defaults, $projectArr);
+
+    $this->compareContactsToDefaults($api['id']);
+    $this->compareProfilesToDefaults($api['id']);
+  }
+
+  /**
+   * Action: update a project, specifying only project contacts. Expectation:
+   * previously specified fields will not be overridden with defaults.
+   */
+  function testAdminProjectDefaultsDuringContactUpdate() {
+    // note that these params are different from the defaults
+    $createParams = array(
+      'campaign_id' => $this->campaignIds['second'],
+      'is_active' => 0,
+      'loc_block_id' => 1,
+      'title' => "Tedious, isn't it?",
+    );
+    $create = civicrm_api3('VolunteerProject', 'create', $createParams);
+
+    civicrm_api3('VolunteerProject', 'create', array(
+      'id' => $create['id'],
+      'project_contacts' => array(
+        'volunteer_owner' => array($this->contactIds['owner1']),
+        'volunteer_manager' => array($this->contactIds['manager1']),
+        'volunteer_beneficiary' => array($this->contactIds['manager2']),
+      ),
+    ));
+
+    $bao = new CRM_Volunteer_BAO_Project();
+    $projectArr = $bao->retrieveByID($create['id'])->toArray();
+    $this->compareProjectEntityFields($createParams, $projectArr);
+  }
+
+  /**
+   * Action: update a project, specifying only profile joins. Expectation:
+   * previously specified fields will not be overridden with defaults.
+   */
+  function testAdminProjectDefaultsDuringProfileUpdate() {
+    // note that these params are different from the defaults
+    $createParams = array(
+      'campaign_id' => $this->campaignIds['second'],
+      'is_active' => 0,
+      'loc_block_id' => 1,
+      'title' => "Tedious, isn't it?",
+    );
+    $create = civicrm_api3('VolunteerProject', 'create', $createParams);
+
+    civicrm_api3('VolunteerProject', 'create', array(
+      'id' => $create['id'],
+      'profiles' => array(
+        array(
+          'module_data' => array(
+            'audience' => 'both',
+          ),
+          'uf_group_id' => 3,
+          'weight' => 1,
+        ),
+      ),
+    ));
+
+    $bao = new CRM_Volunteer_BAO_Project();
+    $projectArr = $bao->retrieveByID($create['id'])->toArray();
+    $this->compareProjectEntityFields($createParams, $projectArr);
+  }
+
+  /**
+   * Action: update a project, specifying only own-entity fields (i.e., fields
+   * that are represented in civicrm_volunteer_project). Expectation: supplied
+   * values will not be overridden by defaults.
+   */
+  function testAdminProjectDefaultsDuringFieldUpdate() {
+    $create = civicrm_api3('VolunteerProject', 'create', array(
+      'title' => 'Sigue y sigue',
+    ));
+
+    // note that these params are different from the defaults
+    $updateParams = array(
+      'id' => $create['id'],
+      'campaign_id' => $this->campaignIds['second'],
+      'is_active' => 0,
+      'loc_block_id' => 1,
+    );
+    civicrm_api3('VolunteerProject', 'create', $updateParams);
+
+    $bao = new CRM_Volunteer_BAO_Project();
+    $projectArr = $bao->retrieveByID($create['id'])->toArray();
+    $this->compareProjectEntityFields($updateParams, $projectArr);
+  }
+
+  /**
+   * Action: create project with just a title. Expectation: defaults applied to
+   * nonspecified fields.
+   */
+  function testCoordProjectDefaultsDuringCreate() {
+    $this->setCoordPerms();
+    $this->testAdminProjectDefaultsDuringCreate();
+  }
+
+  /**
+   * Action: update project. Expectation: ancillary data is not dropped.
+   */
+  function testCoordProjectDefaultsDuringUpdate() {
+    $this->setCoordPerms();
+
+    $create = civicrm_api3('VolunteerProject', 'create', array(
+      'check_permissions' => 1,
+      'title' => 'Project Title',
+    ));
+
+    civicrm_api3('VolunteerProject', 'create', array(
+      'check_permissions' => 1,
+      'id' => $create['id'],
+      // change an arbitrary field
+      'is_active' => 0,
+    ));
+
+    $this->compareContactsToDefaults($create['id']);
+    $this->compareProfilesToDefaults($create['id']);
+  }
+
+  /**
+   * Action: create project, specifying ancillary data. Expectation: supplied
+   * ancillary data is ignored, defaults used.
+   */
+  function testCoordProjectPermsDuringCreate() {
+    $this->setCoordPerms();
+
+    $create = civicrm_api3('VolunteerProject', 'create', array(
+      'check_permissions' => 1,
+      'title' => 'Jolines',
+      'profiles' => array(
+        array(
+          'module_data' => array(
+            'audience' => 'both',
+          ),
+          'uf_group_id' => 3,
+          'weight' => 1,
+        ),
+      ),
+      'project_contacts' => array(
+        'volunteer_owner' => array($this->contactIds['owner1']),
+        'volunteer_manager' => array($this->contactIds['manager1']),
+        'volunteer_beneficiary' => array($this->contactIds['manager2']),
+      ),
+    ));
+
+    $this->compareContactsToDefaults($create['id']);
+    $this->compareProfilesToDefaults($create['id']);
+  }
+
+  /**
+   * Action: update project, specifying ancillary data. Expectation: supplied
+   * ancillary data is ignored and previously stored ancillary data remain
+   * unchanged.
+   */
+  function testCoordProjectPermsDuringUpdate() {
+    $this->setCoordPerms();
+
+    $create = civicrm_api3('VolunteerProject', 'create', array(
+      'check_permissions' => 1,
+      'title' => '¡Ya Basta!',
+    ));
+
+    $ucpdate = civicrm_api3('VolunteerProject', 'create', array(
+      'check_permissions' => 1,
+      'id' => $create['id'],
+      'profiles' => array(
+        array(
+          'module_data' => array(
+            'audience' => 'both',
+          ),
+          'uf_group_id' => 3,
+          'weight' => 1,
+        ),
+      ),
+      'project_contacts' => array(
+        'volunteer_owner' => array($this->contactIds['owner1']),
+        'volunteer_manager' => array($this->contactIds['manager1']),
+        'volunteer_beneficiary' => array($this->contactIds['manager2']),
+      ),
+    ));
+
+    $this->compareContactsToDefaults($create['id']);
+    $this->compareProfilesToDefaults($create['id']);
+  }
+
+  /**
+   * Notably missing from the list of a coordinator's (and perhaps we could have
+   * come up with a better name) permissions are:
+   *   - edit volunteer project relationships
+   *   - edit volunteer registration profiles
+   */
+  function setCoordPerms() {
+    CRM_Core_Config::singleton()->userPermissionClass->permissions = array(
+      'create volunteer projects',
+      'delete own volunteer projects',
+      'edit own volunteer projects',
+    );
   }
 
 }
