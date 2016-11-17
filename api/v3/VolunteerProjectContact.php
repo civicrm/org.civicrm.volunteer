@@ -46,7 +46,7 @@
  * @access public
  */
 function civicrm_api3_volunteer_project_contact_create($params) {
-  if (!$params['check_permissions'] || CRM_Volunteer_Permission::checkProjectPerms(CRM_Core_Action::UPDATE, $params['project_id'])) {
+  if (empty($params['check_permissions']) || CRM_Volunteer_Permission::checkProjectPerms(CRM_Core_Action::UPDATE, $params['project_id'])) {
     return _civicrm_api3_basic_create(_civicrm_api3_get_BAO(__FUNCTION__), $params);
   } else {
     return civicrm_api3_create_error(ts('You do not have permission to modify contacts for this project'));
@@ -131,7 +131,7 @@ function civicrm_api3_volunteer_project_contact_get($params) {
  */
 function civicrm_api3_volunteer_project_contact_delete($params) {
   $projectId = CRM_Core_DAO::getFieldValue("CRM_Volunteer_DAO_ProjectContact", $params['id'], "project_id");
-  if (!$params['check_permissions'] || CRM_Volunteer_Permission::checkProjectPerms(CRM_Core_Action::UPDATE, $projectId)) {
+  if (empty($params['check_permissions']) || CRM_Volunteer_Permission::checkProjectPerms(CRM_Core_Action::UPDATE, $projectId)) {
     return _civicrm_api3_basic_delete(_civicrm_api3_get_BAO(__FUNCTION__), $params);
   } else {
     return civicrm_api3_create_error(ts('You do not have permission to modify contacts for this project'));

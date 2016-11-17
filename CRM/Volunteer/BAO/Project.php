@@ -291,32 +291,36 @@ class CRM_Volunteer_BAO_Project extends CRM_Volunteer_DAO_Project {
     }
 
     if ($updateVPC || CRM_Core_Action::ADD) {
-      foreach ($params['project_contacts'] as $relationshipType => $contactIds) {
-        $contactIds = array_unique(self::validateContactFormat($contactIds));
-        foreach ($contactIds as $id) {
-          civicrm_api3('VolunteerProjectContact', 'create', array(
-            'contact_id' => $id,
-            'project_id' => $project->id,
-            'relationship_type_id' => $relationshipType,
-          ));
+      if (!empty($params['project_contacts'])) {
+        foreach ($params['project_contacts'] as $relationshipType => $contactIds) {
+          $contactIds = array_unique(self::validateContactFormat($contactIds));
+          foreach ($contactIds as $id) {
+            civicrm_api3('VolunteerProjectContact', 'create', array(
+              'contact_id' => $id,
+              'project_id' => $project->id,
+              'relationship_type_id' => $relationshipType,
+            ));
+          }
         }
       }
     }
     if ($updateProfiles || CRM_Core_Action::ADD) {
-      foreach ($params['profiles'] as $profile) {
-        $profile['is_active'] = 1;
-        $profile['module'] = "CiviVolunteer";
-        $profile['entity_table'] = "civicrm_volunteer_project";
-        $profile['entity_id'] = $project->id;
-        if (is_array($profile['module_data'])) {
-          $profile['module_data'] = json_encode($profile['module_data']);
+      if (!empty($params['profiles'])) {
+        foreach ($params['profiles'] as $profile) {
+          $profile['is_active'] = 1;
+          $profile['module'] = "CiviVolunteer";
+          $profile['entity_table'] = "civicrm_volunteer_project";
+          $profile['entity_id'] = $project->id;
+          if (is_array($profile['module_data'])) {
+            $profile['module_data'] = json_encode($profile['module_data']);
+          }
+
+          // Since we delete then recreate the ufjoins, drop the ID from the params
+          // or else CiviCRM tries to update a nonexistent record and fails silently
+          unset($profile['id']);
+
+          civicrm_api3('UFJoin', 'create', $profile);
         }
-
-        // Since we delete then recreate the ufjoins, drop the ID from the params
-        // or else CiviCRM tries to update a nonexistent record and fails silently
-        unset($profile['id']);
-
-        civicrm_api3('UFJoin', 'create', $profile);
       }
     }
 
