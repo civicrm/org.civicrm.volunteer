@@ -169,13 +169,45 @@ class CRM_Volunteer_BAO_Project extends CRM_Volunteer_DAO_Project {
   }
 
   /**
-   * Helper method to supply default values to a project missing properties.
+   * Strips invalid params, throws exception in case of unusable params.
+   *
+   * @param array $params
+   *   Params for self::create().
+   * @return array
+   *   Filtered params.
+   *
+   * @throws Exception
+   *   Via delegate.
+   */
+  private static function validateCreateParams(array $params) {
+    if (empty($params['id']) && empty($params['title'])) {
+      CRM_Core_Error::fatal('Not enough data to create volunteer project object.');
+    }
+
+    if (!CRM_Volunteer_Permission::check('edit volunteer registration profiles')) {
+      unset($params['profiles']);
+    }
+    if (!CRM_Volunteer_Permission::check('edit volunteer project relationships')) {
+      unset($params['project_contacts']);
+    }
+
+    return $params;
+  }
+
+  /**
+   * Helper method to supply default values to a new project missing properties.
    *
    * @param array $params
    *   Parameters for project create.
    * @return array
    */
-  public static function supplyDefaults(array $params) {
+  private static function supplyDefaults(array $params) {
+    // Defaults only matter in the case of a create; in the case of an edit we
+    // assume replacement params have been passed or that no change is desired.
+    if (!empty($params['id'])) {
+      return $params;
+    }
+
     $defaults = self::composeDefaultSettingsArray();
 
     if (!array_key_exists('campaign_id', $params)) {
@@ -187,10 +219,10 @@ class CRM_Volunteer_BAO_Project extends CRM_Volunteer_DAO_Project {
     if (!array_key_exists('loc_block_id', $params)) {
       $params['loc_block_id'] = $defaults['loc_block_id'];
     }
-    if (!array_key_exists('profiles', $params) || !CRM_Volunteer_Permission::check('edit volunteer registration profiles')) {
+    if (!array_key_exists('profiles', $params)) {
       $params['profiles'] = $defaults['profiles'];
     }
-    if (!array_key_exists('project_contacts', $params) || !CRM_Volunteer_Permission::check('edit volunteer project relationships')) {
+    if (!array_key_exists('project_contacts', $params)) {
       $params['project_contacts'] = $defaults['relationships'];
     }
 
@@ -234,38 +266,17 @@ class CRM_Volunteer_BAO_Project extends CRM_Volunteer_DAO_Project {
       return FALSE;
     }
 
-    // check required params
-    if (!self::dataExists($params)) {
-      CRM_Core_Error::fatal('Not enough data to create volunteer project object.');
-    }
-
-    // Defaults only matter in the case of a create; in the case of an edit we
-    // assume replacement params have been passed or that no change is desired.
-    if ($op === CRM_Core_Action::ADD) {
-      $params = self::supplyDefaults($params);
-    }
+    $params = self::validateCreateParams($params);
+    $params = self::supplyDefaults($params);
 
     $project = new CRM_Volunteer_BAO_Project();
     $project->copyValues($params);
-
     $project->save();
-
-    // Prevent updates for unpermissioned users.
-    $hasEditVPC = CRM_Volunteer_Permission::check('edit volunteer project relationships');
-    $hasEditProfiles = CRM_Volunteer_Permission::check('edit volunteer registration profiles');
-    if ($op === CRM_Core_Action::UPDATE) {
-      if (!$hasEditVPC) {
-        unset($params['project_contacts']);
-      }
-      if (!$hasEditProfiles) {
-        unset($params['profiles']);
-      }
-    }
 
     // If updating, treat profile and project contact relationship params as
     // replacement data. Start by deleting existing relationships.
-    $updateVPC = ($op === CRM_Core_Action::UPDATE) && !empty($params['project_contacts']) && $hasEditVPC;
-    $updateProfiles = ($op === CRM_Core_Action::UPDATE) && !empty($params['profiles']) && $hasEditProfiles;
+    $updateVPC = ($op === CRM_Core_Action::UPDATE) && array_key_exists('project_contacts', $params);
+    $updateProfiles = ($op === CRM_Core_Action::UPDATE) && array_key_exists('profiles', $params);
     if ($updateVPC) {
       civicrm_api3('VolunteerProjectContact', 'get', array(
         'options' => array('limit' => 0),
@@ -290,37 +301,33 @@ class CRM_Volunteer_BAO_Project extends CRM_Volunteer_DAO_Project {
       ));
     }
 
-    if ($updateVPC || CRM_Core_Action::ADD) {
-      if (!empty($params['project_contacts'])) {
-        foreach ($params['project_contacts'] as $relationshipType => $contactIds) {
-          $contactIds = array_unique(self::validateContactFormat($contactIds));
-          foreach ($contactIds as $id) {
-            civicrm_api3('VolunteerProjectContact', 'create', array(
-              'contact_id' => $id,
-              'project_id' => $project->id,
-              'relationship_type_id' => $relationshipType,
-            ));
-          }
+    if ($updateVPC || $op === CRM_Core_Action::ADD) {
+      foreach ($params['project_contacts'] as $relationshipType => $contactIds) {
+      $contactIds = array_unique(self::validateContactFormat($contactIds));
+        foreach ($contactIds as $id) {
+          civicrm_api3('VolunteerProjectContact', 'create', array(
+            'contact_id' => $id,
+            'project_id' => $project->id,
+            'relationship_type_id' => $relationshipType,
+          ));
         }
       }
     }
-    if ($updateProfiles || CRM_Core_Action::ADD) {
-      if (!empty($params['profiles'])) {
-        foreach ($params['profiles'] as $profile) {
-          $profile['is_active'] = 1;
-          $profile['module'] = "CiviVolunteer";
-          $profile['entity_table'] = "civicrm_volunteer_project";
-          $profile['entity_id'] = $project->id;
-          if (is_array($profile['module_data'])) {
-            $profile['module_data'] = json_encode($profile['module_data']);
-          }
-
-          // Since we delete then recreate the ufjoins, drop the ID from the params
-          // or else CiviCRM tries to update a nonexistent record and fails silently
-          unset($profile['id']);
-
-          civicrm_api3('UFJoin', 'create', $profile);
+    if ($updateProfiles || $op === CRM_Core_Action::ADD) {
+      foreach ($params['profiles'] as $profile) {
+        $profile['is_active'] = 1;
+        $profile['module'] = "CiviVolunteer";
+        $profile['entity_table'] = "civicrm_volunteer_project";
+        $profile['entity_id'] = $project->id;
+        if (is_array($profile['module_data'])) {
+          $profile['module_data'] = json_encode($profile['module_data']);
         }
+
+        // Since we delete then recreate the ufjoins, drop the ID from the params
+        // or else CiviCRM tries to update a nonexistent record and fails silently
+        unset($profile['id']);
+
+        civicrm_api3('UFJoin', 'create', $profile);
       }
     }
 
@@ -584,17 +591,6 @@ class CRM_Volunteer_BAO_Project extends CRM_Volunteer_DAO_Project {
     }
 
     return $projects[$id];
-  }
-
-  /**
-   * Check if there is absolute minimum of data to add the object.
-   *
-   * @param array $params
-   *   An associatve array of name/value pairs
-   * @return boolean
-   */
-  public static function dataExists($params) {
-    return (CRM_Utils_Array::value('id', $params) || CRM_Utils_Array::value('title', $params));
   }
 
   /**
