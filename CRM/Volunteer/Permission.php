@@ -73,7 +73,7 @@ class CRM_Volunteer_Permission extends CRM_Core_Permission {
       }
 
       // Ensure that checks for "edit own" pass if user has "edit all."
-      if ($v === 'edit own volunteer projects' && self::check('edit all volunteer projects')) {
+      if ($v === 'edit own volunteer projects' && CRM_Volunteer_Permission::check('edit all volunteer projects')) {
         $v = CRM_Core_Permission::ALWAYS_ALLOW_PERMISSION;
       }
     });
