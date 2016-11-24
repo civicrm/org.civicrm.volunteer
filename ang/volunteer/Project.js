@@ -360,10 +360,15 @@
      */
     saveProject = function() {
       if ($scope.validateProject()) {
-
+        if($scope.project.loc_block_id == "0" || $scope.project.loc_block_id == "") {
+          delete $scope.project.loc_block_id;
+        }
+	 
+        
         return crmApi('VolunteerProject', 'create', $scope.project).then(function(result) {
+          console.log('VolunteerProject.create resolved:', result);
           var projectId = result.values.id;
-
+          
           // VOL-140: For legacy reasons, a new flexible need should be created
           // for each project. Pretty sure we want to re-architect this soon.
           if ($scope.project.id === 0) {
@@ -373,15 +378,31 @@
               visibility_id: 'admin'
             });
           }
-
+          
           //Save the LocBlock
           if($scope.locBlockIsDirty) {
             $scope.locBlock.entity_id = projectId;
-            $scope.locBlock.id = result.values.loc_block_id;
-            crmApi('VolunteerProject', 'savelocblock', $scope.locBlock);
+            if (result.values.loc_block_id) {
+              $scope.locBlock.id = result.values.loc_block_id;
+            }
+            crmApi('VolunteerProject', 'savelocblock', $scope.locBlock).then(function(result) {
+              if(!$scope.project.loc_block_id) {
+                $scope.project.loc_block_id = result.values.id;
+                var tmp_project = {
+                  id: $scope.project.id,
+                  loc_block_id: result.values.id,
+                };
+                return crmApi('VolunteerProject', 'create', tmp_project).then(null,function(error) {
+                  console.log(tmp_project);
+                  crmUiAlert({text: error.error_message, title: ts('Error saving new location to project'), type: 'error'});
+                });
+              }
+            });
           }
-
+          
           return projectId;
+        },function(error) {
+          crmUiAlert({text: error.error_message, title: ts('Error saving project'), type: 'error'});
         });
       } else {
         return $q.reject(false);
