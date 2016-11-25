@@ -360,13 +360,11 @@
      */
     saveProject = function() {
       if ($scope.validateProject()) {
-        if($scope.project.loc_block_id == "0" || $scope.project.loc_block_id == "") {
+        if($scope.project.loc_block_id == "0") {
           delete $scope.project.loc_block_id;
         }
-	 
-        
+
         return crmApi('VolunteerProject', 'create', $scope.project).then(function(result) {
-          console.log('VolunteerProject.create resolved:', result);
           var projectId = result.values.id;
           
           // VOL-140: For legacy reasons, a new flexible need should be created
@@ -380,20 +378,18 @@
           }
           
           //Save the LocBlock
-          if($scope.locBlockIsDirty) {
+          if($scope.locBlockIsDirty && $scope.project.loc_block_id != "") {
             $scope.locBlock.entity_id = projectId;
             if (result.values.loc_block_id) {
               $scope.locBlock.id = result.values.loc_block_id;
             }
             crmApi('VolunteerProject', 'savelocblock', $scope.locBlock).then(function(result) {
               if(!$scope.project.loc_block_id) {
-                $scope.project.loc_block_id = result.values.id;
                 var tmp_project = {
-                  id: $scope.project.id,
-                  loc_block_id: result.values.id,
+                  id: projectId,
+                  loc_block_id: result.values,
                 };
-                return crmApi('VolunteerProject', 'create', tmp_project).then(null,function(error) {
-                  console.log(tmp_project);
+                return crmApi('VolunteerProject', 'create', tmp_project).catch(function(error) {
                   crmUiAlert({text: error.error_message, title: ts('Error saving new location to project'), type: 'error'});
                 });
               }
