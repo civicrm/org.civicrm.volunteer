@@ -360,6 +360,12 @@
      */
     saveProject = function() {
       if ($scope.validateProject()) {
+        // Force location block ID to undefined for new or no location.
+        if(!$scope.project.loc_block_id && $scope.locBlock.id) {
+          delete $scope.locBlock.id;
+        }
+
+        // Do not send a 0 loc_block_id to VolunteerProject.create - avoid DB constraint failure.
         if($scope.project.loc_block_id == "0") {
           delete $scope.project.loc_block_id;
         }
@@ -380,8 +386,8 @@
           //Save the LocBlock
           if($scope.locBlockIsDirty && $scope.project.loc_block_id != "") {
             $scope.locBlock.entity_id = projectId;
-            if (result.values.loc_block_id) {
-              $scope.locBlock.id = result.values.loc_block_id;
+            if ($scope.project.loc_block_id) {
+              $scope.locBlock.id = $scope.project.loc_block_id;
             }
             crmApi('VolunteerProject', 'savelocblock', $scope.locBlock).then(function(result) {
               if(!$scope.project.loc_block_id) {
