@@ -309,7 +309,7 @@
       return valid;
     };
 
-    $scope.validateProject = function() {
+    $scope.validate = function() {
       var valid = true;
       var relationshipsValid = validateRelationships();
 
@@ -355,42 +355,68 @@
     };
 
     /**
-     * Helper function which actually saves a form submission.
+     * Helper function which serves as a harness for the API calls which
+     * constitute form submission.
      *
      * @returns {Mixed} Returns project ID on success, boolean FALSE on failure.
      */
-    saveProject = function() {
-      if ($scope.validateProject()) {
-
-        return crmApi('VolunteerProject', 'create', $scope.project).then(function(result) {
-          var projectId = result.values.id;
-
-          // VOL-140: For legacy reasons, a new flexible need should be created
-          // for each project. Pretty sure we want to re-architect this soon.
-          if ($scope.project.id === 0) {
-            crmApi('VolunteerNeed', 'create', {
-              is_flexible: 1,
-              project_id: projectId,
-              visibility_id: 'admin'
-            });
-          }
-
-          //Save the LocBlock
-          if($scope.locBlockIsDirty) {
-            $scope.locBlock.entity_id = projectId;
-            $scope.locBlock.id = result.values.loc_block_id;
-            crmApi('VolunteerProject', 'savelocblock', $scope.locBlock);
-          }
-
-          return projectId;
-        });
+    doSave = function() {
+      if ($scope.validate()) {
+        if ($scope.locBlockIsDirty) {
+          // pass an ID only if we are updating an existing locblock
+          $scope.locBlock.id = $scope.project.loc_block_id === "0" ? null : $scope.project.loc_block_id;
+          return crmApi('VolunteerProject', 'savelocblock', $scope.locBlock).then(
+            // success
+            function (result) {
+              $scope.project.loc_block_id = result.id;
+              return _saveProject();
+            },
+            // failure
+            function(result) {
+              crmUiAlert({text: ts('Failed to save location details. Project could not be saved.'), title: ts('Error'), type: 'error'});
+              console.log('api.VolunteerProject.savelocblock failed with the following message: ' + result.error_message);
+            }
+          );
+        } else {
+          return _saveProject();
+        }
       } else {
         return $q.reject(false);
       }
     };
 
+    /**
+     * Helper function which saves a volunteer project and creates a flexible
+     * need if appropriate.
+     *
+     * @returns {Mixed} Returns project ID on success.
+     */
+    _saveProject = function() {
+      // Zero is a bit of a magic number the form uses to connote creation of
+      // a new location; this value should never be passed to the API.
+      if ($scope.project.loc_block_id === "0") {
+        delete $scope.project.loc_block_id;
+      }
+
+      return crmApi('VolunteerProject', 'create', $scope.project).then(function(result) {
+        var projectId = result.values.id;
+
+        // VOL-140: For legacy reasons, a new flexible need should be created
+        // for each project. Pretty sure we want to re-architect this soon.
+        if ($scope.project.id === 0) {
+          crmApi('VolunteerNeed', 'create', {
+            is_flexible: 1,
+            project_id: projectId,
+            visibility_id: 'admin'
+          });
+        }
+
+        return projectId;
+      });
+    };
+
     $scope.saveAndDone = function () {
-      saveProject().then(function (projectId) {
+      doSave().then(function (projectId) {
         if (projectId) {
           crmUiAlert({text: ts('Changes saved successfully'), title: ts('Saved'), type: 'success'});
           $location.path("/volunteer/manage");
@@ -399,7 +425,7 @@
     };
 
     $scope.saveAndNext = function() {
-      saveProject().then(function(projectId) {
+      doSave().then(function(projectId) {
         if (projectId) {
           crmUiAlert({text: ts('Changes saved successfully'), title: ts('Saved'), type: 'success'});
           saveAndNextCallback(projectId);
