@@ -358,11 +358,19 @@
      * Helper function which serves as a harness for the API calls which
      * constitute form submission.
      *
+     * TODO: The value of loc_block_id is a little too magical. "" means the
+     * location is empty. "0" means the location is new, i.e., about to be
+     * created. Any other int-like string represents the ID of an existing
+     * location. This magic could perhaps be encapsulated in a function whose
+     * job it is to return an operation: "create" or "update."
+     *
      * @returns {Mixed} Returns project ID on success, boolean FALSE on failure.
      */
     doSave = function() {
       if ($scope.validate()) {
-        if ($scope.locBlockIsDirty) {
+        // When the loc block ID is an empty string, it indicates that the
+        // location is blank. Thus, there is no loc block to create/edit.
+        if ($scope.locBlockIsDirty && $scope.project.loc_block_id !== "") {
           // pass an ID only if we are updating an existing locblock
           $scope.locBlock.id = $scope.project.loc_block_id === "0" ? null : $scope.project.loc_block_id;
           return crmApi('VolunteerProject', 'savelocblock', $scope.locBlock).then(
