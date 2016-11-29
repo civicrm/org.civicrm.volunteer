@@ -361,10 +361,19 @@
      */
     saveProject = function() {
       if ($scope.validateProject()) {
+        // Force location block ID to undefined for new or no location.
+        if(!$scope.project.loc_block_id && $scope.locBlock.id) {
+          delete $scope.locBlock.id;
+        }
+
+        // Do not send a 0 loc_block_id to VolunteerProject.create - avoid DB constraint failure.
+        if($scope.project.loc_block_id == "0") {
+          delete $scope.project.loc_block_id;
+        }
 
         return crmApi('VolunteerProject', 'create', $scope.project).then(function(result) {
           var projectId = result.values.id;
-
+          
           // VOL-140: For legacy reasons, a new flexible need should be created
           // for each project. Pretty sure we want to re-architect this soon.
           if ($scope.project.id === 0) {
@@ -374,15 +383,29 @@
               visibility_id: 'admin'
             });
           }
-
+          
           //Save the LocBlock
-          if($scope.locBlockIsDirty) {
+          if($scope.locBlockIsDirty && $scope.project.loc_block_id != "") {
             $scope.locBlock.entity_id = projectId;
-            $scope.locBlock.id = result.values.loc_block_id;
-            crmApi('VolunteerProject', 'savelocblock', $scope.locBlock);
+            if ($scope.project.loc_block_id) {
+              $scope.locBlock.id = $scope.project.loc_block_id;
+            }
+            crmApi('VolunteerProject', 'savelocblock', $scope.locBlock).then(function(result) {
+              if(!$scope.project.loc_block_id) {
+                var tmp_project = {
+                  id: projectId,
+                  loc_block_id: result.values,
+                };
+                return crmApi('VolunteerProject', 'create', tmp_project).catch(function(error) {
+                  crmUiAlert({text: error.error_message, title: ts('Error saving new location to project'), type: 'error'});
+                });
+              }
+            });
           }
-
+          
           return projectId;
+        },function(error) {
+          crmUiAlert({text: error.error_message, title: ts('Error saving project'), type: 'error'});
         });
       } else {
         return $q.reject(false);
