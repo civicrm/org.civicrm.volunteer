@@ -1,52 +1,75 @@
 <?php
 
-require_once 'CiviTest/CiviUnitTestCase.php';
+use Civi\Test\HeadlessInterface;
+use Civi\Test\HookInterface;
+use Civi\Test\TransactionalInterface;
 
 /**
  * Abstract class for Volunteer tests
  */
-abstract class VolunteerTestAbstract extends CiviUnitTestCase {
+abstract class VolunteerTestAbstract extends \PHPUnit_Framework_TestCase implements HeadlessInterface, HookInterface, TransactionalInterface {
 
   /**
-   * Ensure that, if the database is repopulated, CiviVolunteer's install
-   * operations are run, adding custom option group, activity fields, etc. to
-   * the testing DB. NOTE: Installation/alteration of tables not managed by
-   * core (e.g., civicrm_volunteer_project) should not be reproduced here.
+   * The ID of a contact mocked as the acting user.
    *
-   * @param type $perClass
-   * @param type $object
-   * @return boolean
+   * Some volunteer code checks to see who the logged in user is -- e.g., to
+   * fetch related contacts or owned projects. Tests will fail if
+   * CRM_Core_Session::getLoggedInContactID() doesn't return a valid ID, so we
+   * want to make sure to mock this.
+   *
+   * NOTE: To access this value, use getter getMockedContactId() instead of
+   * accessing the property directly.
+   *
+   * NOTE: We expect that permissions management will be an unrelated process to
+   * this mocking.
+   *
+   * @var int
    */
-  protected static function _populateDB($perClass = FALSE, &$object = NULL) {
-    if (!parent::_populateDB($perClass, $object)) {
-      return FALSE;
+  protected $mockedContactId;
+  protected $mockedContactParams = array(
+    'contact_type' => 'Individual',
+    'first_name' => 'Logged',
+    'last_name' => 'In',
+  );
+
+  public function setUpHeadless() {
+    // Civi\Test has many helpers, like install(), uninstall(), sql(), and sqlFile().
+    // See: https://github.com/civicrm/org.civicrm.testapalooza/blob/master/civi-test.md
+    return \Civi\Test::headless()
+            ->installMe(__DIR__)
+            ->callback(function() {
+              $mockedContact = \CRM_Core_DAO::createTestObject('CRM_Contact_DAO_Contact', $this->mockedContactParams);
+              $this->mockedContactId = $mockedContact->id;
+            }, 'mockContact')
+            ->callback(function() {
+              // This is a hack that we hope to remove once we figure out why most settings
+              // are nonexistent following installation.
+              $params = array();
+              $extSettings = include(__DIR__ . '/../../settings/volunteer.setting.php');
+              foreach ($extSettings as $setting) {
+                $params[$setting['name']] = $setting['default'];
+              }
+              CRM_Core_BAO_Setting::setItems($params);
+            }, 'importSettings')
+            ->apply();
+  }
+
+  function setUp() {
+    // Apparently actions performed in setUpHeadless take place in a different
+    // session, so our mocked contact's ID needs to be added into the session
+    // before each test.
+    \CRM_Core_Session::singleton()->set('userID', $this->getMockedContactId());
+  }
+
+  function getMockedContactId() {
+    if (empty($this->mockedContactId)) {
+      $params = $this->mockedContactParams;
+      $params['return'] = 'id';
+      // cast as int for compatibility with \CRM_Core_DAO::createTestObject
+      $this->mockedContactId = (int) civicrm_api3('Contact', 'getvalue', $params);
     }
 
-    // Code adapted from CRM_Volunteer_Upgrader::install().
-    $upgrader = new CRM_Volunteer_Upgrader('org.civicrm.volunteer', dirname(__FILE__) . '/../../');
-
-    $activityTypeId = $upgrader->createActivityType(CRM_Volunteer_BAO_Assignment::CUSTOM_ACTIVITY_TYPE);
-    $smarty = CRM_Core_Smarty::singleton();
-    $smarty->assign('volunteer_custom_activity_type_name', CRM_Volunteer_BAO_Assignment::CUSTOM_ACTIVITY_TYPE);
-    $smarty->assign('volunteer_custom_group_name', CRM_Volunteer_BAO_Assignment::CUSTOM_GROUP_NAME);
-    $smarty->assign('volunteer_custom_option_group_name', CRM_Volunteer_BAO_Assignment::ROLE_OPTION_GROUP);
-    $smarty->assign('volunteer_activity_type_id', $activityTypeId);
-
-    $customIDs = $upgrader->findCustomGroupValueIDs();
-    $smarty->assign('customIDs', $customIDs);
-
-    $upgrader->executeCustomDataTemplateFile('volunteer-customdata.xml.tpl');
-
-    $upgrader->createVolunteerActivityStatus();
-
-    $upgrader->createVolunteerContactType();
-    $volContactTypeCustomGroupID = $upgrader->createVolunteerContactCustomGroup();
-    $upgrader->createVolunteerContactCustomFields($volContactTypeCustomGroupID);
-
-    $upgrader->installCommendationActivityType();
-
-    $upgrader->installProjectRelationships();
-
-    return TRUE;
+    return $this->mockedContactId;
   }
+
 }
