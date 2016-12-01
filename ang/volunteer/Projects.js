@@ -265,6 +265,18 @@
         project.selected = toggle;
       });
     };
+
+    /**
+     * Reset the checkboxes whenever the search criteria are changed. Eliminates
+     * the possibility of accidental deletions by ensuring that selections for
+     * bulk operations are always visible.
+     */
+    $scope.$watch('searchParams', function() {
+      $scope.allSelected = false;
+      $.each($scope.projects, function(index, project) {
+        project.selected = false;
+      });
+    }, true);
   });
 
 })(angular, CRM.$, CRM._);
