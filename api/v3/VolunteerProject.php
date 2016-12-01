@@ -270,7 +270,12 @@ function civicrm_api3_volunteer_project_savelocblock($params) {
     $params['phone']['location_type_id'] = 2;
   }
 
-  // TODO: Check permissions on the project in question
+  // Permissions check is not required; the purpose of this wrapper API is to
+  // allow CiviVolunteer to determine whether the user should be able to create
+  // a locblock. This is managed via the permissions checks around
+  // api.volunteerProject.savelocblock. TODO: Check permissions on the project
+  // in question in addition to general permission.
+  $params['check_permissions'] = 0;
   $location = civicrm_api3('LocBlock', 'create', $params);
   return civicrm_api3_create_success($location, $params, "VolunteerProject", "savelocblock");
 }
