@@ -232,9 +232,19 @@
         $scope.batchActions[$scope.batchAction].run();
       }
     };
+
+    /**
+     * Keeps the "select all" checkbox synced with the project checkboxes.
+     *
+     * Additions to/subtractions from the selected set will cause the "select
+     * all" checkbox to be checked or unchecked as appropriate.
+     */
     $scope.watchSelected = function() {
       var all = true;
-      $.each($scope.projects, function(index, project) {
+      var filter = $filter('filter');
+      var projectsInView = filter($scope.projects, $scope.searchParams);
+
+      $.each(projectsInView, function(index, project) {
         all = (all && project.selected);
       });
       $scope.allSelected = all;
