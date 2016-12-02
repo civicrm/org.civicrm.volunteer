@@ -76,10 +76,6 @@ class CRM_Volunteer_BAO_Need extends CRM_Volunteer_DAO_Need {
       return FALSE;
     }
 
-    if (empty($params)) {
-      return;
-    }
-
     // VOL-269: Do not allow creation of more than one flexible need per project.
     if ($need->is_flexible) {
       $existingNeedId = CRM_Volunteer_BAO_Project::getFlexibleNeedID($projectId);
