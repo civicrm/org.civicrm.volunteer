@@ -273,6 +273,17 @@ class CRM_Volunteer_BAO_Project extends CRM_Volunteer_DAO_Project {
     $project->copyValues($params);
     $project->save();
 
+    // VOL-269: create flexible need during project creation
+    if ($op === CRM_Core_Action::ADD) {
+      CRM_Volunteer_BAO_Need::create(array(
+        // Save an unnecessary lookup for a perms check that will always succeed.
+        'check_permissions' => FALSE,
+        'is_flexible' => TRUE,
+        'project_id' => $project->id,
+        'visibility_id' => 'admin',
+      ));
+    }
+
     // If updating, treat profile and project contact relationship params as
     // replacement data. Start by deleting existing relationships.
     $updateVPC = ($op === CRM_Core_Action::UPDATE) && array_key_exists('project_contacts', $params);
