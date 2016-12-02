@@ -218,11 +218,11 @@
             .on('crmConfirm:yes', function() {
               $.each($scope.projects, function (index, project) {
                 if (project.selected) {
-                  crmApi("VolunteerProject", "delete", {id: project.id}, true);
-                  delete $scope.projects[index];
+                  crmApi("VolunteerProject", "delete", {id: project.id}, true).then(function() {
+                    $scope.projects.splice(index, 1);
+                  });
                 }
               });
-              $scope.$apply();
             });
         }
       }
