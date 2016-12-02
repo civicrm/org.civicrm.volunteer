@@ -56,7 +56,7 @@
     }
   );
 
-  angular.module('volunteer').controller('VolunteerProjects', function ($scope, crmApi, crmStatus, crmUiHelp, projectData, $location, volunteerBackbone, beneficiaries, campaigns, $window) {
+  angular.module('volunteer').controller('VolunteerProjects', function ($scope, $filter, crmApi, crmStatus, crmUiHelp, projectData, $location, volunteerBackbone, beneficiaries, campaigns, $window) {
     // The ts() and hs() functions help load strings for this module.
     var ts = $scope.ts = CRM.ts('org.civicrm.volunteer');
     var hs = $scope.hs = crmUiHelp({file: 'CRM/volunteer/Projects'}); // See: templates/CRM/volunteer/Projects.hlp
@@ -232,24 +232,51 @@
         $scope.batchActions[$scope.batchAction].run();
       }
     };
+
+    /**
+     * Keeps the "select all" checkbox synced with the project checkboxes.
+     *
+     * Additions to/subtractions from the selected set will cause the "select
+     * all" checkbox to be checked or unchecked as appropriate.
+     */
     $scope.watchSelected = function() {
       var all = true;
-      $.each($scope.projects, function(index, project) {
+      var filter = $filter('filter');
+      var projectsInView = filter($scope.projects, $scope.searchParams);
+
+      $.each(projectsInView, function(index, project) {
         all = (all && project.selected);
       });
       $scope.allSelected = all;
     };
+
+    /**
+     * Handles clicks of the "select all" checkbox.
+     *
+     * When clicked, all visible projects are selected. When unclicked, they are
+     * deselected.
+     */
     $scope.selectAll = function() {
-      if($scope.allSelected) {
-        $.each($scope.projects, function(index, project) {
-          project.selected = true;
-        });
-      } else {
-        $.each($scope.projects, function(index, project) {
-          project.selected = false;
-        });
-      }
+      var filter = $filter('filter');
+      var projectsInView = filter($scope.projects, $scope.searchParams);
+      var toggle = $scope.allSelected;
+
+      $.each(projectsInView, function(index, project) {
+        project.selected = toggle;
+      });
     };
+
+    /**
+     * Reset the checkboxes whenever the search criteria are changed. Eliminates
+     * the possibility of accidental deletions by ensuring that selections for
+     * bulk operations are always visible.
+     */
+    $scope.$watch('searchParams', function() {
+      $scope.allSelected = false;
+      $.each($scope.projects, function(index, project) {
+        project.selected = false;
+      });
+    }, true);
   });
 
 })(angular, CRM.$, CRM._);
