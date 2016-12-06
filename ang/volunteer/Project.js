@@ -406,9 +406,17 @@
         delete $scope.project.loc_block_id;
       }
 
-      return crmApi('VolunteerProject', 'create', $scope.project).then(function(result) {
-        return result.values.id;
-      });
+      return crmApi('VolunteerProject', 'create', $scope.project).then(
+        function(success) {
+          return success.values.id;
+        },
+        function(fail) {
+          var text = ts('Your submission was not saved. Resubmitting the form is unlikely to resolve this problem. Please contact a system administrator.');
+          var title = ts('A technical problem has occurred');
+          crmUiAlert({text: text, title: title, type: 'error'});
+          console.log('api.VolunteerProject.create failed with the following message: ' + fail.error_message);
+        }
+      );
     };
 
     $scope.saveAndDone = function () {
