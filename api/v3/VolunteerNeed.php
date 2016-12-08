@@ -186,3 +186,29 @@ function civicrm_api3_volunteer_need_delete($params) {
   return _civicrm_api3_basic_delete('CRM_Volunteer_BAO_Need', $params);
 }
 
+/**
+ * Get parameters for Volunteer Need list.
+ *
+ * @see _civicrm_api3_generic_getlist_params
+ *
+ * @param array $request
+ *   API request.
+ */
+function _civicrm_api3_volunteer_need_getlist_params(&$request) {
+  $fieldsToReturn = array(
+    'role_label',
+    'role_id',
+    'display_time',
+    'project_id',
+    'start_time',
+    'duration',
+    'is_flexible',
+    'visibility_id',
+    'quantity',
+  );
+  $request['params']['return'] = array_unique(array_merge($fieldsToReturn, $request['extra']));
+  $request['params']['options']['sort'] = 'start_time DESC';
+  $request['params'] += array(
+    'is_active' => 1,
+  );
+}
