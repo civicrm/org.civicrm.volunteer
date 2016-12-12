@@ -95,6 +95,9 @@ function civicrm_api3_volunteer_need_get($params) {
         $need['role_label'] = CRM_Volunteer_BAO_Need::getFlexibleRoleLabel();
         $need['role_description'] = NULL;
       }
+      if (!empty($need['project_id'])) {
+        $need['project_title'] = CRM_Core_Pseudoconstant::getLabel('CRM_Volunteer_BAO_Need', 'project_id', $need['project_id']);;
+      }
     }
   }
   return $result;
@@ -185,4 +188,3 @@ function civicrm_api3_volunteer_need_getsearchresult($params) {
 function civicrm_api3_volunteer_need_delete($params) {
   return _civicrm_api3_basic_delete('CRM_Volunteer_BAO_Need', $params);
 }
-

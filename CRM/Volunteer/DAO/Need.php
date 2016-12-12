@@ -185,6 +185,17 @@ class CRM_Volunteer_DAO_Need extends CRM_Core_DAO
           'description' => 'FK to civicrm_volunteer_project table which contains entity_table + entity for each volunteer project (initially civicrm_event + eventID).',
           'required' => false,
           'FKClassName' => 'CRM_Volunteer_DAO_Project',
+          'title' => ts('Project') ,
+          'import' => TRUE,
+          'where' => 'civicrm_volunteer_need.project_id',
+          'headerPattern' => '',
+          'dataPattern' => '',
+          'export' => TRUE,
+          'pseudoconstant' => array(
+            'table' => 'civicrm_volunteer_project',
+            'keyColumn' => 'id',
+            'labelColumn' => 'title',
+          )
         ) ,
         'start_time' => array(
           'name' => 'start_time',
