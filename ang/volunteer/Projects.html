@@ -1,4 +1,5 @@
 <div class="crm-container">
+  <!-- TODO for VOL-267: Remove beneficiaries debugging block. -->
   <div crm-ui-debug="beneficiaries"></div>
   <div crm-ui-debug="campaigns"></div>
   <div crm-ui-debug="projects"></div>
@@ -33,6 +34,7 @@
               <input crm-ui-id="volProjectSearchForm.title" ng-model="searchParams.title" />
             </div>
             <div class="crm-vol-field crm-vol-field-projects-search-beneficiaries" crm-ui-field="{name: 'volProjectSearchForm.beneficiary', title: ts('Beneficiary')}">
+              <!-- TODO for VOL-267: Replace this with an entityRef widget. -->
               <select class="big crm-form-select crm-vol-beneficiary" crm-ui-select="{placeholder: ts('Filter by Beneficiary'), allowClear:true}"
                       ng-options="key as value.display_name for (key , value) in beneficiaries" ng-model="searchParams.beneficiaries">
                 <option />
