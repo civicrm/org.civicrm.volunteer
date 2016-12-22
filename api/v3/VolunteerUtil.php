@@ -10,6 +10,20 @@
  */
 
 /**
+ * @deprecated api notice
+ * @return array
+ *   Array of deprecated actions
+ */
+function _civicrm_api3_volunteer_util_deprecation() {
+  return array(
+    'getbeneficiaries' => 'VolunteerUtil API "getbeneficiaries" action is '
+    . 'deprecated in favor of api.VolunteerProjectContacts.getList. Set the '
+    . '"params" parameter to array("relationship_type_id" => "volunteer_beneficiary") '
+    . 'to replace calls to api.VolunteerUtil.getbeneficiaries.',
+  );
+}
+
+/**
  * This function will return the needed pieces to load up the backbone/
  * marionette project backend from within an angular page.
  *
@@ -171,6 +185,10 @@ function civicrm_api3_volunteer_util_getsupportingdata($params) {
 
 /**
  * This method returns a list of beneficiaries
+ *
+ * @deprecated since version 2.3
+ *   api.VolunteerProjectContacts.getList serves the same purpose and is both
+ *   more efficient more versatile.
  *
  * @param array $params
  *   Not presently used.
