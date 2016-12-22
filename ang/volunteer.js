@@ -1,4 +1,4 @@
-(function(angular, $, _) {
+(function(angular, $, _, crmVolAngPath) {
   // Declare a list of dependencies.
   angular
     .module('volunteer', [
@@ -318,4 +318,18 @@
       };
     });
 
-})(angular, CRM.$, CRM._);
+})(angular, CRM.$, CRM._,
+  // This function allows specification of templateUrls that are relative to this
+  // file, since the path relative from root will depend on where the extensions
+  // directory is configured.
+  // Inspired by: http://stackoverflow.com/a/21103831.
+  (function () {
+    var scripts = document.getElementsByTagName("script");
+    var currentScriptPath = scripts[scripts.length - 1].src;
+    var pathParts = currentScriptPath.split('/');
+    // get rid of the file name
+    pathParts.pop();
+    var crmVolAngPath = pathParts.join('/');
+    return crmVolAngPath;
+  })()
+);
