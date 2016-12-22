@@ -147,3 +147,24 @@ function civicrm_api3_volunteer_project_contact_delete($params) {
 function _civicrm_api3_volunteer_project_contact_delete_spec(&$params) {
   $params['id']['api.required'] = 1;
 }
+
+/**
+ * Set the default getList behavior to return a list of contact IDs labeled by
+ * contact sort names.
+ *
+ * @param array $request
+ *   The parameters passed to the sub-API call (i.e., the parameters to the get
+ *   call underlying the getList call). These are passed to getList in
+ *   $params['params'].
+ * @return array
+ *   Despite the fact that $request represents a subset of the parameters passed
+ *   to getList, the return of this function is merged with the getList params
+ *   in their entirety.
+ */
+function _civicrm_api3_volunteer_project_contact_getlist_defaults(&$request) {
+  return array(
+    'id_field' => 'contact_id',
+    'label_field' => 'contact_id.sort_name',
+    'search_field' => 'contact_id.sort_name',
+  );
+}
