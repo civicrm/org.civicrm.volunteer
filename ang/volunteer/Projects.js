@@ -8,6 +8,8 @@
         // If you need to look up data when opening the page, list it out
         // under "resolve".
         resolve: {
+          // TODO for VOL-276: Factor this out. api.VolunteerUtil.getbeneficiaries
+          // is deprecated in favor of api.VolunteerProjectContact.getList.
           beneficiaries: function (crmApi) {
             return crmApi('VolunteerUtil', 'getbeneficiaries').then(function(data) {
               return data.values;
@@ -56,6 +58,7 @@
     }
   );
 
+  // TODO for VOL-276: Remove reference to beneficiaries object, based on deprecated API.
   angular.module('volunteer').controller('VolunteerProjects', function ($scope, $filter, crmApi, crmStatus, crmUiHelp, projectData, $location, volunteerBackbone, beneficiaries, campaigns, $window) {
     // The ts() and hs() functions help load strings for this module.
     var ts = $scope.ts = CRM.ts('org.civicrm.volunteer');
@@ -67,6 +70,7 @@
     $scope.projects = projectData;
     $scope.batchAction = "";
     $scope.allSelected = false;
+    // TODO for VOL-276: Remove reference to beneficiaries object, based on deprecated API.
     $scope.beneficiaries = beneficiaries;
     $scope.campaigns = campaigns;
     $scope.needBase = CRM.url("civicrm/volunteer/need");
@@ -130,6 +134,9 @@
       return result;
     };
 
+    // TODO for VOL-276: Replace or obviate the need for this method. This is
+    // the blocker to removing the deprecated api.VolunteerUtil.getbeneficiaries.
+    // Other related changes are trivial.
     $scope.formatBeneficiaries = function (project) {
       var displayNames = [];
 
