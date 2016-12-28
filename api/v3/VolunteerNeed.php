@@ -208,5 +208,4 @@ function _civicrm_api3_volunteer_need_getlist_params(&$request) {
   );
   $request['params']['return'] = array_unique(array_merge($fieldsToReturn, $request['extra']));
   $request['params']['options']['sort'] = 'start_time DESC';
-  );
 }
