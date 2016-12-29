@@ -116,6 +116,15 @@ function volunteer_civicrm_navigationMenu(&$menu) {
     'separator' => 0,
   ));
 
+  _volunteer_civix_insert_navigation_menu($menu, 'volunteer_volunteers', array(
+      'label' => E::ts('Log Your Own Hours'),
+      'name' => 'volunteer_log_own_hours',
+      'url' => 'civicrm/vol/#/volunteer/log?',
+      'permission' => NULL,
+      'operator' => NULL,
+      'separator' => 0,
+  ));
+
   _volunteer_civix_navigationMenu($menu);
 }
 
@@ -501,17 +510,47 @@ function volunteer_civicrm_permission(array &$permissions) {
  * Implements hook_civicrm_alterAPIPermissions
  */
 function volunteer_civicrm_alterAPIPermissions($entity, $action, &$params, &$permissions) {
-// note: unsetting the below would require the default 'administer CiviCRM' permission
+  // Allow creation of Volunteer activities to those with "log own hours."
+  if ($entity === 'activity' && ($action === 'create' || $action === 'update')) {
+    // Normalize the activity type to machine name.
+    $activityTypeId = CRM_Utils_Array::value('activity_type_id', $params);
+    if (CRM_Utils_Type::validate($activityTypeId, 'Int', FALSE)) {
+      $activityTypeId = civicrm_api3('OptionValue', 'getvalue', array(
+        'check_permissions' => FALSE,
+        'value' => $activityTypeId,
+        'option_group_id' => "activity_type",
+        'return' => "name",
+      ));
+    }
+
+    if ($activityTypeId === 'Volunteer') {
+      $permissions['activity'][$action] = array('log own hours');
+    }
+  }
   $permissions['volunteer_need']['default'] = array('create volunteer projects');
   $permissions['volunteer_need']['getsearchresult'] = array('register to volunteer');
-  $permissions['volunteer_assignment']['default'] = array('edit own volunteer projects');
+  $permissions['volunteer_need']['getvalue'] = array('log own hours');
+  $permissions['volunteer_assignment']['default'] = array(
+    // This totally insane syntax means either permission is sufficient to grant API access.
+    array('edit own volunteer projects', 'log own hours'),
+  );
   $permissions['volunteer_commendation']['default'] = array('edit own volunteer projects');
   $permissions['volunteer_project']['default'] = array('create volunteer projects');
   $permissions['volunteer_project']['get'] = array('register to volunteer');
-  $permissions['volunteer_project']['getlocblockdata'] = array('edit own volunteer projects');
+  // This totally insane syntax means either permission is sufficient to grant API access.
+  $permissions['volunteer_project']['getlocblockdata'] = array(
+    array('edit own volunteer projects', 'log own hours')
+  );
   $permissions['volunteer_util']['default'] = array('edit own volunteer projects');
   $permissions['volunteer_project_contact']['default'] = array('edit own volunteer projects');
 
+  // Enables use of volunteer role in entityRef widgets
+  $isVolRoleGetList = ($entity === 'option_value' && $action === 'getlist' && isset($params['params']) && CRM_Utils_Array::value('option_group_id', $params['params']) === 'volunteer_role');
+  $isVolRoleGet = ($entity === 'option_value' && $action === 'get' && CRM_Utils_Array::value('option_group_id', $params) === 'volunteer_role');
+  if ($isVolRoleGetList || $isVolRoleGet) {
+    $permissions['option_value']['get'] = array('log own hours');
+    $permissions['option_value']['getlist'] = array('log own hours');
+  }
 
   // allow fairly liberal access to the volunteer opp listing UI, which uses lots of API calls
   if (_volunteer_isVolListingApiCall($entity, $action) && CRM_Volunteer_Permission::checkProjectPerms(CRM_Core_Action::VIEW)) {
@@ -571,7 +610,12 @@ function volunteer_civicrm_angularModules(&$angularModules) {
         1 => 'ang/volunteer/*.js',
         2 => 'ang/volunteer/*/*.js'
       ),
-    'css' => array (0 => 'ang/volunteer.css'),
+    'css' => array(
+      'ang/volunteer.css',
+      'ang/volunteer/shared/crmVolLocBlock.css',
+      'ang/volunteer/shared/crmVolProjectDetail.css',
+      'ang/volunteer/shared/crmVolProjectThumb.css',
+    ),
     'partials' => array (0 => 'ang/volunteer'),
     'settings' => array(),
   );
@@ -605,4 +649,3 @@ function volunteer_civicrm_fieldOptions($entity, $field, &$options, $params) {
     $options[CRM_Volunteer_DAO_Project::getTableName()] = CRM_Volunteer_DAO_Project::getTableName();
   }
 }
-

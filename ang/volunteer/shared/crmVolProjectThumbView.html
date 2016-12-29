@@ -1,0 +1,4 @@
+<article>
+  <h1>{{project.title}}</h1>
+  <p>{{project.description | plainText | limitTo:150}}<span ng-if="project.description.length > 150">&hellip;</span></p>
+</article>

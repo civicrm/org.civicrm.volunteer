@@ -1,0 +1,10 @@
+crm-vol-project-detail.disabled article {
+  border: 1px solid #999999;
+}
+
+crm-vol-project-detail article {
+  border: 1px solid #000000;
+  border-radius: 10px;
+  margin: 25px 0;
+  padding: 10px;
+}
