@@ -1,0 +1,5 @@
+<p class="crm-vol-loc-block-heading" ng-if="heading && cntAddressParts">{{heading}}</p>
+<address ng-if="cntAddressParts">
+  {{loc_block.address.street_address}}<br ng-if="loc_block.address.street_address" />
+  {{loc_block.address.city}}<span ng-if="loc_block.address.city">, </span>{{loc_block.address.state_province}} {{loc_block.address.postal_code}}
+</address>

@@ -30,6 +30,12 @@
       CRM.$('#crm-main-content-wrapper').block();
     })
 
+    .filter('plainText', function() {
+      return function(textish) {
+        return angular.element(textish).text();
+      };
+    })
+
     .factory('volOppSearch', ['crmApi', '$location', '$route', function(crmApi, $location, $route) {
       //Search params and results are stored here and assigned by reference to the form
       var volOppSearch = {};
@@ -153,6 +159,52 @@
             $(element).addClass(classes.join(' '));
           });
         }
+      };
+    })
+
+
+    // Example: <crm-vol-project-loc-block data="myLocObj" heading="'Location:'" />
+    // Display a location block. In the example above, myLocObj should match the
+    // format of an item in the values array of api.VolunteerProject.getlocblockdata.
+    .directive('crmVolLocBlock', function() {
+      return {
+        restrict: 'E',
+        link: function(scope, element, attrs) {
+          scope.cntAddressParts = _.size(scope.loc_block);
+        },
+        scope: {
+          heading: '=',
+          loc_block: '=data'
+        },
+        templateUrl: '~/volunteer/shared/crmVolLocBlockView.html'
+      };
+    })
+
+
+    // Example: <crm-vol-project-detail data="myProject" locBlockHeading="'Location:'" />
+    // Provides a detail view for a volunteer project. locBlockHeading is passed
+    // through to crmVolLocBlock for displaying a heading for the address.
+    .directive('crmVolProjectDetail', function() {
+      return {
+        restrict: 'E',
+        scope: {
+          locBlockHeading: '=',
+          project: '=data'
+        },
+        templateUrl: '~/volunteer/shared/crmVolProjectDetailView.html'
+      };
+    })
+
+
+    // Example: <crm-vol-project-thumb data="myProject" />
+    // Provides a thumbnail view for a volunteer project.
+    .directive('crmVolProjectThumb', function() {
+      return {
+        restrict: 'E',
+        scope: {
+          project: '=data'
+        },
+        templateUrl: '~/volunteer/shared/crmVolProjectThumbView.html'
       };
     })
 
