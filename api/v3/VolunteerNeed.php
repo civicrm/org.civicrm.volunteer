@@ -186,3 +186,24 @@ function civicrm_api3_volunteer_need_delete($params) {
   return _civicrm_api3_basic_delete('CRM_Volunteer_BAO_Need', $params);
 }
 
+/**
+ * Set the default getList behavior for Volunteer Need to have the label be the role
+ * and the description be the formatted date and time
+ *
+ * @param array $request
+ *   The parameters passed to the sub-API call (i.e., the parameters to the get
+ *   call underlying the getList call). These are passed to getList in
+ *   $params['params'].
+ * @return array
+ *   Despite the fact that $request represents a subset of the parameters passed
+ *   to getList, the return of this function is merged with the getList params
+ *   in their entirety.
+ */
+function _civicrm_api3_volunteer_need_getlist_defaults(&$request) {
+  return array(
+    'extra' => array('is_flexible', 'role_id', 'role_label', 'start_time', 'display_time'),
+    'params' => array('options' => array('sort' => 'start_time DESC')),
+    'label_field' => 'role_label',
+    'description_field' => array('display_time'),
+  );
+}
