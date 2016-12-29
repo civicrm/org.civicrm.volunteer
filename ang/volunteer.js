@@ -169,9 +169,11 @@
     .directive('crmVolLocBlock', function() {
       return {
         restrict: 'E',
-        link: function(scope, element, attrs) {
-          scope.cntAddressParts = _.size(scope.loc_block);
-        },
+        controller: ['$scope', function($scope) {
+          $scope.$watch('loc_block', function (newValue, oldValue, scope) {
+           $scope.cntAddressParts = _.size(newValue);
+          }, true);
+        }],
         scope: {
           heading: '=',
           loc_block: '=data'
