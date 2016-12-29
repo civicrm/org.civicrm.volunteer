@@ -234,7 +234,14 @@ function civicrm_api3_volunteer_project_getlocblockdata($params) {
     return civicrm_api3_create_success(array(), $params, 'VolunteerProject', 'getlocblockdata');
   }
 
-  return civicrm_api3("LocBlock", "get", $params);
+  $result = civicrm_api3("LocBlock", "get", $params);
+  foreach ($result['values'] as &$data) {
+    $stateProvinceId = CRM_Utils_Array::value('state_province_id', $data['address']);
+    $data['address']['state_province'] = $stateProvinceId ? CRM_Core_PseudoConstant::stateProvince($stateProvinceId) : NULL;
+    $data['address']['state_province_abbr'] = $stateProvinceId ? CRM_Core_PseudoConstant::stateProvinceAbbreviation($stateProvinceId) : NULL;
+  }
+
+  return $result;
 }
 
 /**
