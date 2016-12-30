@@ -1,0 +1,51 @@
+<!--
+Controller: LogHours
+Required vars: wizardSelections, projects
+Optional vars: locBlockHeading
+-->
+
+<div class="crm-container">
+  <div crm-ui-debug="wizardSelections"></div>
+  <div crm-ui-debug="projects"></div>
+
+  <div crm-ui-wizard="logHoursWizardCtrl">
+
+    <div crm-ui-wizard-step="1" crm-title="ts('Select Beneficiary')" ng-form="selectBeneficiaryForm">
+      <div crm-ui-id-scope>
+        <div crm-ui-field="{name: 'selectBeneficiaryForm.beneficiary', title: ts('Beneficiary')}">
+          <input
+            crm-entityref="{entity: 'VolunteerProjectContact',
+            select: {create: true, placeholder: ts('Select Beneficiary')},
+            api: {params: {relationship_type_id: 'volunteer_beneficiary'}}
+            }"
+            crm-ui-id="selectBeneficiaryForm.beneficiary"
+            name="beneficiary"
+            ng-model="wizardSelections.beneficiaryId"
+            required="true"
+            />
+        </div>
+      </div>
+    </div>
+
+    <div crm-ui-wizard-step="2" crm-title="ts('Select Project')" ng-form="selectProjectForm">
+      <div class="help">
+        <p>
+          {{ts('Click a project summary to see the full preview, then click "Next" to select it.')}}
+        </p>
+      </div>
+
+      <div ng-repeat="project in projects">
+        <crm-vol-project-thumb data="project" ng-click="selectProject(project.id)" />
+      </div>
+
+      <crm-vol-project-detail ng-if="wizardSelections.projectId" data="projects[wizardSelections.projectId]" loc-block-heading="locBlockHeading" />
+    </div>
+
+    <div crm-ui-wizard-step="3" crm-title="ts('Enter Details')" ng-form="enterDetailsForm">
+      <span crm-ui-wizard-buttons>
+        <button crm-icon="fa-check" ng-click="completeRegistration()" ng-show="logHoursWizardCtrl.$last()" ng-disabled="!logHoursWizardCtrl.$validStep()">{{ts('Complete Registration')}}</button>
+      </span>
+    </div>
+
+  </div>
+</div>
