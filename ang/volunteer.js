@@ -216,6 +216,16 @@
     // entry should be in the format of a value from api.VolunteerAssignments.get.
     .directive('crmVolTimeEntry', function() {
       return {
+        link: function(scope, element, attrs) {
+          scope.ts = CRM.ts(null);
+
+          // Remove a row when its button is clicked.
+          element.find('button[crm-icon="fa-times"]').click(function () {
+            var index = scope.$parent.$index;
+            scope.$parent.$parent.ngModel.splice(index, 1);
+            scope.$apply();
+          });
+        },
         replace: true,
         require: ['ngModel'],
         restrict: 'AC',
