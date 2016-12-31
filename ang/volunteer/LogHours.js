@@ -29,7 +29,30 @@
     $scope.wizardSelections = {};
 
     $scope.addNewTimeEntry = function() {
-      $scope.newTimeEntries.push({project_id: $scope.wizardSelections.projectId});
+      if ($scope.wizardSelections.projectId) {
+        var flexibleNeedId = $scope.projects[$scope.wizardSelections.projectId]['api.VolunteerNeed.getvalue'];
+        $scope.newTimeEntries.push({
+          assignee_contact_id: CRM.vars['org.civicrm.volunteer'].currentContactId,
+          volunteer_need_id: flexibleNeedId
+        });
+      }
+    };
+
+    $scope.saveTimeEntries = function() {
+      var requests = _.map($scope.newTimeEntries.concat($scope.existingTimeEntries), function(paramsObj) {
+        return ['VolunteerAssignment', 'create', paramsObj];
+      });
+      crmApi(requests).then(function(success){
+        // now what?
+        console.log('"success"');
+        console.dir(success);
+      }, function(fail){
+        // Do something with the failure... I suspect cases where the Internet
+        // connection fails land here... not sure what else. Since we are making
+        // multiple requests through one API connection, the result is a little
+        // different, and we should expect to handle application failures (e.g.,
+        // "required field X missing") in the success handler.
+      });
     };
 
     $scope.selectProject = function(id) {
@@ -46,6 +69,11 @@
             options: {limit: 0},
             return: 'all',
             sequential: 1
+          },
+          'api.VolunteerNeed.getvalue': {
+            is_active: 1,
+            is_flexible: 1,
+            return: 'id'
           }
         }).then(function(success) {
           // format the location data for easier use
@@ -66,8 +94,9 @@
     $scope.$watch('wizardSelections.projectId', function (newValue, oldValue, scope) {
       // reset the list of time entries
       $scope.existingTimeEntries = [];
-      // always start with an empty row, seeded with the project ID
-      $scope.newTimeEntries = [{project_id: $scope.wizardSelections.projectId}];
+      // always start with an empty row
+      $scope.newTimeEntries = [];
+      $scope.addNewTimeEntry();
 
       if (newValue && CRM.vars['org.civicrm.volunteer'].currentContactId) {
         crmApi('VolunteerAssignment', 'get', {

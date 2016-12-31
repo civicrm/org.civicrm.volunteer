@@ -60,7 +60,7 @@ Optional vars: locBlockHeading
       <button crm-icon="fa-plus" ng-click="addNewTimeEntry()">{{ts('Add Another Row')}}</button>
 
       <span crm-ui-wizard-buttons>
-        <button crm-icon="fa-check" ng-click="completeRegistration()" ng-show="logHoursWizardCtrl.$last()" ng-disabled="!logHoursWizardCtrl.$validStep()">{{ts('Save and Finish')}}</button>
+        <button crm-icon="fa-check" ng-click="saveTimeEntries()" ng-show="logHoursWizardCtrl.$last()" ng-disabled="!logHoursWizardCtrl.$validStep()">{{ts('Save and Finish')}}</button>
       </span>
     </div>
 
