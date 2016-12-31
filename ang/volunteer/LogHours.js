@@ -3,12 +3,21 @@
   angular.module('volunteer').config(function($routeProvider) {
       $routeProvider.when('/volunteer/log', {
         controller: 'VolunteerLogHours',
+        resolve: {
+          supportingData: function(crmApi) {
+            return crmApi('VolunteerUtil', 'getsupportingdata', {
+              controller: 'VolunteerLogHours'
+            }).then(function(success) {
+              return success.values;
+            });
+          }
+        },
         templateUrl: '~/volunteer/LogHours.html'
       });
     }
   );
 
-  angular.module('volunteer').controller('VolunteerLogHours', function($scope, $location, $route, crmApi, crmUiAlert, crmUiHelp) {
+  angular.module('volunteer').controller('VolunteerLogHours', function($scope, $location, $route, crmApi, crmUiAlert, crmUiHelp, supportingData) {
     // The ts() and hs() functions help load strings for this module.
     var ts = $scope.ts = CRM.ts('org.civicrm.volunteer');
     var hs = $scope.hs = crmUiHelp({file: 'CRM/Volunteer/Form/Volunteer'}); // See: templates/CRM/volunteer/Project.hlp
@@ -26,6 +35,7 @@
     // (e.g., set via retrieved setting).
     $scope.locBlockHeading = ts('Location:');
     $scope.projects = projects;
+    $scope.supportingData = supportingData;
     $scope.wizardSelections = {};
 
     $scope.addNewTimeEntry = function() {
@@ -40,6 +50,7 @@
 
     $scope.saveTimeEntries = function() {
       var requests = _.map($scope.newTimeEntries.concat($scope.existingTimeEntries), function(paramsObj) {
+        paramsObj.status_id = _.invert(supportingData.volunteer_status)['Completed'];
         return ['VolunteerAssignment', 'create', paramsObj];
       });
       crmApi(requests).then(function(success){
