@@ -13,6 +13,13 @@
     var ts = $scope.ts = CRM.ts('org.civicrm.volunteer');
     var hs = $scope.hs = crmUiHelp({file: 'CRM/Volunteer/Form/Volunteer'}); // See: templates/CRM/volunteer/Project.hlp
 
+    // Having two collections for the same model is somewhat dirty, but there's no
+    // (worthwhile) way to filter the list and preserve two-way binding in the view.
+    var newTimeEntries = [{}]; // always start with an empty row
+    var existingTimeEntries = [];
+    $scope.newTimeEntries = newTimeEntries;
+    $scope.existingTimeEntries = existingTimeEntries;
+
     var projects = {};
 
     // Hardcoded for now. Located in the controller for future extensibility
@@ -45,6 +52,24 @@
             delete values[key]['api.VolunteerProject.getlocblockdata'];
           });
           $scope.projects = values;
+        }, function (fail){
+          // do something with the failure, eh?
+        });
+      }
+    });
+
+    // Refresh the list of time entries when the project is changed.
+    $scope.$watch('wizardSelections.projectId', function (newValue, oldValue, scope) {
+      // reset the list of time entries
+      $scope.existingTimeEntries = [];
+
+      if (newValue && CRM.vars['org.civicrm.volunteer'].currentContactId) {
+        crmApi('VolunteerAssignment', 'get', {
+          assignee_contact_id: CRM.vars['org.civicrm.volunteer'].currentContactId,
+          project_id: newValue,
+          sequential: 1
+        }).then(function(success) {
+          Array.prototype.push.apply($scope.existingTimeEntries, success.values);
         }, function (fail){
           // do something with the failure, eh?
         });
