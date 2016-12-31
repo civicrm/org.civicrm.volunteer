@@ -28,6 +28,10 @@
     $scope.projects = projects;
     $scope.wizardSelections = {};
 
+    $scope.addNewTimeEntry = function() {
+      $scope.newTimeEntries.push({});
+    };
+
     $scope.selectProject = function(id) {
       $scope.wizardSelections.projectId = id;
     };
