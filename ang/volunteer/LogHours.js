@@ -15,7 +15,7 @@
 
     // Having two collections for the same model is somewhat dirty, but there's no
     // (worthwhile) way to filter the list and preserve two-way binding in the view.
-    var newTimeEntries = [{}]; // always start with an empty row
+    var newTimeEntries = [];
     var existingTimeEntries = [];
     $scope.newTimeEntries = newTimeEntries;
     $scope.existingTimeEntries = existingTimeEntries;
@@ -29,7 +29,7 @@
     $scope.wizardSelections = {};
 
     $scope.addNewTimeEntry = function() {
-      $scope.newTimeEntries.push({});
+      $scope.newTimeEntries.push({project_id: $scope.wizardSelections.projectId});
     };
 
     $scope.selectProject = function(id) {
@@ -66,6 +66,8 @@
     $scope.$watch('wizardSelections.projectId', function (newValue, oldValue, scope) {
       // reset the list of time entries
       $scope.existingTimeEntries = [];
+      // always start with an empty row, seeded with the project ID
+      $scope.newTimeEntries = [{project_id: $scope.wizardSelections.projectId}];
 
       if (newValue && CRM.vars['org.civicrm.volunteer'].currentContactId) {
         crmApi('VolunteerAssignment', 'get', {
