@@ -48,7 +48,7 @@ function volunteer_civicrm_navigationMenu(&$params) {
   $administerMenuId = CRM_Core_DAO::getFieldValue('CRM_Core_BAO_Navigation', 'Administer', 'id', 'name');
   $posOfAdminMenu = array_search($administerMenuId, array_keys($params));
 
-  $newNavId = _volunteer_getMenuKeyMax($params);
+  $rootNavId = $newNavId = _volunteer_getMenuKeyMax($params);
   $volMenu = array(
     $newNavId => array(
       'attributes' => array(
@@ -63,7 +63,7 @@ function volunteer_civicrm_navigationMenu(&$params) {
         'active' => 1,
       ),
       'child' => array(
-        $newNavId + 1 => array(
+        ++$newNavId => array(
           'attributes' => array(
             'label' => ts('New Volunteer Project', array('domain' => 'org.civicrm.volunteer')),
             'name' => 'volunteer_new_project',
@@ -71,13 +71,13 @@ function volunteer_civicrm_navigationMenu(&$params) {
             'permission' => NULL,
             'operator' => NULL,
             'separator' => 0,
-            'parentID' => $newNavId,
-            'navID' => $newNavId + 1,
+            'parentID' => $rootNavId,
+            'navID' => $newNavId,
             'active' => 1,
           ),
           'child' => array(),
         ),
-        $newNavId + 2 => array(
+        ++$newNavId => array(
           'attributes' => array(
             'label' => ts('Manage Volunteer Projects', array('domain' => 'org.civicrm.volunteer')),
             'name' => 'volunteer_manage_projects',
@@ -85,13 +85,13 @@ function volunteer_civicrm_navigationMenu(&$params) {
             'permission' => NULL,
             'operator' => NULL,
             'separator' => 1,
-            'parentID' => $newNavId,
-            'navID' => $newNavId + 2,
+            'parentID' => $rootNavId,
+            'navID' => $newNavId,
             'active' => 1,
           ),
           'child' => array(),
         ),
-        $newNavId + 3 => array(
+        ++$newNavId => array(
           'attributes' => array(
             'label' => ts('Configure Roles', array('domain' => 'org.civicrm.volunteer')),
             'name' => 'volunteer_config_roles',
@@ -99,13 +99,13 @@ function volunteer_civicrm_navigationMenu(&$params) {
             'permission' => NULL,
             'operator' => NULL,
             'separator' => 0,
-            'parentID' => $newNavId,
-            'navID' => $newNavId + 3,
+            'parentID' => $rootNavId,
+            'navID' => $newNavId,
             'active' => 1,
           ),
           'child' => array(),
         ),
-        $newNavId + 4 => array(
+        ++$newNavId => array(
           'attributes' => array(
             'label' => ts('Configure Project Relationships', array('domain' => 'org.civicrm.volunteer')),
             'name' => 'volunteer_config_projrel',
@@ -113,13 +113,13 @@ function volunteer_civicrm_navigationMenu(&$params) {
             'permission' => NULL,
             'operator' => NULL,
             'separator' => 0,
-            'parentID' => $newNavId,
-            'navID' => $newNavId + 4,
+            'parentID' => $rootNavId,
+            'navID' => $newNavId,
             'active' => 1,
           ),
           'child' => array(),
         ),
-        $newNavId + 5 => array(
+        ++$newNavId => array(
           'attributes' => array(
             'label' => ts('Configure Volunteer Settings', array('domain' => 'org.civicrm.volunteer')),
             'name' => 'volunteer_config_settings',
@@ -127,13 +127,13 @@ function volunteer_civicrm_navigationMenu(&$params) {
             'permission' => NULL,
             'operator' => NULL,
             'separator' => 1,
-            'parentID' => $newNavId,
-            'navID' => $newNavId + 5,
+            'parentID' => $rootNavId,
+            'navID' => $newNavId,
             'active' => 1,
           ),
           'child' => array(),
         ),
-        $newNavId + 6 => array(
+        ++$newNavId => array(
           'attributes' => array(
             'label' => ts('Volunteer Interest Form', array('domain' => 'org.civicrm.volunteer')),
             'name' => 'volunteer_join',
@@ -141,13 +141,13 @@ function volunteer_civicrm_navigationMenu(&$params) {
             'permission' => NULL,
             'operator' => NULL,
             'separator' => 0,
-            'parentID' => $newNavId,
-            'navID' => $newNavId + 6,
+            'parentID' => $rootNavId,
+            'navID' => $newNavId,
             'active' => 1,
           ),
           'child' => array(),
         ),
-        $newNavId + 7 => array(
+        ++$newNavId => array(
           'attributes' => array(
             'label' => ts('Search for Volunteer Opportunities', array('domain' => 'org.civicrm.volunteer')),
             'name' => 'volunteer_opp_search',
@@ -155,8 +155,22 @@ function volunteer_civicrm_navigationMenu(&$params) {
             'permission' => NULL,
             'operator' => NULL,
             'separator' => 0,
-            'parentID' => $newNavId,
-            'navID' => $newNavId + 7,
+            'parentID' => $rootNavId,
+            'navID' => $newNavId,
+            'active' => 1,
+          ),
+          'child' => array(),
+        ),
+        ++$newNavId => array(
+          'attributes' => array(
+            'label' => ts('Log Your Own Hours', array('domain' => 'org.civicrm.volunteer')),
+            'name' => 'volunteer_log_own_hours',
+            'url' => 'civicrm/vol/#/volunteer/log?',
+            'permission' => NULL,
+            'operator' => NULL,
+            'separator' => 0,
+            'parentID' => $rootNavId,
+            'navID' => $newNavId,
             'active' => 1,
           ),
           'child' => array(),
