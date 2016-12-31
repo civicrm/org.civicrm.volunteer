@@ -211,6 +211,39 @@
     })
 
 
+    // Example: <tr class="crm-vol-time-entry" ng-repeat="entry in myArray" ng-model="entry" />
+    // Builds a table row with fields for updating time entries. In the example above,
+    // entry should be in the format of a value from api.VolunteerAssignments.get.
+    .directive('crmVolTimeEntry', function() {
+      return {
+        replace: true,
+        require: ['ngModel'],
+        restrict: 'AC',
+        scope: {
+          ngModel: '='
+        },
+        templateUrl: '~/volunteer/shared/crmVolTimeEntryView.html'
+      };
+    })
+
+
+    // Example: <crm-vol-time-table ng-form="myForm" ng-model="myArray" />
+    // Builds a table for creating time entries. See crmVolTimeEntry.
+    .directive('crmVolTimeTable', function() {
+      return {
+        link: function(scope, element, attrs) {
+          scope.ts = CRM.ts(null);
+        },
+        require: ['ngModel'],
+        restrict: 'E',
+        scope: {
+          ngModel: '='
+        },
+        templateUrl: '~/volunteer/shared/crmVolTimeTableView.html'
+      };
+    })
+
+
     /**
      * This is a service for loading the backbone-based volunteer UIs (and their
      * prerequisite scripts) into angular routes.

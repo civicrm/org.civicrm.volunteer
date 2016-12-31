@@ -1,0 +1,19 @@
+<tr>
+  <td class="crm-vol-log-start_time">
+    <input crm-ui-datepicker="{date: 'm/d/y'}" ng-model="ngModel.start_time"/>
+  </td>
+  <td>
+    <input
+      crm-entityref="{entity: 'option_value',
+      select: {minimumInputLength: 0, placeholder: ts('Select Role')},
+      api: {params: {option_group_id: 'volunteer_role'}}
+      }"
+      ng-model="ngModel.role_id"
+      />
+  </td>
+  <td class="crm-vol-log-duration">
+    <!-- TODO: replace this with a directive for specifying time by hours/minutes -->
+    <input ng-model="ngModel.duration" />
+  </td>
+  <td>Button here</td>
+</tr>
