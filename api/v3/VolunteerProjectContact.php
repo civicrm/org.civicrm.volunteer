@@ -162,9 +162,47 @@ function _civicrm_api3_volunteer_project_contact_delete_spec(&$params) {
  *   in their entirety.
  */
 function _civicrm_api3_volunteer_project_contact_getlist_defaults(&$request) {
-  return array(
+  $request += array(
     'id_field' => 'contact_id',
     'label_field' => 'contact_id.sort_name',
     'search_field' => 'contact_id.sort_name',
   );
+
+  /*
+   * getlist_defaults() sets an inappropriate limit, for Project Contacts,
+   * based on $resultsPerPage = Civi::settings()->get('search_autocomplete_count');
+   * Respect user's limit, otherwise, default to a large limit so that
+   * we get a sizeable result before running dedupe in getlist_outpu
+   */
+  $options = array('limit' => 100);
+  if (array_key_exists('params', $request)
+      && array_key_exists('options', $request['params'])) {
+    $options = array_merge($options, $request['params']['options']);
+  } else if (!array_key_exists('params', $request)) {
+    $request['params'] = array();
+  }
+  $request['params']['options'] = $options;
+
+  return $request;
+}
+
+/*
+ * Dedupe GetList Values since Project Contacts are many-to-many
+ */
+function _civicrm_api3_volunteer_project_contact_getlist_output($results, $request, $entity, $meta_values) {
+  $values = array();
+  foreach ($results['values'] as $result_item) {
+    $found = FALSE;
+    foreach ($values as $return_item) {
+      if ($result_item['contact_id'] == $return_item['contact_id'])
+        $found = TRUE;
+    }
+    if ($found) {
+      continue;
+    }
+    array_push($values, $result_item);
+  }
+
+  $results['values'] = $values;
+  return _civicrm_api3_generic_getlist_output($results, $request, $entity, $meta_values);
 }
