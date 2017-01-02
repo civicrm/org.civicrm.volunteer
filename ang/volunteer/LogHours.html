@@ -46,6 +46,19 @@ Optional vars: locBlockHeading
             ng-repeat="project in projects" />
         </div>
 
+        <!--
+             This is perhaps inelegant, but it's a quick way to enforce that the
+             "Next" button for this step is disabled until a project selection
+             is made. It may be worthwhile to look at the family of crmWizard
+             directives to see if there's a cleaner way to do this, or we could
+             have modeled crmVolProjectThumb as a radio input rather than a div.
+        -->
+        <input
+          name="projectId"
+          ng-model="wizardSelections.projectId"
+          required="required"
+          type="hidden" />
+
         <crm-vol-project-detail
           data="projects[wizardSelections.projectId]"
           loc-block-heading="locBlockHeading"
