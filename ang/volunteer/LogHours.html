@@ -66,7 +66,7 @@ Optional vars: locBlockHeading
       </div>
 
       <div crm-ui-wizard-step="3" crm-title="ts('Enter Details')" ng-form="enterDetailsForm">
-        <div id="crm-vol-log-hours-wizard-form-pre-save" ng-if="submitted">
+        <div id="crm-vol-log-hours-wizard-form-pre-save" ng-if="!submitted">
           <div class="help" ng-if="_.size(existingTimeEntries)">
             <p>
               {{ts("You've registered for the following \"%1\" volunteer opportunities. Please log your time for them below. If you haven't performed these hours yet or wish to log them later, click the \"Remove\" button to remove it from the list.", {1: projects[wizardSelections.projectId].title})}}
