@@ -50,14 +50,14 @@
     };
 
     $scope.saveTimeEntries = function() {
+      $scope.submitted = true;
+      CRM.$('div[ng-form=enterDetailsForm]').block();
       var requests = _.map($scope.newTimeEntries.concat($scope.existingTimeEntries), function(paramsObj) {
         paramsObj.status_id = _.invert(supportingData.volunteer_status)['Completed'];
         return ['VolunteerAssignment', 'create', paramsObj];
       });
       crmApi(requests).then(function(success){
-        // now what?
-        console.log('"success"');
-        console.dir(success);
+        CRM.$('div[ng-form=enterDetailsForm]').unblock();
       }, function(fail){
         // Do something with the failure... I suspect cases where the Internet
         // connection fails land here... not sure what else. Since we are making
