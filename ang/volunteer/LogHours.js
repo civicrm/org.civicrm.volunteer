@@ -110,13 +110,27 @@
       $scope.newTimeEntries = [];
       $scope.addNewTimeEntry();
 
-      if (newValue && CRM.vars['org.civicrm.volunteer'].currentContactId) {
-        crmApi('VolunteerAssignment', 'get', {
-          assignee_contact_id: CRM.vars['org.civicrm.volunteer'].currentContactId,
-          project_id: newValue,
-          sequential: 1
+      if (newValue) {
+        // TODO: This has the potential to be pretty inefficient. We're pulling
+        // a list of all activities assigned to the contact and then filtering
+        // them via the chained API. It would be better to modify
+        // api.VolunteerAssignment.get to take parameters related to table
+        // civicrm_activity_contact so that we can filter on assignee.
+        crmApi('ActivityContact', 'get', {
+          contact_id: "user_contact_id",
+          record_type_id: "Activity Assignees",
+          sequential: 1,
+          "api.VolunteerAssignment.get": {
+            id: "$value.activity_id",
+            project_id: newValue,
+            sequential: 1
+          }
         }).then(function(success) {
-          Array.prototype.push.apply($scope.existingTimeEntries, success.values);
+          _.each(success.values, function(value, key) {
+            if (value['api.VolunteerAssignment.get'].count) {
+              Array.prototype.push.apply($scope.existingTimeEntries, value['api.VolunteerAssignment.get'].values);
+            }
+          });
         }, function (fail){
           // do something with the failure, eh?
         });
