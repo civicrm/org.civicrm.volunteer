@@ -9,7 +9,7 @@
     <input
       crm-entityref="{entity: 'option_value',
       select: {minimumInputLength: 0, placeholder: ts('Select Role')},
-      api: {params: {option_group_id: 'volunteer_role'}}
+      api: {params: {option_group_id: 'volunteer_role', is_active: true}}
       }"
       ng-model="ngModel.volunteer_role_id"
       required="required"
