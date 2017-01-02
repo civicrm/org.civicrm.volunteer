@@ -607,6 +607,13 @@ function volunteer_civicrm_alterAPIPermissions($entity, $action, &$params, &$per
   $permissions['volunteer_util']['default'] = array('edit own volunteer projects');
   $permissions['volunteer_project_contact']['default'] = array('edit own volunteer projects');
 
+  // Enables use of volunteer role in entityRef widgets
+  $isVolRoleGetList = ($entity === 'option_value' && $action === 'getlist' && isset($params['params']) && CRM_Utils_Array::value('option_group_id', $params['params']) === 'volunteer_role');
+  $isVolRoleGet = ($entity === 'option_value' && $action === 'get' && CRM_Utils_Array::value('option_group_id', $params) === 'volunteer_role');
+  if ($isVolRoleGetList || $isVolRoleGet) {
+    $permissions['option_value']['get'] = array('log own hours');
+    $permissions['option_value']['getlist'] = array('log own hours');
+  }
 
   // allow fairly liberal access to the volunteer opp listing UI, which uses lots of API calls
   if (_volunteer_isVolListingApiCall($entity, $action) && CRM_Volunteer_Permission::checkProjectPerms(CRM_Core_Action::VIEW)) {
