@@ -592,11 +592,30 @@ function _volunteer_checkResourceUrl() {
  * Implements hook_civicrm_alterAPIPermissions
  */
 function volunteer_civicrm_alterAPIPermissions($entity, $action, &$params, &$permissions) {
-// note: unsetting the below would require the default 'administer CiviCRM' permission
+  // Allow creation of Volunteer activities to those with "log own hours."
+  if ($entity === 'activity' && ($action === 'create' || $action === 'update')) {
+    // Normalize the activity type to machine name.
+    $activityTypeId = CRM_Utils_Array::value('activity_type_id', $params);
+    if (CRM_Utils_Type::validate($activityTypeId, 'Int', FALSE)) {
+      $activityTypeId = civicrm_api3('OptionValue', 'getvalue', array(
+        'check_permissions' => FALSE,
+        'value' => $activityTypeId,
+        'option_group_id' => "activity_type",
+        'return' => "name",
+      ));
+    }
+
+    if ($activityTypeId === 'Volunteer') {
+      $permissions['activity'][$action] = array('log own hours');
+    }
+  }
   $permissions['volunteer_need']['default'] = array('create volunteer projects');
   $permissions['volunteer_need']['getsearchresult'] = array('register to volunteer');
   $permissions['volunteer_need']['getvalue'] = array('log own hours');
-  $permissions['volunteer_assignment']['default'] = array('edit own volunteer projects');
+  $permissions['volunteer_assignment']['default'] = array(
+    // This totally insane syntax means either permission is sufficient to grant API access.
+    array('edit own volunteer projects', 'log own hours'),
+  );
   $permissions['volunteer_commendation']['default'] = array('edit own volunteer projects');
   $permissions['volunteer_project']['default'] = array('create volunteer projects');
   $permissions['volunteer_project']['get'] = array('register to volunteer');
