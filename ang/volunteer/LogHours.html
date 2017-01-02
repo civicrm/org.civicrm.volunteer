@@ -11,6 +11,7 @@ Optional vars: locBlockHeading
   <div crm-ui-debug="existingTimeEntries"></div>
   <div crm-ui-debug="newTimeEntries"></div>
 
+  <div id="crm-vol-log-hours-wizard-form-wrapper" ng-if="!submitted">
   <form name="logHours">
     <div crm-ui-wizard="logHoursWizardCtrl">
 
@@ -66,7 +67,6 @@ Optional vars: locBlockHeading
       </div>
 
       <div crm-ui-wizard-step="3" crm-title="ts('Enter Details')" ng-form="enterDetailsForm">
-        <div id="crm-vol-log-hours-wizard-form-pre-save" ng-if="!submitted">
           <div class="help" ng-if="_.size(existingTimeEntries)">
             <p>
               {{ts("You've registered for the following \"%1\" volunteer opportunities. Please log your time for them below. If you haven't performed these hours yet or wish to log them later, click the \"Remove\" button to remove it from the list.", {1: projects[wizardSelections.projectId].title})}}
@@ -88,18 +88,17 @@ Optional vars: locBlockHeading
           <span crm-ui-wizard-buttons>
             <button crm-icon="fa-check" ng-click="saveTimeEntries()" ng-show="logHoursWizardCtrl.$last()" ng-disabled="!logHoursWizardCtrl.$validStep()">{{ts('Save and Finish')}}</button>
           </span>
-        </div>
-        <div id="crm-vol-log-hours-wizard-form-post-save" ng-if="submitted">
-          <h1>Volunteer Time Logged</h1>
-          Thank you.<br />
-          <ul>
-            <li><a href="/civicrm/vol/#/volunteer/opportunities">Sign-up for more opportunities.</a></li>
-            <li><a href="/civicrm/vol/#/volunteer/log">Log more hours.</a></li>
-            <li><a href="/">Return home.</a></li>
-          </ul>
-        </div>
       </div>
-
     </div>
   </form>
+  </div>
+  <div id="crm-vol-log-hours-wizard-confirm" ng-if="submitted">
+    <h1>Volunteer Time Logged</h1>
+    Thank you.<br />
+    <ul>
+      <li><a href="/civicrm/vol/#/volunteer/opportunities">Sign-up for more opportunities.</a></li>
+      <li><a href="/civicrm/vol/#/volunteer/log">Log more hours.</a></li>
+      <li><a href="/">Return home.</a></li>
+    </ul>
+  </div>
 </div>
