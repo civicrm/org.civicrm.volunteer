@@ -595,11 +595,15 @@ function volunteer_civicrm_alterAPIPermissions($entity, $action, &$params, &$per
 // note: unsetting the below would require the default 'administer CiviCRM' permission
   $permissions['volunteer_need']['default'] = array('create volunteer projects');
   $permissions['volunteer_need']['getsearchresult'] = array('register to volunteer');
+  $permissions['volunteer_need']['getvalue'] = array('log own hours');
   $permissions['volunteer_assignment']['default'] = array('edit own volunteer projects');
   $permissions['volunteer_commendation']['default'] = array('edit own volunteer projects');
   $permissions['volunteer_project']['default'] = array('create volunteer projects');
   $permissions['volunteer_project']['get'] = array('register to volunteer');
-  $permissions['volunteer_project']['getlocblockdata'] = array('edit own volunteer projects');
+  // This totally insane syntax means either permission is sufficient to grant API access.
+  $permissions['volunteer_project']['getlocblockdata'] = array(
+    array('edit own volunteer projects', 'log own hours')
+  );
   $permissions['volunteer_util']['default'] = array('edit own volunteer projects');
   $permissions['volunteer_project_contact']['default'] = array('edit own volunteer projects');
 
