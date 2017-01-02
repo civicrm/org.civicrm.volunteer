@@ -37,6 +37,7 @@
     $scope.projects = projects;
     $scope.supportingData = supportingData;
     $scope.wizardSelections = {};
+    $scope.submitted = false; // TODO: can probably use a framework provided variable instead.
 
     $scope.addNewTimeEntry = function() {
       if ($scope.wizardSelections.projectId) {

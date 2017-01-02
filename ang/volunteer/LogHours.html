@@ -66,27 +66,37 @@ Optional vars: locBlockHeading
       </div>
 
       <div crm-ui-wizard-step="3" crm-title="ts('Enter Details')" ng-form="enterDetailsForm">
-        <div class="help" ng-if="_.size(existingTimeEntries)">
-          <p>
-            {{ts("You've registered for the following \"%1\" volunteer opportunities. Please log your time for them below. If you haven't performed these hours yet or wish to log them later, click the \"Remove\" button to remove it from the list.", {1: projects[wizardSelections.projectId].title})}}
-          </p>
-        </div>
-        <crm-vol-time-table ng-if="_.size(existingTimeEntries)" ng-model="existingTimeEntries"></crm-vol-time-table>
+        <div id="crm-vol-log-hours-wizard-form-pre-save" ng-if="submitted">
+          <div class="help" ng-if="_.size(existingTimeEntries)">
+            <p>
+              {{ts("You've registered for the following \"%1\" volunteer opportunities. Please log your time for them below. If you haven't performed these hours yet or wish to log them later, click the \"Remove\" button to remove it from the list.", {1: projects[wizardSelections.projectId].title})}}
+            </p>
+          </div>
+          <crm-vol-time-table ng-if="_.size(existingTimeEntries)" ng-model="existingTimeEntries"></crm-vol-time-table>
 
-        <div class="help">
-          <p ng-if="_.size(existingTimeEntries)">
-            {{ts('To log additional time to this project, add more rows below.')}}
-          </p>
-          <p ng-if="!_.size(existingTimeEntries)">
-            {{ts('Log your time for the \"%1\" project below. Add as many rows as needed.', {1: projects[wizardSelections.projectId].title})}}
-          </p>
-        </div>
-        <crm-vol-time-table ng-model="newTimeEntries"></crm-vol-time-table>
-        <button crm-icon="fa-plus" ng-click="addNewTimeEntry()">{{ts('Add Another Row')}}</button>
+          <div class="help">
+            <p ng-if="_.size(existingTimeEntries)">
+              {{ts('To log additional time to this project, add more rows below.')}}
+            </p>
+            <p ng-if="!_.size(existingTimeEntries)">
+              {{ts('Log your time for the \"%1\" project below. Add as many rows as needed.', {1: projects[wizardSelections.projectId].title})}}
+            </p>
+          </div>
+          <crm-vol-time-table ng-model="newTimeEntries"></crm-vol-time-table>
+          <button crm-icon="fa-plus" ng-click="addNewTimeEntry()">{{ts('Add Another Row')}}</button>
 
-        <span crm-ui-wizard-buttons>
-          <button crm-icon="fa-check" ng-click="saveTimeEntries()" ng-show="logHoursWizardCtrl.$last()" ng-disabled="!logHoursWizardCtrl.$validStep()">{{ts('Save and Finish')}}</button>
-        </span>
+          <span crm-ui-wizard-buttons>
+            <button crm-icon="fa-check" ng-click="saveTimeEntries()" ng-show="logHoursWizardCtrl.$last()" ng-disabled="!logHoursWizardCtrl.$validStep()">{{ts('Save and Finish')}}</button>
+          </span>
+        </div>
+        <div id="crm-vol-log-hours-wizard-form-post-save" ng-if="submitted">
+          <h1>Volunteer Time Logged</h1>
+          Thank you.<br />
+          <ul>
+            <li><a href="/civicrm/vol/#/volunteer/opportunities">Sign-up for more opportunities</a></li>
+            <li><a href="/">Return home</a></li>
+          </ul>
+        </div>
       </div>
 
     </div>
