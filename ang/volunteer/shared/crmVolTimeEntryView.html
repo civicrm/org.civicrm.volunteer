@@ -13,7 +13,11 @@
   </td>
   <td class="crm-vol-log-duration">
     <!-- TODO: replace this with a directive for specifying time by hours/minutes -->
-    <input ng-model="ngModel.time_completed_minutes" />
+    <input
+      ng-model="ngModel.time_completed_minutes"
+      placeholder="{{ts('Enter minutes')}}"
+      type="number"
+      />
   </td>
   <td class="crm-vol-log-remove">
     <button crm-icon="fa-times">{{ts('Remove')}}</button>
