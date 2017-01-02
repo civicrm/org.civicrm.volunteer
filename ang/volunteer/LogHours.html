@@ -38,11 +38,18 @@ Optional vars: locBlockHeading
           </p>
         </div>
 
-        <div ng-repeat="project in projects">
-          <crm-vol-project-thumb data="project" ng-click="selectProject(project.id)" />
+        <div class="crm-vol-project-thumb-wrapper">
+          <crm-vol-project-thumb
+            data="project"
+            ng-class="{'selected': project.id === wizardSelections.projectId}"
+            ng-click="selectProject(project.id)"
+            ng-repeat="project in projects" />
         </div>
 
-        <crm-vol-project-detail ng-if="wizardSelections.projectId" data="projects[wizardSelections.projectId]" loc-block-heading="locBlockHeading" />
+        <crm-vol-project-detail
+          data="projects[wizardSelections.projectId]"
+          loc-block-heading="locBlockHeading"
+          ng-class="{'disabled': !wizardSelections.projectId}" />
       </div>
 
       <div crm-ui-wizard-step="3" crm-title="ts('Enter Details')" ng-form="enterDetailsForm">

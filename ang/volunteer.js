@@ -188,6 +188,9 @@
     // through to crmVolLocBlock for displaying a heading for the address.
     .directive('crmVolProjectDetail', function() {
       return {
+        link: function(scope, element, attrs) {
+          scope.ts = CRM.ts(null);
+        },
         restrict: 'E',
         scope: {
           locBlockHeading: '=',

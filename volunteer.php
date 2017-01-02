@@ -653,7 +653,12 @@ function volunteer_civicrm_angularModules(&$angularModules) {
         1 => 'ang/volunteer/*.js',
         2 => 'ang/volunteer/*/*.js'
       ),
-    'css' => array (0 => 'ang/volunteer.css'),
+    'css' => array(
+      'ang/volunteer.css',
+      'ang/volunteer/shared/crmVolLocBlock.css',
+      'ang/volunteer/shared/crmVolProjectDetail.css',
+      'ang/volunteer/shared/crmVolProjectThumb.css',
+    ),
     'partials' => array (0 => 'ang/volunteer'),
     'settings' => array (),
     'volunteer' => true
