@@ -128,6 +128,10 @@
         }).then(function(success) {
           _.each(success.values, function(value, key) {
             if (value['api.VolunteerAssignment.get'].count) {
+              // Account for inconsistent property names: role_id in get; volunteer_role_id in create.
+              _.each(value['api.VolunteerAssignment.get'].values, function(v, k) {
+                v.volunteer_role_id = v.role_id;
+              });
               Array.prototype.push.apply($scope.existingTimeEntries, value['api.VolunteerAssignment.get'].values);
             }
           });
