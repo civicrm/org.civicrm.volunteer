@@ -14,7 +14,11 @@ Optional vars: locBlockHeading
   <div id="crm-vol-log-hours-wizard-form-wrapper" ng-if="!submitted">
   <form name="logHours" novalidate>
     <div crm-ui-wizard="logHoursWizardCtrl">
-
+      <div class="help">
+        <p>
+          {{ts('Log the time you volunteered. First, please select the organization you volunteered for.')}}
+        </p>
+      </div>
       <div crm-ui-wizard-step="1" crm-title="ts('Select Beneficiary')" ng-form="selectBeneficiaryForm">
         <div crm-ui-id-scope>
           <div crm-ui-field="{name: 'selectBeneficiaryForm.beneficiary', title: ts('Beneficiary')}">
