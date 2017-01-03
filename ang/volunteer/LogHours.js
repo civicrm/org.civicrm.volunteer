@@ -17,7 +17,7 @@
     }
   );
 
-  angular.module('volunteer').controller('VolunteerLogHours', function($scope, $location, $route, crmApi, crmUiAlert, crmUiHelp, supportingData) {
+  angular.module('volunteer').controller('VolunteerLogHours', function($scope, $window, $location, $route, crmApi, crmUiAlert, crmUiHelp, supportingData) {
     // The ts() and hs() functions help load strings for this module.
     var ts = $scope.ts = CRM.ts('org.civicrm.volunteer');
     var hs = $scope.hs = crmUiHelp({file: 'CRM/Volunteer/Form/Volunteer'}); // See: templates/CRM/volunteer/Project.hlp
@@ -49,6 +49,14 @@
       }
     };
 
+    $scope.goHome = function() {
+      $window.location.href = '/';
+    };
+
+    $scope.goTo = function(url) {
+      $location.path(url);
+    }
+
     $scope.saveTimeEntries = function() {
       $scope.submitted = true;
       CRM.$('div[ng-form=enterDetailsForm]').block();
@@ -70,6 +78,10 @@
     $scope.selectProject = function(id) {
       $scope.wizardSelections.projectId = id;
     };
+
+    $scope.startOver = function() {
+      $route.reload();
+    }
 
     // Refresh the project list when the beneficiary is changed.
     $scope.$watch('wizardSelections.beneficiaryId', function (newValue, oldValue, scope) {

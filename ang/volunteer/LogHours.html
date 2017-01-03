@@ -98,11 +98,9 @@ Optional vars: locBlockHeading
   </div>
   <div id="crm-vol-log-hours-wizard-confirm" ng-if="submitted">
     <h1>Volunteer Time Logged</h1>
-    Thank you.<br />
-    <ul>
-      <li><a href="/civicrm/vol/#/volunteer/opportunities">Sign-up for more opportunities.</a></li>
-      <li><a href="/civicrm/vol/#/volunteer/log">Log more hours.</a></li>
-      <li><a href="/">Return home.</a></li>
-    </ul>
+    <p>Thank you.</p>
+    <button crm-icon="fa-search" ng-click="goTo('/volunteer/opportunities')">Find more opportunities</button>
+    <button crm-icon="fa-clock-o" ng-click="startOver()">Log more hours</button>
+    <button crm-icon="fa-home" ng-click="goHome()">Return home</button>
   </div>
 </div>
