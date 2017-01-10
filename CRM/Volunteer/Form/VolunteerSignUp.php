@@ -207,7 +207,7 @@ class CRM_Volunteer_Form_VolunteerSignUp extends CRM_Core_Form {
       $openNeeds += CRM_Volunteer_BAO_Project::retrieveByID($projectId)->open_needs;
     }
 
-    foreach ($this->_needs as $needId => $needArr) {
+    foreach ($this->_needs as $needId => &$needArr) {
       // Don't bother checking for need validity if the project has been invalidated.
       if (array_key_exists($needArr['project_id'], $invalidatedProjects)) {
         continue;
@@ -222,6 +222,8 @@ class CRM_Volunteer_Form_VolunteerSignUp extends CRM_Core_Form {
         $this->preProcessErrors[2] = ts('One or more volunteer opportunities is at maximum capacity or is in the past.', array('domain' => 'org.civicrm.volunteer'));
         continue;
       }
+
+      $needArr['quantity_available'] = $openNeeds[$needId]['quantity'] - $openNeeds[$needId]['quantity_assigned'];
     }
   }
 
@@ -367,6 +369,16 @@ class CRM_Volunteer_Form_VolunteerSignUp extends CRM_Core_Form {
     if ($allowAdditionalVolunteers) {
       //Give the volunteer a box to select how many friends they are bringing
       $this->add("text", "additionalVolunteerQuantity", ts("Number of Additional Volunteers", array('domain' => 'org.civicrm.volunteer')), array("size" => 3));
+
+      // VOL-282: Cap how many additional volunteers can be added based on the opp with the fewest openings
+      $quantitiesAvailable = array_column($this->_needs, 'quantity_available');
+      reset($this->_projects);
+      CRM_Core_Resources::singleton()->addVars('org.civicrm.volunteer', array(
+        // subtract 1 to account for the primary volunteer
+        'maxAddtlReg' => min($quantitiesAvailable) - 1,
+        'projectId' => key($this->_projects),
+      ));
+
       if(!empty($this->_submitValues)) {
 
         $additionalVolunteerQuantity = CRM_Utils_Array::value("additionalVolunteerQuantity", $this->_submitValues, 0);
