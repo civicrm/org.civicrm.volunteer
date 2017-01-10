@@ -45,7 +45,7 @@ CRM.$(function($) {
 
 
   /*****[ Change the number of additional volunteers ]*****/
-  $("#additionalVolunteerQuantity").change(function(event) {
+  $("#additionalVolunteerQuantity").keyup(function(event) {
 
     //We can't add a non-numerical amount of profile forms
     if(!$.isNumeric($(this).val()) && $(this).val() !== '') {
