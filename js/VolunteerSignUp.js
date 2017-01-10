@@ -55,27 +55,10 @@ CRM.$(function($) {
       return;
     }
 
-    var numberOfExistingRows = $("#additionalVolunteers .additional-volunteer-profile").length;
-    //If we need to add rows, do it.
-    if (numberOfExistingRows < numberRequested) {
-      var numberOfRowsToAdd = numberRequested - numberOfExistingRows;
-      var i = 1;
-      while (i <= numberOfRowsToAdd) {
-        addProfileRow();
-        i++;
-      }
-    }
-
-    //Show and Hide the Profile rows
-    $("#additionalVolunteers .additional-volunteer-profile").slice(0, numberRequested).slideDown();
-    $("#additionalVolunteers .additional-volunteer-profile").slice(numberRequested).slideUp();
-
     // VOL-282: Cap how many additional volunteers can be added based on the opp with the fewest openings
     var max = CRM.vars['org.civicrm.volunteer'].maxAddtlReg;
     if (numberRequested > max) {
-      $(this).val(max)
-              // trigger keyup again to remove the rows added over the minimum
-              .trigger('keyup');
+      $(this).val(max);
       CRM.confirm({
         message: ts('This opportunity can accommodate only %1 more volunteer(s). Click a button below to select a course of action.', {1: max}),
         options: {
@@ -92,8 +75,25 @@ CRM.$(function($) {
       }).on('crmConfirm:searchAll', function() {
         window.location.href = CRM.url('civicrm/vol/#volunteer/opportunities');
       });
+
+      // force the number requested to the max allowed so that no extra rows are built
+      numberRequested = max;
     }
 
+    var numberOfExistingRows = $("#additionalVolunteers .additional-volunteer-profile").length;
+    // If we need to add rows, do it.
+    if (numberOfExistingRows < numberRequested) {
+      var numberOfRowsToAdd = numberRequested - numberOfExistingRows;
+      var i = 1;
+      while (i <= numberOfRowsToAdd) {
+        addProfileRow();
+        i++;
+      }
+    }
+
+    //Show and Hide the Profile rows
+    $("#additionalVolunteers .additional-volunteer-profile").slice(0, numberRequested).slideDown();
+    $("#additionalVolunteers .additional-volunteer-profile").slice(numberRequested).slideUp();
   });
 
 
