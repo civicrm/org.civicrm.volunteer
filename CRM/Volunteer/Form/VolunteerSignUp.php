@@ -769,8 +769,8 @@ class CRM_Volunteer_Form_VolunteerSignUp extends CRM_Core_Form {
   }
 
   /**
-   * If the form preprocessing uncovers problems with the passed needs, display
-   * them via this method.
+   * Subroutine of buildQuickForm. Used to display preProcessing validation
+   * errors to the user. Prevents the display of form elements.
    */
   private function buildErrorPage() {
     CRM_Utils_System::setTitle(ts('An unrecoverable error has occurred', array('domain' => 'org.civicrm.volunteer')));
