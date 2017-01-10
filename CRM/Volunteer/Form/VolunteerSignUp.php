@@ -773,7 +773,7 @@ class CRM_Volunteer_Form_VolunteerSignUp extends CRM_Core_Form {
    * errors to the user. Prevents the display of form elements.
    */
   private function buildErrorPage() {
-    CRM_Utils_System::setTitle(ts('An unrecoverable error has occurred', array('domain' => 'org.civicrm.volunteer')));
+    CRM_Utils_System::setTitle(ts('Please select a different volunteer opportunity', array('domain' => 'org.civicrm.volunteer')));
     $region = CRM_Core_Region::instance('page-body');
     $region->update('default', array(
       'disabled' => TRUE,
