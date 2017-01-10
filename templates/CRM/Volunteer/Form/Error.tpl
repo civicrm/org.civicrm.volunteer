@@ -1,6 +1,6 @@
 <div class="error messages">
   <p>
-    {ts}The volunteer registration form cannot be displayed due to the following error(s):{/ts}
+    {ts}You cannot proceed to register because of the following problem(s):{/ts}
   </p>
   <ul>
     {foreach from=$errors item=errorMsg}
