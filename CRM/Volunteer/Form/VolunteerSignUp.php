@@ -69,6 +69,13 @@ class CRM_Volunteer_Form_VolunteerSignUp extends CRM_Core_Form {
   protected $_needs = array();
 
   /**
+   * Error messages to display, related to the need IDs passed to the form via URL.
+   *
+   * @var array
+   */
+  protected $preProcessErrors = array();
+
+  /**
    * The profile IDs associated with this form and marked
    * for use with the primary contact.
    *
@@ -173,11 +180,51 @@ class CRM_Volunteer_Form_VolunteerSignUp extends CRM_Core_Form {
     }
     $this->fetchProjectDetails();
 
+    $this->preProcessNeeds();
+
     $this->setDestination();
     $this->_action = CRM_Utils_Request::retrieve('action', 'String', $this, FALSE);
 
     // current mode
     $this->_mode = ($this->_action == CRM_Core_Action::PREVIEW) ? 'test' : 'live';
+  }
+
+  /**
+   * Preprocesses needs passed via URL.
+   *
+   * Checks that the supplied needs are valid for registration (e.g., is the
+   * project or need enabled? has the need already been filled?).
+   */
+  private function preProcessNeeds() {
+    $invalidatedProjects = array();
+    $openNeeds = array();
+    foreach ($this->_projects as $projectId => $projectArr) {
+      if (!$projectArr['is_active']) {
+        $this->preProcessErrors[0] = ts('One or more of the specified volunteer opportunities is associated with a project which has been deleted or disabled.', array('domain' => 'org.civicrm.volunteer'));
+        $invalidatedProjects[$projectId] = $projectArr;
+        continue;
+      }
+      $openNeeds += CRM_Volunteer_BAO_Project::retrieveByID($projectId)->open_needs;
+    }
+
+    foreach ($this->_needs as $needId => &$needArr) {
+      // Don't bother checking for need validity if the project has been invalidated.
+      if (array_key_exists($needArr['project_id'], $invalidatedProjects)) {
+        continue;
+      }
+
+      if (!$needArr['is_active']) {
+        $this->preProcessErrors[1] = ts('One or more specified volunteer opportunities has been deleted or disabled.', array('domain' => 'org.civicrm.volunteer'));
+        continue;
+      }
+
+      if (!array_key_exists($needId, $openNeeds) && !$needArr['is_flexible']) {
+        $this->preProcessErrors[2] = ts('One or more volunteer opportunities is at maximum capacity or is in the past.', array('domain' => 'org.civicrm.volunteer'));
+        continue;
+      }
+
+      $needArr['quantity_available'] = $openNeeds[$needId]['quantity'] - $openNeeds[$needId]['quantity_assigned'];
+    }
   }
 
   /**
@@ -272,7 +319,12 @@ class CRM_Volunteer_Form_VolunteerSignUp extends CRM_Core_Form {
   }
 
   function buildQuickForm() {
-    CRM_Utils_System::setTitle(ts('Sign Up to Volunteer'));
+    if (count($this->preProcessErrors)) {
+      $this->buildErrorPage();
+      return;
+    }
+
+    CRM_Utils_System::setTitle(ts('Sign Up to Volunteer', array('domain' => 'org.civicrm.volunteer')));
 
     $contactID = CRM_Utils_Array::value('userID', $_SESSION['CiviCRM']);
     $profiles = $this->buildCustom($this->getPrimaryVolunteerProfileIDs(), $contactID);
@@ -317,6 +369,16 @@ class CRM_Volunteer_Form_VolunteerSignUp extends CRM_Core_Form {
     if ($allowAdditionalVolunteers) {
       //Give the volunteer a box to select how many friends they are bringing
       $this->add("text", "additionalVolunteerQuantity", ts("Number of Additional Volunteers", array('domain' => 'org.civicrm.volunteer')), array("size" => 3));
+
+      // VOL-282: Cap how many additional volunteers can be added based on the opp with the fewest openings
+      $quantitiesAvailable = array_column($this->_needs, 'quantity_available');
+      reset($this->_projects);
+      CRM_Core_Resources::singleton()->addVars('org.civicrm.volunteer', array(
+        // subtract 1 to account for the primary volunteer
+        'maxAddtlReg' => min($quantitiesAvailable) - 1,
+        'projectId' => key($this->_projects),
+      ));
+
       if(!empty($this->_submitValues)) {
 
         $additionalVolunteerQuantity = CRM_Utils_Array::value("additionalVolunteerQuantity", $this->_submitValues, 0);
@@ -704,6 +766,22 @@ class CRM_Volunteer_Form_VolunteerSignUp extends CRM_Core_Form {
     }
 
     $this->_destination = CRM_Utils_System::url($path, $query, FALSE, $fragment);
+  }
+
+  /**
+   * Subroutine of buildQuickForm. Used to display preProcessing validation
+   * errors to the user. Prevents the display of form elements.
+   */
+  private function buildErrorPage() {
+    CRM_Utils_System::setTitle(ts('Please select a different volunteer opportunity', array('domain' => 'org.civicrm.volunteer')));
+    $region = CRM_Core_Region::instance('page-body');
+    $region->update('default', array(
+      'disabled' => TRUE,
+    ));
+    $region->add(array(
+      'template' => 'CRM/Volunteer/Form/Error.tpl',
+    ));
+    $this->assign('errors', $this->preProcessErrors);
   }
 
 }

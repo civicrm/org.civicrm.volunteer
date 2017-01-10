@@ -45,18 +45,43 @@ CRM.$(function($) {
 
 
   /*****[ Change the number of additional volunteers ]*****/
-  $("#additionalVolunteerQuantity").change(function(event) {
+  $("#additionalVolunteerQuantity").keyup(function(event) {
+
+    var numberRequested = $(this).val();
 
     //We can't add a non-numerical amount of profile forms
-    if(!$.isNumeric($(this).val()) && $(this).val() !== '') {
+    if(!$.isNumeric(numberRequested) && numberRequested !== '') {
       CRM.alert(ts("Please supply a number"));
       return;
     }
 
-    var numberOfExistingRows = $("#additionalVolunteers .additional-volunteer-profile").length;
-    var numberRequested = $(this).val();
+    // VOL-282: Cap how many additional volunteers can be added based on the opp with the fewest openings
+    var max = CRM.vars['org.civicrm.volunteer'].maxAddtlReg;
+    if (numberRequested > max) {
+      $(this).val(max);
+      CRM.confirm({
+        message: ts('This opportunity can accommodate only %1 more volunteer(s). Click a button below to select a course of action.', {1: max}),
+        options: {
+          // First option is called "no" to get the X icon
+          no: ts('Continue with %1 volunteer(s)', {1: max}),
+          searchProject: ts('Search for other opportunities in this project'),
+          searchAll: ts('Search all volunteer projects')
+        },
+        title: ts('Invalid Selection')
+      }).on('crmConfirm:searchProject', function() {
+        window.location.href = CRM.url('civicrm/vol/#volunteer/opportunities', {
+          project: CRM.vars['org.civicrm.volunteer'].projectId
+        });
+      }).on('crmConfirm:searchAll', function() {
+        window.location.href = CRM.url('civicrm/vol/#volunteer/opportunities');
+      });
 
-    //If we need to add rows, do it.
+      // force the number requested to the max allowed so that no extra rows are built
+      numberRequested = max;
+    }
+
+    var numberOfExistingRows = $("#additionalVolunteers .additional-volunteer-profile").length;
+    // If we need to add rows, do it.
     if (numberOfExistingRows < numberRequested) {
       var numberOfRowsToAdd = numberRequested - numberOfExistingRows;
       var i = 1;
@@ -70,7 +95,6 @@ CRM.$(function($) {
     $("#additionalVolunteers .additional-volunteer-profile").slice(0, numberRequested).slideDown();
     $("#additionalVolunteers .additional-volunteer-profile").slice(numberRequested).slideUp();
   });
-
 
 
   /*****[ Setup the Template ]*****/
