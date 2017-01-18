@@ -86,25 +86,34 @@ class CRM_Volunteer_Form_VolunteerReport extends CRM_Report_Form {
         ),
         'filters' => array(
           'contact_assignee' => array(
-            'name' => 'sort_name',
+            'name' => 'id',
             'alias' => 'civicrm_contact_assignee_civireport',
-            'title' => ts('Volunteer Name', array('domain' => 'org.civicrm.volunteer')),
-            'operator' => 'like',
-            'type' => CRM_Report_Form::OP_STRING,
+            'title' => ts('Volunteer (assignee contact)', array('domain' => 'org.civicrm.volunteer')),
+            'operatorType' => CRM_Report_Form::OP_ENTITYREF,
+            'type' => CRM_Utils_Type::T_INT,
+            'attributes' => array(
+              'select' => array('minimumInputLength' => 0),
+            ),
           ),
           'contact_source' => array(
-            'name' => 'sort_name',
+            'name' => 'id',
             'alias' => 'civicrm_contact_source',
-            'title' => ts('Source Contact Name', array('domain' => 'org.civicrm.volunteer')),
-            'operator' => 'like',
-            'type' => CRM_Report_Form::OP_STRING,
+            'title' => ts('Assigner (source contact)', array('domain' => 'org.civicrm.volunteer')),
+            'operatorType' => CRM_Report_Form::OP_ENTITYREF,
+            'type' => CRM_Utils_Type::T_INT,
+            'attributes' => array(
+              'select' => array('minimumInputLength' => 0),
+            ),
           ),
           'contact_target' => array(
-            'name' => 'sort_name',
+            'name' => 'id',
             'alias' => 'contact_civireport',
-            'title' => ts('Target Contact Name', array('domain' => 'org.civicrm.volunteer')),
-            'operator' => 'like',
-            'type' => CRM_Report_Form::OP_STRING,
+            'title' => ts('Beneficiary (target contact)', array('domain' => 'org.civicrm.volunteer')),
+            'operatorType' => CRM_Report_Form::OP_ENTITYREF,
+            'type' => CRM_Utils_Type::T_INT,
+            'attributes' => array(
+              'select' => array('minimumInputLength' => 0),
+            ),
           ),
           'current_user' => array(
             'name' => 'current_user',
