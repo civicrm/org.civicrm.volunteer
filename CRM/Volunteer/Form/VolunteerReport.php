@@ -632,6 +632,49 @@ class CRM_Volunteer_Form_VolunteerReport extends CRM_Report_Form {
     $this->_aclWhere = NULL;
   }
 
+  function preProcessCommon() {
+    parent::preProcessCommon();
+    $this->handleLegacyContactParams();
+  }
+
+  /**
+   * Tries to adapt legacy contact filters and prompts the user to update the report.
+   *
+   * Previously the activity contact filters compared strings against contacts'
+   * sort names. Now the report uses autocompletes and stores a string of
+   * comma-separated contact IDs.
+   */
+  protected function handleLegacyContactParams() {
+    $updatedFilters = array('contact_assignee', 'contact_source', 'contact_target');
+
+    $msgs = array();
+    foreach ($updatedFilters as $column) {
+      $formKey = $column . '_value';
+      $value = CRM_Utils_Array::value($formKey, $this->_formValues);
+
+      // bail out if nothing was retrieved or if value matches the new storage format
+      if (!$value || preg_match('#^\d+(,\d+)*$#', $value)) {
+        continue;
+      }
+
+      $api = civicrm_api3('Contact', 'get', array(
+        'sort_name' => $value,
+      ));
+      $this->_formValues[$formKey] = implode(',', array_keys($api['values']));
+      $this->_formValues[$column . '_op'] = 'in';
+      $msgs[$column] = '<li><strong>' . $this->_columns['civicrm_contact']['filters'][$column]['title'] . '</strong><br />' .
+          ts('stored value:', array('domain' => 'org.civicrm.volunteer')) .
+          ' <em>' . $value . '</em></li>';
+    }
+
+    if (count($msgs)) {
+      $msg = '<p>' . ts('This report template has been updated to enable contact autocomplete on the "Filters" tab. Please review the following filters and re-save the report to ensure there are no unexpected results:', array('domain' => 'org.civicrm.volunteer')) . '</p><ul>';
+      $msg .= implode('', $msgs);
+      $msg .= '</ul>';
+      CRM_Core_Session::setStatus($msg, ts('Time to Update Your Report!', array('domain' => 'org.civicrm.volunteer')), 'alert', array('expires' => 0));
+    }
+  }
+
   function postProcess() {
     $this->buildACLClause(array('civicrm_contact_source', 'contact_civireport', 'civicrm_contact_assignee'));
     parent::postProcess();
