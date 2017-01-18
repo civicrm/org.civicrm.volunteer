@@ -296,7 +296,18 @@ class CRM_Volunteer_Form_VolunteerReport extends CRM_Report_Form {
       ),
     );
 
-    // forgive me for this terrible hack
+    $this->addPhoneFields();
+
+    $this->_groupFilter = TRUE;
+    $this->_tagFilter = TRUE;
+    parent::__construct();
+  }
+
+  /**
+   * Loops through the various activity contacts and phone types and builds a
+   * column for each phone type per contact.
+   */
+  protected function addPhoneFields() {
     $phoneTypes = CRM_Core_BAO_Phone::buildOptions('phone_type_id');
     $activityRoles = array(
       'assignee' => array(
@@ -316,6 +327,7 @@ class CRM_Volunteer_Form_VolunteerReport extends CRM_Report_Form {
       ),
     );
 
+    // a table for each contact related to the activity
     foreach ($activityRoles as $roleKey => $role) {
       $table = "phone_{$roleKey}";
       $this->_columns[$table] = array(
@@ -325,6 +337,7 @@ class CRM_Volunteer_Form_VolunteerReport extends CRM_Report_Form {
         'fields' => array(),
       );
 
+      // a field for each type of phone number
       foreach ($phoneTypes as $phoneKey => $label) {
         $this->_columns[$table]['fields']["{$table}_type{$phoneKey}"] = array(
           'alias' => "{$table}_civireport_type{$phoneKey}",
@@ -333,10 +346,6 @@ class CRM_Volunteer_Form_VolunteerReport extends CRM_Report_Form {
         );
       }
     }
-
-    $this->_groupFilter = TRUE;
-    $this->_tagFilter = TRUE;
-    parent::__construct();
   }
 
   function select() {
