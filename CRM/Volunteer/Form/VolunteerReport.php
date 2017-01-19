@@ -86,25 +86,34 @@ class CRM_Volunteer_Form_VolunteerReport extends CRM_Report_Form {
         ),
         'filters' => array(
           'contact_assignee' => array(
-            'name' => 'sort_name',
+            'name' => 'id',
             'alias' => 'civicrm_contact_assignee_civireport',
-            'title' => ts('Volunteer Name', array('domain' => 'org.civicrm.volunteer')),
-            'operator' => 'like',
-            'type' => CRM_Report_Form::OP_STRING,
+            'title' => ts('Volunteer (assignee contact)', array('domain' => 'org.civicrm.volunteer')),
+            'operatorType' => CRM_Report_Form::OP_ENTITYREF,
+            'type' => CRM_Utils_Type::T_INT,
+            'attributes' => array(
+              'select' => array('minimumInputLength' => 0),
+            ),
           ),
           'contact_source' => array(
-            'name' => 'sort_name',
+            'name' => 'id',
             'alias' => 'civicrm_contact_source',
-            'title' => ts('Source Contact Name', array('domain' => 'org.civicrm.volunteer')),
-            'operator' => 'like',
-            'type' => CRM_Report_Form::OP_STRING,
+            'title' => ts('Assigner (source contact)', array('domain' => 'org.civicrm.volunteer')),
+            'operatorType' => CRM_Report_Form::OP_ENTITYREF,
+            'type' => CRM_Utils_Type::T_INT,
+            'attributes' => array(
+              'select' => array('minimumInputLength' => 0),
+            ),
           ),
           'contact_target' => array(
-            'name' => 'sort_name',
+            'name' => 'id',
             'alias' => 'contact_civireport',
-            'title' => ts('Target Contact Name', array('domain' => 'org.civicrm.volunteer')),
-            'operator' => 'like',
-            'type' => CRM_Report_Form::OP_STRING,
+            'title' => ts('Beneficiary (target contact)', array('domain' => 'org.civicrm.volunteer')),
+            'operatorType' => CRM_Report_Form::OP_ENTITYREF,
+            'type' => CRM_Utils_Type::T_INT,
+            'attributes' => array(
+              'select' => array('minimumInputLength' => 0),
+            ),
           ),
           'current_user' => array(
             'name' => 'current_user',
@@ -296,7 +305,18 @@ class CRM_Volunteer_Form_VolunteerReport extends CRM_Report_Form {
       ),
     );
 
-    // forgive me for this terrible hack
+    $this->addPhoneFields();
+
+    $this->_groupFilter = TRUE;
+    $this->_tagFilter = TRUE;
+    parent::__construct();
+  }
+
+  /**
+   * Loops through the various activity contacts and phone types and builds a
+   * column for each phone type per contact.
+   */
+  protected function addPhoneFields() {
     $phoneTypes = CRM_Core_BAO_Phone::buildOptions('phone_type_id');
     $activityRoles = array(
       'assignee' => array(
@@ -316,6 +336,7 @@ class CRM_Volunteer_Form_VolunteerReport extends CRM_Report_Form {
       ),
     );
 
+    // a table for each contact related to the activity
     foreach ($activityRoles as $roleKey => $role) {
       $table = "phone_{$roleKey}";
       $this->_columns[$table] = array(
@@ -325,6 +346,7 @@ class CRM_Volunteer_Form_VolunteerReport extends CRM_Report_Form {
         'fields' => array(),
       );
 
+      // a field for each type of phone number
       foreach ($phoneTypes as $phoneKey => $label) {
         $this->_columns[$table]['fields']["{$table}_type{$phoneKey}"] = array(
           'alias' => "{$table}_civireport_type{$phoneKey}",
@@ -333,10 +355,6 @@ class CRM_Volunteer_Form_VolunteerReport extends CRM_Report_Form {
         );
       }
     }
-
-    $this->_groupFilter = TRUE;
-    $this->_tagFilter = TRUE;
-    parent::__construct();
   }
 
   function select() {
@@ -612,6 +630,49 @@ class CRM_Volunteer_Form_VolunteerReport extends CRM_Report_Form {
 
     $this->_aclFrom = implode(" ", $clauses);
     $this->_aclWhere = NULL;
+  }
+
+  function preProcessCommon() {
+    parent::preProcessCommon();
+    $this->handleLegacyContactParams();
+  }
+
+  /**
+   * Tries to adapt legacy contact filters and prompts the user to update the report.
+   *
+   * Previously the activity contact filters compared strings against contacts'
+   * sort names. Now the report uses autocompletes and stores a string of
+   * comma-separated contact IDs.
+   */
+  protected function handleLegacyContactParams() {
+    $updatedFilters = array('contact_assignee', 'contact_source', 'contact_target');
+
+    $msgs = array();
+    foreach ($updatedFilters as $column) {
+      $formKey = $column . '_value';
+      $value = CRM_Utils_Array::value($formKey, $this->_formValues);
+
+      // bail out if nothing was retrieved or if value matches the new storage format
+      if (!$value || preg_match('#^\d+(,\d+)*$#', $value)) {
+        continue;
+      }
+
+      $api = civicrm_api3('Contact', 'get', array(
+        'sort_name' => $value,
+      ));
+      $this->_formValues[$formKey] = implode(',', array_keys($api['values']));
+      $this->_formValues[$column . '_op'] = 'in';
+      $msgs[$column] = '<li><strong>' . $this->_columns['civicrm_contact']['filters'][$column]['title'] . '</strong><br />' .
+          ts('stored value:', array('domain' => 'org.civicrm.volunteer')) .
+          ' <em>' . $value . '</em></li>';
+    }
+
+    if (count($msgs)) {
+      $msg = '<p>' . ts('This report template has been updated to enable contact autocomplete on the "Filters" tab. Please review the following filters and re-save the report to ensure there are no unexpected results:', array('domain' => 'org.civicrm.volunteer')) . '</p><ul>';
+      $msg .= implode('', $msgs);
+      $msg .= '</ul>';
+      CRM_Core_Session::setStatus($msg, ts('Time to Update Your Report!', array('domain' => 'org.civicrm.volunteer')), 'alert', array('expires' => 0));
+    }
   }
 
   function postProcess() {
