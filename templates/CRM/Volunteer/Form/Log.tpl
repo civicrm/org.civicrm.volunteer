@@ -110,7 +110,3 @@
   });
 </script>
 {/literal}
-
-<!-- Commendation libraries -->
-<link rel="stylesheet" type="text/css" href="{$extResourceURL}/css/commendation.css" />
-<script type="text/javascript" src="{$extResourceURL}/js/commendation.js"></script>
