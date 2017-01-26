@@ -84,12 +84,10 @@ class CRM_Volunteer_Form_Log extends CRM_Core_Form {
       $this->_title .= ' )';
     }
 
-    /*
-     * Because CiviCRM's asset management framework isn't mature yet (e.g., adding
-     * assets to forms rendered in pop-ups using CRM_Core_Resources doesn't work),
-     * we pass a URL fragment to the template and include them via HTML.
-     */
-    $this->assign('extResourceURL', CRM_Core_Resources::singleton()->getUrl('org.civicrm.volunteer'));
+    CRM_Core_Resources::singleton()
+        ->addStyleFile('org.civicrm.volunteer', 'css/commendation.css')
+        ->addScriptFile('org.civicrm.volunteer', 'js/commendation.js');
+
     $this->assign('vid', $this->_vid);
   }
 
