@@ -99,14 +99,3 @@
 
 {*include batch copy js js file*}
 {include file="CRM/common/batchCopy.tpl"}
-
-{literal}
-<script type="text/javascript">
-  CRM.$(function($) {
-    $('#addMoreVolunteer').click(function(e){
-      $('div.hiddenElement:first').show().removeClass('hiddenElement').addClass('crm-grid-row').css('display', 'table-row');
-      e.preventDefault();
-    });
-  });
-</script>
-{/literal}

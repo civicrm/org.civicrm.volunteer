@@ -85,6 +85,7 @@ class CRM_Volunteer_Form_Log extends CRM_Core_Form {
     }
 
     CRM_Core_Resources::singleton()
+        ->addScriptFile('org.civicrm.volunteer', 'js/CRM_Volunteer_Form_Log.js')
         ->addStyleFile('org.civicrm.volunteer', 'css/commendation.css')
         ->addScriptFile('org.civicrm.volunteer', 'js/commendation.js');
 
