@@ -468,6 +468,26 @@ class CRM_Volunteer_Form_VolunteerReport extends CRM_Report_Form {
     }
   }
 
+  /**
+   * Backported from CRM_Report_Form in CiviCRM core 4.7.
+   */
+  public function getSelectColumns() {
+    $selectColumns = array();
+    foreach ($this->_columns as $tableName => $table) {
+      if (array_key_exists('fields', $table)) {
+        foreach ($table['fields'] as $fieldName => $field) {
+          if (!empty($field['required']) ||
+              !empty($this->_params['fields'][$fieldName])
+          ) {
+
+            $selectColumns["{$tableName}_{$fieldName}"] = 1;
+          }
+        }
+      }
+    }
+    return $selectColumns;
+  }
+
   function addEmployerClause() {
     if ($this->isTableSelected('civicrm_contact_organization')) {
       $relationshipTypeId = civicrm_api3('RelationshipType', 'getvalue', array(
