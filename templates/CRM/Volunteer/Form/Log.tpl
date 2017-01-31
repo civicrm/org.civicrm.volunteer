@@ -51,7 +51,7 @@
                                       fname="volunteer_status" class="action-icon"
                                       title="{ts domain='org.civicrm.volunteer'}Click here to copy the Volunteer Status value in row one to ALL rows.{/ts}"/>{ts}Status{/ts}
       </div>
-
+      <div class="crm-grid-cell"></div>
     </div>
 
     {section name='i' start=1 loop=$rowCount}
@@ -86,7 +86,11 @@
         <div class="compressed crm-grid-cell">
           {$form.field.$rowNumber.volunteer_status.html}
         </div>
-
+        <div class="crm-grid-cell">
+          <button crm-icon="fa-times" class="crm-button crm-vol-remove-row"><i class="crm-i fa-times"></i>
+            {ts domain='org.civicrm.volunteer'}Remove{/ts}
+          </button>
+        </div>
       </div>
     {/section}
   </div>
@@ -99,18 +103,3 @@
 
 {*include batch copy js js file*}
 {include file="CRM/common/batchCopy.tpl"}
-
-{literal}
-<script type="text/javascript">
-  CRM.$(function($) {
-    $('#addMoreVolunteer').click(function(e){
-      $('div.hiddenElement:first').show().removeClass('hiddenElement').addClass('crm-grid-row').css('display', 'table-row');
-      e.preventDefault();
-    });
-  });
-</script>
-{/literal}
-
-<!-- Commendation libraries -->
-<link rel="stylesheet" type="text/css" href="{$extResourceURL}/css/commendation.css" />
-<script type="text/javascript" src="{$extResourceURL}/js/commendation.js"></script>
