@@ -108,4 +108,28 @@ return array(
     'help_text' => 'Depending on the value of the Campaign Filter Whitelist/Blacklist setting, the campaign types in this list will either be shown or hidden from CiviVolunteer screens.',
   ),
 
+  'volunteer_floating_cart_enabled' => array(
+    'group_name' => 'CiviVolunteer Global Settings',
+    'group' => 'org.civicrm.volunteer',
+    'name' => 'volunteer_floating_cart_enabled',
+    'type' => 'Int',
+    'default' => 1,
+    'add' => '4.5',
+    'is_domain' => 1,
+    'is_contact' => 0,
+    'description' => 'Enable floating cart on opportunities page?',
+    'help_text' => 'Determines if the "Your Selected Volunteer Opportunities" cart floats to the right when you scroll down the page.',
+  ),
+  'volunteer_show_cart_contents' => array(
+    'group_name' => 'CiviVolunteer Global Settings',
+    'group' => 'org.civicrm.volunteer',
+    'name' => 'volunteer_show_cart_contents',
+    'type' => 'Int',
+    'default' => 0,
+    'add' => '4.5',
+    'is_domain' => 1,
+    'is_contact' => 0,
+    'description' => 'Show cart contents by default on opportunities page?',
+    'help_text' => 'Determines if the "Your Selected Volunteer Opportunities" cart contents are shown when it is loaded.',
+  ),
 );
