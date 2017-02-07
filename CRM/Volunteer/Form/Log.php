@@ -236,7 +236,8 @@ class CRM_Volunteer_Form_Log extends CRM_Core_Form {
       $defaults['field'][$i]['volunteer_role'] = CRM_Utils_Array::value($data['volunteer_role_id'], $volunteerRole);
       $defaults['field'][$i]['volunteer_status'] = $data['status_id'];
       $defaults['field'][$i]['activity_id'] = $data['id'];
-      $defaults['field'][$i]['start_date'] = CRM_Utils_Date::customFormat($data['activity_date_time'], "%m/%E/%Y %l:%M %P");
+      $defaults['field'][$i]['start_date'] = CRM_Utils_Date::customFormat($data['activity_date_time']);
+      //Removed US date format: "%m/%E/%Y %l:%M %P " 
       $defaults['field'][$i]["contact_id"] = $data['contact_id'];
       $i++;
     }
