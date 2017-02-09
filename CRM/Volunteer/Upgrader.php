@@ -131,6 +131,9 @@ class CRM_Volunteer_Upgrader extends CRM_Volunteer_Upgrader_Base {
         'is_active' => 1,
       ));
       $optionGroupId = $optionGroup['id'];
+
+      // VOL-288: Prevent caching-related CiviCRM_API3_Exception: "N is not a valid option for field option_group_id"
+      CRM_Core_Invoke::rebuildMenuAndCaches();
     } catch (Exception $e) {
       // if an exception is thrown, most likely the option group already exists,
       // in which case we'll just use that one
