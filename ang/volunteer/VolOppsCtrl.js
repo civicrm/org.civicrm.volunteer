@@ -16,10 +16,7 @@
         // to allow an admin to manage cart-related settings. The stub
         // function below will likely be replaced with an API call.
         settings: function (crmApi) {
-            return crmApi('Setting','getsingle', {
-		group: 'org.civicrm.volunteer',
-		return: ['volunteer_floating_cart_enabled','volunteer_show_cart_contents']
-	    });
+          return CRM.CiviVolunteer;
         },
         supporting_data: function(crmApi) {
           return crmApi('VolunteerUtil', 'getsupportingdata', {

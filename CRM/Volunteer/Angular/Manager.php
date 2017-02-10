@@ -95,6 +95,14 @@ class VolunteerManager extends Manager {
       $this->modules = $this->resolvePatterns($angularModules);
     }
 
+    $cvsetting = civicrm_api('Setting', 'getsingle', array(
+                   'version' => 3,
+                   'group' => 'org.civicrm.volunteer',
+                   'return' => array('volunteer_floating_cart_enabled','volunteer_show_cart_contents'),
+                 ));
+
+    \CRM_Core_Resources::singleton()->addSetting(array('CiviVolunteer' => $cvsetting));
+
     return $this->modules;
   }
 
