@@ -95,6 +95,11 @@
        * @return string
        */
       var buildQueryString = function () {
+        // VOL-187: The beneficiary widget is an entityRef; it expects values as CSV rather than an array.
+        if (volOppSearch.params.beneficiary && typeof volOppSearch.params.beneficiary !== "string") {
+          volOppSearch.params.beneficiary = volOppSearch.params.beneficiary.join(',');
+        }
+
         // clean up the URL by filtering out those params with falsy values
         var cleanUpSearchParams = function (params) {
           return _.transform(params, function (result, value, key) {
@@ -117,6 +122,11 @@
 
         //Update the URL for bookmarkability
         $location.search(buildQueryString());
+
+        // VOL-187: The beneficiary widget is an entityRef, so the value arrives as CSV rather than an array.
+        if (volOppSearch.params.beneficiary && typeof volOppSearch.params.beneficiary === "string") {
+          volOppSearch.params.beneficiary = volOppSearch.params.beneficiary.split(',');
+        }
 
         return crmApi('VolunteerNeed', 'getsearchresult', volOppSearch.params).then(function(data) {
           result = data.values;
