@@ -66,17 +66,9 @@
         <div class="compressed crm-grid-cell">
           {$form.field.$rowNumber.volunteer_role.html}
         </div>
-
-        {if $rowNumber > $showVolunteerRow}
-          <div class="compressed crm-grid-cell">
-          <span
-            class="crm-log-start_date-{$rowNumber}">{include file="CRM/common/jcalendar.tpl" elementName=start_date  elementIndex=$rowNumber batchUpdate=1}</span>
-          </div>
-        {else}
-          <div class="compressed crm-grid-cell">
-            {$form.field.$rowNumber.start_date.html}
-          </div>
-        {/if}
+        <div class="compressed crm-grid-cell">
+          {$form.field.$rowNumber.start_date.html}
+        </div>
         <div class="compressed crm-grid-cell">
           {$form.field.$rowNumber.scheduled_duration.html}
         </div>
