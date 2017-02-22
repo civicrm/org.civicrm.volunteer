@@ -12,5 +12,14 @@ markdown_extensions:
   - pymdownx.tilde
   - pymdownx.betterem
   - pymdownx.mark
+  - pymdownx.magiclink
 pages:
-- Home: index.md
+- Introduction: index.md
+- Installation: installation.md
+- Configuration: configuration.md
+- Volunteer Interest Form: interests.md
+- Search for Volunteer Opportunities: opportunities.md
+- New Volunteer Project: projects.md
+- Events: events.md
+- Reports: reports.md
+- Examples: examples.md
