@@ -23,3 +23,5 @@ pages:
 - Events: events.md
 - Reports: reports.md
 - Examples: examples.md
+- Developer docs:
+  - hook_civicrm_volunteer_projectDefaultSettings: dev/hooks/hook_civicrm_volunteer_projectDefaultSettings.md
