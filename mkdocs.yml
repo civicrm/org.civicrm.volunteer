@@ -22,6 +22,10 @@ pages:
 - New Volunteer Project: projects.md
 - Events: events.md
 - Reports: reports.md
-- Examples: examples.md
+- Examples & Other Resources: resources.md
+- Release notes:
+  - 1.4 release: release/1.4.md
+  - 2.0 release: release/2.0.md
+  - 2.2 release: release/2.2.md
 - Developer docs:
   - hook_civicrm_volunteer_projectDefaultSettings: dev/hooks/hook_civicrm_volunteer_projectDefaultSettings.md
