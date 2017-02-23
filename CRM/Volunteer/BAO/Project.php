@@ -273,6 +273,11 @@ class CRM_Volunteer_BAO_Project extends CRM_Volunteer_DAO_Project {
     $project->copyValues($params);
     $project->save();
 
+    $customData = CRM_Core_BAO_CustomField::postProcess($params, $project->id, 'Volunteer Project');
+    if (!empty($customData)) {
+      CRM_Core_BAO_CustomValueTable::store($customData, 'civicrm_volunteer_project', $project->id);
+    }
+
     // VOL-269: create flexible need during project creation
     if ($op === CRM_Core_Action::ADD) {
       CRM_Volunteer_BAO_Need::create(array(
