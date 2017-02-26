@@ -16,16 +16,19 @@ markdown_extensions:
 pages:
 - Introduction: index.md
 - Installation: installation.md
-- Configuration: configuration.md
-- Volunteer Interest Form: interests.md
-- Search for Volunteer Opportunities: opportunities.md
-- New Volunteer Project: projects.md
-- Events: events.md
-- Reports: reports.md
-- Examples & Other Resources: resources.md
+- Projects: projects.md
+- Opportunities: opportunities.md
+- Assignments: assignments.md
+- Sign up form: sign-up-form.md
+- Interest form: interest-form.md
+- Custom data: custom-data.md
+- Logging hours: logging-hours.md
+- Reporting: reporting.md
+- Live examples: examples.md
 - Release notes:
-  - 1.4 release: release/1.4.md
-  - 2.0 release: release/2.0.md
   - 2.2 release: release/2.2.md
+  - 2.0 release: release/2.0.md
+  - 1.4 release: release/1.4.md
 - Developer docs:
-  - hook_civicrm_volunteer_projectDefaultSettings: dev/hooks/hook_civicrm_volunteer_projectDefaultSettings.md
+  - API functions: dev/api.md
+  - Hooks: dev/hooks.md

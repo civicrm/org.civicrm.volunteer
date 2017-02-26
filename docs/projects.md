@@ -1,273 +1,113 @@
-# New Volunteer Project
+# Volunteer Projects
 
-## New project
+CiviVolunteer uses "projects" to compartmentalize different kinds of volunteering. All volunteering information must be associated with a specific project.
 
-**Volunteer > New Volunteer Project**
+To see all the active projects, go to **Volunteers > Manage Volunteer Projects**. If you're just starting out, you probably won't see any projects here, so below we'll create one.
 
-![](/images/manual_html_4907831511c60fa9.png)
+## Characteristics of a project {:#characteristics}
 
-On this screen, a new project can be created, complete with:
+In addition to simple settings such as "Title" and "Description", each project has the following characteristics:
 
-**Project Title (required identifier)**
+* **Multiple [volunteering opportunities](#opportunities):** Within each project, you can define many different opportunities and assign contacts to those opportunities. In turn, each opportunity can be filled by multiple [assignments](assignments) to separate volunteers.
 
-**Project description**
+* **Ongoing, or event-based:** Projects, by themselves, do not have dates &mdash; so a simple project may be considered "ongoing". If you wish to specify a time frame for a project, you can [associate it with an event](#events).
 
-**Campagne:** option used to link to [CiviCRM
-Campagne](http://book.civicrm.org/user/campaign/what-is-civicampaign)
+* **Active, or not:** Projects can be marked as active or inactive. Only *active* projects will be displayed to potential volunteers. You may wish to keep a project inactive while it is still in the planning stages, or after it is completed.
 
-**Locatie:** Select from a list, or choose: *Create a new location* for
-this project. If selected from a list, there is the option to "Edit
-Location" ,which will be permanently saved after clicking **Save and
-Done.** The location is useful if potential volunteers want to know which
-projects are in their vicinity.
+* **Location:** Specifies the physical location (as an address) where the volunteering will take place. The location is useful if potential volunteers want to know which projects are in their vicinity.
 
+* **Campaign:** Projects can be associated with [campaigns](https://docs.civicrm.org/user/en/stable/campaign/what-is-civicampaign/)
 
-There is also the ability to enable **is this Project Active?** The
-option is enabled (checked) by default. Disabling (unchecking) this
-option will make the project invisible to potential volunteers searching
-for volunteer opportunities.
+    !!! tip
+        You can restrict the campaigns available for association with volunteering projects (by campaign type) by choosing **Volunteers > Configure Volunteer Settings** and looking in the **Global Settings** section.
 
-This is potentially useful for projects that are still in the planning
-phase, which should not allow potential volunteers to sign up, just yet.
+* **Multiple [relationships](#relationships) to contacts:** In order to control editing access and email notifications for each project, we must add relationships from the project to specific CiviCRM contacts.
 
-2nd part of New project: Relationships:
+* **Multiple [registration profiles](#profiles):** Specify which quesitons to ask volunteers when they [sign up](sign-up-form).
 
-![](/images/manual_html_94f732733ef9026d.png)
 
-Owner, Manager, Beneficiary
+## Creating a new project {:#new}
 
-These relationships are specific to CiviVolunteer, and are
-self-documented on this screen, as to their intended usage. If
-necessary: learn how [CiviCRM handles
-Relationships](https://docs.civicrm.org/user/en/stable/organising-your-data/relationships/).
+### New stand-alone project {:#stand-alone}
 
-Also: add the right permissions to the right users (e.g. esp. Owner.)
+A "stand-alone" project is not associated with an event, and thus can be ongoing. Create one as follows:
 
-![](/images/manual_html_3260e73e28a2f222.png)
+1. Choose **Volunteer > New Volunteer Project**.
+2. Fill out the settings and click **Save**.
 
+Next, you can define [volunteer opportunities](/opportunities) by finding the project under **Volunteer > Manage Projects**.
 
-## Volunteer Registration
+### New event-based project {:#events}
 
-![](/images/manual_html_8538cfda8a3c4d5c.png)
+To associate a project with an event, the project must be created from within the event's configuration.
 
-**The first selection menu** is a list of [CiviCRM
-Profiles](https://docs.civicrm.org/user/en/stable/organising-your-data/profiles/)
-and few special profiles that have been added specifically for
-CiviVolunteer (such as Volunteer Sign Up) . The magnifying glass (with
-"voorbeeld") icon to the right allows a quick preview of the resulting
-form from that selected Profile.
+1. First create the event.
+2. Configure the event, and choose the **Volunteers** tab.
+3. Adjust project settings as necessary.
+3. Click **Save** at the bottom of the Volunteers tab to create the project and associate it with the event.
 
-**Use for:** Individual Registration, Group Registration or Both.
+Next, you can define [volunteer opportunities](/opportunities) by finding the project under **Volunteer > Manage Projects**.
 
-*Individual Registration* will use the selected Profile to collect
-information when registering a single Individual.
+!!! note
+    When an event has an associated volunteer project, the event's info page will show a "Volunteer Now" button which takes users to a [sign-up form](/sign-up-form) showing all the available [volunteer opportunities](/opportunities) defined for this project.
 
-*Group Registration* will use the selected Profile to collect
-information when registering multiple Individuals on the same page.
 
-*Both* will us the selected Profile for all volunteer sign-ups, whether
-through Individual or Group Registration.
+## Project relationships {:#relationships}
 
-**(+) add another Profile**
+A common scenario is for an organization to have multiple volunteering projects, with separate staff members responsible for each project in various capacities. To accomodate these needs, CiviVolunteer relates each project to different contacts with *project relationships*.
 
-CiviVolunteer will allow as many Profiles as desired for a single
-Volunteer Project, configured individually via the 'Use For: options.
-Profiles can be added or removed from this page.
+!!! tip
+    The default relationships used for new projects can be be configured within the [project defaults](#defaults).
 
-Clicking **Save and Done** will save the Project and take the user to
-the **Manage Volunteer Projects** screen.
+Out of the box, CiviVolunteer provides the following project relationship types and functionality:
 
+### Owner
 
+Contacts listed as "Owner" of a project will have control over editing and deleting the project.
 
-Clicking **Continue** will save the project and take the user to the
-**Needs** screen, which can also be accessed from **Manage Volunteer
-Projects > Define Needs**
+!!! caution "Permissions required"
+    The following permissions make use of this *owner* relationship and must be set properly to take advantage of this access restriction functionality.
 
-## Manage Volunteer Projects
+    * CiviVolunteer: edit own volunteer projects
+    * CiviVolunteer: delete own volunteer projects
 
-From the **Volunteers** menu, clicking on **Manage Volunteer
-Projects** yields:
+### Manager
 
-![](/images/manual_html_360916e08e6cfe23.png)
+Contacts listed as "Manager" will be BCC'd on all confirmation emails sent by CiviCRM to volunteers who fill out the [sign up form](/sign-up-form).
 
-Any existing projects will be listed on this screen with the
-information:
+### Beneficiary
 
-* Volunteer Project Name and ID
-* Associated Entity
-* Beneficiaries
-* Location
-* Active (Yes/No)
-* List of actions for the project
-
-A new project can be created by clicking on the **+Add Project** button.
-This will display the New Volunteer Project Screen, the same as when
-choosing **Volunteer > New Volunteer Project.**
+When activities are created for volunteering assignments, all contacts listed as "Beneficiary" of the volunteering project will be attached to these activities in the "With Contact" field.
 
-Using the checkboxes to the left of each project (of the checkbox at the
-top header), any number of existing projects may be selected for **Bulk
-Actions:**
+The beneficiary relationship can also be used to report the total number of hours volunteered for specific beneficiaries.
 
-* Delete
-* Enable
-* Disable
+### Other project relationships
 
-Using the search box at the top right, existing projects in the list can
-be filtered by their **Title** of by their associated **Campaign.** The
-**Campaign** dropdown ly displays existing Campaigns.
+Other types of project relationships can be added for any specific [reporting](/reporting) needs of your organization. To add a new type of project relationship choose **Volunteers > Configure Project Relationships**.
 
-For each individual project in the list, there are the following
-additional actions that may be taken:
 
-* Edit
-* Define Needs
-* Assign Volunteers
-* View Volunteer Roster
-* Log Hours
+## Profiles for volunteer registration {:#profiles}
 
-### Edit
+When people sign up to volunter, CiviVolunteer uses profiles to control the questions in the [sign-up form](/sign-up-form).
 
-Edit takes the user to the same screen as **New Volunteer Project,** but
-with the current project information filled in and available for
-modification.
+!!! tip
+    Read more about [CiviCRM profiles](https://docs.civicrm.org/user/en/stable/organising-your-data/profiles/) (in the User Guide) to learn how to edit the fields within a profile and add new profiles.
 
-### Define Volunteer Opportunities
+These profiles are set per-project, and multiple profiles can be used in sequence.
 
-Define Opportunities takes the user to a new screen to define the
-volunteers needed for the project.
+Edit the project to select the profile(s) you would like to use.
 
-![](/images/manual_html_a4582ccd0050fd45.png)
+To edit the fields within the profiles go to **Administer > Customize Data and Screens**. Also read about [custom data](/custom-data) if you want to add fields within these profiles that do not correspond to any fields already in CiviCRM.
 
-Use this form to define the number of volunteers needed for each role
-and time slot. For each slot, you will select a role, set the number of
-volunteers needed, set a start date and time, and indicate the duration
-in minutes.
+### Group registration
 
-If you want to include a 'Sign Up' button on the event information page,
-check the 'Public' column for at least one of the slots, or check the
-box to allow users to sign up without specifying a shift. 'Public' slots
-will be visible on the public signup form. You will also need to ensure
-that the 'CiviVolunteer: register to volunteer' permission has been
-enabled.
+When volunteers sign up (i.e. register), you can also offer them the option of  registering *other* people, too. We call this "group registration", and when it's enabled, the registration form will first ask the user for *their* information and then ask them for the "Number of Additional Volunteers". Subsequetnly, CiviVolunteer will ask questions about each of the additional volunteers and these questions that CiviVolunteer presents to the *additional* volunteers can even be *different* from questions presented at first to the person signing everyone up.
 
-If this is a new type of volunteer project, you may need to create
-additional volunteer roles first from **Administer > Administration
-Console > Volunteer Roles** OR **Volunteers > Configure Roles**
+To enable group registration, select at least one profile to be used for "Group Registration" or "Both".
 
-Many volunteer programs do not work on fixed dates. For instance, a
-teacher may have a window of several months to schedule a guest lecturer
-for the fall semester. For these applications, the use of fuzzy dates is
-helpful.
+Now let's say you want to ask different questions of the additional volunteers. *(Perhaps you want to collect a phone number for the "primary" volunteer who is signing everyone up, but don't feel this is necessary to collect for all the other volunteers signed up by this person)*. Then choose different profiles to be used for "Individual Registration" vs "Group Registration". The fields in the "Individual Registration" profile will be presented first. Then the fields in the "Group Registration" profile will be presented after the "Additional Volunteers" question.
 
-The **End Date/Time** field can be used to specify fuzzy dates, or a
-window during which the volunteer is sought. This field can be used in
-conjunction with the Start Date/Time and Duration fields to declare a
-need for three hours of volunteering sometime in December, for instance.
 
-### **Assign Volunteers**
+## Changing the default project settings {:#defaults}
 
-Assign Volunteers takes the user to a new screen to view roles currently
-assigned volunteers, copy volunteers between roles, or remove volunteers
-from roles.
-
-![](/images/manual_html_ddf7bddbb46845f9.png)
-
-This screen can be used to view which Volunteers are assigned to their
-respective Volunteer Events, and which Role(s) they intend to fulfil.
-Basic contact information, such as E-mail and Phone Number are displayed
-next to each Volunteer Entry. Clicking on a Volunteer's name will take
-the user to the associated Contact, where more complete information may
-be displayed.
-
-This screen can also be used to move a Volunteer to a different
-Role/Event by doing one of the following:
-
-* Drag and drop the Volunteer via the crosshairs to the left of their
-  name (to an available empty slot)
-* Click the Action Arrow (dropdown menu) to the right of the
-  Volunteer's name and choose **Move to** > Desired Event Role
-
-In a similar fashion, using the Action Arrow (dropdown menu), a
-Volunteer can be remove from a Role/Event or copied to another
-Role/Event by choosing: **Delete** OR **Copy to** Desired Role/Event
-respectively.
-
-Note that you can search for volunteers by clicking on the magnifying
-glass on the right hand corner per volunteer need. The search shows the
-custom fields of the Volunteer data and of specific groups.
-
-Note that there is no checking on whether a person has already signed up
-for 2 or more shifts at the same time. Some shifts you can easily do at
-the same time. E.g: be a Ticket checker and also be a back up for when
-they need First Aid.
-
-
-### View Volunteer Roster
-
-View Volunteer Roster takes the user to a new screen to view roles
-currently assigned volunteers, and provides one-click options for
-contacting those volunteers, via E-mail, Call or SMS, based upon the
-Contact information available.
-
-![](/images/manual_html_7abd44053d1d3c55.png)
-
-Note that any volunteer assignments that '*end before the current
-date'*will not be shown on this screen. In this manner, only current and
-future assignments are shown.
-
-Contact your volunteers: use standard CiviCRM functionality
-
-If you want to contact volunteers of one project or one shift or of one
-role of one day, use sdvanced search: Contacts – Volunteers – activity
-volunteer – scheduled – CiviVolunteer Role – name of project. Send them
-either an e-mail or a mass mailing.
-
-Can we expand the CiviVolunteer Tab in activities as far as searching is
-concerned. You can now only search for the role, not for the other
-things like date or shift. Might be useful to certain organisations.
-Once you have done that, you can send mailings to that group of people.
-
-### Log hours
-
-Log hours takes the user to a new screen to record the actual time spent
-by each Volunteer in a specific Role.
-
-By Clicking on **+ Add Volunteer** button on the lower left, a new entry
-can be recorded with the following fields
-
-* **Star Icon (Commendation):** 'gold star 'to give merit to a
-    volunteer' (the user will be asked to write text to explain the
-    merit) . The activity 'Volunteer Commendation' is added on the
-    contact card of the individual.
-
-* **Contact:** any CiviCRM Contact entered using a searchable dropdown
-    interface or the option to create a new Contact
-
-* **Role:** one of the defined Roles for the current Volunteer
-    Project, selectable in the dropdown
-
-* **Start date:** the time at which the Volunteer began their
-    volunteer work
-
-* **Scheduled duration:** the amount of time (in minutes) reserved for
-    volunteering
-
-* **Actual duration:** the actual amount of time (in minutes) spent
-    volunteering
-
-* **Status:** a variety of options, from Completed to No Show to
-    Available
-
-This screen is designed to be flexible and meet the needs of various
-organisations when it comes to tracking their volunteers' time. The only
-required fields are **Contact** and **Actual Duration**, and the rest
-are optional. Scheduled vs Actual Duration of volunteering can be
-compared. Status can be reported upon, and the popularity of particular
-Roles can be reported upon as well. These are just a few options made
-possible by having the data from the screen.
-
-Known Bug? As soon as I open the log hours page I will always have to
-add a number, even when the shift is not begun yet. When I fill in 0
-when a shift is cancelled, it won't accept that either.
-
-![](/images/manual_html_a16602a0b0e708b1.png)
+To change the default settings when creating a new project, choose **Volunteers > Configure Volunteer Settings**.
