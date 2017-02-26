@@ -1,71 +1,41 @@
 # CiviVolunteer
 
-The CiviVolunteer extension provides tools for signing up, managing and
-tracking volunteers. The features for release 2.0 focus on volunteering
-at events, but the design creates a foundation for adding support for
-volunteering in a wide variety of situations.
+## Overview
 
-## Features
+The CiviVolunteer extension provides tools for signing up, managing, and tracking volunteers.
 
-### Volunteer Opportunities
+### Features
 
-After installing the extension using the automated installer from Manage
-Extensions, you'll see a new Volunteers tab for each event (**Manage
-Events > Configure**). Check the 'Enable Volunteer Management' box to get
-started. You can then build a list of volunteer shifts by clicking
-'Define Volunteer Needs'. Shifts consist of a volunteer role (e.g.
-Usher, Box Office, etc.) plus a date and time period. For each shift you
-can specify the number of volunteers required.
+* Define multiple [volunteer projects](/projects).
+    * (Optionally) [associate a project with a CiviCRM event](/projects#events).
+    * Define specific [volunteer opportunities](/opportunities) for each project with distinct roles and shifts.
+* Allow volunteers to:
+    * [sign up for specific opportunities](/sign-up-form) themselves.
+    * [express interest](/interest-form) generally in volunteering, without signing up for anything specifically.
+* Manually [assign volunteers to shifts](/assignments)
+* [Log](/logging-hours) and [report](/reporting) on volunteer hours
 
-### Self-service Volunteer Signup
+This documentation book provides assistance to users, administrators, and developers of CiviVoluneer.
 
-Once you've defined your volunteer needs, you can decide to include a
-volunteer signup form as part of your public event. A "Volunteer Now"
-button will appear on your event info page (next to the "Register"
-button). Volunteers can select a shift, or let you know that they are
-available for any shift. You will need to enable the "*CiviVolunteer:
-register to volunteer permission*" if you want to provide self-service
-signup for anonymous and / or authenticated users.
 
-### Manage Volunteer Assignments
- The 'Manage Assignments' widget allows you to assign flexible
-volunteers to shifts, add new volunteers and change shift assignments -
-all in an easy to use drag-and-drop panel.
+## Other resources
 
-### Log and Report on Volunteer Hours
-Finally, staff can log actual hours worked by each volunteer on a
-regular basis if needed for funder reports (click "Log Volunteer Hours"
-from the event's Volunteer tab). Then you can access the new Volunteer
-Activity Report (**Contacts > Contact Reports**) to get statistics
-statistics on volunteering. You can even add that report as a dashlet on
-your dashboard if you want to keep track of your organization's
-cumulative volunteering totals.
+* [GitHub repository](https://github.com/civicrm/org.civicrm.volunteer)
+* [Release downloads](https://civicrm.org/extensions/civivolunteer) (within CiviCRM.org's extensions directory)
+* [Issue tracking](https://issues.civicrm.org/jira/browse/VOL) (in a Jira project)
+* [Q&A on StackExchange](http://civicrm.stackexchange.com/questions/tagged/civivolunteer) (with the `civivolunteer` tag)
 
 ## Requirements
 
--   Requires CiviCRM 4.4 or higher
--   Angular Profiles
-
+* CiviCRM 4.4 or higher
+* The [Angular Profiles](https://civicrm.org/extensions/angular-profile-utilities) extension must also be installed and enabled
 
 ## Known Issues
 
--   The installer will not create the "register to volunteer" permission
-    automatically for Joomla installations.
+* The installer will not create the "register to volunteer" permission automatically for Joomla installations.
 
-## What's Next
+## Future plans
 
--   Going forward there are some great ideas on the drawing board for
-    phase 2 including: specification of qualifications and
-    skill-matching, linking volunteer opportunities directly to an
-    organization or individual, recurring volunteer opportunities,
-    public recognition / rewards, and self-service logging of volunteer
-    hours.
--   If your organization has invested in a CiviCRM installation, and you
-    foresee a need for CiviVolunteer, consider donating to the ongoing
-    development of CiviVolunteer through the [Make it Happen
-    program](https://civicrm.org/make-it-happen/civivolunteer-improvements).
--   Developers within organizations that would like to use CiviVolunteer
-    are more than welcome to participate in the development and testing
-    effort. Contact us via the project's
-    [GitHub repository](https://github.com/civicrm/civivolunteer),
-    email us at inquire@ginkgostreet.com or call us at 1-888-223-6609.
+* Going forward there are some great ideas on the drawing board for phase 2 including: specification of qualifications and skill-matching, linking volunteer opportunities directly to an organization or individual, recurring volunteer opportunities, public recognition / rewards, and self-service logging of volunteer hours.
+* If your organization has a invested in a CiviCRM installation, and you foresee a need for CiviVolunteer, consider donating to the ongoingdevelopment of CiviVolunteer through the [Make it Happen program](https://civicrm.org/make-it-happen/civivolunteer-improvements).
+* Developers within organizations that would like to use CiviVolunteer are more than welcome to participate in the development and testing effort. Contact us via the project's [GitHub repository](https://github.com/civicrm/civivolunteer), email us at inquire@ginkgostreet.com or call us at 1-888-223-6609.

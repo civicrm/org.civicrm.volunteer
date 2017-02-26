@@ -1,71 +1,42 @@
 # Installation
 
-Install the extension *CiviVolunteer* AND *Angular profiles* using the
-automated installer from Manage Extensions in CiviCRM. Enable the
-extensions and you will find three things: a Menu item 'Volunteer' and
-on the Events a tab called 'Volunteer'. Under Reports / contact Reports
-you will find a Volunteer Report.
+## Steps
 
-In Drupal: check the permissions boxes concerning CiviVolunteer.
+Use the following steps to install CiviVolunteer.
 
-## Obtaining the Latest Stable Version
+1. **Administer > System Settings > Extensions**
+1. **Add New**
+1. Sort by name
+1. Find, download, and install *both* of these extensions:
+    * **CiviVolunteer**
+    * **Angular Profiles**
 
-Make sure that CiviCRM Extensions are enabled correctly:
+        !!! caution ""
+            CiviVolunteer requires this additional extension, Angular Profiles, in order to function properly.
 
-[Enabling CiviCRM
-Extensions](http://wiki.civicrm.org/confluence/display/CRMDOC/Extensions)
+1. If necessary, click Enable after the extension has been downloaded and installed. When the extension is enabled:
 
-In the CiviCRM main dashboard menu:
+    * CiviVolunteer should show up as green-highlighted.
+    * The option to **Disable** it will be present.
 
-Administer > System Settings > Manage Extensions
 
-![Manage Extensions
-Menu](/org.civicrm.volunteer/docs/screenshots/manage-extensions-menu.png)
+## Discovering features after installing {:#discovery}
 
-![Manage Extensions
-Page](/org.civicrm.volunteer/docs/screenshots/manage-extensions-page.png)
+After installing, CiviVolunteer's features can be found in the following places:
 
-Sort by name (and/or scroll) until "CiviVolunteer" is found
+* A 'Volunteers' menu item
+* A 'Volunteers' tab within the configuration for each event
+* A 'Volunteer Report' report template
 
-Click Add New
 
-![Add New
-Extension](/org.civicrm.volunteer/docs/screenshots/manage-extensions-add-new.png)
+## Permissions {:#permissions}
 
-Click Download (and Download/Install as necessary on following screens)
+CiviVolunteer adds a handful of new permissions which should be configured within your CMS before using.
 
-It will also be necessary to install the following dependencies manually
-(if this extension does not appear in the list):
+## Removing
 
-[Angular Profiles
-Extension](https://github.com/ginkgostreet/org.civicrm.angularprofiles)
+If you no longer wish to use CiviVolunteer, you may disable it, or uninstall it.
 
-For more information about manual installation of dependencies, please
-visit:
+* **Disable** - will turn off CiviVolunteer's features, but preserve any data that you have created with it. If you re-enable CiviVolunteer later, you'll be back where you left off. 
+* **Uninstall** - can be done after disabling, and will completely remove all traces of CiviVolunteer, including the data created with it. If you re-install CiviVolunteer later, you'll be back to square one, before you ever installed it.
 
-[Manual Installation of Native
-Extensions](http://wiki.civicrm.org/confluence/display/CRMDOC/Extensions#Extensions-Installinganewextension)
-
-After the necessary files have been uploaded with the correct
-permissions set, the dependencies should be listed and ready for manual
-installaion:
-
-![Manually Install
-Plug-In](/org.civicrm.volunteer/docs/screenshots/manual-install-plugin.png)
-
-Clicking Install (and Install as necessary on following screens) should
-complete the installation process.
-
-## Enabling CiviVolunteer
-
-If necessary, click Enable after the extension has been downloaded and
-installed. When the extension is enabled:
-
--   CiviVolunteer should show up as green-highlighted.
--   The option to **Disable** it will be present.
-
-The following image shows the CiviVolunteer Extension and its required
-dependencies installed and enabled:
-
-![Installation
-Completed](/org.civicrm.volunteer/docs/screenshots/install-complete-step.png)
