@@ -38,7 +38,7 @@ When adding a new custom field it's important to consider the field *type* caref
 
 CiviVolunteer adds the option to use a slider when choosing the value for a field, which can be helpful when gathering data about the skills or interests of volunteers.
 
-<!-- TODO screenshot here -->
+![Slider demonstration](/images/slider.gif)
 
 To use the slider:
 
