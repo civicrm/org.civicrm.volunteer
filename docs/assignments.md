@@ -15,8 +15,6 @@ A user with the proper [permissions](/installation#permissions) *(henceforth kno
 2. Find the project
 3. Choose **Assign Volunteers**
 
-<!-- TODO Screenshot here -->
-
 ### The Available Volunteers list
 
 The left side shows a list of "Available Volunteers" which is populated by either of the following actions:
@@ -32,6 +30,8 @@ Volunteers must be added to the Available Volunteers list before they can be ass
 
 * Drag and drop volunteers from Available Volunteers to the red **More Needed** boxs below the opportunities.
 * Click the triangle icon to the right of a volunteer and choose **Move to** or **Copy to**.
+
+![Assign Volunteers screenshot](/images/assign-volunteers.gif)
 
 When an opportunity has reached the required number of volunteer assignments, CiviVolunteer won't allow any more.
 
