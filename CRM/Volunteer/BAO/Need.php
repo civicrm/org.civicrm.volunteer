@@ -58,6 +58,12 @@ class CRM_Volunteer_BAO_Need extends CRM_Volunteer_DAO_Need {
    * @static
    */
   static function &create($params) {
+    // these metadata fields are managed; don't accept them as params
+    unset($params['created'], $params['last_updated']);
+    if (empty($params['id'])) {
+      $params['created'] = CRM_Utils_Date::currentDBDate();
+    }
+
     $need = new CRM_Volunteer_BAO_Need();
     $need->copyValues($params);
     $projectId = $need->getProjectId();
