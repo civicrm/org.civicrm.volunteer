@@ -92,6 +92,15 @@ class CRM_Volunteer_BAO_Need extends CRM_Volunteer_DAO_Need {
     }
 
     $need->save();
+    // Workaround for CRM-20178 - timestamp fields can't be saved via the save()
+    // method and hence we must use SQL
+    if (!empty($params['created'])) {
+      $sql = 'UPDATE civicrm_volunteer_need SET created = %1 WHERE id = %2';
+      $need->executeQuery($sql, array(
+        1 => array($params['created'], 'Timestamp'),
+        2 => array($need->id, 'Integer'),
+      ));
+    }
 
     return $need;
   }
