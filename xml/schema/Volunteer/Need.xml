@@ -99,4 +99,16 @@
     <comment>Is this need enabled?</comment>
     <add>4.4</add>
   </field>
+  <field>
+    <name>created</name>
+    <type>timestamp</type>
+    <title>Date of Creation</title>
+    <default>NULL</default>
+  </field>
+  <field>
+    <name>last_updated</name>
+    <type>timestamp</type>
+    <title>Date of Last Update</title>
+    <default>CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP</default>
+  </field>
 </table>
