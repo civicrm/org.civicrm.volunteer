@@ -167,6 +167,22 @@ function civicrm_api3_volunteer_util_getsupportingdata($params) {
     CRM_Volunteer_Hook::projectDefaultSettings($defaults);
 
     $results['defaults'] = $defaults;
+
+    $results['project_custom_field_groups'] = array();
+    $projectCustomFieldGroupResult = civicrm_api3('CustomGroup', 'get', array(
+      'extends' => 'Volunteer Project',
+      'is_active' => 1,
+      'return' => array('id'),
+      'sort' => 'weight',
+    ));
+    foreach ($projectCustomFieldGroupResult['values'] as $v) {
+      $meta = civicrm_api3('Fieldmetadata', 'get', array(
+        'entity' => "CustomGroup",
+        'entity_params' => array('id' => $v['id']),
+        'context' => "Angular",
+      ));
+      $results['project_custom_field_groups'][] = $meta['values'];
+    }
   }
 
   if ($controller === 'VolOppsCtrl') {

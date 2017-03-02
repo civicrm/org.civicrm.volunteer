@@ -113,6 +113,9 @@
       </div>
     </fieldset>
 
+    <fieldset ng-repeat="customFieldGroup in supporting_data.project_custom_field_groups"
+              crm-render-field-collection="customFieldGroup" model="project"></fieldset>
+
     <fieldset class="crm-vol-relationships" ng-if="showRelationshipBlock" crm-ui-id-scope>
       <legend>{{ts("Relationships")}}</legend>
       <div ng-repeat="relType in relationship_types">
