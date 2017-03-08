@@ -170,7 +170,7 @@ function civicrm_api3_volunteer_util_getsupportingdata($params) {
 
     $results['project_custom_field_groups'] = array();
     $projectCustomFieldGroupResult = civicrm_api3('CustomGroup', 'get', array(
-      'extends' => 'Volunteer Project',
+      'extends' => 'VolunteerProject',
       'is_active' => 1,
       'return' => array('id'),
       'sort' => 'weight',
