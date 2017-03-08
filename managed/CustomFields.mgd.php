@@ -19,7 +19,7 @@ return array(
       'version' => 3,
       'option_group_id' => 'cg_extend_objects',
       'label' => 'Volunteer Project',
-      'value' => 'Volunteer Project',
+      'value' => 'VolunteerProject',
       'name' => 'civicrm_volunteer_project',
     ),
   ),
