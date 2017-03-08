@@ -17,7 +17,8 @@
               };
             } else {
               return crmApi('VolunteerProject', 'getsingle', {
-                id: $route.current.params.projectId
+                id: $route.current.params.projectId,
+                return: ['custom']
               }).then(
                 // success
                 null,

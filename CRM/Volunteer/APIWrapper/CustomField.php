@@ -23,7 +23,10 @@ class CRM_Volunteer_APIWrapper_CustomField implements API_Wrapper {
    */
   public function toApiOutput($apiRequest, $result) {
     // For now let's whitelist the actions we wish to support.
-    $whitelist = array('get');
+    $whitelist = array(
+      'get',
+      // 'getsingle', // supported by 'get' since 'getsingle' is a wrapper
+    );
 
     $requestedReturn = (array) CRM_Utils_Array::value('return', $apiRequest['params']);
 
