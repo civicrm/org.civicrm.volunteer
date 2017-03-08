@@ -280,20 +280,32 @@ function volunteer_civicrm_managed(&$entities) {
  * Implementation of hook_civicrm_entityTypes
  */
 function volunteer_civicrm_entityTypes(&$entityTypes) {
-  $entityTypes[] = array(
-    'name'  => 'VolunteerNeed',
-    'class' => 'CRM_Volunteer_DAO_Need',
-    'table' => 'civicrm_volunteer_need',
-  );
-  $entityTypes[] = array(
-    'name'  => 'VolunteerProject',
-    'class' => 'CRM_Volunteer_DAO_Project',
-    'table' => 'civicrm_volunteer_project',
-  );
-  $entityTypes[] = array(
-    'name'  => 'VolunteerProjectContact',
-    'class' => 'CRM_Volunteer_DAO_ProjectContact',
-    'table' => 'civicrm_volunteer_project_contact',
+  // Core ignores the keys introduced in _volunteer_get_entityTypes()
+  $entityTypes += _volunteer_get_entityTypes();
+}
+
+/**
+ * Returns an array of entityTypes introduced by CiviVolunteer.
+ *
+ * @return array
+ */
+function _volunteer_get_entityTypes() {
+  return array(
+    'VolunteerNeed' => array(
+      'name' => 'VolunteerNeed',
+      'class' => 'CRM_Volunteer_DAO_Need',
+      'table' => 'civicrm_volunteer_need',
+    ),
+    'VolunteerProject' => array(
+      'name' => 'VolunteerProject',
+      'class' => 'CRM_Volunteer_DAO_Project',
+      'table' => 'civicrm_volunteer_project',
+    ),
+    'VolunteerProjectContact' => array(
+      'name' => 'VolunteerProjectContact',
+      'class' => 'CRM_Volunteer_DAO_ProjectContact',
+      'table' => 'civicrm_volunteer_project_contact',
+    ),
   );
 }
 
