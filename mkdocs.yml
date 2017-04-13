@@ -1,0 +1,34 @@
+site_name: CiviVolunteer
+repo_url: https://github.com/civicrm/org.civicrm.volunteer
+theme: material
+markdown_extensions:
+  - attr_list
+  - admonition
+  - def_list
+  - codehilite(guess_lang=false)
+  - toc(permalink=true)
+  - pymdownx.superfences
+  - pymdownx.inlinehilite
+  - pymdownx.tilde
+  - pymdownx.betterem
+  - pymdownx.mark
+  - pymdownx.magiclink
+pages:
+- Introduction: index.md
+- Installation: installation.md
+- Projects: projects.md
+- Opportunities: opportunities.md
+- Assignments: assignments.md
+- Sign up form: sign-up-form.md
+- Interest form: interest-form.md
+- Custom data: custom-data.md
+- Logging hours: logging-hours.md
+- Reporting: reporting.md
+- Live examples: examples.md
+- Release notes:
+  - 2.2 release: release/2.2.md
+  - 2.0 release: release/2.0.md
+  - 1.4 release: release/1.4.md
+- Developer docs:
+  - API functions: dev/api.md
+  - Hooks: dev/hooks.md
