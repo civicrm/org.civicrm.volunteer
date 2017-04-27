@@ -282,7 +282,7 @@ function volunteer_civicrm_uninstall() {
  * Implementation of hook_civicrm_enable
  */
 function volunteer_civicrm_enable() {
-  $doc_url = 'http://civicrm.github.io/org.civicrm.volunteer/docs';
+  $doc_url = 'https://docs.civicrm.org/volunteer/en/latest/';
   $forum_url = 'http://forum.civicrm.org/index.php/board,84.0.html';
   $role_url = CRM_Utils_System::url('civicrm/admin/options/volunteer_role', 'group=volunteer_role&reset=1');
   $events_url = CRM_Utils_System::url('civicrm/event/manage', 'reset=1');
