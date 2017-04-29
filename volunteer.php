@@ -668,20 +668,7 @@ function volunteer_civicrm_fieldOptions($entity, $field, &$options, $params) {
  * @link https://docs.civicrm.org/dev/en/master/hooks/hook_civicrm_apiWrappers/
  */
 function volunteer_civicrm_apiWrappers(&$wrappers, $apiRequest) {
-  $extEntities = _volunteer_get_entityTypes();
-  $extEntity = CRM_Utils_Array::value($apiRequest['entity'], $extEntities);
-
-  $entityCustomFieldSupport = FALSE;
-  // This is basically a check that the entity came from this extension.
-  if (!empty($extEntity['table'])) {
-    // Check that the entity has been registered to use custom fields.
-    $entityCustomFieldSupport = (bool) civicrm_api3('OptionValue', 'getcount', array(
-      'option_group_id' => 'cg_extend_objects',
-      'name' => $extEntity['table'],
-    ));
-  }
-
-  if ($entityCustomFieldSupport) {
+  if ($apiRequest['entity'] === 'VolunteerProject') {
     $wrappers[] = new CRM_Volunteer_APIWrapper_CustomField();
   }
 }
