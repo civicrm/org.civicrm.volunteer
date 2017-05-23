@@ -314,12 +314,12 @@ class CRM_Volunteer_Form_VolunteerReport extends CRM_Report_Form {
 
   public function buildGroupFilter() {
     parent::buildGroupFilter();
-    $this->_columns['civicrm_group']['filters']['gid']['title'] = ts('Group for Volunteer (assignee contact)', array('domain' => 'org.civicrm.volunteer.'));
+    $this->_columns['civicrm_group']['filters']['gid']['title'] = ts('Group for Volunteer (assignee contact)', array('domain' => 'org.civicrm.volunteer'));
   }
 
   public function buildTagFilter() {
     parent::buildTagFilter();
-    $this->_columns['civicrm_tag']['filters']['tagid']['title'] = ts('Tag for Volunteer (assignee contact)', array('domain' => 'org.civicrm.volunteer.'));
+    $this->_columns['civicrm_tag']['filters']['tagid']['title'] = ts('Tag for Volunteer (assignee contact)', array('domain' => 'org.civicrm.volunteer'));
   }
 
   /**
