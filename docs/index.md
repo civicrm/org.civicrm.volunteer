@@ -15,7 +15,7 @@ The CiviVolunteer extension provides tools for signing up, managing, and trackin
 * Manually [assign volunteers to shifts](/assignments)
 * [Log](/logging-hours) and [report](/reporting) on volunteer hours
 
-This documentation book provides assistance to users, administrators, and developers of CiviVoluneer.
+This documentation book provides assistance to users, administrators, and developers of CiviVolunteer.
 
 
 ## Other resources
