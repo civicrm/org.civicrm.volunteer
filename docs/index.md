@@ -32,7 +32,7 @@ This documentation book provides assistance to users, administrators, and develo
 
 ## Known Issues
 
-* The installer will not create the "register to volunteer" permission automatically for Joomla installations.
+* Before 4.7.21, extension permissions did not work properly in Joomla (see [CRM-12059](https://issues.civicrm.org/jira/browse/CRM-12059)). CiviCRM would recognize extension-defined permissions but not give site administrators any way to grant them to users.
 
 ## Future plans
 

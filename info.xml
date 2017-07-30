@@ -22,6 +22,6 @@
     <namespace>CRM/Volunteer</namespace>
   </civix>
   <urls>
-    <url desc="Documentation">http://civicrm.github.io/org.civicrm.volunteer/docs</url>
+    <url desc="Documentation">https://docs.civicrm.org/volunteer/en/latest/</url>
   </urls>
 </extension>
