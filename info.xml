@@ -5,14 +5,12 @@
   <description>The CiviVolunteer extension provides tools for signing up, managing, and tracking volunteers.</description>
   <license>AGPL-3.0</license>
   <maintainer>
-    <author>Ginkgo Street Labs; CiviCRM, LLC; and the CiviCRM community</author>
+    <author>Ginkgo Street Labs</author>
     <email>inquire@ginkgostreet.com</email>
   </maintainer>
-  <releaseDate>2016-12-06</releaseDate>
-  <version>4.6-2.2.1</version>
-  <develStage>stable</develStage>
+  <releaseDate>2017-07-30</releaseDate>
+  <version>4.7.21-2.2.2-beta1</version>
   <compatibility>
-    <ver>4.6</ver>
     <ver>4.7</ver>
   </compatibility>
   <comments>
