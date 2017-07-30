@@ -153,6 +153,23 @@ class CRM_Volunteer_Form_Settings extends CRM_Core_Form {
       )
     );
 
+    /* Volunteer Opportunities cart settings. */
+    $this->add(
+      'checkbox',
+      'volunteer_floating_cart_enabled',
+      ts('Enable floating cart on opportunities page?', array('domain' => 'org.civicrm.volunteer')),
+      null,
+      false
+    );
+
+    $this->add(
+      'checkbox',
+      'volunteer_show_cart_contents',
+      ts('Show cart contents by default on opportunities page?', array('domain' => 'org.civicrm.volunteer')),
+      null,
+      false
+    );
+
     $this->addButtons(array(
       array(
         'type' => 'submit',
@@ -256,6 +273,8 @@ class CRM_Volunteer_Form_Settings extends CRM_Core_Form {
     //General Settings
     $defaults['volunteer_general_campaign_filter_type'] = CRM_Utils_Array::value('volunteer_general_campaign_filter_type', $this->_settings);
     $defaults['volunteer_general_campaign_filter_list'] = CRM_Utils_Array::value('volunteer_general_campaign_filter_list', $this->_settings);
+    $defaults['volunteer_floating_cart_enabled'] = CRM_Utils_Array::value('volunteer_floating_cart_enabled', $this->_settings);
+    $defaults['volunteer_show_cart_contents'] = CRM_Utils_Array::value('volunteer_show_cart_contents', $this->_settings);
 
     return $defaults;
   }
@@ -330,6 +349,14 @@ class CRM_Volunteer_Form_Settings extends CRM_Core_Form {
     civicrm_api3('Setting', 'create', array(
       "volunteer_general_campaign_filter_list" => CRM_Utils_Array::value('volunteer_general_campaign_filter_list', $values, array())
     ));
+
+    civicrm_api3('Setting', 'create', array(
+        "volunteer_floating_cart_enabled" => CRM_Utils_Array::value('volunteer_floating_cart_enabled', $values, 0),
+    ));
+    civicrm_api3('Setting', 'create', array(
+      "volunteer_show_cart_contents" => CRM_Utils_Array::value('volunteer_show_cart_contents', $values, 0)
+    ));
+
 
     CRM_Core_Session::setStatus(ts("Changes Saved", array('domain' => 'org.civicrm.volunteer')), "Saved", "success");
     parent::postProcess();

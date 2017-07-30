@@ -16,10 +16,7 @@
         // to allow an admin to manage cart-related settings. The stub
         // function below will likely be replaced with an API call.
         settings: function (crmApi) {
-          return {
-            volunteer_floating_cart_enabled: true,
-            volunteer_show_cart_contents: false
-          };
+          return CRM.CiviVolunteer;
         },
         supporting_data: function(crmApi) {
           return crmApi('VolunteerUtil', 'getsupportingdata', {
@@ -37,7 +34,7 @@
 
     var volOppsInCart = {};
     $scope.shoppingCart = volOppsInCart;
-    $scope.showCartContents = settings.volunteer_show_cart_contents;
+    $scope.showCartContents = parseInt(settings.volunteer_show_cart_contents);
 
     // on page load, search based on the URL params
     volOppSearch.search();
@@ -217,7 +214,7 @@
     // Logic for managing Cart Floating - TODO: refactor as a directive
     $scope.cartIsFloating = false;
 
-    if (settings.volunteer_floating_cart_enabled) {
+    if (parseInt(settings.volunteer_floating_cart_enabled)) {
       var cartDelay = 200;
 
       var cartTop = $("div.crm-vol-opp-cart").offset().top;
