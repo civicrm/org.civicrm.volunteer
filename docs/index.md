@@ -32,7 +32,7 @@ This documentation book provides assistance to users, administrators, and develo
 
 ## Known Issues
 
-* For versions of CiviCRM prior to and including 4.6, the installer will not create extension-defined permissions for Joomla installations (see [CRM-12059](https://issues.civicrm.org/jira/browse/CRM-12059)). As a result, the "register to volunteer" permission does not appear in Joomla's access control interface. As a workaround (see [VOL-71](https://issues.civicrm.org/jira/browse/VOL-71)), CiviVolunteer will not create or enforce the "register to volunteer" permission in Joomla installations; Joomla admins won't enjoy the same level of permissions granularity as installations on other frameworks, and the public sign-up form will be accessible to everyone.
+* Before 4.7.21, extension permissions did not work properly in Joomla (see [CRM-12059](https://issues.civicrm.org/jira/browse/CRM-12059)). CiviCRM would recognize extension-defined permissions but not give site administrators any way to grant them to users.
 
 ## Future plans
 
