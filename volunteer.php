@@ -633,6 +633,14 @@ function _volunteer_isVolListingApiCall($entity, $action) {
 function volunteer_civicrm_angularModules(&$angularModules) {
   $angularModules['volunteer'] = array(
     'ext' => 'org.civicrm.volunteer',
+    'basePages' => array('civicrm/vol'),
+    'requires' => array(
+      'crmApp',
+      'crmProfileUtils',
+      'crmUi',
+      'crmUtil',
+      'ngRoute',
+    ),
     'js' =>
       array (
         0 => 'ang/volunteer.js',
@@ -641,8 +649,7 @@ function volunteer_civicrm_angularModules(&$angularModules) {
       ),
     'css' => array (0 => 'ang/volunteer.css'),
     'partials' => array (0 => 'ang/volunteer'),
-    'settings' => array (),
-    'volunteer' => true
+    'settings' => array(),
   );
 
   // Perhaps the placement of this code is a little hackish; unless/until we

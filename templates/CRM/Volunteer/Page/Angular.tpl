@@ -4,6 +4,4 @@
     </div>
 {/literal}
 
-{if $includeNotificationTemplate}
-    {include file="CRM/common/notifications.tpl" location="bottom"}
-{/if}
+{include file="CRM/common/notifications.tpl" location="bottom"}
