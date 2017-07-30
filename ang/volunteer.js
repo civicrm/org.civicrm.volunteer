@@ -1,9 +1,7 @@
 (function(angular, $, _) {
   // Declare a list of dependencies.
   angular
-    .module('volunteer', [
-      'crmUi', 'crmUtil', 'ngRoute'
-    ])
+    .module('volunteer', CRM.angRequires('volunteer'))
 
     // Makes lodash/underscore available in templates
     .run(function($rootScope) {
