@@ -31,4 +31,3 @@
 
     <div class="clear"></div>
 </div>
-{include file="CRM/Volunteer/Page/Angular.tpl" location="bottom"}
