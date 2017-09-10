@@ -209,14 +209,27 @@ function volunteer_civicrm_xmlMenu(&$files) {
 /**
  * Implementation of hook_civicrm_tabset
  *
- * Insert the "Volunteer" tab into the event edit workflow
+ * Insert the "Volunteer" tab into the event edit workflow and load Angular when
+ * appropriate.
  */
 function volunteer_civicrm_tabset($tabsetName, &$tabs, $context) {
+  $eventId = CRM_Utils_Array::value('event_id', $context);
+
   if ($tabsetName == 'civicrm/event/manage') {
-    if (!empty($context)) {
-      $eventID = $context['event_id'];
+    if ($eventId) {
+      // If in snippet mode, tab content is loading. Otherwise, the tabset is
+      // loading. Angular should be loaded only once, and only in the latter case.
+      // While it seems presumptuous to load Angular with the tabset, when we
+      // don't yet know whether the user will visit the Volunteer tab, the
+      // alternative is to load it after the full page has loaded, via an AJAX
+      // call (with the tab content). The latter invites difficult-to-resolve
+      // JavaScript scope conflicts with the CMS, so we avoid it.
+      if (!CRM_Utils_Request::retrieve('snippet', 'String')) {
+        CRM_Volunteer_Angular_Tab_Event::prepareTab($eventId);
+      }
+
       $url = CRM_Utils_System::url( 'civicrm/event/manage/volunteer',
-        "reset=1&snippet=5&force=1&id=$eventID&action=update&component=event" );
+        "reset=1&snippet=5&force=1&id=$eventId&action=update&component=event");
 
       $tab['volunteer'] = array(
         'title' => ts('Volunteers', array('domain' => 'org.civicrm.volunteer')),
@@ -227,9 +240,7 @@ function volunteer_civicrm_tabset($tabsetName, &$tabs, $context) {
         'current' => false,
       );
 
-      CRM_Volunteer_Form_Manage::addResources($eventID, CRM_Event_DAO_Event::$_tableName);
-
-      if (!CRM_Volunteer_BAO_Project::isActive($eventID, CRM_Event_DAO_Event::$_tableName)) {
+      if (!CRM_Volunteer_BAO_Project::isActive($eventId, CRM_Event_DAO_Event::$_tableName)) {
         $tab['volunteer']['valid'] = FALSE;
       }
     }
@@ -249,9 +260,8 @@ function volunteer_civicrm_tabset($tabsetName, &$tabs, $context) {
   }
 
   // on manage events listing screen, this section sets volunteer tab in configuration popup as enabled/disabled.
-  if ($tabsetName == 'civicrm/event/manage/rows' && CRM_Utils_Array::value('event_id', $context)) {
-    $eventID = $context['event_id'];
-    $tabs[$eventID]['is_volunteer'] = CRM_Volunteer_BAO_Project::isActive($eventID, CRM_Event_DAO_Event::$_tableName);
+  if ($tabsetName == 'civicrm/event/manage/rows' && $eventId) {
+    $tabs[$eventId]['is_volunteer'] = CRM_Volunteer_BAO_Project::isActive($eventId, CRM_Event_DAO_Event::$_tableName);
   }
 }
 
