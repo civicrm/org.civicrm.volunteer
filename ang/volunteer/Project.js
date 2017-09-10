@@ -131,6 +131,7 @@
 
     switch ($scope.formContext) {
       case 'eventTab':
+        volBackbone.load();
         var cancelCallback = function (projectId) {
           CRM.$("body").trigger("volunteerProjectCancel");
         };
