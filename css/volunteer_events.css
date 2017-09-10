@@ -1,4 +1,7 @@
-
+/* Rendered on load of the tabset and should remain hidden initially. */
+#crm_volunteer_angular_frame {
+  display: none;
+}
 .crm-volunteer-event-action-items-all {
   margin: 10px 5px;
 }
