@@ -34,7 +34,7 @@
 
       <div class="crm-vol-campaign" crm-ui-field='{name: "projectForm.campaign_id", title: ts("Campaign")}'>
         <select class="big crm-form-select crm-vol-campaign" crm-ui-select="{placeholder: '', allowClear:true}"
-                ng-options="key as value.title for (key , value) in campaigns" ng-model="project.campaign_id">
+                ng-options="key as value.title for (key , value) in campaigns track by key" ng-model="project.campaign_id">
           <option />
         </select>
       </div>
@@ -42,7 +42,7 @@
       <div class="crm-vol-location" crm-ui-field='{name: "projectForm.locBlock", title: ts("Location")}'>
         <select class="big crm-form-select crm-vol-location-block-id"
                 crm-ui-select="{placeholder: '', allowClear:true}"
-                ng-options="key as value for (key , value) in locationBlocks" ng-model="project.loc_block_id">
+                ng-options="key as value for (key , value) in locationBlocks track by key" ng-model="project.loc_block_id">
           <option />
         </select>
         <div id="crm-vol-location-block" class="crm-vol-extra-top" crm-ui-accordion="{title: ts('Edit Location'), collapsed: project.loc_block_id !==0}" ng-hide="!project.loc_block_id">
@@ -73,7 +73,7 @@
                 crm-ui-select="{allowClear: false}"
                 ng-change="locBlockDirty()"
                 ng-model="locBlock.address.country_id"
-                ng-options="k as v.name for (k, v) in countries">
+                ng-options="k as v.name for (k, v) in countries track by k">
               </select>
             </div>
           </fieldset>
