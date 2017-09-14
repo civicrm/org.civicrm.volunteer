@@ -247,10 +247,12 @@ class CRM_Volunteer_BAO_Assignment extends CRM_Volunteer_BAO_Activity {
       $defaults['campaign_id'] = '';
     }
 
+    // Taking volunteer_role_id outside of Action ADD scope, we have to update the role on moving the activity.
+    $defaults['volunteer_role_id'] = CRM_Utils_Array::value('role_id', $need);
     if ($op === CRM_Core_Action::ADD) {
-      $defaults['volunteer_role_id'] = CRM_Utils_Array::value('role_id', $need);
       $defaults['time_scheduled_minutes'] = CRM_Utils_Array::value('duration', $need);
-      $defaults['target_contact_id'] = CRM_Volunteer_BAO_Project::getContactsByRelationship($project->id, 'volunteer_beneficiary');
+      $defaults['target_contact_id'] = CRM_Volunteer_BAO_Project::getContactsByRelationship($project->id, 'volunteer_manager'); // Changed to volunteer_manager from volunteer_beneficiary.
+      $defaults['location'] = $project->getLocation(); //Getting location of the project to save in activity.
 
       // If the related entity doesn't provide a good default, use tomorrow.
       if (empty($params['activity_date_time'])) {
@@ -309,6 +311,12 @@ class CRM_Volunteer_BAO_Assignment extends CRM_Volunteer_BAO_Activity {
         $params['custom_' . $field['id']] = $params[$fieldName];
         unset($params[$fieldName]);
       }
+    }
+
+    // Saving the Volunteer role custom field for the activity.
+    $volunteerRoleId = CRM_Core_BAO_CustomField::getCustomFieldID("Volunteer_Role_Id", "CiviVolunteer");
+    if($volunteerRoleId) {
+        $params["custom_{$volunteerRoleId}"] = $defaults["volunteer_role_id"];
     }
 
     $activity = civicrm_api3('Activity', 'create', $params);
