@@ -482,6 +482,33 @@ function volunteer_civicrm_buildForm($formName, &$form) {
     $f($formName, $form);
   }
   _volunteer_addSliderWidget($form);
+  if($formName == "CRM_Activity_Form_Activity") {
+    if(empty($form->_activityId) && isset($form->_defaultValues["target_contact_id"]) && isset($form->_defaultValues["activity_type_id"]) && _isVolunteerActivity($form->_defaultValues["activity_type_id"])) {
+      $form->_defaultValues["assignee_contact_id"] = $form->_defaultValues["target_contact_id"];
+      unset($form->_defaultValues["target_contact_id"]);
+      $form->buildQuickForm();
+    }
+  }
+}
+
+/**
+ * Function to check if activity type is Volunteer activity or not.
+ * @return bool
+ *   true if activity is Volunteer activity, else false.
+ */
+function _isVolunteerActivity($activityTypeId) {
+  if ($activityTypeId) {
+    $activitiyType = civicrm_api3("OptionValue", 'get', array(
+      "option_group_id.name" => 'activity_type',
+      "name"                 => array('IN' => array('Volunteer', 'volunteer_commendation')),
+      "value"                => $activityTypeId,
+      "sequential"     => 1,
+    ));
+    if ($activitiyType["count"] > 0) {
+      return TRUE;
+    }
+  }
+  return FALSE;
 }
 
 /**
