@@ -389,6 +389,34 @@ class CRM_Volunteer_Upgrader extends CRM_Volunteer_Upgrader_Base {
     return TRUE;
   }
 
+  /**
+   * Notify administrators that this version of CiviVolunteer requires an
+   * upgraded version of CiviCRM.
+   */
+  public function upgrade_2201() {
+    $this->ctx->log->info('Applying update 2201 - Compatibility check');
+
+    if (!class_exists('\Civi\Angular\AngularLoader')) {
+      $message = ts('This version of CiviVolunteer will not function without features that were introduced in CiviCRM v4.7.21. It is recommended that you upgrade CiviCRM.', array('domain' => 'org.civicrm.volunteer'));
+      $title = ts('Incompatible Versions', array('domain' => 'org.civicrm.volunteer'));
+      CRM_Core_Session::setStatus($message, $title, 'info', array('expires' => 0));
+    }
+
+    return TRUE;
+  }
+
+  /**
+   * Notify administrators of problems they might experience due to CRM-21210.
+   */
+  public function upgrade_2202() {
+    $this->ctx->log->info('Applying update 2202 - CiviVolunteer Upgrade Notice');
+
+    $message = ts("Some users have reported that their CiviVolunteer settings \"disappear\" after an upgrade. This is due to an issue with CiviCRM's extension system, but can usually be resolved by flushing CiviCRM's caches. For more information, see <a href=\"https://issues.civicrm.org/jira/browse/CRM-21210\">CRM-21210</a>.", array('domain' => 'org.civicrm.volunteer'));
+    $title = ts('Post-Upgrade Steps May Be Required', array('domain' => 'org.civicrm.volunteer'));
+    CRM_Core_Session::setStatus($message, $title, 'info', array('expires' => 0));
+    return TRUE;
+  }
+
   public function uninstall() {
     civicrm_api3('CustomGroup', 'get', array(
       'name' => array('IN' => array('CiviVolunteer', 'Volunteer_Information', 'volunteer_commendation')),
