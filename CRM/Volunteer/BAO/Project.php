@@ -169,6 +169,40 @@ class CRM_Volunteer_BAO_Project extends CRM_Volunteer_DAO_Project {
   }
 
   /**
+   * Gets location of a project.
+   *
+   * @return string
+   *   Street Address
+   */
+  public function getLocation() {
+    $location = "";
+    if($this->loc_block_id) {
+        $addressId = civicrm_api3('LocBlock','getvalue', array(
+          'id'         => $this->loc_block_id,
+          'return'     => "address_id"
+        ));
+        if($addressId) {
+          $locationObject = civicrm_api3('Address','getsingle', array(
+            'id'         => $addressId,
+            'return'     => array(
+                "street_address",
+                "city",
+                "state_province_id.name"
+            )
+          ));
+          $location = $locationObject["street_address"];
+          if(!empty($locationObject["city"])) {
+              $location .= ", ".$locationObject["city"];
+          }
+          if(!empty($locationObject["state_province_id.name"])) {
+              $location .= ", ".$locationObject["state_province_id.name"];
+          }
+        }
+    }
+    return $location;
+  }
+
+  /**
    * Strips invalid params, throws exception in case of unusable params.
    *
    * @param array $params
