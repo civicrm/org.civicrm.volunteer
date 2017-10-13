@@ -28,6 +28,12 @@
       CRM.$('#crm-main-content-wrapper').block();
     })
 
+    .filter('plainText', function() {
+      return function(textish) {
+        return angular.element(textish).text();
+      };
+    })
+
     .factory('volOppSearch', ['crmApi', '$location', '$route', function(crmApi, $location, $route) {
       //Search params and results are stored here and assigned by reference to the form
       var volOppSearch = {};
@@ -161,6 +167,100 @@
             $(element).addClass(classes.join(' '));
           });
         }
+      };
+    })
+
+
+    // Example: <crm-vol-project-loc-block data="myLocObj" heading="'Location:'" />
+    // Display a location block. In the example above, myLocObj should match the
+    // format of an item in the values array of api.VolunteerProject.getlocblockdata.
+    .directive('crmVolLocBlock', function() {
+      return {
+        restrict: 'E',
+        controller: ['$scope', function($scope) {
+          $scope.$watch('loc_block', function (newValue, oldValue, scope) {
+           $scope.cntAddressParts = _.size(newValue);
+          }, true);
+        }],
+        scope: {
+          heading: '=',
+          loc_block: '=data'
+        },
+        templateUrl: '~/volunteer/shared/crmVolLocBlockView.html'
+      };
+    })
+
+
+    // Example: <crm-vol-project-detail data="myProject" locBlockHeading="'Location:'" />
+    // Provides a detail view for a volunteer project. locBlockHeading is passed
+    // through to crmVolLocBlock for displaying a heading for the address.
+    .directive('crmVolProjectDetail', function() {
+      return {
+        link: function(scope, element, attrs) {
+          scope.ts = CRM.ts(null);
+        },
+        restrict: 'E',
+        scope: {
+          locBlockHeading: '=',
+          project: '=data'
+        },
+        templateUrl: '~/volunteer/shared/crmVolProjectDetailView.html'
+      };
+    })
+
+
+    // Example: <crm-vol-project-thumb data="myProject" />
+    // Provides a thumbnail view for a volunteer project.
+    .directive('crmVolProjectThumb', function() {
+      return {
+        restrict: 'E',
+        scope: {
+          project: '=data'
+        },
+        templateUrl: '~/volunteer/shared/crmVolProjectThumbView.html'
+      };
+    })
+
+
+    // Example: <tr class="crm-vol-time-entry" ng-repeat="entry in myArray" ng-model="entry" />
+    // Builds a table row with fields for updating time entries. In the example above,
+    // entry should be in the format of a value from api.VolunteerAssignments.get.
+    .directive('crmVolTimeEntry', function() {
+      return {
+        link: function(scope, element, attrs) {
+          scope.ts = CRM.ts(null);
+
+          // Remove a row when its button is clicked.
+          element.find('button[crm-icon="fa-times"]').click(function () {
+            var index = scope.$parent.$index;
+            scope.$parent.$parent.ngModel.splice(index, 1);
+            scope.$apply();
+          });
+        },
+        replace: true,
+        require: ['ngModel'],
+        restrict: 'AC',
+        scope: {
+          ngModel: '='
+        },
+        templateUrl: '~/volunteer/shared/crmVolTimeEntryView.html'
+      };
+    })
+
+
+    // Example: <crm-vol-time-table ng-form="myForm" ng-model="myArray" />
+    // Builds a table for creating time entries. See crmVolTimeEntry.
+    .directive('crmVolTimeTable', function() {
+      return {
+        link: function(scope, element, attrs) {
+          scope.ts = CRM.ts(null);
+        },
+        require: ['ngModel'],
+        restrict: 'E',
+        scope: {
+          ngModel: '='
+        },
+        templateUrl: '~/volunteer/shared/crmVolTimeTableView.html'
       };
     })
 

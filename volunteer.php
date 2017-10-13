@@ -48,7 +48,7 @@ function volunteer_civicrm_navigationMenu(&$params) {
   $administerMenuId = CRM_Core_DAO::getFieldValue('CRM_Core_BAO_Navigation', 'Administer', 'id', 'name');
   $posOfAdminMenu = array_search($administerMenuId, array_keys($params));
 
-  $newNavId = _volunteer_getMenuKeyMax($params);
+  $rootNavId = $newNavId = _volunteer_getMenuKeyMax($params);
   $volMenu = array(
     $newNavId => array(
       'attributes' => array(
@@ -63,7 +63,7 @@ function volunteer_civicrm_navigationMenu(&$params) {
         'active' => 1,
       ),
       'child' => array(
-        $newNavId + 1 => array(
+        ++$newNavId => array(
           'attributes' => array(
             'label' => ts('New Volunteer Project', array('domain' => 'org.civicrm.volunteer')),
             'name' => 'volunteer_new_project',
@@ -71,13 +71,13 @@ function volunteer_civicrm_navigationMenu(&$params) {
             'permission' => NULL,
             'operator' => NULL,
             'separator' => 0,
-            'parentID' => $newNavId,
-            'navID' => $newNavId + 1,
+            'parentID' => $rootNavId,
+            'navID' => $newNavId,
             'active' => 1,
           ),
           'child' => array(),
         ),
-        $newNavId + 2 => array(
+        ++$newNavId => array(
           'attributes' => array(
             'label' => ts('Manage Volunteer Projects', array('domain' => 'org.civicrm.volunteer')),
             'name' => 'volunteer_manage_projects',
@@ -85,13 +85,13 @@ function volunteer_civicrm_navigationMenu(&$params) {
             'permission' => NULL,
             'operator' => NULL,
             'separator' => 1,
-            'parentID' => $newNavId,
-            'navID' => $newNavId + 2,
+            'parentID' => $rootNavId,
+            'navID' => $newNavId,
             'active' => 1,
           ),
           'child' => array(),
         ),
-        $newNavId + 3 => array(
+        ++$newNavId => array(
           'attributes' => array(
             'label' => ts('Configure Roles', array('domain' => 'org.civicrm.volunteer')),
             'name' => 'volunteer_config_roles',
@@ -99,13 +99,13 @@ function volunteer_civicrm_navigationMenu(&$params) {
             'permission' => NULL,
             'operator' => NULL,
             'separator' => 0,
-            'parentID' => $newNavId,
-            'navID' => $newNavId + 3,
+            'parentID' => $rootNavId,
+            'navID' => $newNavId,
             'active' => 1,
           ),
           'child' => array(),
         ),
-        $newNavId + 4 => array(
+        ++$newNavId => array(
           'attributes' => array(
             'label' => ts('Configure Project Relationships', array('domain' => 'org.civicrm.volunteer')),
             'name' => 'volunteer_config_projrel',
@@ -113,13 +113,13 @@ function volunteer_civicrm_navigationMenu(&$params) {
             'permission' => NULL,
             'operator' => NULL,
             'separator' => 0,
-            'parentID' => $newNavId,
-            'navID' => $newNavId + 4,
+            'parentID' => $rootNavId,
+            'navID' => $newNavId,
             'active' => 1,
           ),
           'child' => array(),
         ),
-        $newNavId + 5 => array(
+        ++$newNavId => array(
           'attributes' => array(
             'label' => ts('Configure Volunteer Settings', array('domain' => 'org.civicrm.volunteer')),
             'name' => 'volunteer_config_settings',
@@ -127,13 +127,13 @@ function volunteer_civicrm_navigationMenu(&$params) {
             'permission' => NULL,
             'operator' => NULL,
             'separator' => 1,
-            'parentID' => $newNavId,
-            'navID' => $newNavId + 5,
+            'parentID' => $rootNavId,
+            'navID' => $newNavId,
             'active' => 1,
           ),
           'child' => array(),
         ),
-        $newNavId + 6 => array(
+        ++$newNavId => array(
           'attributes' => array(
             'label' => ts('Volunteer Interest Form', array('domain' => 'org.civicrm.volunteer')),
             'name' => 'volunteer_join',
@@ -141,13 +141,13 @@ function volunteer_civicrm_navigationMenu(&$params) {
             'permission' => NULL,
             'operator' => NULL,
             'separator' => 0,
-            'parentID' => $newNavId,
-            'navID' => $newNavId + 6,
+            'parentID' => $rootNavId,
+            'navID' => $newNavId,
             'active' => 1,
           ),
           'child' => array(),
         ),
-        $newNavId + 7 => array(
+        ++$newNavId => array(
           'attributes' => array(
             'label' => ts('Search for Volunteer Opportunities', array('domain' => 'org.civicrm.volunteer')),
             'name' => 'volunteer_opp_search',
@@ -155,8 +155,22 @@ function volunteer_civicrm_navigationMenu(&$params) {
             'permission' => NULL,
             'operator' => NULL,
             'separator' => 0,
-            'parentID' => $newNavId,
-            'navID' => $newNavId + 7,
+            'parentID' => $rootNavId,
+            'navID' => $newNavId,
+            'active' => 1,
+          ),
+          'child' => array(),
+        ),
+        ++$newNavId => array(
+          'attributes' => array(
+            'label' => ts('Log Your Own Hours', array('domain' => 'org.civicrm.volunteer')),
+            'name' => 'volunteer_log_own_hours',
+            'url' => 'civicrm/vol/#/volunteer/log?',
+            'permission' => NULL,
+            'operator' => NULL,
+            'separator' => 0,
+            'parentID' => $rootNavId,
+            'navID' => $newNavId,
             'active' => 1,
           ),
           'child' => array(),
@@ -570,17 +584,47 @@ function volunteer_civicrm_permission(array &$permissions) {
  * Implements hook_civicrm_alterAPIPermissions
  */
 function volunteer_civicrm_alterAPIPermissions($entity, $action, &$params, &$permissions) {
-// note: unsetting the below would require the default 'administer CiviCRM' permission
+  // Allow creation of Volunteer activities to those with "log own hours."
+  if ($entity === 'activity' && ($action === 'create' || $action === 'update')) {
+    // Normalize the activity type to machine name.
+    $activityTypeId = CRM_Utils_Array::value('activity_type_id', $params);
+    if (CRM_Utils_Type::validate($activityTypeId, 'Int', FALSE)) {
+      $activityTypeId = civicrm_api3('OptionValue', 'getvalue', array(
+        'check_permissions' => FALSE,
+        'value' => $activityTypeId,
+        'option_group_id' => "activity_type",
+        'return' => "name",
+      ));
+    }
+
+    if ($activityTypeId === 'Volunteer') {
+      $permissions['activity'][$action] = array('log own hours');
+    }
+  }
   $permissions['volunteer_need']['default'] = array('create volunteer projects');
   $permissions['volunteer_need']['getsearchresult'] = array('register to volunteer');
-  $permissions['volunteer_assignment']['default'] = array('edit own volunteer projects');
+  $permissions['volunteer_need']['getvalue'] = array('log own hours');
+  $permissions['volunteer_assignment']['default'] = array(
+    // This totally insane syntax means either permission is sufficient to grant API access.
+    array('edit own volunteer projects', 'log own hours'),
+  );
   $permissions['volunteer_commendation']['default'] = array('edit own volunteer projects');
   $permissions['volunteer_project']['default'] = array('create volunteer projects');
   $permissions['volunteer_project']['get'] = array('register to volunteer');
-  $permissions['volunteer_project']['getlocblockdata'] = array('edit own volunteer projects');
+  // This totally insane syntax means either permission is sufficient to grant API access.
+  $permissions['volunteer_project']['getlocblockdata'] = array(
+    array('edit own volunteer projects', 'log own hours')
+  );
   $permissions['volunteer_util']['default'] = array('edit own volunteer projects');
   $permissions['volunteer_project_contact']['default'] = array('edit own volunteer projects');
 
+  // Enables use of volunteer role in entityRef widgets
+  $isVolRoleGetList = ($entity === 'option_value' && $action === 'getlist' && isset($params['params']) && CRM_Utils_Array::value('option_group_id', $params['params']) === 'volunteer_role');
+  $isVolRoleGet = ($entity === 'option_value' && $action === 'get' && CRM_Utils_Array::value('option_group_id', $params) === 'volunteer_role');
+  if ($isVolRoleGetList || $isVolRoleGet) {
+    $permissions['option_value']['get'] = array('log own hours');
+    $permissions['option_value']['getlist'] = array('log own hours');
+  }
 
   // allow fairly liberal access to the volunteer opp listing UI, which uses lots of API calls
   if (_volunteer_isVolListingApiCall($entity, $action) && CRM_Volunteer_Permission::checkProjectPerms(CRM_Core_Action::VIEW)) {
@@ -639,7 +683,12 @@ function volunteer_civicrm_angularModules(&$angularModules) {
         1 => 'ang/volunteer/*.js',
         2 => 'ang/volunteer/*/*.js'
       ),
-    'css' => array (0 => 'ang/volunteer.css'),
+    'css' => array(
+      'ang/volunteer.css',
+      'ang/volunteer/shared/crmVolLocBlock.css',
+      'ang/volunteer/shared/crmVolProjectDetail.css',
+      'ang/volunteer/shared/crmVolProjectThumb.css',
+    ),
     'partials' => array (0 => 'ang/volunteer'),
     'settings' => array(),
   );

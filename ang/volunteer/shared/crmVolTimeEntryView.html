@@ -1,0 +1,30 @@
+<tr>
+  <td class="crm-vol-log-start_time">
+    <input
+      crm-ui-datepicker
+      ng-model="ngModel.activity_date_time"
+      required="required" />
+  </td>
+  <td>
+    <input
+      crm-entityref="{entity: 'option_value',
+      select: {minimumInputLength: 0, placeholder: ts('Select Role')},
+      api: {params: {option_group_id: 'volunteer_role', is_active: true}}
+      }"
+      ng-model="ngModel.volunteer_role_id"
+      required="required"
+      />
+  </td>
+  <td class="crm-vol-log-duration">
+    <!-- TODO: replace this with a directive for specifying time by hours/minutes -->
+    <input
+      ng-model="ngModel.time_completed_minutes"
+      placeholder="{{ts('Enter minutes')}}"
+      required="required"
+      type="number"
+      />
+  </td>
+  <td class="crm-vol-log-remove">
+    <button crm-icon="fa-times">{{ts('Remove')}}</button>
+  </td>
+</tr>

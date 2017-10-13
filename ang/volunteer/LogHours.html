@@ -1,0 +1,106 @@
+<!--
+Controller: LogHours
+Required vars: wizardSelections, projects
+Optional vars: locBlockHeading
+-->
+
+<div class="crm-container">
+  <div crm-ui-debug="supportingData"></div>
+  <div crm-ui-debug="wizardSelections"></div>
+  <div crm-ui-debug="projects"></div>
+  <div crm-ui-debug="existingTimeEntries"></div>
+  <div crm-ui-debug="newTimeEntries"></div>
+
+  <div id="crm-vol-log-hours-wizard-form-wrapper" ng-if="!submitted">
+  <form name="logHours" novalidate>
+    <div crm-ui-wizard="logHoursWizardCtrl">
+      <div crm-ui-wizard-step="1" crm-title="ts('Select Beneficiary')" ng-form="selectBeneficiaryForm">
+        <div class="help">
+          <p>
+            {{ts('Log the time you volunteered. First, please select the organization you volunteered for.')}}
+          </p>
+        </div>
+        <div crm-ui-id-scope>
+          <div crm-ui-field="{name: 'selectBeneficiaryForm.beneficiary', title: ts('Beneficiary')}">
+            <input
+              crm-entityref="{entity: 'VolunteerProjectContact',
+              select: {create: true, placeholder: ts('Select Beneficiary')},
+              api: {params: {relationship_type_id: 'volunteer_beneficiary'}}
+              }"
+              crm-ui-id="selectBeneficiaryForm.beneficiary"
+              name="beneficiary"
+              ng-model="wizardSelections.beneficiaryId"
+              required="true"
+              />
+          </div>
+        </div>
+      </div>
+
+      <div crm-ui-wizard-step="2" crm-title="ts('Select Project')" ng-form="selectProjectForm">
+        <div class="help">
+          <p>
+            {{ts('Click a project summary to see the full preview, then click "Next" to select it.')}}
+          </p>
+        </div>
+
+        <div class="crm-vol-project-thumb-wrapper">
+          <crm-vol-project-thumb
+            data="project"
+            ng-class="{'selected': project.id === wizardSelections.projectId}"
+            ng-click="selectProject(project.id)"
+            ng-repeat="project in projects" />
+        </div>
+
+        <!--
+             This is perhaps inelegant, but it's a quick way to enforce that the
+             "Next" button for this step is disabled until a project selection
+             is made. It may be worthwhile to look at the family of crmWizard
+             directives to see if there's a cleaner way to do this, or we could
+             have modeled crmVolProjectThumb as a radio input rather than a div.
+        -->
+        <input
+          name="projectId"
+          ng-model="wizardSelections.projectId"
+          required="required"
+          type="hidden" />
+
+        <crm-vol-project-detail
+          data="projects[wizardSelections.projectId]"
+          loc-block-heading="locBlockHeading"
+          ng-class="{'disabled': !wizardSelections.projectId}" />
+      </div>
+
+      <div crm-ui-wizard-step="3" crm-title="ts('Enter Details')" ng-form="enterDetailsForm">
+        <div class="help" ng-if="_.size(existingTimeEntries)">
+          <p>
+            {{ts("You've registered for the following \"%1\" volunteer opportunities. Please log your time for them below. If you haven't performed these hours yet or wish to log them later, click the \"Remove\" button to remove it from the list.", {1: projects[wizardSelections.projectId].title})}}
+          </p>
+        </div>
+        <crm-vol-time-table ng-if="_.size(existingTimeEntries)" ng-model="existingTimeEntries"></crm-vol-time-table>
+
+        <div class="help">
+          <p ng-if="_.size(existingTimeEntries)">
+            {{ts('To log additional time to this project, add more rows below.')}}
+          </p>
+          <p ng-if="!_.size(existingTimeEntries)">
+            {{ts('Log your time for the \"%1\" project below. Add as many rows as needed.', {1: projects[wizardSelections.projectId].title})}}
+          </p>
+        </div>
+        <crm-vol-time-table ng-model="newTimeEntries"></crm-vol-time-table>
+        <button crm-icon="fa-plus" ng-click="addNewTimeEntry()">{{ts('Add Another Row')}}</button>
+
+        <span crm-ui-wizard-buttons>
+          <button crm-icon="fa-check" ng-click="saveTimeEntries()" ng-show="logHoursWizardCtrl.$last()" ng-disabled="!logHoursWizardCtrl.$validStep()">{{ts('Save and Finish')}}</button>
+        </span>
+      </div>
+    </div>
+  </form>
+  </div>
+  <div id="crm-vol-log-hours-wizard-confirm" ng-if="submitted">
+    <h1>Volunteer Time Logged</h1>
+    <p>Thank you.</p>
+    <button crm-icon="fa-search" ng-click="goTo('/volunteer/opportunities')">Find more opportunities</button>
+    <button crm-icon="fa-clock-o" ng-click="startOver()">Log more hours</button>
+    <button crm-icon="fa-home" ng-click="goHome()">Return home</button>
+  </div>
+</div>

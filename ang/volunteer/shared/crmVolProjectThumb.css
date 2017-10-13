@@ -1,0 +1,21 @@
+/* Assumes a layout of a single row of three thumbs */
+crm-vol-project-thumb {
+  display: inline-block;
+  margin-right: 5%;
+  width: 30%;
+}
+
+crm-vol-project-thumb:last-child {
+  margin-right: 0;
+}
+
+crm-vol-project-thumb.selected article {
+  background: #C9E0FF;
+}
+
+crm-vol-project-thumb article {
+  border: 1px solid black;
+  border-radius: 10px;
+  cursor: pointer;
+  padding: 10px;
+}
