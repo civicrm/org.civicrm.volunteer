@@ -30,7 +30,7 @@
   <div id="help">
     {* VOL-47: The following is on one line intentionally. *}
     {ts domain='org.civicrm.volunteer'}Use this form to specify the number of volunteers needed for each role and time slot. If no opportunities are specified, volunteers will be considered to be generally available.{/ts}
-    {help id="volunteer-define" file="CRM/Volunteer/Form/Manage/Define.hlp" isModulePermissionSupported=`$isModulePermissionSupported`}
+    {help id="volunteer-define" file="CRM/Volunteer/Page/Backbone/Define.hlp" isModulePermissionSupported=`$isModulePermissionSupported`}
   </div>
   <form class="crm-block crm-form-block crm-event-manage-volunteer-form-block">
     <div id="crm-vol-define-scheduled-needs-region">
@@ -87,7 +87,7 @@
           {ts domain='org.civicrm.volunteer'}Open-Ended{/ts}
         </option>
       </select>
-          {help id="volunteer-define-schedule_type" file="CRM/Volunteer/Form/Manage/Define.hlp"}
+          {help id="volunteer-define-schedule_type" file="CRM/Volunteer/Page/Backbone/Define.hlp"}
     </label>
     <table class="time_components">
       <thead>
