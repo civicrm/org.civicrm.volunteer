@@ -140,7 +140,7 @@
         //returns an error that distance, units and postal code
         //are all required, even though the user is not attempting
         //to do a proximity search.
-        $scope.searchParams.proximity = {};
+        delete $scope.searchParams.proximity;
       }
       return crmStatus(
         {start: ts('Searching...'), success: ts('Search complete')},
