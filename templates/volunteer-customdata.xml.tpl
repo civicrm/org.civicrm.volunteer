@@ -18,7 +18,6 @@
       <table_name>civicrm_value_civivolunteer_{$customIDs.civicrm_custom_group}</table_name>
       <is_multiple>0</is_multiple>
       <collapse_adv_display>0</collapse_adv_display>
-      <created_date>0000-00-00 00:00:00</created_date>
       <is_reserved>1</is_reserved>
     </CustomGroup>
   </CustomGroups>
