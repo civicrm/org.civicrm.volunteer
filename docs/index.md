@@ -2,7 +2,7 @@
 
 ## Overview
 
-The CiviVolunteer extension provides tools for signing up, managing, and tracking volunteers.
+The [CiviVolunteer extension](https://github.com/civicrm/org.civicrm.volunteer.git "CiviVolunteer extension") provides tools for signing up, managing, and tracking volunteers.
 
 ### Features
 
