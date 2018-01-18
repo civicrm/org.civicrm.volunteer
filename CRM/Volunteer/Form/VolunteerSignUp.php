@@ -608,11 +608,12 @@ class CRM_Volunteer_Form_VolunteerSignUp extends CRM_Core_Form {
 
     $profileFields = $this->getProfileFields($this->getAdditionalVolunteerProfileIDs());
     $profileFieldsByType = array_reduce($profileFields, array($this, 'reduceByType'), array());
+    $activityProfileFields = CRM_Utils_Array::value('Activity', $profileFrieldsByType, array());
 
     $index = 0;
     while ($index < $qty) {
       $profileData = CRM_Utils_Array::value('additionalVolunteers_' . $index, $data, array());
-      $activityData = array_intersect_key($profileData, $profileFieldsByType['Activity']);
+      $activityData = array_intersect_key($profileData, $activityProfileFields);
       $contactData = array_diff_key($profileData, $activityData);
 
       $cid = $this->processContactProfileData($contactData, $profileFields);
