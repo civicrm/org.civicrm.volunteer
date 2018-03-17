@@ -475,7 +475,8 @@ class CRM_Volunteer_BAO_Project extends CRM_Volunteer_DAO_Project {
     $dao = self::executeQuery($query->toSQL());
     while ($dao->fetch()) {
       $fetchedProject = new CRM_Volunteer_BAO_Project();
-      $fetchedProject->copyValues(clone $dao);
+      $daoClone = clone $dao;
+      $fetchedProject->copyValues($daoClone);
       $result[(int) $dao->id] = $fetchedProject;
     }
     $dao->free();
