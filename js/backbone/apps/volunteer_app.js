@@ -1,5 +1,5 @@
 // http://civicrm.org/licensing
-CRM.volunteerApp = new Backbone.Marionette.Application();
+CRM.volunteerApp = new CRM.BB.Marionette.Application();
 CRM.volunteerApp.addRegions({
   dialogRegion: '#crm-volunteer-dialog',
   searchRegion: '#crm-volunteer-search-dialog'
