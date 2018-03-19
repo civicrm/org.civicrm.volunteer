@@ -94,7 +94,7 @@
           <div><a ng-click="backbonePopup(ts('Assign Volunteers'), 'Assign', project.id)">{{ ts('Assign Volunteers') }}</a></div>
           <div><a ng-click="showRoster()">{{ ts('View Volunteer Roster') }}</a></div>
           <div><a ng-click="showLogHours()">{{ ts('Log Hours') }}</a></div>
-          <div><a href="#/volunteer/opportunities?project={{project.id}}">{{ ts('Volunteer Signup Page') }}</a></div>
+          <div><a target="_blank" href="#/volunteer/opportunities?project={{project.id}}&amp;hideSearch=1">{{ ts('Public Signup') }}</a></div>
         </td>
       </tr>
       </tbody>
