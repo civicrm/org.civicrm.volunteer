@@ -22,4 +22,7 @@
   <urls>
     <url desc="Documentation">https://docs.civicrm.org/volunteer/en/latest/</url>
   </urls>
+  <requires>
+    <ext>org.civicrm.angularprofiles</ext>
+  </requires>
 </extension>
