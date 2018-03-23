@@ -29,6 +29,8 @@
 require_once 'volunteer.civix.php';
 require_once 'volunteer.slider.php';
 
+use CRM_Volunteer_ExtensionUtil as E;
+
 /**
  * Implementation of hook_civicrm_config
  */
@@ -37,155 +39,84 @@ function volunteer_civicrm_config(&$config) {
 }
 
 /**
- * Implementation of hook_civicrm_navigationMenu.
+ * Implements hook_civicrm_navigationMenu().
  *
- * Adds CiviVolunteer navigation items just before the Administer menu.
- *
- * @link http://wiki.civicrm.org/confluence/display/CRMDOC/hook_civicrm_navigationMenu
+ * @link https://docs.civicrm.org/dev/en/latest/hooks/hook_civicrm_navigationMenu/
  */
-function volunteer_civicrm_navigationMenu(&$params) {
-  // get the Administer menu ID and position in the $params array
-  $administerMenuId = CRM_Core_DAO::getFieldValue('CRM_Core_BAO_Navigation', 'Administer', 'id', 'name');
-  $posOfAdminMenu = array_search($administerMenuId, array_keys($params));
+function volunteer_civicrm_navigationMenu(&$menu) {
+  _volunteer_civix_insert_navigation_menu($menu, NULL, array(
+    'label' => E::ts('Volunteers'),
+    'name' => 'volunteer_volunteers',
+    'url' => NULL,
+    'permission' => NULL,
+    'operator' => NULL,
+    'separator' => 0,
+  ));
 
-  $newNavId = _volunteer_getMenuKeyMax($params);
-  $volMenu = array(
-    $newNavId => array(
-      'attributes' => array(
-        'label' => ts('Volunteers', array('domain' => 'org.civicrm.volunteer')),
-        'name' => 'volunteer_volunteers',
-        'url' => NULL,
-        'permission' => NULL,
-        'operator' => NULL,
-        'separator' => 0,
-        'parentID' => NULL,
-        'navID' => $newNavId,
-        'active' => 1,
-      ),
-      'child' => array(
-        $newNavId + 1 => array(
-          'attributes' => array(
-            'label' => ts('New Volunteer Project', array('domain' => 'org.civicrm.volunteer')),
-            'name' => 'volunteer_new_project',
-            'url' => 'civicrm/vol/#/volunteer/manage/0',
-            'permission' => NULL,
-            'operator' => NULL,
-            'separator' => 0,
-            'parentID' => $newNavId,
-            'navID' => $newNavId + 1,
-            'active' => 1,
-          ),
-          'child' => array(),
-        ),
-        $newNavId + 2 => array(
-          'attributes' => array(
-            'label' => ts('Manage Volunteer Projects', array('domain' => 'org.civicrm.volunteer')),
-            'name' => 'volunteer_manage_projects',
-            'url' => 'civicrm/vol/#/volunteer/manage',
-            'permission' => NULL,
-            'operator' => NULL,
-            'separator' => 1,
-            'parentID' => $newNavId,
-            'navID' => $newNavId + 2,
-            'active' => 1,
-          ),
-          'child' => array(),
-        ),
-        $newNavId + 3 => array(
-          'attributes' => array(
-            'label' => ts('Configure Roles', array('domain' => 'org.civicrm.volunteer')),
-            'name' => 'volunteer_config_roles',
-            'url' => 'civicrm/admin/options/volunteer_role?reset=1',
-            'permission' => NULL,
-            'operator' => NULL,
-            'separator' => 0,
-            'parentID' => $newNavId,
-            'navID' => $newNavId + 3,
-            'active' => 1,
-          ),
-          'child' => array(),
-        ),
-        $newNavId + 4 => array(
-          'attributes' => array(
-            'label' => ts('Configure Project Relationships', array('domain' => 'org.civicrm.volunteer')),
-            'name' => 'volunteer_config_projrel',
-            'url' => 'civicrm/admin/options/volunteer_project_relationship?reset=1',
-            'permission' => NULL,
-            'operator' => NULL,
-            'separator' => 0,
-            'parentID' => $newNavId,
-            'navID' => $newNavId + 4,
-            'active' => 1,
-          ),
-          'child' => array(),
-        ),
-        $newNavId + 5 => array(
-          'attributes' => array(
-            'label' => ts('Configure Volunteer Settings', array('domain' => 'org.civicrm.volunteer')),
-            'name' => 'volunteer_config_settings',
-            'url' => 'civicrm/admin/volunteer/settings',
-            'permission' => NULL,
-            'operator' => NULL,
-            'separator' => 1,
-            'parentID' => $newNavId,
-            'navID' => $newNavId + 5,
-            'active' => 1,
-          ),
-          'child' => array(),
-        ),
-        $newNavId + 6 => array(
-          'attributes' => array(
-            'label' => ts('Volunteer Interest Form', array('domain' => 'org.civicrm.volunteer')),
-            'name' => 'volunteer_join',
-            'url' => 'civicrm/volunteer/join',
-            'permission' => NULL,
-            'operator' => NULL,
-            'separator' => 0,
-            'parentID' => $newNavId,
-            'navID' => $newNavId + 6,
-            'active' => 1,
-          ),
-          'child' => array(),
-        ),
-        $newNavId + 7 => array(
-          'attributes' => array(
-            'label' => ts('Search for Volunteer Opportunities', array('domain' => 'org.civicrm.volunteer')),
-            'name' => 'volunteer_opp_search',
-            'url' => 'civicrm/vol/#/volunteer/opportunities',
-            'permission' => NULL,
-            'operator' => NULL,
-            'separator' => 0,
-            'parentID' => $newNavId,
-            'navID' => $newNavId + 7,
-            'active' => 1,
-          ),
-          'child' => array(),
-        ),
-      ),
-    ),
-  );
+  _volunteer_civix_insert_navigation_menu($menu, 'volunteer_volunteers', array(
+    'label' => E::ts('New Volunteer Project'),
+    'name' => 'volunteer_new_project',
+    'url' => 'civicrm/vol/#/volunteer/manage/0',
+    'permission' => NULL,
+    'operator' => NULL,
+    'separator' => 0,
+  ));
 
-  // insert volunteer menu before the admininster menu
-  $params = array_slice($params, 0, $posOfAdminMenu, true)
-    + $volMenu + array_slice($params, $posOfAdminMenu, NULL, true);
-}
+  _volunteer_civix_insert_navigation_menu($menu, 'volunteer_volunteers', array(
+    'label' => E::ts('Manage Volunteer Projects'),
+    'name' => 'volunteer_manage_projects',
+    'url' => 'civicrm/vol/#/volunteer/manage',
+    'permission' => NULL,
+    'operator' => NULL,
+    'separator' => 1,
+  ));
 
-/**
- * Helper function for getting the highest key in the navigation menu.
- *
- * Taken from http://wiki.civicrm.org/confluence/display/CRMDOC/hook_civicrm_navigationMenu.
- *
- * @param array $menuArray
- * @return int
- */
-function _volunteer_getMenuKeyMax($menuArray) {
-  $max = array(max(array_keys($menuArray)));
-  foreach($menuArray as $v) {
-    if (!empty($v['child'])) {
-      $max[] = _volunteer_getMenuKeyMax($v['child']);
-    }
-  }
-  return max($max);
+  _volunteer_civix_insert_navigation_menu($menu, 'volunteer_volunteers', array(
+    'label' => E::ts('Configure Roles'),
+    'name' => 'volunteer_config_roles',
+    'url' => 'civicrm/admin/options/volunteer_role?reset=1',
+    'permission' => NULL,
+    'operator' => NULL,
+    'separator' => 0,
+  ));
+
+  _volunteer_civix_insert_navigation_menu($menu, 'volunteer_volunteers', array(
+    'label' => E::ts('Configure Project Relationships'),
+    'name' => 'volunteer_config_projrel',
+    'url' => 'civicrm/admin/options/volunteer_project_relationship?reset=1',
+    'permission' => NULL,
+    'operator' => NULL,
+    'separator' => 0,
+  ));
+
+  _volunteer_civix_insert_navigation_menu($menu, 'volunteer_volunteers', array(
+    'label' => E::ts('Configure Volunteer Settings'),
+    'name' => 'volunteer_config_settings',
+    'url' => 'civicrm/admin/volunteer/settings',
+    'permission' => NULL,
+    'operator' => NULL,
+    'separator' => 1,
+  ));
+
+  _volunteer_civix_insert_navigation_menu($menu, 'volunteer_volunteers', array(
+    'label' => E::ts('Volunteer Interest Form'),
+    'name' => 'volunteer_join',
+    'url' => 'civicrm/volunteer/join',
+    'permission' => NULL,
+    'operator' => NULL,
+    'separator' => 0,
+  ));
+
+  _volunteer_civix_insert_navigation_menu($menu, 'volunteer_volunteers', array(
+    'label' => E::ts('Search for Volunteer Opportunities'),
+    'name' => 'volunteer_opp_search',
+    'url' => 'civicrm/vol/#/volunteer/opportunities',
+    'permission' => NULL,
+    'operator' => NULL,
+    'separator' => 0,
+  ));
+
+  _volunteer_civix_navigationMenu($menu);
 }
 
 /**
