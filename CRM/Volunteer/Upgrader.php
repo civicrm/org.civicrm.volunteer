@@ -265,7 +265,8 @@ class CRM_Volunteer_Upgrader extends CRM_Volunteer_Upgrader_Base {
     ');
     CRM_Core_DAO::executeQuery('
       ALTER TABLE `civicrm_volunteer_project`
-      ADD FOREIGN KEY (`target_contact_id`)
+      ADD CONSTRAINT `FK_civicrm_volunteer_project_target_contact_id`
+      FOREIGN KEY (`target_contact_id`)
       REFERENCES `civicrm_contact` (`id`)
       ON DELETE SET NULL
     ');
