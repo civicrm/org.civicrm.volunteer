@@ -43,14 +43,8 @@
   margin-top: 2em;
 }
 
-/* wrap label and select together on smaller screens */
-.crm-volunteer-profile-use-type {
-  display: inline-block;
-}
-
-.crm-profile-selector-wrapper {
-  float: left;
-  margin-right: 10px;
+.crm-profile-selector-container .crm-button-remove-profile {
+  position: absolute;
 }
 
 .crm-container fieldset.crm-vol-ui-fieldset, fieldset.crm-vol-ui-fieldset {
