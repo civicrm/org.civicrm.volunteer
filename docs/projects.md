@@ -23,7 +23,7 @@ In addition to simple settings such as "Title" and "Description", each project h
 
 * **Multiple [relationships](#relationships) to contacts:** In order to control editing access and email notifications for each project, we must add relationships from the project to specific CiviCRM contacts.
 
-* **Multiple [registration profiles](#profiles):** Specify which quesitons to ask volunteers when they [sign up](sign-up-form).
+* **Multiple [registration profiles](#profiles):** Specify which questions to ask volunteers when they [sign up](sign-up-form).
 
 
 ## Creating a new project {:#new}
