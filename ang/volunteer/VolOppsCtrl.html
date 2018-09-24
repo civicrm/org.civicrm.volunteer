@@ -40,7 +40,7 @@ Required vars: volOppData(), searchParams
               multiple="multiple"
               name="role_id"
               ng-model="searchParams.role_id"
-              ng-options="key as value for (key , value) in  roles"
+              ng-options="key as value for (key , value) in  roles track by key"
               class="big crm-form-text">
               <option />
             </select>
