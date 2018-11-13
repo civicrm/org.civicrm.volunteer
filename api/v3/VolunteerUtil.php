@@ -311,7 +311,7 @@ function civicrm_api3_volunteer_util_getcountries($params) {
  * @return array
  */
 function civicrm_api3_volunteer_util_getcustomfields($params) {
-  $allowedCustomFieldTypes = array('AdvMulti-Select', 'Autocomplete-Select',
+  $allowedCustomFieldTypes = array('Autocomplete-Select',
     'CheckBox', 'Multi-Select', 'Radio', 'Select', 'Text');
 
   $customGroupAPI = civicrm_api3('CustomGroup', 'getsingle', array(

@@ -29,11 +29,11 @@
          */
         var typeMap = {
           checkRadio: ['CheckBox', 'Radio'],
-          select: ['AdvMulti-Select', 'Autocomplete-Select', 'Multi-Select', 'Select'],
+          select: ['Autocomplete-Select', 'Multi-Select', 'Select'],
           text: ['Text']
         };
         // html_types which allow the user to select multiple values
-        var typeMulti = ['AdvMulti-Select', 'CheckBox', 'Multi-Select'];
+        var typeMulti = ['CheckBox', 'Multi-Select'];
 
         var html_type = this.model.get('html_type');
         var type = _.findKey(typeMap, function(group) {
