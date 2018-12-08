@@ -246,9 +246,10 @@ class CRM_Volunteer_BAO_Assignment extends CRM_Volunteer_BAO_Activity {
     if (empty($defaults['campaign_id'])) {
       $defaults['campaign_id'] = '';
     }
-
+    if (empty($params['volunteer_role_id'])) {
+      $defaults['volunteer_role_id'] = CRM_Utils_Array::value('role_id', $need, 'null');
+    }
     if ($op === CRM_Core_Action::ADD) {
-      $defaults['volunteer_role_id'] = CRM_Utils_Array::value('role_id', $need);
       $defaults['time_scheduled_minutes'] = CRM_Utils_Array::value('duration', $need);
       $defaults['target_contact_id'] = CRM_Volunteer_BAO_Project::getContactsByRelationship($project->id, 'volunteer_beneficiary');
 
