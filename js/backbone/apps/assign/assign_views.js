@@ -133,6 +133,7 @@
         var status = _.invert(CRM.pseudoConstant.volunteer_status),
           params = {
             activity_date_time: this.model.get('start_time'),
+            time_scheduled_minutes: this.model.get('duration'),
             volunteer_need_id: this.model.get('id'),
             volunteer_role_id: this.model.get('role_id'),
             status_id: status[this.isFlexible ? 'Available' : 'Scheduled']
