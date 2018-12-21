@@ -51,6 +51,7 @@ function volunteer_civicrm_navigationMenu(&$menu) {
     'permission' => NULL,
     'operator' => NULL,
     'separator' => 0,
+    'icon' => 'crm-i fa-users',
   ));
 
   _volunteer_civix_insert_navigation_menu($menu, 'volunteer_volunteers', array(
