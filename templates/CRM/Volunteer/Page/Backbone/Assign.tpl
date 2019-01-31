@@ -34,7 +34,7 @@
 <script type="text/template" id="crm-vol-scheduled-assignment-tpl">
   <td class="crm-vol-name">
     <span class="icon crm-vol-drag"></span>
-    <a target="_blank" href="<%= contactUrl(contact_id) %>"><%= display_name %></a>
+    <a target="_blank" href="<%= contactUrl(contact_id) %>"><%- display_name %></a>
     {literal}<%if (details){%><a href="#" class="icon crm-vol-info"> </a><%}%>{/literal}
     <div class="crm-vol-menu"><a class="crm-vol-menu-button" href="#" title="{ts domain='org.civicrm.volunteer'}Actions{/ts}"><span></span></a></div>
   </td>
@@ -45,7 +45,7 @@
 <script type="text/template" id="crm-vol-flexible-assignment-tpl">
   <td class="crm-vol-name">
     <span class="icon crm-vol-drag"></span>
-    <a target="_blank" href="<%= contactUrl(contact_id) %>"><%= display_name %></a>
+    <a target="_blank" href="<%= contactUrl(contact_id) %>"><%- display_name %></a>
     {literal}<%if (details){%><a href="#" class="icon crm-vol-info"> </a><%}%>{/literal}
     <div class="crm-vol-menu"><a class="crm-vol-menu-button" href="#" title="{ts domain='org.civicrm.volunteer'}Actions{/ts}"><span></span></a></div>
   </td>
