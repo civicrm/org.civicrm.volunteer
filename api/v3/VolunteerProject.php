@@ -98,6 +98,7 @@ function civicrm_api3_volunteer_project_get($params) {
     }
 
     $params['project_contacts']['volunteer_owner'] = array(CRM_Core_Session::getLoggedInContactID());
+    $params['project_contacts']['volunteer_manager'] = array(CRM_Core_Session::getLoggedInContactID());
     unset($params['context']);
   }
 
