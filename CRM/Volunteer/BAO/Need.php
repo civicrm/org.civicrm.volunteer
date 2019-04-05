@@ -68,7 +68,7 @@ class CRM_Volunteer_BAO_Need extends CRM_Volunteer_DAO_Need {
     $need->copyValues($params);
     $projectId = $need->getProjectId();
 
-    if ($projectId === FALSE) {
+    if ($projectId === false) {
       CRM_Core_Error::fatal('Missing required Need ID or Project ID');
     }
 
@@ -79,13 +79,13 @@ class CRM_Volunteer_BAO_Need extends CRM_Volunteer_DAO_Need {
 
       // FIXME: If we don't return here, the script keeps executing. This is not
       // what I expect from CRM_Utils_System::permissionDenied().
-      return FALSE;
+      return false;
     }
 
     // VOL-269: Do not allow creation of more than one flexible need per project.
     if ($need->is_flexible) {
       $existingNeedId = CRM_Volunteer_BAO_Project::getFlexibleNeedID($projectId);
-      $thisNeedId = property_exists($need, 'id') ? (int) $need->id : NULL;
+      $thisNeedId = property_exists($need, 'id') ? (int) $need->id : null;
       if ($existingNeedId === $thisNeedId) {
         CRM_Core_Error::fatal('Cannot create more than one flexible need for a given project');
       }
@@ -114,17 +114,17 @@ class CRM_Volunteer_BAO_Need extends CRM_Volunteer_DAO_Need {
   public function getProjectId() {
     // If the project ID was passed into the create method, or if the object is
     // already fully loaded, we already have the project ID and can return it...
-    if (isset($this->project_id) && CRM_Utils_Type::validate($this->project_id, 'Positive', FALSE)) {
+    if (isset($this->project_id) && CRM_Utils_Type::validate($this->project_id, 'Positive', false)) {
       return (int) $this->project_id;
     }
 
     // ... otherwise we have to look it up from the database
-    if (isset($this->id) && CRM_Utils_Type::validate($this->id, 'Positive', FALSE)) {
+    if (isset($this->id) && CRM_Utils_Type::validate($this->id, 'Positive', false)) {
       $dbNeed = $this->findById($this->id);
       return $dbNeed->project_id;
     }
 
-    return FALSE;
+    return false;
   }
 
   /**
@@ -166,9 +166,9 @@ class CRM_Volunteer_BAO_Need extends CRM_Volunteer_DAO_Need {
    *   Returns a string on success, boolean FALSE if $start is not
    *   a parseable time.
    */
-  static function getTimes($start, $duration = NULL, $end = NULL) {
+  static function getTimes($start, $duration = null, $end = null) {
     if (!strtotime($start)) {
-      return FALSE;
+      return false;
     }
 
     $config = CRM_Core_Config::singleton();
@@ -177,7 +177,7 @@ class CRM_Volunteer_BAO_Need extends CRM_Volunteer_DAO_Need {
 
     if (strtotime($end)) {
       $result .= ' - ' . CRM_Utils_Date::customFormat($end, $timeFormat);
-    } elseif (CRM_Utils_Type::validate($duration, 'Positive', FALSE)) {
+    } elseif (CRM_Utils_Type::validate($duration, 'Positive', false)) {
       $date = new DateTime($start);
       $startDay = $date->format('Y-m-d');
       $date->add(new DateInterval("PT{$duration}M"));
@@ -226,9 +226,9 @@ class CRM_Volunteer_BAO_Need extends CRM_Volunteer_DAO_Need {
       }
     }
     else {
-      return FALSE;
+      return false;
     }
-    return TRUE;
+    return true;
   }
 
   /**

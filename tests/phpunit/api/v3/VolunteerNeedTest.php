@@ -75,7 +75,7 @@ class api_v3_VolunteerNeedTest extends VolunteerTestAbstract {
     ) + $defaultNeedParams);
     $singleDateNeedProject1 = $this->callAPISuccess('VolunteerNeed', 'create', array(
       'project_id' => $project1['id'],
-      'end_time' => NULL,
+      'end_time' => null,
     ) + $defaultNeedParams);
     $disabledNeedProject1 = $this->callAPISuccess('VolunteerNeed', 'create', array(
       'project_id' => $project1['id'],

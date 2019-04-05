@@ -35,7 +35,7 @@ class CRM_Volunteer_BAO_AssignmentTest extends VolunteerTestAbstract {
    * that the project beneficiary is made the activity target.
    */
   function testActivityTarget() {
-    $beneficiaryContactId = $need = $project = $volunteerContactId = NULL;
+    $beneficiaryContactId = $need = $project = $volunteerContactId = null;
     extract($this->setUpProject(), EXTR_IF_EXISTS);
 
     $projectContact = CRM_Core_DAO::createTestObject('CRM_Volunteer_BAO_ProjectContact', array(
@@ -66,7 +66,7 @@ class CRM_Volunteer_BAO_AssignmentTest extends VolunteerTestAbstract {
    * that the activity subject defaults to the project title.
    */
   function testActivitySubject() {
-    $need = $project = $volunteerContactId = NULL;
+    $need = $project = $volunteerContactId = null;
     extract($this->setUpProject(), EXTR_IF_EXISTS);
 
     $assignmentId = CRM_Volunteer_BAO_Assignment::createVolunteerActivity(array(
@@ -110,7 +110,7 @@ class CRM_Volunteer_BAO_AssignmentTest extends VolunteerTestAbstract {
       'source_contact_id' => 1,
       'volunteer_need_id' => $need->id,
     ));
-    $this->assertNotSame(FALSE, $activityId, 'Failed to create Volunteer Activity');
+    $this->assertNotSame(false, $activityId, 'Failed to create Volunteer Activity');
 
     $createdActivity = CRM_Volunteer_BAO_Assignment::findById($activityId);
     $this->assertEquals($campaign->id, $createdActivity->campaign_id,

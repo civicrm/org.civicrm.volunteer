@@ -2,7 +2,7 @@
 
 class CRM_Volunteer_Page_Router extends CRM_Core_Page {
 
-  function run($args = NULL) {
+  function run($args = null) {
     if (CRM_Utils_Array::value(0, $args) !== 'civicrm' || CRM_Utils_Array::value(1, $args) !== 'volunteer') {
       CRM_Core_Error::fatal('Invalid page callback config.');
       return;
@@ -27,12 +27,12 @@ class CRM_Volunteer_Page_Router extends CRM_Core_Page {
 
         // set params for controller
         $class = 'CRM_Profile_Form_Edit';
-        $title = NULL;
+        $title = null;
         $mode = isset($contact_id) ? CRM_Core_Action::UPDATE : CRM_Core_Action::ADD;
-        $imageUpload = FALSE;
-        $addSequence = FALSE;
-        $ignoreKey = TRUE;
-        $attachUpload = FALSE;
+        $imageUpload = false;
+        $addSequence = false;
+        $ignoreKey = true;
+        $attachUpload = false;
 
         $controller = new CRM_Core_Controller_Simple($class, $title, $mode, $imageUpload, $addSequence, $ignoreKey, $attachUpload);
 

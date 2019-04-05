@@ -26,7 +26,7 @@ class CRM_Volunteer_Page_Roster extends CRM_Core_Page {
    * Builds the page.
    */
   public function run() {
-    $this->projectId = CRM_Utils_Request::retrieve('project_id', 'Positive', CRM_Core_DAO::$_nullObject, TRUE);
+    $this->projectId = CRM_Utils_Request::retrieve('project_id', 'Positive', CRM_Core_DAO::$_nullObject, true);
     $this->project = CRM_Volunteer_BAO_Project::retrieveByID($this->projectId);
     CRM_Utils_System::setTitle(ts('Volunteer Roster for %1', array(
       1 => $this->project->title,
@@ -94,7 +94,7 @@ class CRM_Volunteer_Page_Roster extends CRM_Core_Page {
   private function isAssignmentInThePast(array $assignment){
     // If we don't have the crucial data then we assume that it's not in the future.
     if (empty($assignment['start_time'])) {
-      return TRUE;
+      return true;
     }
 
     // In case there is no end time and no duration, we use the start date as

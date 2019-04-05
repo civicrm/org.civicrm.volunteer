@@ -49,8 +49,8 @@ class CRM_Volunteer_Form_VolunteerReport extends CRM_Report_Form {
           'project' => array(
             'name' => 'title',
             'title' => ts('Project', array('domain' => 'org.civicrm.volunteer')),
-            'no_repeat' => TRUE,
-            'default' => TRUE,
+            'no_repeat' => true,
+            'default' => true,
           ),
         ),
         'alias' => 'project',
@@ -69,14 +69,14 @@ class CRM_Volunteer_Form_VolunteerReport extends CRM_Report_Form {
             'name' => 'sort_name',
             'title' => ts('Volunteer Name', array('domain' => 'org.civicrm.volunteer')),
             'alias' => 'civicrm_contact_assignee_civireport',
-            'default' => TRUE,
-            'required' => TRUE,
+            'default' => true,
+            'required' => true,
           ),
           'contact_source' => array(
             'name' => 'sort_name',
             'title' => ts('Source Contact Name', array('domain' => 'org.civicrm.volunteer')),
             'alias' => 'civicrm_contact_source',
-            'no_repeat' => TRUE,
+            'no_repeat' => true,
           ),
           'contact_target' => array(
             'name' => 'sort_name',
@@ -137,7 +137,7 @@ class CRM_Volunteer_Form_VolunteerReport extends CRM_Report_Form {
         'fields' => array(
           'organization_id' => array(
             'name' => 'id',
-            'no_display' => TRUE,
+            'no_display' => true,
           ),
           'organization_name' => array(
             'title' => ts('Employer', array('domain' => 'org.civicrm.volunteer')),
@@ -173,29 +173,29 @@ class CRM_Volunteer_Form_VolunteerReport extends CRM_Report_Form {
         'dao' => 'CRM_Activity_DAO_Activity',
         'fields' => array(
           'id' => array(
-            'no_display' => TRUE,
-            'required' => TRUE,
+            'no_display' => true,
+            'required' => true,
           ),
           'source_record_id' => array(
-            'no_display' => TRUE,
-            'required' => TRUE,
+            'no_display' => true,
+            'required' => true,
           ),
           'activity_type_id' => array(
-            'no_display' => TRUE,
-            'required' => TRUE,
+            'no_display' => true,
+            'required' => true,
           ),
           'activity_subject' => array(
             'title' => ts('Subject', array('domain' => 'org.civicrm.volunteer')),
-            'default' => TRUE,
+            'default' => true,
           ),
           'activity_date_time' => array(
             'title' => ts('Scheduled Date/Time', array('domain' => 'org.civicrm.volunteer')),
-            'default' => TRUE,
+            'default' => true,
             'type' => CRM_Utils_Type::T_STRING,
           ),
           'status_id' => array(
             'title' => ts('Activity Status', array('domain' => 'org.civicrm.volunteer')),
-            'default' => TRUE,
+            'default' => true,
             'type' => CRM_Utils_Type::T_STRING,
           ),
         ),
@@ -229,8 +229,8 @@ class CRM_Volunteer_Form_VolunteerReport extends CRM_Report_Form {
         'dao' => 'CRM_Activity_DAO_ActivityContact',
         'fields' => array(
           'contact_id' => array(
-            'no_display' => TRUE,
-            'required' => TRUE,
+            'no_display' => true,
+            'required' => true,
           ),
         ),
         'alias' => 'activity_assignment',
@@ -239,8 +239,8 @@ class CRM_Volunteer_Form_VolunteerReport extends CRM_Report_Form {
         'dao' => 'CRM_Activity_DAO_ActivityContact',
         'fields' => array(
           'contact_id' => array(
-            'no_display' => TRUE,
-            'required' => TRUE,
+            'no_display' => true,
+            'required' => true,
           ),
         ),
         'alias' => 'activity_target',
@@ -249,8 +249,8 @@ class CRM_Volunteer_Form_VolunteerReport extends CRM_Report_Form {
         'dao' => 'CRM_Activity_DAO_ActivityContact',
         'fields' => array(
           'contact_id' => array(
-            'no_display' => TRUE,
-            'required' => TRUE,
+            'no_display' => true,
+            'required' => true,
           ),
         ),
         'alias' => 'activity_source',
@@ -261,8 +261,8 @@ class CRM_Volunteer_Form_VolunteerReport extends CRM_Report_Form {
             'name' => $this->customFields['volunteer_role_id']['column_name'],
             'title' => ts('Volunteer Role', array('domain' => 'org.civicrm.volunteer')),
             'alias' => 'cg',
-            'no_repeat' => TRUE,
-            'default' => TRUE,
+            'no_repeat' => true,
+            'default' => true,
           ),
         ),
         'order_bys' => array(
@@ -276,8 +276,8 @@ class CRM_Volunteer_Form_VolunteerReport extends CRM_Report_Form {
             'name' => $this->customFields['time_scheduled_minutes']['column_name'],
             'title' => ts('Time Scheduled in Minutes', array('domain' => 'org.civicrm.volunteer')),
             'alias' => 'cg',
-            'no_repeat' => TRUE,
-            'default' => TRUE,
+            'no_repeat' => true,
+            'default' => true,
           ),
         ),
       ),
@@ -287,8 +287,8 @@ class CRM_Volunteer_Form_VolunteerReport extends CRM_Report_Form {
             'name' => $this->customFields['time_completed_minutes']['column_name'],
             'title' => ts('Time Completed in Minutes', array('domain' => 'org.civicrm.volunteer')),
             'alias' => 'cg',
-            'no_repeat' => TRUE,
-            'default' => TRUE,
+            'no_repeat' => true,
+            'default' => true,
           ),
         ),
       ),
@@ -297,8 +297,8 @@ class CRM_Volunteer_Form_VolunteerReport extends CRM_Report_Form {
         'fields' => array(
           'case_id' => array(
             'name' => 'case_id',
-            'no_display' => TRUE,
-            'required' => TRUE,
+            'no_display' => true,
+            'required' => true,
           ),
         ),
         'alias' => 'case_activity',
@@ -307,8 +307,8 @@ class CRM_Volunteer_Form_VolunteerReport extends CRM_Report_Form {
 
     $this->addPhoneFields();
 
-    $this->_groupFilter = TRUE;
-    $this->_tagFilter = TRUE;
+    $this->_groupFilter = true;
+    $this->_tagFilter = true;
     parent::__construct();
   }
 
@@ -370,7 +370,7 @@ class CRM_Volunteer_Form_VolunteerReport extends CRM_Report_Form {
   function select() {
     // Require the contact ID if the employer is selected so we can hyperlink to the record.
     if ($this->isTableSelected('civicrm_contact_organization')) {
-      $this->_columns['civicrm_contact_organization']['fields']['organization_id']['required'] = TRUE;
+      $this->_columns['civicrm_contact_organization']['fields']['organization_id']['required'] = true;
     }
 
     $select = array();
@@ -413,7 +413,7 @@ class CRM_Volunteer_Form_VolunteerReport extends CRM_Report_Form {
   }
 
   function from() {
-    $activityContacts = CRM_Core_OptionGroup::values('activity_contacts', FALSE, FALSE, FALSE, NULL, 'name');
+    $activityContacts = CRM_Core_OptionGroup::values('activity_contacts', false, false, false, null, 'name');
     $roleID = CRM_Core_DAO::getFieldValue('CRM_Core_DAO_OptionGroup', 'volunteer_role', 'id','name');
     $assigneeID = CRM_Utils_Array::key('Activity Assignees', $activityContacts);
     $targetID = CRM_Utils_Array::key('Activity Targets', $activityContacts);
@@ -528,7 +528,7 @@ class CRM_Volunteer_Form_VolunteerReport extends CRM_Report_Form {
       if (array_key_exists('filters', $table)) {
 
         foreach ($table['filters'] as $fieldName => $field) {
-          $clause = NULL;
+          $clause = null;
           if (CRM_Utils_Array::value('type', $field) & CRM_Utils_Type::T_DATE) {
             $relative = CRM_Utils_Array::value("{$fieldName}_relative", $this->_params);
             $from     = CRM_Utils_Array::value("{$fieldName}_from", $this->_params);
@@ -556,11 +556,11 @@ class CRM_Volunteer_Form_VolunteerReport extends CRM_Report_Form {
                 $clause = "( civicrm_contact_source.id = " . $contactID . " OR civicrm_contact_assignee.id = " . $contactID . " OR contact_civireport.id = " . $contactID . " )";
               }
               else {
-                $clause = NULL;
+                $clause = null;
               }
             }
             else {
-              $clause = NULL;
+              $clause = null;
             }
           }
           if (!empty($clause)) {
@@ -621,7 +621,7 @@ class CRM_Volunteer_Form_VolunteerReport extends CRM_Report_Form {
     // contact/assignee or target also it may be null )
 
     if (CRM_Core_Permission::check('view all contacts')) {
-      $this->_aclFrom = $this->_aclWhere = NULL;
+      $this->_aclFrom = $this->_aclWhere = null;
       return;
     }
 
@@ -639,7 +639,7 @@ class CRM_Volunteer_Form_VolunteerReport extends CRM_Report_Form {
     }
 
     $this->_aclFrom = implode(" ", $clauses);
-    $this->_aclWhere = NULL;
+    $this->_aclWhere = null;
   }
 
   function preProcessCommon() {
@@ -693,16 +693,16 @@ class CRM_Volunteer_Form_VolunteerReport extends CRM_Report_Form {
   function alterDisplay(&$rows) {
     // custom code to alter rows
 
-    $entryFound     = FALSE;
-    $activityType   = CRM_Core_PseudoConstant::activityType(TRUE, TRUE, FALSE, 'label', TRUE);
+    $entryFound     = false;
+    $activityType   = CRM_Core_PseudoConstant::activityType(true, true, false, 'label', true);
     $activityStatus = CRM_Core_PseudoConstant::activityStatus();
     $volunteerRoles = CRM_Volunteer_BAO_Need::buildOptions('role_id', 'create');
-    $viewLinks      = FALSE;
+    $viewLinks      = false;
     $seperator      = CRM_CORE_DAO::VALUE_SEPARATOR;
-    $context        = CRM_Utils_Request::retrieve('context', 'String', $this, FALSE, 'report');
+    $context        = CRM_Utils_Request::retrieve('context', 'String', $this, false, 'report');
 
     if (CRM_Core_Permission::check('access CiviCRM')) {
-      $viewLinks  = TRUE;
+      $viewLinks  = true;
       $onHover    = ts('View Contact Summary for this Contact', array('domain' => 'org.civicrm.volunteer'));
       $onHoverAct = ts('View Activity Record', array('domain' => 'org.civicrm.volunteer'));
     }
@@ -715,7 +715,7 @@ class CRM_Volunteer_Form_VolunteerReport extends CRM_Report_Form {
             $rows[$rowNum]['civicrm_contact_organization_organization_name_link'] = $url;
             $rows[$rowNum]['civicrm_contact_organization_organization_name_hover'] = $onHover;
           }
-          $entryFound = TRUE;
+          $entryFound = true;
         }
       }
 
@@ -729,7 +729,7 @@ class CRM_Volunteer_Form_VolunteerReport extends CRM_Report_Form {
             $rows[$rowNum]['civicrm_contact_contact_source_link'] = $url;
             $rows[$rowNum]['civicrm_contact_contact_source_hover'] = $onHover;
           }
-          $entryFound = TRUE;
+          $entryFound = true;
         }
       }
 
@@ -748,7 +748,7 @@ class CRM_Volunteer_Form_VolunteerReport extends CRM_Report_Form {
             }
             $rows[$rowNum]['civicrm_contact_contact_assignee'] = implode('; ', $link);
           }
-          $entryFound = TRUE;
+          $entryFound = true;
         }
       }
 
@@ -767,7 +767,7 @@ class CRM_Volunteer_Form_VolunteerReport extends CRM_Report_Form {
             }
             $rows[$rowNum]['civicrm_contact_contact_target'] = implode('; ', $link);
           }
-          $entryFound = TRUE;
+          $entryFound = true;
         }
       }
 
@@ -787,7 +787,7 @@ class CRM_Volunteer_Form_VolunteerReport extends CRM_Report_Form {
 
             $actionLinks = CRM_Activity_Selector_Activity::actionLinks($row['civicrm_activity_activity_type_id'],
               CRM_Utils_Array::value('civicrm_activity_source_record_id', $rows[$rowNum]),
-              FALSE,
+              false,
               $rows[$rowNum]['civicrm_activity_id']
             );
 
@@ -797,26 +797,26 @@ class CRM_Volunteer_Form_VolunteerReport extends CRM_Report_Form {
               'cxt' => $context,
             );
             $url = CRM_Utils_System::url($actionLinks[CRM_Core_Action::VIEW]['url'],
-              CRM_Core_Action::replace($actionLinks[CRM_Core_Action::VIEW]['qs'], $linkValues), TRUE
+              CRM_Core_Action::replace($actionLinks[CRM_Core_Action::VIEW]['qs'], $linkValues), true
             );
             $rows[$rowNum]['civicrm_activity_activity_type_id_link'] = $url;
             $rows[$rowNum]['civicrm_activity_activity_type_id_hover'] = $onHoverAct;
           }
-          $entryFound = TRUE;
+          $entryFound = true;
         }
       }
 
       if (array_key_exists('civicrm_activity_status_id', $row)) {
         if ($value = $row['civicrm_activity_status_id']) {
           $rows[$rowNum]['civicrm_activity_status_id'] = $activityStatus[$value];
-          $entryFound = TRUE;
+          $entryFound = true;
         }
       }
 
       if (array_key_exists('role_role', $row)) {
         if ($value = $row['role_role']) {
           $rows[$rowNum]['role_role'] = $volunteerRoles[$value];
-          $entryFound = TRUE;
+          $entryFound = true;
         }
       }
 
@@ -828,11 +828,11 @@ class CRM_Volunteer_Form_VolunteerReport extends CRM_Report_Form {
           $activityStatus[$row['civicrm_activity_status_id']] != 'Completed'
         ) {
           $rows[$rowNum]['class'] = "status-overdue";
-          $entryFound = TRUE;
+          $entryFound = true;
         }
       }
 
-      $entryFound = $this->alterDisplayAddressFields($row, $rows, $rowNum, 'activity', 'List all activities for this ') ? TRUE : $entryFound;
+      $entryFound = $this->alterDisplayAddressFields($row, $rows, $rowNum, 'activity', 'List all activities for this ') ? true : $entryFound;
 
       if (!$entryFound) {
         break;

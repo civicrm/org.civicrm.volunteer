@@ -43,7 +43,7 @@ function _volunteer_civicrm_postProcess_CRM_Custom_Form_Field($formName, &$form)
  * Registers the form to allow use of the volunteer slider widget.
  */
 function _volunteer_civicrm_buildForm_CRM_Profile_Form_Edit($formName, CRM_Core_Form &$form) {
-  $form->allowVolunteerSliderWidget = TRUE;
+  $form->allowVolunteerSliderWidget = true;
 }
 
 /**

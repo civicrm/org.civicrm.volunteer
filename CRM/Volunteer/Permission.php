@@ -94,7 +94,7 @@ class CRM_Volunteer_Permission {
    * @return boolean
    *   TRUE is the action is allowed; else FALSE.
    */
-  public static function checkProjectPerms($op, $projectId = NULL) {
+  public static function checkProjectPerms($op, $projectId = null) {
     $opsRequiringProjectId = array(CRM_Core_Action::UPDATE, CRM_Core_Action::DELETE, self::VIEW_ROSTER,);
     if (in_array($op, $opsRequiringProjectId) && empty($projectId)) {
       CRM_Core_Error::fatal('Missing required parameter Project ID');
@@ -108,44 +108,44 @@ class CRM_Volunteer_Permission {
 
       case CRM_Core_Action::UPDATE:
         if (self::check('edit all volunteer projects')) {
-          return TRUE;
+          return true;
         }
 
         $projectOwners = CRM_Volunteer_BAO_Project::getContactsByRelationship($projectId, 'volunteer_owner');
         if (self::check('edit own volunteer projects')
           && in_array($contactId, $projectOwners)) {
-          return TRUE;
+          return true;
         }
         break;
       case CRM_Core_Action::DELETE:
         if (self::check('delete all volunteer projects')) {
-          return TRUE;
+          return true;
         }
 
         $projectOwners = CRM_Volunteer_BAO_Project::getContactsByRelationship($projectId, 'volunteer_owner');
         if (self::check('delete own volunteer projects')
           && in_array($contactId, $projectOwners)) {
-          return TRUE;
+          return true;
         }
         break;
       case CRM_Core_Action::VIEW:
         if (self::check('register to volunteer') || self::check('edit all volunteer projects')) {
-          return TRUE;
+          return true;
         }
         break;
       case self::VIEW_ROSTER:
         if (self::check('edit all volunteer projects')) {
-          return TRUE;
+          return true;
         }
 
         $projectManagers = CRM_Volunteer_BAO_Project::getContactsByRelationship($projectId, 'volunteer_manager');
         if (in_array($contactId, $projectManagers)) {
-          return TRUE;
+          return true;
         }
         break;
     }
 
-    return FALSE;
+    return false;
   }
 
 }

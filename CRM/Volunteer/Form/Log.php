@@ -56,7 +56,7 @@ class CRM_Volunteer_Form_Log extends CRM_Core_Form {
    * @access public
    */
   function preProcess() {
-    $this->_vid = CRM_Utils_Request::retrieve('vid', 'Positive', $this, TRUE);
+    $this->_vid = CRM_Utils_Request::retrieve('vid', 'Positive', $this, true);
 
     if (!CRM_Volunteer_Permission::checkProjectPerms(CRM_Core_Action::UPDATE, $this->_vid)) {
       CRM_Utils_System::permissionDenied();
@@ -113,7 +113,7 @@ class CRM_Volunteer_Form_Log extends CRM_Core_Form {
       array(
         'type' => 'upload',
         'name' => ts('Save', array('domain' => 'org.civicrm.volunteer')),
-        'isDefault' => TRUE
+        'isDefault' => true
       ),
       array(
         'type' => 'cancel',
@@ -133,11 +133,11 @@ class CRM_Volunteer_Form_Log extends CRM_Core_Form {
     for ($rowNumber = 1; $rowNumber <= $this->_batchInfo['item_count']; $rowNumber++) {
       $extra = array();
       $entityRefParams = array(
-        'create' => TRUE,
+        'create' => true,
         'class' => 'big required',
         'placeholder' => ts('- select -', array('domain' => 'org.civicrm.volunteer')),
       );
-      $isRequired = FALSE;
+      $isRequired = false;
       $contactField = $this->addEntityRef("field[$rowNumber][contact_id]", '', $entityRefParams, $isRequired);
 
       $datePickerAttr = array('formatType' => 'activityDateTime');
@@ -145,7 +145,7 @@ class CRM_Volunteer_Form_Log extends CRM_Core_Form {
         // readonly for some fields
         $contactField->freeze();
         $extra = array(
-          'READONLY' => TRUE,
+          'READONLY' => true,
           'style' => "background-color:#EBECE4",
           'disabled' => 'disabled'
         );
@@ -216,7 +216,7 @@ class CRM_Volunteer_Form_Log extends CRM_Core_Form {
       return $errors;
     }
 
-    return TRUE;
+    return true;
   }
 
   /**
@@ -290,7 +290,7 @@ class CRM_Volunteer_Form_Log extends CRM_Core_Form {
           'time_scheduled_minutes' => CRM_Utils_Array::value('scheduled_duration', $value),
         );
         if (!empty($value['start_date'])) {
-          $volunteer['activity_date_time'] = CRM_Utils_Date::processDate($value['start_date'], $value['start_date_time'], TRUE);
+          $volunteer['activity_date_time'] = CRM_Utils_Date::processDate($value['start_date'], $value['start_date_time'], true);
         }
 
         CRM_Volunteer_BAO_Assignment::createVolunteerActivity($volunteer);

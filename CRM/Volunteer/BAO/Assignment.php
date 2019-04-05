@@ -91,7 +91,7 @@ class CRM_Volunteer_BAO_Assignment extends CRM_Volunteer_BAO_Activity {
     }
     $customSelect = implode(', ', $selectClause);
 
-    $activityContactTypes = CRM_Core_OptionGroup::values('activity_contacts', FALSE, FALSE, FALSE, NULL, 'name');
+    $activityContactTypes = CRM_Core_OptionGroup::values('activity_contacts', false, false, false, null, 'name');
     $assigneeID = CRM_Utils_Array::key('Activity Assignees', $activityContactTypes);
     $targetID = CRM_Utils_Array::key('Activity Targets', $activityContactTypes);
 
@@ -109,7 +109,7 @@ class CRM_Volunteer_BAO_Assignment extends CRM_Volunteer_BAO_Activity {
 
     $i = count($placeholders) + 1;
     $where = array();
-    $whereClause = NULL;
+    $whereClause = null;
     foreach ($filtered_params as $key => $value) {
 
       if (CRM_Utils_Array::value($key, $activity_fields)) {
@@ -320,7 +320,7 @@ class CRM_Volunteer_BAO_Assignment extends CRM_Volunteer_BAO_Activity {
     }
 
     $activity = civicrm_api3('Activity', 'create', $params);
-    return empty($activity['id']) ? FALSE : $activity['id'];
+    return empty($activity['id']) ? false : $activity['id'];
   }
 
 }

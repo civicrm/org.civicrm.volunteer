@@ -44,12 +44,12 @@ function volunteer_civicrm_config(&$config) {
  * @link https://docs.civicrm.org/dev/en/latest/hooks/hook_civicrm_navigationMenu/
  */
 function volunteer_civicrm_navigationMenu(&$menu) {
-  _volunteer_civix_insert_navigation_menu($menu, NULL, array(
+  _volunteer_civix_insert_navigation_menu($menu, null, array(
     'label' => E::ts('Volunteers'),
     'name' => 'volunteer_volunteers',
-    'url' => NULL,
-    'permission' => NULL,
-    'operator' => NULL,
+    'url' => null,
+    'permission' => null,
+    'operator' => null,
     'separator' => 0,
     'icon' => 'crm-i fa-users',
   ));
@@ -58,8 +58,8 @@ function volunteer_civicrm_navigationMenu(&$menu) {
     'label' => E::ts('New Volunteer Project'),
     'name' => 'volunteer_new_project',
     'url' => 'civicrm/vol/#/volunteer/manage/0',
-    'permission' => NULL,
-    'operator' => NULL,
+    'permission' => null,
+    'operator' => null,
     'separator' => 0,
   ));
 
@@ -67,8 +67,8 @@ function volunteer_civicrm_navigationMenu(&$menu) {
     'label' => E::ts('Manage Volunteer Projects'),
     'name' => 'volunteer_manage_projects',
     'url' => 'civicrm/vol/#/volunteer/manage',
-    'permission' => NULL,
-    'operator' => NULL,
+    'permission' => null,
+    'operator' => null,
     'separator' => 1,
   ));
 
@@ -76,8 +76,8 @@ function volunteer_civicrm_navigationMenu(&$menu) {
     'label' => E::ts('Configure Roles'),
     'name' => 'volunteer_config_roles',
     'url' => 'civicrm/admin/options/volunteer_role?reset=1',
-    'permission' => NULL,
-    'operator' => NULL,
+    'permission' => null,
+    'operator' => null,
     'separator' => 0,
   ));
 
@@ -85,8 +85,8 @@ function volunteer_civicrm_navigationMenu(&$menu) {
     'label' => E::ts('Configure Project Relationships'),
     'name' => 'volunteer_config_projrel',
     'url' => 'civicrm/admin/options/volunteer_project_relationship?reset=1',
-    'permission' => NULL,
-    'operator' => NULL,
+    'permission' => null,
+    'operator' => null,
     'separator' => 0,
   ));
 
@@ -94,8 +94,8 @@ function volunteer_civicrm_navigationMenu(&$menu) {
     'label' => E::ts('Configure Volunteer Settings'),
     'name' => 'volunteer_config_settings',
     'url' => 'civicrm/admin/volunteer/settings',
-    'permission' => NULL,
-    'operator' => NULL,
+    'permission' => null,
+    'operator' => null,
     'separator' => 1,
   ));
 
@@ -103,8 +103,8 @@ function volunteer_civicrm_navigationMenu(&$menu) {
     'label' => E::ts('Volunteer Interest Form'),
     'name' => 'volunteer_join',
     'url' => 'civicrm/volunteer/join',
-    'permission' => NULL,
-    'operator' => NULL,
+    'permission' => null,
+    'operator' => null,
     'separator' => 0,
   ));
 
@@ -112,8 +112,8 @@ function volunteer_civicrm_navigationMenu(&$menu) {
     'label' => E::ts('Search for Volunteer Opportunities'),
     'name' => 'volunteer_opp_search',
     'url' => 'civicrm/vol/#/volunteer/opportunities',
-    'permission' => NULL,
-    'operator' => NULL,
+    'permission' => null,
+    'operator' => null,
     'separator' => 0,
   ));
 
@@ -125,7 +125,7 @@ function volunteer_civicrm_navigationMenu(&$menu) {
  *
  * @link http://wiki.civicrm.org/confluence/display/CRMDOC/hook_civicrm_alterSettingsFolders
  */
-function volunteer_civicrm_alterSettingsFolders(&$metaDataFolders = NULL) {
+function volunteer_civicrm_alterSettingsFolders(&$metaDataFolders = null) {
   _volunteer_civix_civicrm_alterSettingsFolders($metaDataFolders);
 }
 
@@ -166,14 +166,14 @@ function volunteer_civicrm_tabset($tabsetName, &$tabs, $context) {
       $tab['volunteer'] = array(
         'title' => ts('Volunteers', array('domain' => 'org.civicrm.volunteer')),
         'link' => $url,
-        'valid' => TRUE,
-        'active' => TRUE,
+        'valid' => true,
+        'active' => true,
         'class' => 'livePage',
         'current' => false,
       );
 
       if (!CRM_Volunteer_BAO_Project::isActive($eventId, CRM_Event_DAO_Event::$_tableName)) {
-        $tab['volunteer']['valid'] = FALSE;
+        $tab['volunteer']['valid'] = false;
       }
     }
     else {
@@ -254,7 +254,7 @@ function volunteer_civicrm_disable() {
  * @return mixed  based on op. for 'check', returns array(boolean) (TRUE if upgrades are pending)
  *                for 'enqueue', returns void
  */
-function volunteer_civicrm_upgrade($op, CRM_Queue_Queue $queue = NULL) {
+function volunteer_civicrm_upgrade($op, CRM_Queue_Queue $queue = null) {
   return _volunteer_civix_civicrm_upgrade($op, $queue);
 }
 
@@ -371,11 +371,11 @@ function _volunteer_civicrm_pageRun_CRM_Event_Page_EventInfo(&$page) {
         //VOL-190: Hide search pane in "shopping cart" for low role count projects
         $hideSearch = ($openNeeds['count'] < 10) ? "hideSearch=always" : (($openNeeds['count'] < 25) ? "hideSearch=1" : "hideSearch=0");
         $url = CRM_Utils_System::url('civicrm/vol/',
-          NULL, // query string
-          FALSE, // absolute?
+          null, // query string
+          false, // absolute?
           "/volunteer/opportunities?project={$project->id}&dest=event&{$hideSearch}", // fragment
-          TRUE, // htmlize?
-          TRUE // is frontend?
+          true, // htmlize?
+          true // is frontend?
         );
       }
 
@@ -433,7 +433,7 @@ function _volunteer_civicrm_buildForm_CRM_Activity_Form_Activity($formName, &$fo
     'custom_' . $field_id . '_1',
     'custom_' . $field_id . '_-1',
   );
-  $element_name = NULL;
+  $element_name = null;
   foreach ($possible_element_names as $name) {
     if ($form->elementExists($name)) {
       $element_name = $name;
@@ -466,7 +466,7 @@ function _volunteer_civicrm_buildForm_CRM_Activity_Form_Activity($formName, &$fo
         $element_name,          // field name
         $field->_label,         // field label
         $needs,                 // list of options (value => label)
-        TRUE                    // required
+        true                    // required
       );
     }
   }
@@ -516,7 +516,7 @@ function volunteer_civicrm_alterAPIPermissions($entity, $action, &$params, &$per
 
   // allow fairly liberal access to the volunteer opp listing UI, which uses lots of API calls
   if (_volunteer_isVolListingApiCall($entity, $action) && CRM_Volunteer_Permission::checkProjectPerms(CRM_Core_Action::VIEW)) {
-    $params['check_permissions'] = FALSE;
+    $params['check_permissions'] = false;
   }
 }
 

@@ -26,7 +26,7 @@ class CRM_Volunteer_ExtensionUtil {
    */
   public static function ts($text, $params = array()) {
     if (!array_key_exists('domain', $params)) {
-      $params['domain'] = array(self::LONG_NAME, NULL);
+      $params['domain'] = array(self::LONG_NAME, null);
     }
     return ts($text, $params);
   }
@@ -41,8 +41,8 @@ class CRM_Volunteer_ExtensionUtil {
    *   Ex: 'http://example.org/sites/default/ext/org.example.foo'.
    *   Ex: 'http://example.org/sites/default/ext/org.example.foo/css/foo.css'.
    */
-  public static function url($file = NULL) {
-    if ($file === NULL) {
+  public static function url($file = null) {
+    if ($file === null) {
       return rtrim(CRM_Core_Resources::singleton()->getUrl(self::LONG_NAME), '/');
     }
     return CRM_Core_Resources::singleton()->getUrl(self::LONG_NAME, $file);
@@ -58,9 +58,9 @@ class CRM_Volunteer_ExtensionUtil {
    *   Ex: '/var/www/example.org/sites/default/ext/org.example.foo'.
    *   Ex: '/var/www/example.org/sites/default/ext/org.example.foo/css/foo.css'.
    */
-  public static function path($file = NULL) {
+  public static function path($file = null) {
     // return CRM_Core_Resources::singleton()->getPath(self::LONG_NAME, $file);
-    return __DIR__ . ($file === NULL ? '' : (DIRECTORY_SEPARATOR . $file));
+    return __DIR__ . ($file === null ? '' : (DIRECTORY_SEPARATOR . $file));
   }
 
   /**
@@ -84,12 +84,12 @@ use CRM_Volunteer_ExtensionUtil as E;
  *
  * @link http://wiki.civicrm.org/confluence/display/CRMDOC/hook_civicrm_config
  */
-function _volunteer_civix_civicrm_config(&$config = NULL) {
-  static $configured = FALSE;
+function _volunteer_civix_civicrm_config(&$config = null) {
+  static $configured = false;
   if ($configured) {
     return;
   }
-  $configured = TRUE;
+  $configured = true;
 
   $template =& CRM_Core_Smarty::singleton();
 
@@ -198,7 +198,7 @@ function _volunteer_civix_civicrm_disable() {
  *
  * @link http://wiki.civicrm.org/confluence/display/CRMDOC/hook_civicrm_upgrade
  */
-function _volunteer_civix_civicrm_upgrade($op, CRM_Queue_Queue $queue = NULL) {
+function _volunteer_civix_civicrm_upgrade($op, CRM_Queue_Queue $queue = null) {
   if ($upgrader = _volunteer_civix_upgrader()) {
     return $upgrader->onUpgrade($op, $queue);
   }
@@ -209,7 +209,7 @@ function _volunteer_civix_civicrm_upgrade($op, CRM_Queue_Queue $queue = NULL) {
  */
 function _volunteer_civix_upgrader() {
   if (!file_exists(__DIR__ . '/CRM/Volunteer/Upgrader.php')) {
-    return NULL;
+    return null;
   }
   else {
     return CRM_Volunteer_Upgrader_Base::instance();
@@ -241,7 +241,7 @@ function _volunteer_civix_find_files($dir, $pattern) {
       }
     }
     if ($dh = opendir($subdir)) {
-      while (FALSE !== ($entry = readdir($dh))) {
+      while (false !== ($entry = readdir($dh))) {
         $path = $subdir . DIRECTORY_SEPARATOR . $entry;
         if ($entry{0} == '.') {
         }
@@ -366,11 +366,11 @@ function _volunteer_civix_insert_navigation_menu(&$menu, $path, $item) {
         'active'     => 1,
       ), $item),
     );
-    return TRUE;
+    return true;
   }
   else {
     // Find an recurse into the next level down
-    $found = FALSE;
+    $found = false;
     $path = explode('/', $path);
     $first = array_shift($path);
     foreach ($menu as $key => &$entry) {
@@ -405,13 +405,13 @@ function _volunteer_civix_fixNavigationMenu(&$nodes) {
       $maxNavID = max($maxNavID, $item);
     }
   });
-  _volunteer_civix_fixNavigationMenuItems($nodes, $maxNavID, NULL);
+  _volunteer_civix_fixNavigationMenuItems($nodes, $maxNavID, null);
 }
 
 function _volunteer_civix_fixNavigationMenuItems(&$nodes, &$maxNavID, $parentID) {
   $origKeys = array_keys($nodes);
   foreach ($origKeys as $origKey) {
-    if (!isset($nodes[$origKey]['attributes']['parentID']) && $parentID !== NULL) {
+    if (!isset($nodes[$origKey]['attributes']['parentID']) && $parentID !== null) {
       $nodes[$origKey]['attributes']['parentID'] = $parentID;
     }
     // If no navID, then assign navID and fix key.
@@ -433,12 +433,12 @@ function _volunteer_civix_fixNavigationMenuItems(&$nodes, &$maxNavID, $parentID)
  *
  * @link http://wiki.civicrm.org/confluence/display/CRMDOC/hook_civicrm_alterSettingsFolders
  */
-function _volunteer_civix_civicrm_alterSettingsFolders(&$metaDataFolders = NULL) {
-  static $configured = FALSE;
+function _volunteer_civix_civicrm_alterSettingsFolders(&$metaDataFolders = null) {
+  static $configured = false;
   if ($configured) {
     return;
   }
-  $configured = TRUE;
+  $configured = true;
 
   $settingsDir = __DIR__ . DIRECTORY_SEPARATOR . 'settings';
   if (is_dir($settingsDir) && !in_array($settingsDir, $metaDataFolders)) {

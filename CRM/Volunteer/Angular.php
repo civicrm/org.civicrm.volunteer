@@ -2,7 +2,7 @@
 
 class CRM_Volunteer_Angular {
 
-  private static $loaded = FALSE;
+  private static $loaded = false;
 
   /**
    * @return boolean
@@ -34,7 +34,7 @@ class CRM_Volunteer_Angular {
       ),
     ));
 
-    self::$loaded = TRUE;
+    self::$loaded = true;
   }
 
 }

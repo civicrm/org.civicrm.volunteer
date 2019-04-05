@@ -33,9 +33,9 @@ class CRM_Volunteer_Form_Commendation extends CRM_Core_Form {
    * if you are messing with URL params you are kind of asking for trouble...
    */
   function preProcess() {
-    $this->_aid = CRM_Utils_Request::retrieve('aid', 'Positive', $this, FALSE);
-    $this->_cid = CRM_Utils_Request::retrieve('cid', 'Positive', $this, FALSE);
-    $this->_vid = CRM_Utils_Request::retrieve('vid', 'Positive', $this, FALSE);
+    $this->_aid = CRM_Utils_Request::retrieve('aid', 'Positive', $this, false);
+    $this->_cid = CRM_Utils_Request::retrieve('cid', 'Positive', $this, false);
+    $this->_vid = CRM_Utils_Request::retrieve('vid', 'Positive', $this, false);
 
     if (!CRM_Volunteer_Permission::checkProjectPerms(CRM_Core_Action::UPDATE, $this->_vid)) {
       CRM_Utils_System::permissionDenied();
@@ -119,7 +119,7 @@ class CRM_Volunteer_Form_Commendation extends CRM_Core_Form {
     $buttons = array(
       array(
         'type' => 'submit',
-        'isDefault' => TRUE,
+        'isDefault' => true,
       ),
     );
     if (isset($this->_aid)) {

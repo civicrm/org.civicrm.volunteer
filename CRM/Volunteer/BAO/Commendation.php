@@ -78,9 +78,9 @@ class CRM_Volunteer_BAO_Commendation extends CRM_Volunteer_BAO_Activity {
         CRM_Utils_Array::value('vid', $params) // volunteer project id
       )
     ) {
-      return TRUE;
+      return true;
     }
-    return FALSE;
+    return false;
   }
 
   /**
@@ -118,7 +118,7 @@ class CRM_Volunteer_BAO_Commendation extends CRM_Volunteer_BAO_Activity {
     }
     $customSelect = implode(', ', $selectClause);
 
-    $activityContactTypes = CRM_Core_OptionGroup::values('activity_contacts', FALSE, FALSE, FALSE, NULL, 'name');
+    $activityContactTypes = CRM_Core_OptionGroup::values('activity_contacts', false, false, false, null, 'name');
     $targetID = CRM_Utils_Array::key('Activity Targets', $activityContactTypes);
 
     $placeholders = array(
@@ -128,7 +128,7 @@ class CRM_Volunteer_BAO_Commendation extends CRM_Volunteer_BAO_Activity {
 
     $i = count($placeholders) + 1;
     $where = array();
-    $whereClause = NULL;
+    $whereClause = null;
     foreach ($filtered_params as $key => $value) {
 
       if (CRM_Utils_Array::value($key, $activity_fields)) {

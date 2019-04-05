@@ -36,7 +36,7 @@ class CRM_Volunteer_Upgrader_Base {
    * @var boolean
    *   Flag to clean up extension revision data in civicrm_setting
    */
-  private $revisionStorageIsDeprecated = FALSE;
+  private $revisionStorageIsDeprecated = false;
 
   /**
    * Obtain a reference to the active upgrade handler.
@@ -100,7 +100,7 @@ class CRM_Volunteer_Upgrader_Base {
     require_once 'CRM/Utils/Migrate/Import.php';
     $import = new CRM_Utils_Migrate_Import();
     $import->run($xml_file);
-    return TRUE;
+    return true;
   }
 
   /**
@@ -115,7 +115,7 @@ class CRM_Volunteer_Upgrader_Base {
       CIVICRM_DSN,
       $this->extensionDir . DIRECTORY_SEPARATOR . $relativePath
     );
-    return TRUE;
+    return true;
   }
 
   /**
@@ -132,9 +132,9 @@ class CRM_Volunteer_Upgrader_Base {
     $smarty = CRM_Core_Smarty::singleton();
     $smarty->assign('domainID', CRM_Core_Config::domainID());
     CRM_Utils_File::sourceSQLFile(
-      CIVICRM_DSN, $smarty->fetch($tplFile), NULL, TRUE
+      CIVICRM_DSN, $smarty->fetch($tplFile), null, true
     );
-    return TRUE;
+    return true;
   }
 
   /**
@@ -147,7 +147,7 @@ class CRM_Volunteer_Upgrader_Base {
   public function executeSql($query, $params = array()) {
     // FIXME verify that we raise an exception on error
     CRM_Core_DAO::executeQuery($query, $params);
-    return TRUE;
+    return true;
   }
 
   /**
@@ -182,10 +182,10 @@ class CRM_Volunteer_Upgrader_Base {
     $currentRevision = $this->getCurrentRevision();
 
     if (empty($revisions)) {
-      return FALSE;
+      return false;
     }
     if (empty($currentRevision)) {
-      return TRUE;
+      return true;
     }
 
     return ($currentRevision < max($revisions));
@@ -257,7 +257,7 @@ class CRM_Volunteer_Upgrader_Base {
   private function getCurrentRevisionDeprecated() {
     $key = $this->extensionName . ':version';
     if ($revision = CRM_Core_BAO_Setting::getItem('Extension', $key)) {
-      $this->revisionStorageIsDeprecated = TRUE;
+      $this->revisionStorageIsDeprecated = true;
     }
     return $revision;
   }
@@ -266,7 +266,7 @@ class CRM_Volunteer_Upgrader_Base {
     CRM_Core_BAO_Extension::setSchemaVersion($this->extensionName, $revision);
     // clean up legacy schema version store (CRM-19252)
     $this->deleteDeprecatedRevision();
-    return TRUE;
+    return true;
   }
 
   private function deleteDeprecatedRevision() {
@@ -361,7 +361,7 @@ class CRM_Volunteer_Upgrader_Base {
     }
   }
 
-  public function onUpgrade($op, CRM_Queue_Queue $queue = NULL) {
+  public function onUpgrade($op, CRM_Queue_Queue $queue = null) {
     switch ($op) {
       case 'check':
         return array($this->hasPendingRevisions());

@@ -6,7 +6,7 @@ return array(
     'group' => 'org.civicrm.volunteer',
     'name' => 'slider_widget_fields',
     'type' => 'Array',
-    'default' => NULL,
+    'default' => null,
     'add' => '4.5',
     'is_domain' => 1,
     'is_contact' => 0,

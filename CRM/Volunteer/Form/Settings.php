@@ -165,7 +165,7 @@ class CRM_Volunteer_Form_Settings extends CRM_Core_Form {
       array(
         'type' => 'submit',
         'name' => ts('Save Volunteer Settings', array('domain' => 'org.civicrm.volunteer')),
-        'isDefault' => TRUE,
+        'isDefault' => true,
       ),
     ));
     // export form elements
@@ -183,8 +183,8 @@ class CRM_Volunteer_Form_Settings extends CRM_Core_Form {
         $data['label'],
         $this->getProjectRelationshipSettingModes(),
         array("data-fieldgroup" => "Default Project Settings",),
-        NULL,
-        TRUE
+        null,
+        true
       );
 
       // EntityRef is not used because a select list not easily obtainable through a single API call is needed
@@ -197,7 +197,7 @@ class CRM_Volunteer_Form_Settings extends CRM_Core_Form {
         array(
           'class' => 'crm-select2',
           'data-fieldgroup' => 'Default Project Settings',
-          'placeholder' => TRUE,
+          'placeholder' => true,
         )
       );
 
@@ -205,7 +205,7 @@ class CRM_Volunteer_Form_Settings extends CRM_Core_Form {
         "volunteer_project_default_contacts_contact_$name",
         ts('Default to Selected Contact(s)', array('domain' => 'org.civicrm.volunteer')),
         array(
-          'multiple' => TRUE,
+          'multiple' => true,
           'data-fieldgroup' => "Default Project Settings",
         )
       );
@@ -216,7 +216,7 @@ class CRM_Volunteer_Form_Settings extends CRM_Core_Form {
    * Assigns help text to the form object for use in the template layer.
    */
   private function buildHelpText() {
-    $newProjectUrl = CRM_Utils_System::url('civicrm/vol/', NULL, FALSE, 'volunteer/manage/0');
+    $newProjectUrl = CRM_Utils_System::url('civicrm/vol/', null, false, 'volunteer/manage/0');
     $helpText = '<p>' . ts('The values set in this section will be used as defaults for volunteer projects in both the form and data layers.', array('domain' => 'org.civicrm.volunteer')) . '</p>';
     $helpText .= '<p>' . ts('Streamline creation of new volunteer projects by selecting the options you choose most. The <a href="%1">New Project screen</a> will open with these settings already selected. These values will also be used for projects created through API unless other values are specified.', array(1 => $newProjectUrl, 'domain' => 'org.civicrm.volunteer')) . '</p>';
     $helpText .= '<p>' . ts('Note: Projects created by users who do not have the "edit volunteer project relationships" or "edit volunteer registration profiles" permissions will always use the defaults for those fields.', array('domain' => 'org.civicrm.volunteer')) . '</p>';
@@ -395,7 +395,7 @@ class CRM_Volunteer_Form_Settings extends CRM_Core_Form {
    *   String or NULL
    */
   private function getGroupName(HTML_QuickForm_element $element) {
-    $groupName = NULL;
+    $groupName = null;
 
     // radios and checkboxes are nested inside HTML_QuickForm_group objects;
     // check *their* elements for the data-fieldgroup attribute
@@ -502,7 +502,7 @@ class CRM_Volunteer_Form_Settings extends CRM_Core_Form {
 
       if ($mode === 'acting_contact') {
         // For interface consistency we supply a 'value' key though it isn't strictly needed.
-        $store[$name]['value'] = TRUE;
+        $store[$name]['value'] = true;
       }
       else {
         $fieldName = "volunteer_project_default_contacts_{$mode}_{$name}";

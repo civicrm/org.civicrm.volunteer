@@ -155,7 +155,7 @@ function civicrm_api3_volunteer_util_getsupportingdata($params) {
     ));
     $results['relationship_types'] = $relTypes['values'];
 
-    $results['phone_types'] = CRM_Core_OptionGroup::values("phone_type", FALSE, FALSE, TRUE);
+    $results['phone_types'] = CRM_Core_OptionGroup::values("phone_type", false, false, true);
     $results['volunteer_general_project_settings_help_text'] = civicrm_api3('Setting', 'getvalue', array(
       'name' => "volunteer_general_project_settings_help_text",
     ));
@@ -170,7 +170,7 @@ function civicrm_api3_volunteer_util_getsupportingdata($params) {
   }
 
   if ($controller === 'VolOppsCtrl') {
-    $results['roles'] = CRM_Core_OptionGroup::values('volunteer_role', FALSE, FALSE, TRUE);
+    $results['roles'] = CRM_Core_OptionGroup::values('volunteer_role', false, false, true);
   }
 
   $results['use_profile_editor'] = CRM_Volunteer_Permission::check(array("access CiviCRM","profile listings and forms"));

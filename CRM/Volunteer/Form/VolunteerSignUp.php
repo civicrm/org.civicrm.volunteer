@@ -40,7 +40,7 @@ class CRM_Volunteer_Form_VolunteerSignUp extends CRM_Core_Form {
    *
    * @var boolean
    */
-  public $allowVolunteerSliderWidget = TRUE;
+  public $allowVolunteerSliderWidget = true;
 
   /**
    * The URL to which the user should be redirected after successfully
@@ -137,12 +137,12 @@ class CRM_Volunteer_Form_VolunteerSignUp extends CRM_Core_Form {
    * Info page associated with a Volunteer Project. See VOL-180 for more info.
    */
   function redirectLegacyRequests() {
-    $vid = CRM_Utils_Request::retrieve('vid', 'Int', $this, FALSE, NULL, 'GET');
+    $vid = CRM_Utils_Request::retrieve('vid', 'Int', $this, false, null, 'GET');
     
-    if($vid != NULL) {
+    if($vid != null) {
       $path = "civicrm/vol/";
       $fragment =  "/volunteer/opportunities?project=$vid&dest=event";
-      $newURL = CRM_Utils_System::url($path, NULL, FALSE, $fragment, FALSE, TRUE);
+      $newURL = CRM_Utils_System::url($path, null, false, $fragment, false, true);
       CRM_Utils_System::redirect($newURL);
     }    
   }
@@ -157,16 +157,16 @@ class CRM_Volunteer_Form_VolunteerSignUp extends CRM_Core_Form {
 
     CRM_Core_Resources::singleton()
         ->addScriptFile('org.civicrm.volunteer', 'js/CRM_Volunteer_Form_VolunteerSignUp.js')
-        ->addScriptFile('civicrm', 'packages/jquery/plugins/jquery.notify.min.js', -9990, 'html-header', FALSE);
+        ->addScriptFile('civicrm', 'packages/jquery/plugins/jquery.notify.min.js', -9990, 'html-header', false);
 
     $validNeedIds = array();
-    $needs = CRM_Utils_Request::retrieve('needs', 'String', $this, TRUE);
+    $needs = CRM_Utils_Request::retrieve('needs', 'String', $this, true);
     if (!is_array($needs)) {
       $needs = explode(',', $needs);
     }
 
     foreach($needs as $need) {
-      if (CRM_Utils_Type::validate($need, 'Positive', FALSE)) {
+      if (CRM_Utils_Type::validate($need, 'Positive', false)) {
         $validNeedIds[] = $need;
       }
     }
@@ -183,7 +183,7 @@ class CRM_Volunteer_Form_VolunteerSignUp extends CRM_Core_Form {
     $this->preProcessNeeds();
 
     $this->setDestination();
-    $this->_action = CRM_Utils_Request::retrieve('action', 'String', $this, FALSE);
+    $this->_action = CRM_Utils_Request::retrieve('action', 'String', $this, false);
 
     // current mode
     $this->_mode = ($this->_action == CRM_Core_Action::PREVIEW) ? 'test' : 'live';
@@ -352,7 +352,7 @@ class CRM_Volunteer_Form_VolunteerSignUp extends CRM_Core_Form {
       array(
         'type' => 'done',
         'name' => ts('Submit', array('domain' => 'org.civicrm.volunteer')),
-        'isDefault' => TRUE,
+        'isDefault' => true,
       ),
     ));
 
@@ -431,7 +431,7 @@ class CRM_Volunteer_Form_VolunteerSignUp extends CRM_Core_Form {
    * see http://wiki.civicrm.org/confluence/display/CRMDOC43/Transaction+Reference
    */
   function postProcess() {
-    $cid = CRM_Utils_Array::value('userID', $_SESSION['CiviCRM'], NULL);
+    $cid = CRM_Utils_Array::value('userID', $_SESSION['CiviCRM'], null);
     $values = $this->controller->exportValues();
 
     $profileFields = $this->getProfileFields($this->getPrimaryVolunteerProfileIDs());
@@ -576,7 +576,7 @@ class CRM_Volunteer_Form_VolunteerSignUp extends CRM_Core_Form {
     // Search for duplicate
     if (!$cid) {
       $dedupeParams = CRM_Dedupe_Finder::formatParams($profileValues, 'Individual');
-      $dedupeParams['check_permission'] = FALSE;
+      $dedupeParams['check_permission'] = false;
       $ids = CRM_Dedupe_Finder::dupesByParams($dedupeParams, 'Individual');
       if ($ids) {
         $cid = $ids[0];
@@ -600,9 +600,9 @@ class CRM_Volunteer_Form_VolunteerSignUp extends CRM_Core_Form {
    */
   function processAdditionalVolunteers(array $data) {
     $qty = CRM_Utils_Array::value('additionalVolunteerQuantity', $data, 0);
-    $qty = CRM_Utils_Type::validate($qty, 'Integer', FALSE);
+    $qty = CRM_Utils_Type::validate($qty, 'Integer', false);
 
-    if ($qty === NULL) {
+    if ($qty === null) {
       return;
     }
 
@@ -693,10 +693,10 @@ class CRM_Volunteer_Form_VolunteerSignUp extends CRM_Core_Form {
     $fieldList = array(); // master field list
 
     foreach($profileIds as $profileID) {
-      $fields = CRM_Core_BAO_UFGroup::getFields($profileID, FALSE, CRM_Core_Action::ADD,
-        NULL, NULL, FALSE, NULL,
-        FALSE, NULL, CRM_Core_Permission::CREATE,
-        'field_name', TRUE
+      $fields = CRM_Core_BAO_UFGroup::getFields($profileID, false, CRM_Core_Action::ADD,
+        null, null, false, null,
+        false, null, CRM_Core_Permission::CREATE,
+        'field_name', true
       );
 
       foreach ($fields as $key => $field) {
@@ -707,7 +707,7 @@ class CRM_Volunteer_Form_VolunteerSignUp extends CRM_Core_Form {
           $field,
           CRM_Profile_Form::MODE_CREATE,
           $contactID,
-          TRUE,
+          true,
           null,
           null,
           $prefix
@@ -746,9 +746,9 @@ class CRM_Volunteer_Form_VolunteerSignUp extends CRM_Core_Form {
    * after successfully submitting the sign-up form
    */
   protected function setDestination() {
-    $path = $query = $fragment = NULL;
+    $path = $query = $fragment = null;
 
-    $dest = CRM_Utils_Request::retrieve('dest', 'String', $this, FALSE);
+    $dest = CRM_Utils_Request::retrieve('dest', 'String', $this, false);
     switch ($dest) {
       case 'event':
         // If only one project is associated with the form, send the user back
@@ -766,7 +766,7 @@ class CRM_Volunteer_Form_VolunteerSignUp extends CRM_Core_Form {
         $fragment = '/volunteer/opportunities';
     }
 
-    $this->_destination = CRM_Utils_System::url($path, $query, FALSE, $fragment);
+    $this->_destination = CRM_Utils_System::url($path, $query, false, $fragment);
   }
 
   /**
@@ -777,7 +777,7 @@ class CRM_Volunteer_Form_VolunteerSignUp extends CRM_Core_Form {
     CRM_Utils_System::setTitle(ts('Please select a different volunteer opportunity', array('domain' => 'org.civicrm.volunteer')));
     $region = CRM_Core_Region::instance('page-body');
     $region->update('default', array(
-      'disabled' => TRUE,
+      'disabled' => true,
     ));
     $region->add(array(
       'template' => 'CRM/Volunteer/Form/Error.tpl',

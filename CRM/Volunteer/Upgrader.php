@@ -79,7 +79,7 @@ class CRM_Volunteer_Upgrader extends CRM_Volunteer_Upgrader_Base {
       ));
     } catch (Exception $e) {
       $msg = 'Exception thrown in ' . __METHOD__ . '. Likely the option group already exists.';
-      CRM_Core_Error::debug_log_message($msg, FALSE, 'org.civicrm.volunteer');
+      CRM_Core_Error::debug_log_message($msg, false, 'org.civicrm.volunteer');
     }
 
     $optionDefaults = array(
@@ -273,7 +273,7 @@ class CRM_Volunteer_Upgrader extends CRM_Volunteer_Upgrader_Base {
       REFERENCES `civicrm_contact` (`id`)
       ON DELETE SET NULL
     ');
-    return TRUE;
+    return true;
   }
 
   /**
@@ -285,7 +285,7 @@ class CRM_Volunteer_Upgrader extends CRM_Volunteer_Upgrader_Base {
     $volContactTypeCustomGroupID = $this->createVolunteerContactCustomGroup();
     $customFieldId = $this->createVolunteerContactCustomFields($volContactTypeCustomGroupID);
     _volunteer_update_slider_fields(array(CRM_Core_Action::ADD => $customFieldId));
-    return TRUE;
+    return true;
   }
 
   /**
@@ -294,7 +294,7 @@ class CRM_Volunteer_Upgrader extends CRM_Volunteer_Upgrader_Base {
   public function upgrade_1401() {
     $this->ctx->log->info('Applying update 1401 - creating volunteer_interest profile');
     $this->executeCustomDataFileByAbsPath($this->extensionDir . '/xml/volunteer_interest_install.xml');
-    return TRUE;
+    return true;
   }
 
   // removed by VOL-91; do not reuse
@@ -306,7 +306,7 @@ class CRM_Volunteer_Upgrader extends CRM_Volunteer_Upgrader_Base {
   public function upgrade_1403() {
     $this->ctx->log->info('Applying update 1403 - creating commendation activity type and related custom fields');
     $this->installCommendationActivityType();
-    return TRUE;
+    return true;
   }
 
   /**
@@ -334,19 +334,19 @@ class CRM_Volunteer_Upgrader extends CRM_Volunteer_Upgrader_Base {
     $this->ctx->log->info('Applying update 2001 - Upgrading schema to 2.0');
     $this->schemaUpgrade20();
     $this->migrateProjectTitles();
-    return TRUE;
+    return true;
   }
 
   public function upgrade_2002() {
     $this->ctx->log->info('Applying update 2002 - Adding end_date to civicrm_volunteer_need');
     $this->addNeedEndDate();
-    return TRUE;
+    return true;
   }
 
   public function upgrade_2003() {
     $this->ctx->log->info('Applying update 2003 - Installing Volunteer message workflow templates');
     $this->installVolMsgWorkflowTpls();
-    return TRUE;
+    return true;
   }
 
   public function upgrade_2004() {
@@ -392,7 +392,7 @@ class CRM_Volunteer_Upgrader extends CRM_Volunteer_Upgrader_Base {
     $message = ts('This upgrade introduces two new permissions ("Edit Volunteer Project Relationships" and "Edit Volunteer Registration Profiles"). Grant these to allow users more control over the volunteer project create/edit workflow. Revoke them to streamline the process. Volunteer projects created by users lacking these privileges will use the defaults set by the system administrator.', array('domain' => 'org.civicrm.volunteer'));
     $title = ts('CiviVolunteer Upgrade Notice', array('domain' => 'org.civicrm.volunteer'));
     CRM_Core_Session::setStatus($message, $title, 'info', array('expires' => 0));
-    return TRUE;
+    return true;
   }
 
   /**
@@ -408,7 +408,7 @@ class CRM_Volunteer_Upgrader extends CRM_Volunteer_Upgrader_Base {
       CRM_Core_Session::setStatus($message, $title, 'info', array('expires' => 0));
     }
 
-    return TRUE;
+    return true;
   }
 
   /**
@@ -420,7 +420,7 @@ class CRM_Volunteer_Upgrader extends CRM_Volunteer_Upgrader_Base {
     $message = ts("Some users have reported that their CiviVolunteer settings \"disappear\" after an upgrade. This is due to an issue with CiviCRM's extension system, but can usually be resolved by flushing CiviCRM's caches. For more information, see <a href=\"https://issues.civicrm.org/jira/browse/CRM-21210\">CRM-21210</a>.", array('domain' => 'org.civicrm.volunteer'));
     $title = ts('Post-Upgrade Steps May Be Required', array('domain' => 'org.civicrm.volunteer'));
     CRM_Core_Session::setStatus($message, $title, 'info', array('expires' => 0));
-    return TRUE;
+    return true;
   }
 
   private function installNeedMetaDateFields() {
@@ -575,8 +575,8 @@ class CRM_Volunteer_Upgrader extends CRM_Volunteer_Upgrader_Base {
    * @return int ID of Activity type (i.e., the value of the OptionValue)
    * @throws CRM_Core_Exception
    */
-  public function createActivityType($machineName, $label = NULL) {
-    $id = NULL;
+  public function createActivityType($machineName, $label = null) {
+    $id = null;
     $optionGroup = civicrm_api3('OptionGroup', 'getsingle', array(
       'name' => 'activity_type',
       'return' => 'id'
@@ -601,8 +601,8 @@ class CRM_Volunteer_Upgrader extends CRM_Volunteer_Upgrader_Base {
         'version' => 3,
         'weight' => 0,
       ));
-      if (CRM_Utils_Array::value('is_error', $result, FALSE)) {
-        CRM_Core_Error::debug_var('activityTypeResult', $result, TRUE, TRUE, 'org.civicrm.volunteer');
+      if (CRM_Utils_Array::value('is_error', $result, false)) {
+        CRM_Core_Error::debug_var('activityTypeResult', $result, true, true, 'org.civicrm.volunteer');
         throw new CRM_Core_Exception('Failed to register activity type ' . $machineName);
       }
       $id = $result['values'][$result['id']]['value'];
@@ -619,7 +619,7 @@ class CRM_Volunteer_Upgrader extends CRM_Volunteer_Upgrader_Base {
    * @throws CRM_Core_Exception
    */
   public function createVolunteerContactType() {
-    $id = NULL;
+    $id = null;
     $get = civicrm_api3('ContactType', 'get', array(
       'name' => self::customContactTypeName,
       'return' => 'id',
@@ -638,7 +638,7 @@ class CRM_Volunteer_Upgrader extends CRM_Volunteer_Upgrader_Base {
          )),
       ));
       if (CRM_Utils_Array::value('is_error', $create)) {
-        CRM_Core_Error::debug_var('contactTypeResult', $create, TRUE, TRUE, 'org.civicrm.volunteer');
+        CRM_Core_Error::debug_var('contactTypeResult', $create, true, true, 'org.civicrm.volunteer');
         throw new CRM_Core_Exception('Failed to register contact type');
       }
 
@@ -656,7 +656,7 @@ class CRM_Volunteer_Upgrader extends CRM_Volunteer_Upgrader_Base {
    * @throws CRM_Core_Exception
    */
   public function createVolunteerContactCustomGroup() {
-    $id = NULL;
+    $id = null;
     $get = civicrm_api3('CustomGroup', 'get', array(
       'name' => self::customContactGroupName,
       'return' => 'id',
@@ -673,7 +673,7 @@ class CRM_Volunteer_Upgrader extends CRM_Volunteer_Upgrader_Base {
         'title' => ts('Volunteer Information', array('domain' => 'org.civicrm.volunteer')),
       ));
       if (CRM_Utils_Array::value('is_error', $create)) {
-        CRM_Core_Error::debug_var('customGroupResult', $create, TRUE, TRUE, 'org.civicrm.volunteer');
+        CRM_Core_Error::debug_var('customGroupResult', $create, true, true, 'org.civicrm.volunteer');
         throw new CRM_Core_Exception('Failed to register custom group for volunteer subtype');
       }
 
@@ -777,7 +777,7 @@ class CRM_Volunteer_Upgrader extends CRM_Volunteer_Upgrader_Base {
           ts('Field already exists', array('domain' => 'org.civicrm.volunteer'))
         );
       } else {
-        CRM_Core_Error::debug_var('apiResult', $apiResult, TRUE, TRUE, 'org.civicrm.volunteer');
+        CRM_Core_Error::debug_var('apiResult', $apiResult, true, true, 'org.civicrm.volunteer');
         throw new CRM_Core_Exception("Failed to create $entityType.");
       }
     }
@@ -818,8 +818,8 @@ class CRM_Volunteer_Upgrader extends CRM_Volunteer_Upgrader_Base {
         );
         $result = civicrm_api('OptionValue', 'create', $params);
 
-        if (CRM_Utils_Array::value('is_error', $result, FALSE)) {
-          CRM_Core_Error::debug_var('activityStatusResult', $result, TRUE, TRUE, 'org.civicrm.volunteer');
+        if (CRM_Utils_Array::value('is_error', $result, false)) {
+          CRM_Core_Error::debug_var('activityStatusResult', $result, true, true, 'org.civicrm.volunteer');
           throw new CRM_Core_Exception('Failed to register activity status');
         }
       }
@@ -834,7 +834,7 @@ class CRM_Volunteer_Upgrader extends CRM_Volunteer_Upgrader_Base {
       require_once 'CRM/Utils/Migrate/Import.php';
       $import = new CRM_Utils_Migrate_Import();
       $import->runXmlElement($xml);
-      return TRUE;
+      return true;
   }
 
   /**

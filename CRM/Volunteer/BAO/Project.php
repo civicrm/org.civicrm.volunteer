@@ -136,7 +136,7 @@ class CRM_Volunteer_BAO_Project extends CRM_Volunteer_DAO_Project {
    * @return boolean
    */
   function __isset($name) {
-    $result = FALSE;
+    $result = false;
     $f = "_get_$name";
     if (method_exists($this, $f)) {
       $v = $this->$f();
@@ -263,7 +263,7 @@ class CRM_Volunteer_BAO_Project extends CRM_Volunteer_DAO_Project {
 
       // FIXME: If we don't return here, the script keeps executing. This is not
       // what I expect from CRM_Utils_System::permissionDenied().
-      return FALSE;
+      return false;
     }
 
     $params = self::validateCreateParams($params);
@@ -282,8 +282,8 @@ class CRM_Volunteer_BAO_Project extends CRM_Volunteer_DAO_Project {
     if ($op === CRM_Core_Action::ADD) {
       CRM_Volunteer_BAO_Need::create(array(
         // Save an unnecessary lookup for a perms check that will always succeed.
-        'check_permissions' => FALSE,
-        'is_flexible' => TRUE,
+        'check_permissions' => false,
+        'is_flexible' => true,
         'project_id' => $project->id,
         'visibility_id' => 'admin',
       ));
@@ -390,7 +390,7 @@ class CRM_Volunteer_BAO_Project extends CRM_Volunteer_DAO_Project {
       $p = current($projects);
       return $p->is_active;
     }
-    return NULL;
+    return null;
   }
 
   /**
@@ -400,10 +400,10 @@ class CRM_Volunteer_BAO_Project extends CRM_Volunteer_DAO_Project {
    * @param int $projectId
    * @return boolean
    */
-  private static function allowedToRetrieve($projectId = NULL) {
+  private static function allowedToRetrieve($projectId = null) {
     $userCanView = CRM_Volunteer_Permission::checkProjectPerms(CRM_Core_Action::VIEW);
 
-    $userCanViewRoster = FALSE;
+    $userCanViewRoster = false;
     if (!$userCanView && !empty($projectId)) {
       $userCanViewRoster = CRM_Volunteer_Permission::checkProjectPerms(CRM_Volunteer_Permission::VIEW_ROSTER, $projectId);
     }
@@ -496,15 +496,15 @@ class CRM_Volunteer_BAO_Project extends CRM_Volunteer_DAO_Project {
    *   String SQL fragment otherwise
    */
   private static function buildContactJoin(array $projectContacts) {
-    $result = FALSE;
+    $result = false;
     $onClauses = array();
 
     $relTypes = CRM_Core_OptionGroup::values(
       CRM_Volunteer_BAO_ProjectContact::RELATIONSHIP_OPTION_GROUP,
-      TRUE, FALSE, FALSE, NULL, 'name');
+      true, false, false, null, 'name');
 
     foreach ($projectContacts as $relType => $contactIds) {
-      if (!CRM_Utils_Type::validate($relType, 'Integer', FALSE)) {
+      if (!CRM_Utils_Type::validate($relType, 'Integer', false)) {
         $relType = $relTypes[$relType];
       }
       $contactIds = implode(',', (array) $contactIds);
@@ -540,7 +540,7 @@ class CRM_Volunteer_BAO_Project extends CRM_Volunteer_DAO_Project {
    * @throws Exception
    */
   private static function buildProximityWhere(array $params) {
-    $country = $lat = $lon = $radius = $unit = NULL;
+    $country = $lat = $lon = $radius = $unit = null;
     extract($params, EXTR_IF_EXISTS);
 
     // ensure that radius is a float
@@ -564,7 +564,7 @@ class CRM_Volunteer_BAO_Project extends CRM_Volunteer_DAO_Project {
 
       // TODO: I think CRM_Utils_Geocode_*::format should be responsible for this
       // If/when CRM-17245 is closed, this if-block can be removed.
-      if (CRM_Utils_Type::validate($country, 'Positive', FALSE)) {
+      if (CRM_Utils_Type::validate($country, 'Positive', false)) {
         $params['country'] = civicrm_api3('Country', 'getvalue', array(
           'id' => $country,
           'return' => 'name',
@@ -618,10 +618,10 @@ class CRM_Volunteer_BAO_Project extends CRM_Volunteer_DAO_Project {
    * @access public
    */
   public static function isOff($value) {
-    if (in_array($value, array(FALSE, 0, '0'), TRUE)) {
-      return TRUE;
+    if (in_array($value, array(false, 0, '0'), true)) {
+      return true;
     } else {
-      return FALSE;
+      return false;
     }
   }
 
@@ -632,7 +632,7 @@ class CRM_Volunteer_BAO_Project extends CRM_Volunteer_DAO_Project {
    * @deprecated since version 4.7.21-2.3.0
    *   Internal core methods should not be extended by third-party code.
    */
-  public function copyValues(&$params, $serializeArrays = FALSE) {
+  public function copyValues(&$params, $serializeArrays = false) {
     if (is_a($params, 'CRM_Core_DAO')) {
       $params = get_object_vars($params);
     }
@@ -657,7 +657,7 @@ class CRM_Volunteer_BAO_Project extends CRM_Volunteer_DAO_Project {
   public function getEntityAttributes() {
     if (!$this->entityAttributes) {
       $arrayKeys = array('start_time', 'title');
-      $this->entityAttributes = array_fill_keys($arrayKeys, NULL);
+      $this->entityAttributes = array_fill_keys($arrayKeys, null);
 
       if ($this->entity_table && $this->entity_id) {
         try {
@@ -675,7 +675,7 @@ class CRM_Volunteer_BAO_Project extends CRM_Volunteer_DAO_Project {
           $format = 'Could not fetch entity attributes for volunteer project with ID %d. '
             . 'No %s with ID %d exists; perhaps it has been deleted.';
           $msg = sprintf($format, $this->id, $this->entity_table, $this->entity_id);
-          CRM_Core_Error::debug_log_message($msg, FALSE, 'org.civicrm.volunteer');
+          CRM_Core_Error::debug_log_message($msg, false, 'org.civicrm.volunteer');
         }
       }
     }
@@ -689,7 +689,7 @@ class CRM_Volunteer_BAO_Project extends CRM_Volunteer_DAO_Project {
    * @return mixed Integer on success, else NULL
    */
   public static function getFlexibleNeedID ($project_id) {
-    $result = NULL;
+    $result = null;
 
     if (is_int($project_id) || ctype_digit($project_id)) {
       $flexibleNeed = civicrm_api('volunteer_need', 'getvalue', array(
@@ -789,7 +789,7 @@ class CRM_Volunteer_BAO_Project extends CRM_Volunteer_DAO_Project {
    */
   public static function getDefaultProjectContacts() {
     $defaults = array();
-    $optionMap = CRM_Core_OptionGroup::values("volunteer_project_relationship", TRUE, FALSE, FALSE, NULL, 'name');
+    $optionMap = CRM_Core_OptionGroup::values("volunteer_project_relationship", true, false, false, null, 'name');
     $projectContactsSetting = civicrm_api3('Setting', 'getvalue', array(
       'name' => 'volunteer_project_default_contacts',
     ));

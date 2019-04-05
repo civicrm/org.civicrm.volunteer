@@ -38,7 +38,7 @@ class CRM_Volunteer_BAO_ProjectTest extends VolunteerTestAbstract {
    * Test helper method isOff, which should return TRUE passed an "off" value
    */
   function testProjectIsOff() {
-    $this->assertTrue(CRM_Volunteer_BAO_Project::isOff(FALSE));
+    $this->assertTrue(CRM_Volunteer_BAO_Project::isOff(false));
     $this->assertTrue(CRM_Volunteer_BAO_Project::isOff(0));
     $this->assertTrue(CRM_Volunteer_BAO_Project::isOff('0'));
   }

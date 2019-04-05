@@ -113,26 +113,26 @@ class CRM_Volunteer_BAO_NeedSearch {
     $needEndTime = strtotime(CRM_Utils_Array::value('end_time', $need));
 
     // There are no date-related search criteria, so we're done here.
-    if ($this->searchParams['need']['date_start'] === FALSE && $this->searchParams['need']['date_end'] === FALSE) {
-      return TRUE;
+    if ($this->searchParams['need']['date_start'] === false && $this->searchParams['need']['date_end'] === false) {
+      return true;
     }
 
     // The search window has no end time. We need to verify only that the need
     // has dates after the start time.
-    if ($this->searchParams['need']['date_end'] === FALSE) {
+    if ($this->searchParams['need']['date_end'] === false) {
       return $needStartTime >= $this->searchParams['need']['date_start'] || $needEndTime >= $this->searchParams['need']['date_start'];
     }
 
     // The search window has no start time. We need to verify only that the need
     // starts before the end of the window.
-    if ($this->searchParams['need']['date_start'] === FALSE) {
+    if ($this->searchParams['need']['date_start'] === false) {
       return $needStartTime <= $this->searchParams['need']['date_end'];
     }
 
     // The need does not have fuzzy dates, and both ends of the search
     // window have been specified. We need to verify only that the need
     // starts in the search window.
-    if ($needEndTime === FALSE) {
+    if ($needEndTime === false) {
       return $needStartTime >= $this->searchParams['need']['date_start'] && $needStartTime <= $this->searchParams['need']['date_end'];
     }
 
@@ -178,7 +178,7 @@ class CRM_Volunteer_BAO_NeedSearch {
     $this->setSearchDateParams($userSearchParams);
 
     $projectId = CRM_Utils_Array::value('project', $userSearchParams);
-    if (CRM_Utils_Type::validate($projectId, 'Positive', FALSE)) {
+    if (CRM_Utils_Type::validate($projectId, 'Positive', false)) {
       $this->searchParams['project']['id'] = $projectId;
     }
 
@@ -247,23 +247,23 @@ class CRM_Volunteer_BAO_NeedSearch {
       // Because of CRM-17327, the chained "get" may improperly report its result,
       // so we check the value we're chaining off of to decide whether or not
       // to trust the result.
-      $project['campaign_title'] = empty($api['campaign_id']) ? NULL : $api['api.Campaign.getvalue'];
+      $project['campaign_title'] = empty($api['campaign_id']) ? null : $api['api.Campaign.getvalue'];
 
       // CRM-17327
       if (empty($api['loc_block_id']) || empty($api['api.LocBlock.getsingle']['address_id'])) {
         $project['location'] = array(
-          'city' => NULL,
-          'country' => NULL,
-          'postal_code' => NULL,
-          'state_provice' => NULL,
-          'street_address' => NULL,
+          'city' => null,
+          'country' => null,
+          'postal_code' => null,
+          'state_provice' => null,
+          'street_address' => null,
         );
       } else {
         $countryId = $api['api.LocBlock.getsingle']['api.Address.getsingle']['country_id'];
-        $country = $countryId ? CRM_Core_PseudoConstant::country($countryId) : NULL;
+        $country = $countryId ? CRM_Core_PseudoConstant::country($countryId) : null;
 
         $stateProvinceId = $api['api.LocBlock.getsingle']['api.Address.getsingle']['state_province_id'];
-        $stateProvince = $stateProvinceId ? CRM_Core_PseudoConstant::stateProvince($stateProvinceId) : NULL;
+        $stateProvince = $stateProvinceId ? CRM_Core_PseudoConstant::stateProvince($stateProvinceId) : null;
 
         $project['location'] = array(
           'city' => $api['api.LocBlock.getsingle']['api.Address.getsingle']['city'],
