@@ -49,7 +49,7 @@ class CRM_Volunteer_DAO_Need extends CRM_Core_DAO {
    *
    * @var boolean
    */
-  static $_log = true;
+  static $_log = TRUE;
   /**
    * Need Id
    *
@@ -153,7 +153,7 @@ class CRM_Volunteer_DAO_Need extends CRM_Core_DAO {
           'type' => CRM_Utils_Type::T_INT,
           'title' => ts('CiviVolunteer Need ID', array('domain' => 'org.civicrm.volunteer')) ,
           'description' => 'Need Id',
-          'required' => true,
+          'required' => TRUE,
           'table_name' => 'civicrm_volunteer_need',
           'entity' => 'Need',
           'bao' => 'CRM_Volunteer_DAO_Need',
@@ -162,7 +162,7 @@ class CRM_Volunteer_DAO_Need extends CRM_Core_DAO {
           'name' => 'project_id',
           'type' => CRM_Utils_Type::T_INT,
           'description' => 'FK to civicrm_volunteer_project table which contains entity_table + entity for each volunteer project (initially civicrm_event + eventID).',
-          'required' => false,
+          'required' => FALSE,
           'table_name' => 'civicrm_volunteer_need',
           'entity' => 'Need',
           'bao' => 'CRM_Volunteer_DAO_Need',
@@ -199,7 +199,7 @@ class CRM_Volunteer_DAO_Need extends CRM_Core_DAO {
           'type' => CRM_Utils_Type::T_BOOLEAN,
           'title' => ts('Flexible', array('domain' => 'org.civicrm.volunteer')) ,
           'description' => 'Boolean indicating whether or not the time and role are flexible. Activities linked to a flexible need indicate that the volunteer is generally available.',
-          'required' => true,
+          'required' => TRUE,
           'table_name' => 'civicrm_volunteer_need',
           'entity' => 'Need',
           'bao' => 'CRM_Volunteer_DAO_Need',
@@ -247,7 +247,7 @@ class CRM_Volunteer_DAO_Need extends CRM_Core_DAO {
           'type' => CRM_Utils_Type::T_BOOLEAN,
           'title' => ts('Enabled', array('domain' => 'org.civicrm.volunteer')) ,
           'description' => 'Is this need enabled?',
-          'required' => true,
+          'required' => TRUE,
           'default' => '1',
           'table_name' => 'civicrm_volunteer_need',
           'entity' => 'Need',
@@ -311,7 +311,7 @@ class CRM_Volunteer_DAO_Need extends CRM_Core_DAO {
    *
    * @return array
    */
-  static function &import($prefix = false) {
+  static function &import($prefix = FALSE) {
     $r = CRM_Core_DAO_AllCoreTables::getImports(__CLASS__, 'volunteer_need', $prefix, array());
     return $r;
   }
@@ -322,7 +322,7 @@ class CRM_Volunteer_DAO_Need extends CRM_Core_DAO {
    *
    * @return array
    */
-  static function &export($prefix = false) {
+  static function &export($prefix = FALSE) {
     $r = CRM_Core_DAO_AllCoreTables::getExports(__CLASS__, 'volunteer_need', $prefix, array());
     return $r;
   }

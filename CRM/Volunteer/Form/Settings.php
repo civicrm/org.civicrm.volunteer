@@ -74,7 +74,7 @@ class CRM_Volunteer_Form_Settings extends CRM_Core_Form {
         'volunteer_project_default_profiles_' . $audience['type'],
         $audience['description'],
         $profileList,
-        false, // is required,
+        FALSE, // is required,
         array(
           "placeholder" => ts("- none -", array('domain' => 'org.civicrm.volunteer')),
           "multiple" => "multiple",
@@ -94,8 +94,8 @@ class CRM_Volunteer_Form_Settings extends CRM_Core_Form {
       'volunteer_project_default_campaign',
       ts('Campaign', array('domain' => 'org.civicrm.volunteer')),
       $campaignList,
-      false, // is required,
-      array("placeholder" => true)
+      FALSE, // is required,
+      array("placeholder" => TRUE)
     );
 
     $locBlocks = civicrm_api3('VolunteerProject', 'locations', array());
@@ -104,7 +104,7 @@ class CRM_Volunteer_Form_Settings extends CRM_Core_Form {
       'volunteer_project_default_locblock',
       ts('Location', array('domain' => 'org.civicrm.volunteer')),
       $locBlocks['values'],
-      false, // is required,
+      FALSE, // is required,
       array("placeholder" => ts("- none -", array('domain' => 'org.civicrm.volunteer')))
     );
 
@@ -112,8 +112,8 @@ class CRM_Volunteer_Form_Settings extends CRM_Core_Form {
       'checkbox',
       'volunteer_project_default_is_active',
       ts('Are new Projects active by default?', array('domain' => 'org.civicrm.volunteer')),
-      null,
-      false
+      NULL,
+      FALSE
     );
 
     $this->addProjectRelationshipFields();
@@ -127,7 +127,7 @@ class CRM_Volunteer_Form_Settings extends CRM_Core_Form {
         "blacklist" => ts("Blacklist", array('domain' => 'org.civicrm.volunteer')),
         "whitelist" => ts("Whitelist", array('domain' => 'org.civicrm.volunteer')),
       ),
-      true
+      TRUE
     );
 
     $results = civicrm_api3('OptionValue', 'get', array(
@@ -145,7 +145,7 @@ class CRM_Volunteer_Form_Settings extends CRM_Core_Form {
       'volunteer_general_campaign_filter_list',
       ts('Campaign Type(s)', array('domain' => 'org.civicrm.volunteer')),
       $campaignTypes,
-      false, // is required,
+      FALSE, // is required,
       array(
         "placeholder" => ts("- none -", array('domain' => 'org.civicrm.volunteer')),
         "multiple" => "multiple",
@@ -193,7 +193,7 @@ class CRM_Volunteer_Form_Settings extends CRM_Core_Form {
         "volunteer_project_default_contacts_relationship_$name",
         ts('Default to Contact(s) Having this Relationship with the Acting Contact', array('domain' => 'org.civicrm.volunteer')),
         $this->getValidRelationshipTypes(),
-        false, // is required,
+        FALSE, // is required,
         array(
           'class' => 'crm-select2',
           'data-fieldgroup' => 'Default Project Settings',
@@ -356,7 +356,7 @@ class CRM_Volunteer_Form_Settings extends CRM_Core_Form {
    */
   function getSettingMetadata($settingName, $attr) {
     if (!$settingName || !$attr) {
-      return false;
+      return FALSE;
     }
     $setting = CRM_Utils_Array::value($settingName, $this->_settingsMetadata, array());
     return CRM_Utils_Array::value($attr, $setting);

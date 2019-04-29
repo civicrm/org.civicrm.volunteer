@@ -49,7 +49,7 @@ class CRM_Volunteer_DAO_ProjectContact extends CRM_Core_DAO {
    *
    * @var boolean
    */
-  static $_log = true;
+  static $_log = TRUE;
   /**
    *
    * @var int unsigned
@@ -107,7 +107,7 @@ class CRM_Volunteer_DAO_ProjectContact extends CRM_Core_DAO {
           'name' => 'id',
           'type' => CRM_Utils_Type::T_INT,
           'title' => ts('CiviVolunteer ProjectContact Row ID', array('domain' => 'org.civicrm.volunteer')) ,
-          'required' => true,
+          'required' => TRUE,
           'table_name' => 'civicrm_volunteer_project_contact',
           'entity' => 'ProjectContact',
           'bao' => 'CRM_Volunteer_DAO_ProjectContact',
@@ -117,7 +117,7 @@ class CRM_Volunteer_DAO_ProjectContact extends CRM_Core_DAO {
           'type' => CRM_Utils_Type::T_INT,
           'title' => ts('CiviVolunteer Project ID', array('domain' => 'org.civicrm.volunteer')) ,
           'description' => 'Foreign key to the Volunteer Project for this record',
-          'required' => true,
+          'required' => TRUE,
           'table_name' => 'civicrm_volunteer_project_contact',
           'entity' => 'ProjectContact',
           'bao' => 'CRM_Volunteer_DAO_ProjectContact',
@@ -128,7 +128,7 @@ class CRM_Volunteer_DAO_ProjectContact extends CRM_Core_DAO {
           'type' => CRM_Utils_Type::T_INT,
           'title' => ts('Contact ID', array('domain' => 'org.civicrm.volunteer')) ,
           'description' => 'Foreign key to the Contact for this record',
-          'required' => true,
+          'required' => TRUE,
           'table_name' => 'civicrm_volunteer_project_contact',
           'entity' => 'ProjectContact',
           'bao' => 'CRM_Volunteer_DAO_ProjectContact',
@@ -139,7 +139,7 @@ class CRM_Volunteer_DAO_ProjectContact extends CRM_Core_DAO {
           'type' => CRM_Utils_Type::T_INT,
           'title' => ts('Relationship Type', array('domain' => 'org.civicrm.volunteer')) ,
           'description' => 'Nature of the contact\'s relationship to the Volunteer Project (e.g., Beneficiary). See option group volunteer_project_relationship.',
-          'required' => true,
+          'required' => TRUE,
           'table_name' => 'civicrm_volunteer_project_contact',
           'entity' => 'ProjectContact',
           'bao' => 'CRM_Volunteer_DAO_ProjectContact',
@@ -188,7 +188,7 @@ class CRM_Volunteer_DAO_ProjectContact extends CRM_Core_DAO {
    *
    * @return array
    */
-  static function &import($prefix = false) {
+  static function &import($prefix = FALSE) {
     $r = CRM_Core_DAO_AllCoreTables::getImports(__CLASS__, 'volunteer_project_contact', $prefix, array());
     return $r;
   }
@@ -199,7 +199,7 @@ class CRM_Volunteer_DAO_ProjectContact extends CRM_Core_DAO {
    *
    * @return array
    */
-  static function &export($prefix = false) {
+  static function &export($prefix = FALSE) {
     $r = CRM_Core_DAO_AllCoreTables::getExports(__CLASS__, 'volunteer_project_contact', $prefix, array());
     return $r;
   }

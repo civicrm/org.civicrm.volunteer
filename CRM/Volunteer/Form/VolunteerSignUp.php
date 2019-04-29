@@ -388,7 +388,7 @@ class CRM_Volunteer_Form_VolunteerSignUp extends CRM_Core_Form {
           while ($i < $additionalVolunteerQuantity) {
             $additionalVolunteerProfiles[$i] = array();
             $additionalVolunteerProfiles[$i]['prefix'] = "additionalVolunteers_$i";
-            $additionalVolunteerProfiles[$i]['profiles'] = $this->buildAdditionalVolunteerTemplate($additionalVolunteerProfiles[$i]['prefix'], false);
+            $additionalVolunteerProfiles[$i]['profiles'] = $this->buildAdditionalVolunteerTemplate($additionalVolunteerProfiles[$i]['prefix'], FALSE);
             $i++;
           }
           $this->assign('additionalVolunteerProfiles', $additionalVolunteerProfiles);
@@ -572,7 +572,7 @@ class CRM_Volunteer_Form_VolunteerSignUp extends CRM_Core_Form {
    * @return int
    *   The contact id of the user for whom this data was saved (This can be a new contact)
    */
-  private function processContactProfileData(array $profileValues, array $profileFields, $cid = null) {
+  private function processContactProfileData(array $profileValues, array $profileFields, $cid = NULL) {
     // Search for duplicate
     if (!$cid) {
       $dedupeParams = CRM_Dedupe_Finder::formatParams($profileValues, 'Individual');
@@ -688,7 +688,7 @@ class CRM_Volunteer_Form_VolunteerSignUp extends CRM_Core_Form {
    *   Returns an array of field definitions that have been added to the form.
    *   This result can be passed to a Smarty template as a variable.
    */
-  function buildCustom(array $profileIds = array(), $contactID = null, $prefix = '') {
+  function buildCustom(array $profileIds = array(), $contactID = NULL, $prefix = '') {
     $profiles = array();
     $fieldList = array(); // master field list
 
@@ -708,8 +708,8 @@ class CRM_Volunteer_Form_VolunteerSignUp extends CRM_Core_Form {
           CRM_Profile_Form::MODE_CREATE,
           $contactID,
           TRUE,
-          null,
-          null,
+          NULL,
+          NULL,
           $prefix
         );
         $profiles[$profileID][$key] = $fieldList[$key] = $field;
@@ -731,7 +731,7 @@ class CRM_Volunteer_Form_VolunteerSignUp extends CRM_Core_Form {
    *   An array of the additional volunteer profiles. The array is empty if
    *   there are none.
    */
-  function buildAdditionalVolunteerTemplate($prefix = "additionalVolunteersTemplate", $assign = true) {
+  function buildAdditionalVolunteerTemplate($prefix = "additionalVolunteersTemplate", $assign = TRUE) {
     $profiles = $this->buildCustom($this->getAdditionalVolunteerProfileIDs(), 0, $prefix);
 
     if($assign) {

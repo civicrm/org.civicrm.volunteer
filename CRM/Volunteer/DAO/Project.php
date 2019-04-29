@@ -49,7 +49,7 @@ class CRM_Volunteer_DAO_Project extends CRM_Core_DAO {
    *
    * @var boolean
    */
-  static $_log = true;
+  static $_log = TRUE;
   /**
    * Project Id
    *
@@ -133,7 +133,7 @@ class CRM_Volunteer_DAO_Project extends CRM_Core_DAO {
           'type' => CRM_Utils_Type::T_INT,
           'title' => ts('CiviVolunteer Project ID', array('domain' => 'org.civicrm.volunteer')) ,
           'description' => 'Project Id',
-          'required' => true,
+          'required' => TRUE,
           'table_name' => 'civicrm_volunteer_project',
           'entity' => 'Project',
           'bao' => 'CRM_Volunteer_DAO_Project',
@@ -143,7 +143,7 @@ class CRM_Volunteer_DAO_Project extends CRM_Core_DAO {
           'type' => CRM_Utils_Type::T_STRING,
           'title' => ts('Title', array('domain' => 'org.civicrm.volunteer')) ,
           'description' => 'The title of the Volunteer Project',
-          'required' => true,
+          'required' => TRUE,
           'maxlength' => 255,
           'size' => CRM_Utils_Type::HUGE,
           'table_name' => 'civicrm_volunteer_project',
@@ -155,7 +155,7 @@ class CRM_Volunteer_DAO_Project extends CRM_Core_DAO {
           'type' => CRM_Utils_Type::T_TEXT,
           'title' => ts('Description', array('domain' => 'org.civicrm.volunteer')) ,
           'description' => 'Full description of the Volunteer Project. Text and HTML allowed. Displayed on sign-up screens.',
-          'required' => false,
+          'required' => FALSE,
           'rows' => 8,
           'cols' => 60,
           'table_name' => 'civicrm_volunteer_project',
@@ -170,7 +170,7 @@ class CRM_Volunteer_DAO_Project extends CRM_Core_DAO {
           'type' => CRM_Utils_Type::T_STRING,
           'title' => ts('Entity Table', array('domain' => 'org.civicrm.volunteer')) ,
           'description' => 'Entity table for entity_id (initially civicrm_event)',
-          'required' => true,
+          'required' => TRUE,
           'maxlength' => 64,
           'size' => CRM_Utils_Type::BIG,
           'table_name' => 'civicrm_volunteer_project',
@@ -181,7 +181,7 @@ class CRM_Volunteer_DAO_Project extends CRM_Core_DAO {
           'name' => 'entity_id',
           'type' => CRM_Utils_Type::T_INT,
           'description' => 'Implicit FK project entity (initially eventID).',
-          'required' => true,
+          'required' => TRUE,
           'table_name' => 'civicrm_volunteer_project',
           'entity' => 'Project',
           'bao' => 'CRM_Volunteer_DAO_Project',
@@ -191,7 +191,7 @@ class CRM_Volunteer_DAO_Project extends CRM_Core_DAO {
           'type' => CRM_Utils_Type::T_BOOLEAN,
           'title' => ts('Enabled', array('domain' => 'org.civicrm.volunteer')) ,
           'description' => 'Is this need enabled?',
-          'required' => true,
+          'required' => TRUE,
           'default' => '1',
           'table_name' => 'civicrm_volunteer_project',
           'entity' => 'Project',
@@ -212,7 +212,7 @@ class CRM_Volunteer_DAO_Project extends CRM_Core_DAO {
           'type' => CRM_Utils_Type::T_INT,
           'title' => ts('Campaign', array('domain' => 'org.civicrm.volunteer')) ,
           'description' => 'The campaign associated with this Volunteer Project.',
-          'required' => false,
+          'required' => FALSE,
           'table_name' => 'civicrm_volunteer_project',
           'entity' => 'Project',
           'bao' => 'CRM_Volunteer_DAO_Project',
@@ -258,7 +258,7 @@ class CRM_Volunteer_DAO_Project extends CRM_Core_DAO {
    *
    * @return array
    */
-  static function &import($prefix = false) {
+  static function &import($prefix = FALSE) {
     $r = CRM_Core_DAO_AllCoreTables::getImports(__CLASS__, 'volunteer_project', $prefix, array());
     return $r;
   }
@@ -269,7 +269,7 @@ class CRM_Volunteer_DAO_Project extends CRM_Core_DAO {
    *
    * @return array
    */
-  static function &export($prefix = false) {
+  static function &export($prefix = FALSE) {
     $r = CRM_Core_DAO_AllCoreTables::getExports(__CLASS__, 'volunteer_project', $prefix, array());
     return $r;
   }

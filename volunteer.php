@@ -169,7 +169,7 @@ function volunteer_civicrm_tabset($tabsetName, &$tabs, $context) {
         'valid' => TRUE,
         'active' => TRUE,
         'class' => 'livePage',
-        'current' => false,
+        'current' => FALSE,
       );
 
       if (!CRM_Volunteer_BAO_Project::isActive($eventId, CRM_Event_DAO_Event::$_tableName)) {

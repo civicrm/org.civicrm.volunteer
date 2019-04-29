@@ -96,7 +96,7 @@ function civicrm_api3_volunteer_project_contact_get($params) {
       //Following that, when you pass a null value into getsingle, it finds 3 results and errors out
       //This solution was created to fall back on relationship_type_id if present in
       //$params, and if not, skip loading the relationship type label.
-      $rType = false;
+      $rType = FALSE;
       $rType = (array_key_exists("relationship_type_id", $params) ) ? $params['relationship_type_id'] : $rType;
       $rType = (array_key_exists("relationship_type_id", $projectContact) ) ? $projectContact['relationship_type_id'] : $rType;
 

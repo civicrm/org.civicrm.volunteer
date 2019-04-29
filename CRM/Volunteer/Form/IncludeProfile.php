@@ -26,7 +26,7 @@ class CRM_Volunteer_Form_IncludeProfile extends CRM_Core_Form {
    * @param string $label Label
    * @param array $configs Optional, for addProfileSelector(), defaults to using getProfileSelectorTypes()
    */
-  public static function buildProfileWidget(&$form, $count, $prefix = '', $label = 'Include Profile', $configs = null) {
+  public static function buildProfileWidget(&$form, $count, $prefix = '', $label = 'Include Profile', $configs = NULL) {
     extract( ( is_null($configs) ) ? self::getProfileSelectorTypes() : $configs );
     $element = $prefix . "custom_signup_profiles[$count]";
     $form->assign('profileItem', $count);
