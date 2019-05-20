@@ -1,39 +1,38 @@
-<?xml version="1.0" encoding="iso-8859-1" ?>
-
+<?xml version="1.0" encoding="iso-8859-1"?>
 <menu>
   <item>
-     <path>civicrm/volunteer/loghours</path>
-     <title>Batch Data Entry for Logging Volunteer</title>
-     <page_callback>CRM_Volunteer_Form_Log</page_callback>
-     <path_arguments>action=add</path_arguments>
-     <!-- Access is further restricted in the preprocessor -->
-     <access_callback>CRM_Volunteer_Permission::check</access_callback>
-     <access_arguments>edit own volunteer projects</access_arguments>
-     <is_public>1</is_public>
+    <path>civicrm/volunteer/loghours</path>
+    <title>Batch Data Entry for Logging Volunteer</title>
+    <page_callback>CRM_Volunteer_Form_Log</page_callback>
+    <path_arguments>action=add</path_arguments>
+    <!-- Access is further restricted in the preprocessor -->
+    <access_callback>CRM_Volunteer_Permission::check</access_callback>
+    <access_arguments>edit own volunteer projects</access_arguments>
+    <is_public>1</is_public>
   </item>
   <item>
-     <path>civicrm/volunteer/need</path>
-     <title>Define Volunteer Opportunities</title>
-     <page_callback>CRM_Volunteer_Form_Need</page_callback>
-     <path_arguments>action=add</path_arguments>
-     <access_arguments>access CiviEvent,edit all events</access_arguments>
-     <component>CiviEvent</component>
+    <path>civicrm/volunteer/need</path>
+    <title>Define Volunteer Opportunities</title>
+    <page_callback>CRM_Volunteer_Form_Need</page_callback>
+    <path_arguments>action=add</path_arguments>
+    <access_arguments>access CiviEvent,edit all events</access_arguments>
+    <component>CiviEvent</component>
   </item>
   <item>
-     <path>civicrm/volunteer/assign</path>
-     <title>Assign Volunteers</title>
-     <page_callback>CRM_Volunteer_Form_Assign</page_callback>
-     <path_arguments>action=add</path_arguments>
-     <access_arguments>access CiviEvent,edit all events</access_arguments>
-     <component>CiviEvent</component>
+    <path>civicrm/volunteer/assign</path>
+    <title>Assign Volunteers</title>
+    <page_callback>CRM_Volunteer_Form_Assign</page_callback>
+    <path_arguments>action=add</path_arguments>
+    <access_arguments>access CiviEvent,edit all events</access_arguments>
+    <component>CiviEvent</component>
   </item>
   <item>
-     <path>civicrm/event/manage/volunteer</path>
-     <title>Manage Volunteer</title>
-     <page_callback>CRM_Volunteer_Form_Volunteer</page_callback>
-     <access_arguments>access CiviEvent,edit all events</access_arguments>
-     <is_ssl>true</is_ssl>
-     <weight>935</weight>
+    <path>civicrm/event/manage/volunteer</path>
+    <title>Manage Volunteer</title>
+    <page_callback>CRM_Volunteer_Form_Volunteer</page_callback>
+    <access_arguments>access CiviEvent,edit all events</access_arguments>
+    <is_ssl>true</is_ssl>
+    <weight>935</weight>
   </item>
   <item>
     <path>civicrm/volunteer/signup</path>
@@ -102,5 +101,11 @@
     <page_callback>CRM_Volunteer_Form_Settings</page_callback>
     <title>CiviVolunteer: Settings</title>
     <access_arguments>administer CiviCRM</access_arguments>
+  </item>
+  <item>
+    <path>civicrm/manage/appeals</path>
+    <page_callback>CRM_Volunteer_Form_ListAppeal</page_callback>
+    <title>ListAppeal</title>
+    <access_arguments>access CiviCRM</access_arguments>
   </item>
 </menu>

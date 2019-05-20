@@ -82,7 +82,7 @@ use CRM_Volunteer_ExtensionUtil as E;
 /**
  * (Delegated) Implements hook_civicrm_config().
  *
- * @link http://wiki.civicrm.org/confluence/display/CRMDOC/hook_civicrm_config
+ * @link https://docs.civicrm.org/dev/en/latest/hooks/hook_civicrm_config
  */
 function _volunteer_civix_civicrm_config(&$config = NULL) {
   static $configured = FALSE;
@@ -112,7 +112,7 @@ function _volunteer_civix_civicrm_config(&$config = NULL) {
  *
  * @param $files array(string)
  *
- * @link http://wiki.civicrm.org/confluence/display/CRMDOC/hook_civicrm_xmlMenu
+ * @link https://docs.civicrm.org/dev/en/latest/hooks/hook_civicrm_xmlMenu
  */
 function _volunteer_civix_civicrm_xmlMenu(&$files) {
   foreach (_volunteer_civix_glob(__DIR__ . '/xml/Menu/*.xml') as $file) {
@@ -123,7 +123,7 @@ function _volunteer_civix_civicrm_xmlMenu(&$files) {
 /**
  * Implements hook_civicrm_install().
  *
- * @link http://wiki.civicrm.org/confluence/display/CRMDOC/hook_civicrm_install
+ * @link https://docs.civicrm.org/dev/en/latest/hooks/hook_civicrm_install
  */
 function _volunteer_civix_civicrm_install() {
   _volunteer_civix_civicrm_config();
@@ -135,7 +135,7 @@ function _volunteer_civix_civicrm_install() {
 /**
  * Implements hook_civicrm_postInstall().
  *
- * @link http://wiki.civicrm.org/confluence/display/CRMDOC/hook_civicrm_postInstall
+ * @link https://docs.civicrm.org/dev/en/latest/hooks/hook_civicrm_postInstall
  */
 function _volunteer_civix_civicrm_postInstall() {
   _volunteer_civix_civicrm_config();
@@ -149,7 +149,7 @@ function _volunteer_civix_civicrm_postInstall() {
 /**
  * Implements hook_civicrm_uninstall().
  *
- * @link http://wiki.civicrm.org/confluence/display/CRMDOC/hook_civicrm_uninstall
+ * @link https://docs.civicrm.org/dev/en/latest/hooks/hook_civicrm_uninstall
  */
 function _volunteer_civix_civicrm_uninstall() {
   _volunteer_civix_civicrm_config();
@@ -161,7 +161,7 @@ function _volunteer_civix_civicrm_uninstall() {
 /**
  * (Delegated) Implements hook_civicrm_enable().
  *
- * @link http://wiki.civicrm.org/confluence/display/CRMDOC/hook_civicrm_enable
+ * @link https://docs.civicrm.org/dev/en/latest/hooks/hook_civicrm_enable
  */
 function _volunteer_civix_civicrm_enable() {
   _volunteer_civix_civicrm_config();
@@ -175,7 +175,7 @@ function _volunteer_civix_civicrm_enable() {
 /**
  * (Delegated) Implements hook_civicrm_disable().
  *
- * @link http://wiki.civicrm.org/confluence/display/CRMDOC/hook_civicrm_disable
+ * @link https://docs.civicrm.org/dev/en/latest/hooks/hook_civicrm_disable
  * @return mixed
  */
 function _volunteer_civix_civicrm_disable() {
@@ -196,7 +196,7 @@ function _volunteer_civix_civicrm_disable() {
  * @return mixed  based on op. for 'check', returns array(boolean) (TRUE if upgrades are pending)
  *                for 'enqueue', returns void
  *
- * @link http://wiki.civicrm.org/confluence/display/CRMDOC/hook_civicrm_upgrade
+ * @link https://docs.civicrm.org/dev/en/latest/hooks/hook_civicrm_upgrade
  */
 function _volunteer_civix_civicrm_upgrade($op, CRM_Queue_Queue $queue = NULL) {
   if ($upgrader = _volunteer_civix_upgrader()) {
@@ -259,20 +259,21 @@ function _volunteer_civix_find_files($dir, $pattern) {
  *
  * Find any *.mgd.php files, merge their content, and return.
  *
- * @link http://wiki.civicrm.org/confluence/display/CRMDOC/hook_civicrm_managed
+ * @link https://docs.civicrm.org/dev/en/latest/hooks/hook_civicrm_managed
  */
 function _volunteer_civix_civicrm_managed(&$entities) {
   $mgdFiles = _volunteer_civix_find_files(__DIR__, '*.mgd.php');
+  sort($mgdFiles);
   foreach ($mgdFiles as $file) {
     $es = include $file;
     foreach ($es as $e) {
       if (empty($e['module'])) {
         $e['module'] = E::LONG_NAME;
       }
-      $entities[] = $e;
       if (empty($e['params']['version'])) {
         $e['params']['version'] = '3';
       }
+      $entities[] = $e;
     }
   }
 }
@@ -284,7 +285,7 @@ function _volunteer_civix_civicrm_managed(&$entities) {
  *
  * Note: This hook only runs in CiviCRM 4.4+.
  *
- * @link http://wiki.civicrm.org/confluence/display/CRMDOC/hook_civicrm_caseTypes
+ * @link https://docs.civicrm.org/dev/en/latest/hooks/hook_civicrm_caseTypes
  */
 function _volunteer_civix_civicrm_caseTypes(&$caseTypes) {
   if (!is_dir(__DIR__ . '/xml/case')) {
@@ -313,7 +314,7 @@ function _volunteer_civix_civicrm_caseTypes(&$caseTypes) {
  *
  * Note: This hook only runs in CiviCRM 4.5+.
  *
- * @link http://wiki.civicrm.org/confluence/display/CRMDOC/hook_civicrm_angularModules
+ * @link https://docs.civicrm.org/dev/en/latest/hooks/hook_civicrm_angularModules
  */
 function _volunteer_civix_civicrm_angularModules(&$angularModules) {
   if (!is_dir(__DIR__ . '/ang')) {
@@ -431,7 +432,7 @@ function _volunteer_civix_fixNavigationMenuItems(&$nodes, &$maxNavID, $parentID)
 /**
  * (Delegated) Implements hook_civicrm_alterSettingsFolders().
  *
- * @link http://wiki.civicrm.org/confluence/display/CRMDOC/hook_civicrm_alterSettingsFolders
+ * @link https://docs.civicrm.org/dev/en/latest/hooks/hook_civicrm_alterSettingsFolders
  */
 function _volunteer_civix_civicrm_alterSettingsFolders(&$metaDataFolders = NULL) {
   static $configured = FALSE;
@@ -451,10 +452,16 @@ function _volunteer_civix_civicrm_alterSettingsFolders(&$metaDataFolders = NULL)
  *
  * Find any *.entityType.php files, merge their content, and return.
  *
- * @link http://wiki.civicrm.org/confluence/display/CRMDOC/hook_civicrm_entityTypes
+ * @link https://docs.civicrm.org/dev/en/latest/hooks/hook_civicrm_entityTypes
  */
 
 function _volunteer_civix_civicrm_entityTypes(&$entityTypes) {
   $entityTypes = array_merge($entityTypes, array (
+    'CRM_Volunteer_DAO_VolunteerAppeal' => 
+    array (
+      'name' => 'VolunteerAppeal',
+      'class' => 'CRM_Volunteer_DAO_VolunteerAppeal',
+      'table' => 'civicrm_volunteer_appeal',
+    ),
   ));
 }

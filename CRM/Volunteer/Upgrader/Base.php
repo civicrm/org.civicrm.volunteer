@@ -1,6 +1,7 @@
 <?php
 
 // AUTO-GENERATED FILE -- Civix may overwrite any changes made to this file
+use CRM_Volunteer_ExtensionUtil as E;
 
 /**
  * Base class which provides helpers to execute upgrade logic
@@ -8,7 +9,7 @@
 class CRM_Volunteer_Upgrader_Base {
 
   /**
-   * @var varies, subclass of ttis
+   * @var varies, subclass of this
    */
   static $instance;
 
@@ -97,7 +98,6 @@ class CRM_Volunteer_Upgrader_Base {
    * @return bool
    */
   protected static function executeCustomDataFileByAbsPath($xml_file) {
-    require_once 'CRM/Utils/Migrate/Import.php';
     $import = new CRM_Utils_Migrate_Import();
     $import->run($xml_file);
     return TRUE;
@@ -281,7 +281,7 @@ class CRM_Volunteer_Upgrader_Base {
   // ******** Hook delegates ********
 
   /**
-   * @see https://wiki.civicrm.org/confluence/display/CRMDOC/hook_civicrm_install
+   * @see https://docs.civicrm.org/dev/en/latest/hooks/hook_civicrm_install
    */
   public function onInstall() {
     $files = glob($this->extensionDir . '/sql/*_install.sql');
@@ -308,7 +308,7 @@ class CRM_Volunteer_Upgrader_Base {
   }
 
   /**
-   * @see https://wiki.civicrm.org/confluence/display/CRMDOC/hook_civicrm_postInstall
+   * @see https://docs.civicrm.org/dev/en/latest/hooks/hook_civicrm_postInstall
    */
   public function onPostInstall() {
     $revisions = $this->getRevisions();
@@ -321,7 +321,7 @@ class CRM_Volunteer_Upgrader_Base {
   }
 
   /**
-   * @see https://wiki.civicrm.org/confluence/display/CRMDOC/hook_civicrm_uninstall
+   * @see https://docs.civicrm.org/dev/en/latest/hooks/hook_civicrm_uninstall
    */
   public function onUninstall() {
     $files = glob($this->extensionDir . '/sql/*_uninstall.mysql.tpl');
@@ -342,7 +342,7 @@ class CRM_Volunteer_Upgrader_Base {
   }
 
   /**
-   * @see https://wiki.civicrm.org/confluence/display/CRMDOC/hook_civicrm_enable
+   * @see https://docs.civicrm.org/dev/en/latest/hooks/hook_civicrm_enable
    */
   public function onEnable() {
     // stub for possible future use
@@ -352,7 +352,7 @@ class CRM_Volunteer_Upgrader_Base {
   }
 
   /**
-   * @see https://wiki.civicrm.org/confluence/display/CRMDOC/hook_civicrm_disable
+   * @see https://docs.civicrm.org/dev/en/latest/hooks/hook_civicrm_disable
    */
   public function onDisable() {
     // stub for possible future use

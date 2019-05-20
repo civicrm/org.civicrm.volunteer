@@ -1,0 +1,122 @@
+<?xml version="1.0" encoding="iso-8859-1" ?>
+
+<table>
+  <base>CRM/Volunteer</base>
+  <class>VolunteerAppeal</class>
+  <name>civicrm_volunteer_appeal</name>
+  <comment>FIXME</comment>
+  <log>true</log>
+
+  <field>
+    <name>id</name>
+    <type>int unsigned</type>
+    <required>true</required>
+    <comment>Unique VolunteerAppeal ID</comment>
+  </field>
+  <primaryKey>
+    <name>id</name>
+    <autoincrement>true</autoincrement>
+  </primaryKey>
+
+  <field>
+    <name>contact_id</name>
+    <type>int unsigned</type>
+    <comment>FK to Contact</comment>
+  </field>
+  <foreignKey>
+    <name>contact_id</name>
+    <table>civicrm_contact</table>
+    <key>id</key>
+    <onDelete>CASCADE</onDelete>
+  </foreignKey>
+
+
+
+   <field>
+    <name>project_id</name>
+    <type>int unsigned</type>
+    <comment>Project Id</comment>
+  </field>
+  <foreignKey>
+    <name>project_id</name>
+    <table>civicrm_volunteer_project</table>
+    <key>id</key>
+    <onDelete>CASCADE</onDelete>
+  </foreignKey>
+  <field>
+    <name>title</name>
+    <type>varchar</type>
+    <length>255</length>
+    <comment>title</comment>
+  </field>
+
+  <field>
+    <name>image</name>
+    <type>varchar</type>
+    <length>255</length>
+    <comment>image url</comment>
+  </field>
+  <field>
+    <name>appeal_teaser</name>
+    <type>text</type>    
+    <comment>appeal teaser</comment>
+  </field>
+  <field>
+    <name>appeal_description</name>
+    <type>text</type>
+    <comment>appeal description</comment>
+  </field>
+  <field>
+    <name>location</name>
+    <type>int</type>
+    <comment>location</comment>
+  </field>
+  <field>
+    <name>location_done_anywhere</name>
+    <type>tinyint</type>
+    <length>1</length>
+    <comment>location done anywhere</comment>
+  </field>
+  <field>
+    <name>is_appeal_active</name>
+    <type>tinyint</type>
+    <length>1</length>
+    <comment>is appeal active</comment>
+  </field>
+  <field>
+    <name>active_fromdate</name>
+    <type>date</type>
+    <comment>active fromdate</comment>
+  </field>
+  <field>
+    <name>active_todate</name>
+    <type>date</type>
+    <comment>active todate</comment>
+  </field>
+  <field>
+    <name>display_volunteer_shift</name>
+    <type>tinyint</type>
+    <length>1</length>
+    <comment>display volunteer shift</comment>
+  </field>
+  <field>
+    <name>hide_appeal_volunteer_button</name>
+    <type>tinyint</type>
+    <length>1</length>
+    <comment>hide appeal volunteer button</comment>
+  </field>
+  <field>
+    <name>volunteer_skill_aought</name>
+    <type>varchar</type>
+    <length>500</length>
+    <comment>volunteer skill aought</comment>
+  </field>
+  <field>
+    <name>custom_fields</name>
+    <type>varchar</type>
+    <length>500</length>
+    <comment>custom fields</comment>
+  </field>
+ 
+
+</table>

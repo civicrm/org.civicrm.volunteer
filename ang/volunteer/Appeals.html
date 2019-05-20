@@ -1,0 +1,69 @@
+<div class="crm-container">	
+  	<div crm-ui-debug="beneficiaries"></div>
+  	<div crm-ui-debug="campaigns"></div>
+  	<div crm-ui-debug="projects"></div>
+ 	<div crm-ui-debug="searchParams"></div>
+
+   	<div class="help" ng-show="!canAccessAllProjects">
+	    <p>
+	      {{ts("This page displays only the volunteer Appeals which you have access to edit.")}}
+	    
+	      For a list of all volunteer opportunities on the site, visit the <a href="{{urlPublicVolOppSearch}}">public search form</a>.
+	    </p>
+  	</div>
+  	<div class="crm-form-block">
+	    <div class="crm-vol-widgets crm-vol-manage-widgets"></div>
+	    <div class="clear"></div>	    
+   		<div class="crm-vol-search crm-vol-manage-search crm-vol-half-responsive">
+      		<form name="volProjectSearchForm" crm-ui-id-scope>
+        		<fieldset class="crm-vol-ui-fieldset ui-corner-all">
+          		<legend>Browse Volunteer Apportunities</legend>
+          		<div class="crm-group" crm-ui-id-scope>
+	            	<div class="crm-vol-field crm-vol-field-projects-search-title" 
+	            	crm-ui-field="{name: 'volProjectSearchForm.title', title: ts('search')}">
+	              		<input crm-ui-id="volProjectSearchForm.title"  ng-model="searchParams" />
+	            	</div>
+            	
+          		</div>
+        		</fieldset>
+      		</form>
+   		</div>
+
+   		<div class="clear"></div>
+    <table  class="display dataTable no-footer" role="grid">
+      <thead>
+        <tr role="row">          
+          <th class="ui-state-default crm-vol-manage-beneficiaries"> {{ts("Image")}} </th>
+          <th class="ui-state-default crm-vol-manage-beneficiaries">{{ts("Project Appeal")}}</th>         
+          <th class="ui-state-default crm-vol-manage-beneficiaries">{{ts("Beneficiaries")}}</th>
+          <th class="ui-state-default crm-vol-manage-location">{{ts("Description")}}</th>
+          <th class="ui-state-default crm-vol-manage-location">{{ts("Location")}}</th>
+          <th class="ui-state-default crm-vol-manage-active">{{ts("SignUp")}}</th>
+         
+        </tr>
+      </thead>
+      <tbody>
+      <tr ng-repeat="appeal in appeals | filter:searchParams " role="row">
+        <td class="crm-vol-manage-toggle">
+       <img src="http://localhost/civicrm-volunteer/sites/default/files/civicrm/ext/org.civicrm.volunteer/img/internet.svg" alt="Smiley face" height="42" width="42"></td>
+        <td class="crm-vol-manage-project">
+          <span class="crm-vol-manage-project-title">{{ appeal.title }}</span>
+          <span class="crm-vol-manage-project-id">{{ ts('(ID: %1)', {1: appeal.id}) }}</span>
+        </td>
+        <td class="crm-vol-manage-location" ng-bind-html="formatBeneficiaries(appeal.project_id)" >
+        
+        <td class="crm-vol-manage-entity">
+          {{ appeal.appeal_description }}
+        </td>
+        <td class="crm-vol-manage-entity" ng-bind-html="formatLocation(appeal.project_id)" >       
+        </td>
+        <td class="crm-vol-manage-beneficiaries"  ></td>
+        </td>        
+      </tr>
+      </tbody>
+    </table>
+
+
+
+	</div>
+</div>

@@ -89,7 +89,9 @@
         <td class="crm-vol-manage-location" ng-bind-html="formatLocation(project)"></td>
         <td class="crm-vol-manage-active">{{ project.is_active == 1 ? ts("Yes") : ts("No") }}</td>
         <td class="crm-vol-manage-actionlinks right nowrap">
-          <div><a href="#/volunteer/manage/{{project.id}}">{{ ts('Edit') }}</a></div>
+          <div><a href="#/volunteer/manage/{{project.id}}">{{ ts('Edit') }}</a></div>         
+          <div><a href="#/volunteer/manage_appeals">{{ ts('Manage Appeal') }}</a>
+          </div>         
           <div><a ng-click="backbonePopup(ts('Define Volunteer Opportunities'), 'Define', project.id)">{{ ts('Define Volunteer Opportunities') }}</a></div>
           <div><a ng-click="backbonePopup(ts('Assign Volunteers'), 'Assign', project.id)">{{ ts('Assign Volunteers') }}</a></div>
           <div><a ng-click="showRoster()">{{ ts('View Volunteer Roster') }}</a></div>
