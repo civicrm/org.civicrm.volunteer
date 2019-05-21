@@ -306,6 +306,11 @@ function _volunteer_get_entityTypes() {
       'class' => 'CRM_Volunteer_DAO_ProjectContact',
       'table' => 'civicrm_volunteer_project_contact',
     ),
+	'VolunteerAppeal' => array(
+      'name' => 'VolunteerAppeal',
+      'class' => 'CRM_Volunteer_DAO_VolunteerAppeal',
+      'table' => 'civicrm_volunteer_appeal',
+    ),
   );
 }
 
