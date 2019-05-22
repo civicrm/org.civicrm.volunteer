@@ -3,9 +3,9 @@
    <div crm-ui-debug="searchParams"></div>
    <div crm-ui-debug="proximityUnits"></div>
    <div crm-ui-debug="countries"></div>
-   <div class="help">
+   <!-- <div class="help">
       <p></p>
-   </div>
+   </div> -->
    <!-- Search Form -->
    <!--  <div class="crm-vol-half-responsive crm-vol-opp-show-hidden-search">
       <div class="crm-buttons">
@@ -13,12 +13,13 @@
       </div>
       </div> -->
    <div class="crm-vol-opp-search">
-      <h2>{{ts('Find Volunteer Appeals')}}</h2>
+     <!--  <h2>{{ts('Find Volunteer Appeals')}}</h2> -->
       <form name="volAppSearchForm">
          <div class="crm-block ui-tabs ui-widget ui-widget-content ui-corner-all">
             <div class="crm-group">
                <div class="pull-left">
-                  <input type="text" name="beneficiary" ng-model="searchApportunity" />
+                  <input type="text" name="searchAppeal" ng-model="search"  ng-model-options='{ debounce: 1000 }'
+        ng-change='searchRes()'/>
                </div>
                <div class="pull-right m-5">
                   <button ng-click="changeview('~/volunteer/AppealList.html')"><i class="fa fa-bars"></i> List</button>                     
@@ -41,3 +42,15 @@
    {{ts('No results found. Please try different search criteria.')}}
    </div> -->
 <div ng-include="currentTemplate"></div>
+
+<div class="pull-right">            
+    <div  ng-show="appeals.length>0">
+    <button ng-disabled="currentPage == 1" ng-click="prevPageData()">
+    <i class="fa fa-backward" aria-hidden="true"></i>           
+    </button>         
+    {{currentPage}}/{{numberOfPages}}
+    <button ng-disabled="currentPage >= totalRec/pageSize" ng-click="nextPageData()">
+    <i class="fa fa-forward" aria-hidden="true"></i>
+    </button>          
+    </div>
+</div>

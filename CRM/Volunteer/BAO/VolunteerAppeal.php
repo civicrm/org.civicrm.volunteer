@@ -136,7 +136,7 @@ class CRM_Volunteer_BAO_VolunteerAppeal extends CRM_Volunteer_DAO_VolunteerAppea
 	$orderby = " GROUP By appeal.id ORDER BY " . $orderByColumn . " " . $order;
 	
 	// Pagination Logic.
-	$no_of_records_per_page = 10;
+	$no_of_records_per_page = 2;
 	if(isset($params['page_no']) && !empty($params['page_no'])) {
 		$page_no = $params['page_no'];
 	} else {
@@ -149,8 +149,8 @@ class CRM_Volunteer_BAO_VolunteerAppeal extends CRM_Volunteer_DAO_VolunteerAppea
     $dao->query($sql);
 	
 	$sql2 = $select . $from . $join . $where . $orderby;
-	$dao2 = new CRM_Core_DAO();
-    $dao2->query($sql);
+	$dao2 = new CRM_Core_DAO();   
+  $dao2->query($sql2);
 	$total_appeals = count($dao2->fetchAll());
 	$appeals = array();
 	$appeals['appeal'] = array();

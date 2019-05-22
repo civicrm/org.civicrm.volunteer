@@ -1,6 +1,6 @@
 <div class="grid">
    <div class="grid2x2">
-      <div class="box" ng-repeat="appeal in appeals | filter : search | startFrom:currentPage*pageSize | limitTo:pageSize" role="row">
+      <div class="box" ng-repeat="appeal in appeals track by $index" role="row">
          <div>
             <div class="pull-left w-30">
                <img src="http://localhost/civicrm-volunteer/sites/default/files/civicrm/ext/org.civicrm.volunteer/img/internet.svg" alt="Smiley face">
@@ -8,7 +8,7 @@
             <div class="pull-right w-70">
                <div class="p-l-15">
                   <h2 class="m-t-0">{{ appeal.title }}</h2>
-                  <em>{{appeal.beneficiaries}}<em>
+                  <em> {{appeal.beneficiary_display_name.split(',')[1]}}<em>
                   <p>{{ appeal.appeal_description }}</p>
                   <!-- <span class="crm-vol-manage-project-id">{{ ts('(ID: %1)', {1: appeal.id}) }}</span> -->
                   <!-- {{appeal.location}} -->

@@ -10,7 +10,7 @@
       </tr>
    </thead>
    <tbody>
-      <tr ng-repeat="appeal in appeals | filter : search | startFrom:currentPage*pageSize | limitTo:pageSize" role="row">
+      <tr ng-repeat="appeal in appeals track by $index" role="row"><!-- | filter : search | startFrom:currentPage*pageSize | limitTo:pageSize-->
          <td class="crm-vol-manage-toggle">
             <img src="http://localhost/civicrm-volunteer/sites/default/files/civicrm/ext/org.civicrm.volunteer/img/internet.svg" alt="Smiley face" height="42" width="42">
          </td>
@@ -19,13 +19,13 @@
             <span class="crm-vol-manage-project-id">{{ ts('(ID: %1)', {1: appeal.id}) }}</span>
          </td>
          <td class="crm-vol-manage-entity">
-            {{appeal.beneficiaries}}
+            {{appeal.beneficiary_display_name.split(',')[1]}}            
          </td>
          <td class="crm-vol-manage-entity">
             {{ appeal.appeal_description }}
          </td>
-         <td class="crm-vol-manage-entity" > 
-            {{appeal.location}}
+         <td class="crm-vol-manage-entity" ng-bind-html="appeal.location=appeal.location" > 
+          
          </td>
          <td class="crm-vol-manage-beneficiaries"> 
             <button><i class="fa fa-chevron-circle-right" aria-hidden="true">More Info</i></button>
@@ -33,25 +33,4 @@
          </td>
       </tr>
    </tbody>
-   <tfoot>
-      <tr>
-         <td align="center" colspan="6   ">
-            <span class="form-group pull-left page-size form-inline">
-               <select id="ddlPageSize" class="form-control control-color"  
-                  ng-model="pageSizeSelected"  
-                  ng-change="changePageSize()">
-                  <option value="5">5</option>
-                  <option value="10">10</option>
-                  <option value="25">25</option>
-                  <option value="50">50</option>
-               </select>
-            </span>
-            <div class="pull-right">
-              <ul uib-pagination total-items="10" ng-model="currentPage" ng-change="pageChanged()" items-per-page="4"></ul>
-              <pagination total-items="totalCount" ng-change="pageChanged()" items-per-page="pageSizeSelected" direction-links="true" ng-model="pageIndex" max-size="maxSize" class="pagination" boundary-links="true" rotate="false" num-pages="numPages"></pagination>
-               <a class="btn btn-primary">Page: {{pageIndex}} / {{numPages}}</a>  
-            </div>
-         </td>
-      </tr>
-   </tfoot>
 </table>
