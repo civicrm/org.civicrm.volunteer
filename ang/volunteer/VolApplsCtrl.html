@@ -1,0 +1,43 @@
+   <div class="crm-container">
+   <div crm-ui-debug="volOppData()"></div>
+   <div crm-ui-debug="searchParams"></div>
+   <div crm-ui-debug="proximityUnits"></div>
+   <div crm-ui-debug="countries"></div>
+   <div class="help">
+      <p></p>
+   </div>
+   <!-- Search Form -->
+   <!--  <div class="crm-vol-half-responsive crm-vol-opp-show-hidden-search">
+      <div class="crm-buttons">
+          <button crm-icon="search" ng-click="showSearch()">{{ts('Filter this List of Volunteer Opportunities')}}</button>
+      </div>
+      </div> -->
+   <div class="crm-vol-opp-search">
+      <h2>{{ts('Find Volunteer Appeals')}}</h2>
+      <form name="volAppSearchForm">
+         <div class="crm-block ui-tabs ui-widget ui-widget-content ui-corner-all">
+            <div class="crm-group">
+               <div class="pull-left">
+                  <input type="text" name="beneficiary" ng-model="searchApportunity" />
+               </div>
+               <div class="pull-right m-5">
+                  <button ng-click="changeview('~/volunteer/AppealList.html')"><i class="fa fa-bars"></i> List</button>                     
+                  <button ng-click="changeview('~/volunteer/AppealGrid.html')"><i class="fa fa-th-large"></i> Grid</button>
+                  <!--   <div ng-include="currentTemplate"></div>   -->
+               </div>
+               <div class="clearfix"></div>
+            </div>
+         </div>
+   </div>
+   </form>
+</div>
+<!-- Shopping Cart -->
+<div class="crm-vol-half-responsive crm-vol-opp-cart" >
+</div>
+<div class="clear"></div>
+<!-- Results -->
+<!--  <div class="crm-vol-opp-results messages status no-popup" >
+   <div class="icon inform-icon"></div>
+   {{ts('No results found. Please try different search criteria.')}}
+   </div> -->
+<div ng-include="currentTemplate"></div>
