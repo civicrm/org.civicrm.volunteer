@@ -1,0 +1,57 @@
+<table class="display dataTable no-footer" role="grid">
+   <thead>
+      <tr role="row">
+         <th class="ui-state-default crm-vol-manage-beneficiaries"> {{ts("Image")}} </th>
+         <th class="ui-state-default crm-vol-manage-beneficiaries">{{ts("Project Appeal")}}</th>
+         <th class="ui-state-default crm-vol-manage-beneficiaries">{{ts("Beneficiaries")}}</th>
+         <th class="ui-state-default crm-vol-manage-location">{{ts("Description")}}</th>
+         <th class="ui-state-default crm-vol-manage-location">{{ts("Location")}}</th>
+         <th class="ui-state-default crm-vol-manage-active">{{ts("SignUp")}}</th>
+      </tr>
+   </thead>
+   <tbody>
+      <tr ng-repeat="appeal in appeals | filter : search | startFrom:currentPage*pageSize | limitTo:pageSize" role="row">
+         <td class="crm-vol-manage-toggle">
+            <img src="http://localhost/civicrm-volunteer/sites/default/files/civicrm/ext/org.civicrm.volunteer/img/internet.svg" alt="Smiley face" height="42" width="42">
+         </td>
+         <td class="crm-vol-manage-project">
+            <span class="crm-vol-manage-project-title">{{ appeal.title }}</span>
+            <span class="crm-vol-manage-project-id">{{ ts('(ID: %1)', {1: appeal.id}) }}</span>
+         </td>
+         <td class="crm-vol-manage-entity">
+            {{appeal.beneficiaries}}
+         </td>
+         <td class="crm-vol-manage-entity">
+            {{ appeal.appeal_description }}
+         </td>
+         <td class="crm-vol-manage-entity" > 
+            {{appeal.location}}
+         </td>
+         <td class="crm-vol-manage-beneficiaries"> 
+            <button><i class="fa fa-chevron-circle-right" aria-hidden="true">More Info</i></button>
+            <button><i class="fa fa-users" aria-hidden="true">Volunteer</i></button>
+         </td>
+      </tr>
+   </tbody>
+   <tfoot>
+      <tr>
+         <td align="center" colspan="6   ">
+            <span class="form-group pull-left page-size form-inline">
+               <select id="ddlPageSize" class="form-control control-color"  
+                  ng-model="pageSizeSelected"  
+                  ng-change="changePageSize()">
+                  <option value="5">5</option>
+                  <option value="10">10</option>
+                  <option value="25">25</option>
+                  <option value="50">50</option>
+               </select>
+            </span>
+            <div class="pull-right">
+              <ul uib-pagination total-items="10" ng-model="currentPage" ng-change="pageChanged()" items-per-page="4"></ul>
+              <pagination total-items="totalCount" ng-change="pageChanged()" items-per-page="pageSizeSelected" direction-links="true" ng-model="pageIndex" max-size="maxSize" class="pagination" boundary-links="true" rotate="false" num-pages="numPages"></pagination>
+               <a class="btn btn-primary">Page: {{pageIndex}} / {{numPages}}</a>  
+            </div>
+         </td>
+      </tr>
+   </tfoot>
+</table>

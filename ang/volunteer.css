@@ -151,3 +151,45 @@ span.crm-button-text {
 #crm-vol-form-textarea-wrapper {
   clear: left;
 }
+
+.grid .grid2x2 {
+  min-height: 100%;
+  display: flex;
+  flex-wrap: wrap;
+  flex-direction: row;
+}
+.grid .grid2x2 > div {
+  display: flex; 
+  flex-basis: calc(50% - 40px);  
+  justify-content: center;
+  flex-direction: column;
+}
+/*.grid .grid2x2 > div > div {
+  display: flex;
+  justify-content: center;
+  flex-direction: row;
+}*/
+
+.grid .box { margin: 20px; }
+
+.grid .w-30{
+    width: 30%;
+}
+.grid .w-70{
+    width: 70%;
+}
+.text-right{
+    text-align: right;
+}
+.p-l-15{
+    padding-left: 15px;
+}
+.m-t-0{
+    margin-top:0;
+}
+.clearfix{
+    clear: both
+}
+.m-5{
+      margin: 5px;
+}
