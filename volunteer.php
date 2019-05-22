@@ -559,6 +559,7 @@ function volunteer_civicrm_alterAPIPermissions($entity, $action, &$params, &$per
     array('edit own volunteer projects', 'log own hours')
   );
   $permissions['volunteer_util']['default'] = array('edit own volunteer projects');
+  $permissions['volunteer_appeal']['default'] = array('register to volunteer');
   $permissions['volunteer_project_contact']['default'] = array('edit own volunteer projects');
 
   // Enables use of volunteer role in entityRef widgets
@@ -596,9 +597,10 @@ function _volunteer_isVolListingApiCall($entity, $action) {
     'getlist',
     'getsingle',
     'getsupportingdata',
-    'getperms'
+    'getperms',
+    'getsearchresult'
   );
-  $entities = array('volunteer_project_contact', 'volunteer_need', 'volunteer_project', 'volunteer_util');
+  $entities = array('volunteer_project_contact', 'volunteer_need', 'volunteer_project', 'volunteer_util', 'volunteer_appeal');
 
   return (in_array($entity, $entities) && in_array($action, $actions));
 }
