@@ -66,35 +66,151 @@ class CRM_Volunteer_BAO_NeedSearch {
    * @return array $this->searchResults
    */
   public function search() {
-    $projects = CRM_Volunteer_BAO_Project::retrieve($this->searchParams['project']);
-    foreach ($projects as $project) {
-      $results = array();
+    // Get volunteer_role_option_group_id of volunteer_role".
+    $result = civicrm_api3('OptionGroup', 'get', [
+      'sequential' => 1,
+      'name' => "volunteer_role",
+    ]);
+    $volunteer_role_option_group_id = $result['id'];
 
-      $flexibleNeed = civicrm_api3('VolunteerNeed', 'getsingle', array(
-        'id' => $project->flexible_need_id,
-      ));
-      if ($flexibleNeed['visibility_id'] === CRM_Core_OptionGroup::getValue('visibility', 'public', 'name')) {
-        $needId = $flexibleNeed['id'];
-        $results[$needId] = $flexibleNeed;
+    // Prepare select query for preparing fetch opportunity.
+    // Join relevant table of need.
+    $select = " SELECT project.id,project.title, project.description, project.is_active, project.loc_block_id, project.campaign_id, need.id as need_id, need.start_time, need.end_time, need.is_flexible, need.visibility_id, need.is_active as need_active,need.created as need_created,need.last_updated as need_last_updated,need.role_id as role_id, addr.street_address, addr.city, addr.postal_code, country.name as country, state.name as state_province, opt.label as role_lable, opt.description as role_description, campaign.title as campaign_title ";
+    $from = " FROM civicrm_volunteer_project AS project";
+    $join = " LEFT JOIN civicrm_volunteer_need AS need ON (need.project_id = project.id) ";
+    $join .= " LEFT JOIN civicrm_loc_block AS loc ON (loc.id = project.loc_block_id) ";
+    $join .= " LEFT JOIN civicrm_address AS addr ON (addr.id = loc.address_id) ";
+    $join .= " LEFT JOIN civicrm_country AS country ON (country.id = addr.country_id) ";
+    $join .= " LEFT JOIN civicrm_state_province AS state ON (state.id = addr.state_province_id) ";
+    $join .= " LEFT JOIN civicrm_campaign AS campaign ON (campaign.id = project.campaign_id) ";
+    // Get beneficiary_rel_no for volunteer_project_relationship type.
+    $beneficiary_rel_no = CRM_Core_OptionGroup::getValue('volunteer_project_relationship', 'volunteer_beneficiary', 'name');
+    // Join Project Contact table for benificiary for specific $beneficiary_rel_no.
+    $join .= " LEFT JOIN civicrm_volunteer_project_contact AS pc ON (pc.project_id = project.id And pc.relationship_type_id='".$beneficiary_rel_no."') ";
+    // Join civicrm_option_value table for role details of need.
+    $join .= " LEFT JOIN civicrm_option_value AS opt ON (opt.value = need.role_id And opt.option_group_id='".$volunteer_role_option_group_id."') ";
+    // Join civicrm_contact table for contact details.
+    $join .= " LEFT JOIN civicrm_contact AS cc ON (cc.id = pc.contact_id) ";
+    $select .= ", GROUP_CONCAT( cc.id ) as beneficiary_id , GROUP_CONCAT( cc.display_name ) as beneficiary_display_name";
+    $where = " Where project.is_active = 1 AND need.visibility_id = ".CRM_Core_OptionGroup::getValue('visibility', 'public', 'name');
+    // Default Filter parameter of date start and date end field of need table.
+    if(empty($this->searchParams['need']['date_start']) && empty($this->searchParams['need']['date_end'])) {
+      $where .= " AND (
+       (DATE_FORMAT(need.start_time,'%Y-%m-%d') <=   CURDATE() AND DATE_FORMAT(need.end_time,'%Y-%m-%d') >= CURDATE()) OR 
+       (DATE_FORMAT(need.start_time,'%Y-%m-%d') >=  CURDATE()) OR (DATE_FORMAT(need.end_time,'%Y-%m-%d') >=  CURDATE()) OR
+       (need.start_time Is NOT NULL && need.end_time IS NULL) OR 
+       (need.start_time Is NULL && need.end_time IS NULL)
+      )";
+    }
+    // Add date start and date end filter if passed in UI.
+    if($this->searchParams['need']['date_start'] && $this->searchParams['need']['date_end']) {
+      $start_time = date("Y-m-d", $this->searchParams['need']['date_start']);
+      $end_time = date("Y-m-d", $this->searchParams['need']['date_end']);
+      $where .= " And ((DATE_FORMAT(need.start_time,'%Y-%m-%d')>='".$start_time."' AND  DATE_FORMAT(need.end_time,'%Y-%m-%d') <= '".$end_time."') OR (DATE_FORMAT(need.start_time,'%Y-%m-%d')>='".$start_time."') OR (DATE_FORMAT(need.end_time,'%Y-%m-%d')<='".$end_time."'))";
+    } else {
+      if($this->searchParams['need']['date_start']) {
+        $start_time = date("Y-m-d", $this->searchParams['need']['date_start']);
+        $where .= " And (DATE_FORMAT(need.start_time,'%Y-%m-%d')>='".$start_time."')";
       }
+      if($this->searchParams['need']['date_end']) {
+        $end_time = date("Y-m-d", $this->searchParams['need']['date_end']);
+        $where .= " And (DATE_FORMAT(need.end_time,'%Y-%m-%d')<='".$end_time."')";
+      }
+    }
+    // Add role filter if passed in UI.
+    if($this->searchParams['need']['role_id'] && is_array($this->searchParams['need']['role_id'])) {
+      $role_id_string = implode(",", $this->searchParams['need']['role_id']);
+      $where .= " And need.role_id IN (".$role_id_string.")";
+    }
+    // Add with(benificiary) filter if passed in UI.
+    if($this->searchParams['project']['project_contacts']['volunteer_beneficiary']) {
+      $beneficiary_id_string = implode(",", $this->searchParams['project']['project_contacts']['volunteer_beneficiary']);
+      $where .= " And pc.contact_id IN (".$beneficiary_id_string.")";
+    }
+    // Add Location filter if passed in UI.
+    if(isset($this->searchParams['project']["proximity"]) && !empty($this->searchParams['project']["proximity"])) {
+      $proximityquery = CRM_Volunteer_BAO_Project::buildProximityWhere($this->searchParams['project']["proximity"]);
+      $proximityquery = str_replace("civicrm_address", "addr", $proximityquery);
+      $where .= " And ".$proximityquery;
+    }
+    // Order by Logic.
+    $orderByColumn = "project.id";
+    $order = "ASC";
+    $orderby = " group by need.id ORDER BY " . $orderByColumn . " " . $order;
 
-      $openNeeds = $project->open_needs;
-      foreach ($openNeeds as $key => $need) {
-        if ($this->needFitsSearchCriteria($need)) {
-          $results[$key] = $need;
+    // Pagination Logic.
+    $no_of_records_per_page = 10;
+    if(isset($params['page_no']) && !empty($params['page_no'])) {
+      $page_no = $params['page_no'];
+    } else {
+      $page_no = 1;
+    }
+    $offset = ($page_no-1) * $no_of_records_per_page;
+    $limit = " LIMIT ".$offset.", ".$no_of_records_per_page;
+    // Prepare whole sql query dynamic.
+    //$sql = $select . $from . $join . $where . $orderby . $limit;
+    $sql = $select . $from . $join . $where . $orderby;
+    $dao = new CRM_Core_DAO();
+    $dao->query($sql);
+    $project_opportunities = [];
+    $i=0;
+    $config = CRM_Core_Config::singleton();
+    $timeFormat = $config->dateformatDatetime;
+    // Prepare array for need of projects.
+    while ($dao->fetch()) {
+      $project_opportunities[$i]['id'] = $dao->need_id;
+      $project_opportunities[$i]['project_id'] = $dao->id;
+      $project_opportunities[$i]['is_flexible'] = $dao->is_flexible;
+      $project_opportunities[$i]['visibility_id'] = $dao->visibility_id;
+      $project_opportunities[$i]['is_active'] = $dao->need_active;
+      $project_opportunities[$i]['created'] = $dao->need_created;
+      $project_opportunities[$i]['last_updated'] = $dao->need_last_updated;
+      if(isset($dao->start_time) && !empty($dao->start_time)) {
+        $start_time = CRM_Utils_Date::customFormat($dao->start_time, $timeFormat);
+        if(isset($dao->end_time) && !empty($dao->end_time)) {
+          $end_time = CRM_Utils_Date::customFormat($dao->end_time, $timeFormat);
+          $project_opportunities[$i]['display_time'] = $start_time ." - ". $end_time;
+        } else {
+          $project_opportunities[$i]['display_time'] = $start_time;
         }
+      } else {
+        $project_opportunities[$i]['display_time'] = "Any";
       }
-
-      if (!empty($results)) {
-        $this->projects[$project->id] = array();
+      $project_opportunities[$i]['role_id'] = $dao->role_id;
+      if(empty($dao->role_lable)) {
+        $project_opportunities[$i]['role_label'] = "Any";
+      } else {
+        $project_opportunities[$i]['role_label'] = $dao->role_lable;
       }
-
-      $this->searchResults += $results;
+      $project_opportunities[$i]['role_description'] = $dao->role_description;
+      $project_opportunities[$i]['project']['description'] =  $dao->description;
+      $project_opportunities[$i]['project']['id'] =  $dao->id;
+      $project_opportunities[$i]['project']['title'] =  $dao->title;
+      $project_opportunities[$i]['project']['campaign_title'] = $dao->campaign_title;
+      $project_opportunities[$i]['project']['location'] =  array(
+        "city" => $dao->city,
+        "country" => $dao->country,
+        "postal_code" => $dao->postal_code,
+        "state_province" => $dao->state_province,
+        "street_address" => $dao->street_address
+      );
+      $beneficiary_display_name = explode(',', $dao->beneficiary_display_name);
+      if(isset($beneficiary_display_name) && !empty($beneficiary_display_name) && is_array($beneficiary_display_name)) {
+        $beneficiary_id_array = explode(',', $dao->beneficiary_id);
+        foreach ($beneficiary_display_name as $key => $display_name) {
+          $project_opportunities[$i]['project']['beneficiaries'][$key] = array(
+            "id" => $beneficiary_id_array[$key],
+            "display_name" => $display_name
+          );
+        }
+      } else {
+        $project_opportunities[$i]['project']['beneficiaries'] = $dao->beneficiary_display_name;
+        $project_opportunities[$i]['project']['beneficiary_id'] = $dao->beneficiary_id;
+      }
+      $i++;
     }
 
-    $this->getSearchResultsProjectData();
-    usort($this->searchResults, array($this, "usortDateAscending"));
-    return $this->searchResults;
+    return $project_opportunities;
   }
 
   /**
