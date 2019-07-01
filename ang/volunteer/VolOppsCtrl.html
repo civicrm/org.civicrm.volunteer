@@ -113,7 +113,7 @@ Required vars: volOppData(), searchParams
               crm-ui-id="volOppSearchForm.country"
               crm-ui-select="{placeholder: ts('Select Country'), allowClear:true}"
               ng-model="searchParams.proximity.country"
-              ng-options="k as v.name for (k, v) in countries track by k"
+              ng-options="k as v.name for (k, v) in countries"
               ng-required="isProximitySearch">
             </select>
           </div>
