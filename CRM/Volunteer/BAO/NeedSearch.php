@@ -106,7 +106,7 @@ class CRM_Volunteer_BAO_NeedSearch {
     if($this->searchParams['need']['date_start'] && $this->searchParams['need']['date_end']) {
       $start_time = date("Y-m-d", $this->searchParams['need']['date_start']);
       $end_time = date("Y-m-d", $this->searchParams['need']['date_end']);
-      $where .= " And ((DATE_FORMAT(need.start_time,'%Y-%m-%d')>='".$start_time."' AND  DATE_FORMAT(need.end_time,'%Y-%m-%d') <= '".$end_time."') OR (DATE_FORMAT(need.start_time,'%Y-%m-%d')>='".$start_time."') OR (DATE_FORMAT(need.end_time,'%Y-%m-%d')<='".$end_time."'))";
+      $where .= " And (((DATE_FORMAT(need.start_time,'%Y-%m-%d')>='".$start_time."' OR (need.start_time IS NULL AND need.end_time IS NOT NULL)) AND (DATE_FORMAT(need.end_time,'%Y-%m-%d') <= '".$end_time."' OR ( need.end_time IS NULL AND need.start_time IS NOT NULL))))";
     } else {
       if($this->searchParams['need']['date_start']) {
         $start_time = date("Y-m-d", $this->searchParams['need']['date_start']);
