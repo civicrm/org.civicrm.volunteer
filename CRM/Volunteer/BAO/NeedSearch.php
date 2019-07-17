@@ -146,6 +146,12 @@ class CRM_Volunteer_BAO_NeedSearch {
       $proximityquery = str_replace("civicrm_address", "addr", $proximityquery);
       $where .= " And ".$proximityquery;
     }
+    // If Project Id is passed from URL- Query String.
+    if(isset($this->searchParams['project']) && !empty($this->searchParams['project'])) {
+      if(isset($this->searchParams['project']['is_active']) && isset($this->searchParams['project']['id'])) {
+        $where .= " And project.id=".$this->searchParams['project']['id'];
+      }
+    }
     // Order by Logic.
     $orderByColumn = "project.id";
     $order = "ASC";
