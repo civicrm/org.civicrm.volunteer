@@ -910,7 +910,7 @@ class CRM_Volunteer_BAO_Project extends CRM_Volunteer_DAO_Project {
       $result = civicrm_api3('VolunteerNeed', 'get', array(
         'is_active' => '1',
         'project_id' => $this->id,
-        'visibility_id' => CRM_Core_OptionGroup::getValue('visibility', 'public', 'name'),
+        'visibility_id' => CRM_Volunteer_BAO_Project::getVisibilityId('name', "public"),
         'options' => array(
           'sort' => 'start_time',
           'limit' => 0,
@@ -1003,5 +1003,17 @@ class CRM_Volunteer_BAO_Project extends CRM_Volunteer_DAO_Project {
   private function _get_flexible_need_id() {
     return self::getFlexibleNeedID($this->id);
   }
+
+  /*
+   * Implement getVisibilityId() function.
+   * Based on column and name it return visibility id.
+   */
+  public static function getVisibilityId($column, $name) {
+    $visibility = CRM_Core_PseudoConstant::visibility($column);
+    $visibility_id = array_search ($name, $visibility);
+
+    return $visibility_id;
+  }
+
 
 }

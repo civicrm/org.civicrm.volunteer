@@ -25,7 +25,7 @@ class api_v3_VolunteerNeedTest extends VolunteerTestAbstract {
       "duration"      => 240,
       "is_flexible"   => 0,
       "quantity"      => 1,
-      "visibility_id" => CRM_Core_OptionGroup::getValue('visibility', 'public', 'name'),
+      "visibility_id" => CRM_Volunteer_BAO_Project::getVisibilityId('name', "public"),
       "role_id"       => 1,
       "is_active"     => 1,
     );

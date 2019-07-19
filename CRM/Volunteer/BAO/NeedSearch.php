@@ -84,7 +84,8 @@ class CRM_Volunteer_BAO_NeedSearch {
     $join .= " LEFT JOIN civicrm_state_province AS state ON (state.id = addr.state_province_id) ";
     $join .= " LEFT JOIN civicrm_campaign AS campaign ON (campaign.id = project.campaign_id) ";
     // Get beneficiary_rel_no for volunteer_project_relationship type.
-    $beneficiary_rel_no = CRM_Core_OptionGroup::getValue('volunteer_project_relationship', 'volunteer_beneficiary', 'name');
+    $beneficiary_rel_no = CRM_Core_PseudoConstant::getKey("CRM_Volunteer_BAO_ProjectContact", 'relationship_type_id', 'volunteer_beneficiary');
+
     // Join Project Contact table for benificiary for specific $beneficiary_rel_no.
     $join .= " LEFT JOIN civicrm_volunteer_project_contact AS pc ON (pc.project_id = project.id And pc.relationship_type_id='".$beneficiary_rel_no."') ";
     // Join civicrm_option_value table for role details of need.
@@ -92,7 +93,9 @@ class CRM_Volunteer_BAO_NeedSearch {
     // Join civicrm_contact table for contact details.
     $join .= " LEFT JOIN civicrm_contact AS cc ON (cc.id = pc.contact_id) ";
     $select .= ", GROUP_CONCAT( cc.id ) as beneficiary_id , GROUP_CONCAT( cc.display_name ) as beneficiary_display_name";
-    $where = " Where project.is_active = 1 AND need.visibility_id = ".CRM_Core_OptionGroup::getValue('visibility', 'public', 'name');
+
+    $visibility_id = CRM_Volunteer_BAO_Project::getVisibilityId('name', "public");
+    $where = " Where project.is_active = 1 AND need.visibility_id = ".$visibility_id;
     // Default Filter parameter of date start and date end field of need table.
     if(empty($this->searchParams['need']['date_start']) && empty($this->searchParams['need']['date_end'])) {
       $where .= " AND (

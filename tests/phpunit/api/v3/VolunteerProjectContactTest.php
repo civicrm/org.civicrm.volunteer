@@ -22,7 +22,7 @@ class api_v3_VolunteerProjectContactTest extends VolunteerTestAbstract {
     $params = array(
       'project_id' => $project->id,
       'contact_id' => 1,
-      'relationship_type_id' => CRM_Core_OptionGroup::getValue(CRM_Volunteer_BAO_ProjectContact::RELATIONSHIP_OPTION_GROUP, 'volunteer_owner', 'name'),
+      'relationship_type_id' => CRM_Core_PseudoConstant::getKey("CRM_Volunteer_BAO_ProjectContact", CRM_Volunteer_BAO_ProjectContact::RELATIONSHIP_OPTION_GROUP, 'volunteer_owner')
     );
 
     $this->callAPIAndDocument('VolunteerProjectContact', 'create', $params, __FUNCTION__, __FILE__);
@@ -58,7 +58,7 @@ class api_v3_VolunteerProjectContactTest extends VolunteerTestAbstract {
    * Test simple get via API
    */
   function testGetProjectContactById() {
-    $relTypeId = CRM_Core_OptionGroup::getValue(CRM_Volunteer_BAO_ProjectContact::RELATIONSHIP_OPTION_GROUP, 'volunteer_owner', 'name');
+    $relTypeId = CRM_Core_PseudoConstant::getKey("CRM_Volunteer_BAO_ProjectContact", CRM_Volunteer_BAO_ProjectContact::RELATIONSHIP_OPTION_GROUP, 'volunteer_owner');
     $relTypeLabel = CRM_Core_OptionGroup::getLabel(CRM_Volunteer_BAO_ProjectContact::RELATIONSHIP_OPTION_GROUP, $relTypeId);
 
     $dao = CRM_Core_DAO::createTestObject('CRM_Volunteer_BAO_ProjectContact', array(
