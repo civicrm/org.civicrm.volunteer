@@ -58,7 +58,7 @@ function civicrm_api3_volunteer_need_create($params) {
 function _civicrm_api3_volunteer_need_create_spec(&$params) {
   $params['is_flexible']['api.default'] = 0;
   $params['is_active']['api.default'] = 1;
-  $params['visibility_id']['api.default'] = CRM_Core_OptionGroup::getValue('visibility', 'public', 'name');
+  $params['visibility_id']['api.default'] = CRM_Volunteer_BAO_Project::getVisibilityId('name', "public");
 
   // these metadata fields are managed; don't display them in the API explorer
   unset($params['created'], $params['last_updated']);

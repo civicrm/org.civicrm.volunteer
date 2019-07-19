@@ -105,10 +105,10 @@ class api_v3_VolunteerProjectTest extends VolunteerTestAbstract {
 
     $bao = new CRM_Volunteer_BAO_ProjectContact();
     $bao->project_id = $project['id'];
-    $bao->relationship_type_id = CRM_Core_OptionGroup::getValue(CRM_Volunteer_BAO_ProjectContact::RELATIONSHIP_OPTION_GROUP, 'volunteer_owner', 'name');
+    $bao->relationship_type_id = CRM_Core_PseudoConstant::getKey("CRM_Volunteer_BAO_ProjectContact", CRM_Volunteer_BAO_ProjectContact::RELATIONSHIP_OPTION_GROUP, 'volunteer_owner');
     $this->assertEquals(count($projectContacts['volunteer_owner']), $bao->find());
 
-    $bao->relationship_type_id = CRM_Core_OptionGroup::getValue(CRM_Volunteer_BAO_ProjectContact::RELATIONSHIP_OPTION_GROUP, 'volunteer_manager', 'name');
+    $bao->relationship_type_id = CRM_Core_PseudoConstant::getKey("CRM_Volunteer_BAO_ProjectContact", CRM_Volunteer_BAO_ProjectContact::RELATIONSHIP_OPTION_GROUP, 'volunteer_manager');
     $this->assertEquals(count($projectContacts['volunteer_manager']), $bao->find());
   }
 
