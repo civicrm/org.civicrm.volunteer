@@ -32,6 +32,7 @@ return array(
       'title' => $labelVolunteerReport,
       'description' => $labelVolunteerReport,
       'report_id' => 'volunteer',
+      'permissions' => 'access CiviReport',
       'form_values' => serialize(array(
         'fields' => array(
           'contact_assignee' => '1',
