@@ -409,6 +409,9 @@ class CRM_Volunteer_Form_VolunteerReport extends CRM_Report_Form {
         }
       }
     }
+    // #521 - save the select clauses for later use
+    $this->_selectClauses = $select;
+
     $this->_select = "SELECT " . implode(', ', $select) . " ";
   }
 
