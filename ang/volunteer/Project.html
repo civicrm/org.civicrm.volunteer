@@ -111,7 +111,6 @@
         <input type="checkbox" crm-ui-id="projectForm.is_active" ng-model="project.is_active" />
       </div>
       
-      <!-- <div volunteer-custom-data ng-if="project.customData.length > 0"></div> -->
       <div class="crm-vol-custom-data" ng-if="project.customData.length > 0">
         <div class="crm-vol-custom-data-first" ng-repeat="(index, customGroup) in project.customData" ng-include="'~/volunteer/CustomData.html'"></div>
         <br />

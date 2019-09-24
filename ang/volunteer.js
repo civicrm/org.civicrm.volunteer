@@ -164,57 +164,6 @@
       };
     })
 
-    // // Custom Data
-    // .directive('volunteerCustomData', function($timeout) {
-    //   return {
-    //     restrict: 'A',
-    //     link: function (scope, elem, attrs) {
-    //       var form;
-    //       console.log(
-    //         scope,
-    //         scope.item,
-    //         scope.project,
-    //         'blah2',
-    //         // elem,
-    //         // attrs,
-    //       );
-  
-    //       function close() {
-    //         form.remove();
-    //         elem.show();
-    //         form = null;
-    //       }
-  
-    //       if (!form) {
-    //         var url = CRM.url('civicrm/volunteer/cd/edit', {
-    //           action: 'update',
-    //           reset: 1,
-    //           entityName: 'VolunteerProject',
-    //           entityID: scope.project.id,
-    //           // groupID: scope.customGroup.id,
-    //           // subType: scope.item.case_type_id,
-    //           // civicase_reload: scope.caseGetParams()
-    //         });
-    //         console.log(url);
-    //         form = $('<div></div>').html(elem.hide().html());
-    //         form.insertAfter(elem)
-    //         //   .on('click', '.cancel', close)
-    //         //   .on('crmLoad', function() {
-    //         //     // Workaround bug where href="#" changes the angular route
-    //         //     $('a.crm-clear-link', form).removeAttr('href');
-    //         //   })
-    //         //   .on('crmFormSuccess', function(e, data) {
-    //         //     scope.$apply(function() {
-    //         //       scope.pushCaseData(data.civicase_reload[0]);
-    //         //       close();
-    //         //     });
-    //         //   });
-    //         CRM.loadForm(url, {target: form, dialog: true});
-    //       }
-    //     }
-    //   };
-    // })
-
     // Editable custom data blocks
     .directive('volunteerEditCustomData', function($timeout) {
       return {
