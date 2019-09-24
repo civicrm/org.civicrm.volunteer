@@ -36,6 +36,13 @@
 class CRM_Volunteer_BAO_Project extends CRM_Volunteer_DAO_Project {
 
   /**
+   * Static field for all the case information that we can potentially export.
+   *
+   * @var array
+   */
+  public static $_exportableFields = NULL;
+
+  /**
    * Array of attributes on the related entity, translated to a common vocabulary.
    *
    * For example, an event's 'start_date' property is standardized to
@@ -362,7 +369,7 @@ class CRM_Volunteer_BAO_Project extends CRM_Volunteer_DAO_Project {
    *
    * @see CRM_Volunteer_BAO_Assignment::setActivityDefaults()
    */
-  public function updateAssociatedActivities () {
+  public function updateAssociatedActivities() {
     $activities = CRM_Volunteer_BAO_Assignment::retrieve(array(
       'project_id' => $this->id,
     ));
@@ -688,7 +695,7 @@ class CRM_Volunteer_BAO_Project extends CRM_Volunteer_DAO_Project {
    * @param int $project_id
    * @return mixed Integer on success, else NULL
    */
-  public static function getFlexibleNeedID ($project_id) {
+  public static function getFlexibleNeedID($project_id) {
     $result = NULL;
 
     if (is_int($project_id) || ctype_digit($project_id)) {
@@ -833,8 +840,7 @@ class CRM_Volunteer_BAO_Project extends CRM_Volunteer_DAO_Project {
    *
    * @var array
    */
-  public static function getProjectProfileAudienceTypes()
-  {
+  public static function getProjectProfileAudienceTypes() {
     return array(
       "primary" => array(
         "type" => "primary",
@@ -853,6 +859,29 @@ class CRM_Volunteer_BAO_Project extends CRM_Volunteer_DAO_Project {
       ),
     );
   }
+
+  /**
+   * Combine all the exportable fields from the lower levels object.
+   *
+   * @return array
+   *   array of exportable Fields
+   */
+  public static function &exportableFields() {
+    if (!self::$_exportableFields) {
+      if (!self::$_exportableFields) {
+        self::$_exportableFields = array();
+      }
+
+      $fields = CRM_Volunteer_DAO_Project::export();
+
+      // add custom data for volunteer projects
+      $fields = array_merge($fields, CRM_Core_BAO_CustomField::getFieldsForImport('VolunteerProject'));
+
+      self::$_exportableFields = $fields;
+    }
+    return self::$_exportableFields;
+  }
+
   /**
    * Sets and returns the start date of the entity associated with this Project
    *
@@ -956,7 +985,6 @@ class CRM_Volunteer_BAO_Project extends CRM_Volunteer_DAO_Project {
 
     return $this->roles;
   }
-
 
   /**
    * Sets and returns $this->open_needs. Delegate of __get().
