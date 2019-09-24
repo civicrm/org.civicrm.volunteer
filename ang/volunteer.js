@@ -241,7 +241,6 @@
               CRM
                 .loadForm(url, settings)
                 .on('crmFormSuccess', function(e, data) {
-                  console.log('success', data);
                   scope.refreshCustomData();
                 });
             });
