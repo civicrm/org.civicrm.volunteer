@@ -632,7 +632,7 @@ class CRM_Volunteer_BAO_Project extends CRM_Volunteer_DAO_Project {
    * @deprecated since version 4.7.21-2.3.0
    *   Internal core methods should not be extended by third-party code.
    */
-  public function copyValues(&$params, $serializeArrays = FALSE) {
+  public function copyValues($params) {
     if (is_a($params, 'CRM_Core_DAO')) {
       $params = get_object_vars($params);
     }
@@ -644,7 +644,7 @@ class CRM_Volunteer_BAO_Project extends CRM_Volunteer_DAO_Project {
        */
       $params['is_active'] = CRM_Volunteer_BAO_Project::isOff($params['is_active']) ? 0 : 1;
     }
-    return parent::copyValues($params, $serializeArrays);
+    return parent::copyValues($params);
   }
 
   /**
