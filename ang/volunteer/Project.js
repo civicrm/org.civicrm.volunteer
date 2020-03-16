@@ -1,4 +1,4 @@
-(function(angular, $, _) {
+(function(angular, $, _, CRM) {
 
   angular.module('volunteer').config(function($routeProvider) {
       $routeProvider.when('/volunteer/manage/:projectId', {
@@ -171,6 +171,10 @@
     $scope.phone_types = supporting_data.values.phone_types;
     $scope.supporting_data = supporting_data.values;
     $scope.profile_status = profile_status;
+    $scope.data_entities = CRM.vars['org.civicrm.volunteer'].dataEntities;
+    $scope.data_used_for = CRM.vars['org.civicrm.volunteer'].dataUsedFor;
+    $scope.data_default = CRM.vars['org.civicrm.volunteer'].dataDefault;
+    $scope.data_group_type = CRM.vars['org.civicrm.volunteer'].dataGroupType;
     project.is_active = (project.is_active == "1");
     $scope.project = project;
     $scope.profiles = $scope.project.profiles;
@@ -449,4 +453,4 @@
 
   });
 
-})(angular, CRM.$, CRM._);
+})(angular, CRM.$, CRM._, CRM);

@@ -39,11 +39,12 @@ class CRM_Volunteer_Form_IncludeProfile extends CRM_Core_Form {
    * @return array( 'allowCoreTypes' => array(), 'allowSubTypes' => array(), 'profileEntities' => array() )
    */
   static function getProfileSelectorTypes() {
-    $configs = array(
-      'allowCoreTypes' => array(),
-      'allowSubTypes' => array(),
-      'profileEntities' => array(),
-    );
+    $configs = [
+      'allowCoreTypes' => [],
+      'allowSubTypes' => [],
+      'profileEntities' => [],
+      'usedFor' => [],
+    ];
 
     $configs['allowCoreTypes'][] = 'Contact';
     $configs['allowCoreTypes'][] = 'Individual';
