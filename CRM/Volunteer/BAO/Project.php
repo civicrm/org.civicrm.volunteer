@@ -112,8 +112,16 @@ class CRM_Volunteer_BAO_Project extends CRM_Volunteer_DAO_Project {
   /**
    * class constructor
    */
-  function __construct() {
+  function __construct($params=null) {
     parent::__construct();
+
+    if (!empty($params)) {
+      if (is_a($params, 'CRM_Core_DAO')) {
+        $daoClone = clone $params; // seems uncessary: lost in the fog of war
+        $params = get_object_vars($daoClone); // get an array
+      }
+      $this->copyValues($params);
+    }
   }
 
   /**
@@ -269,8 +277,7 @@ class CRM_Volunteer_BAO_Project extends CRM_Volunteer_DAO_Project {
     $params = self::validateCreateParams($params);
     $params = self::supplyDefaults($params);
 
-    $project = new CRM_Volunteer_BAO_Project();
-    $project->copyValues($params);
+    $project = new CRM_Volunteer_BAO_Project($params);
     $project->save();
 
     $customData = CRM_Core_BAO_CustomField::postProcess($params, $project->id, 'VolunteerProject');
@@ -412,19 +419,14 @@ class CRM_Volunteer_BAO_Project extends CRM_Volunteer_DAO_Project {
   }
 
   /**
-   * Get a list of Projects matching the params.
+   * Get a list of Projects filtered by project-fields
+   * or related entities: Project-Contacts and Proximity (loc_block)
+   * NOTE: related entities are not returned, just available for filtering.
    *
    * This function is invoked from within the web form layer and also from the
-   * API layer. Special params include:
-   * <ol>
-   *   <li>project_contacts (@see CRM_Volunteer_BAO_Project::create() and
-   *     CRM_Volunteer_BAO_Project::buildContactJoin)</li>
-   *   <li>proximity (@see CRM_Volunteer_BAO_Project::buildProximityWhere)</li>
-   * </ol>
-   *
-   * NOTE: This method does not return data related to the special params
-   * outlined above; however, these parameters can be used to filter the list
-   * of Projects that is returned.
+   * API layer. 
+   * 
+   * @see CRM_Volunteer_BAO_Project::create(), CRM_Volunteer_BAO_Project::buildContactJoin(), CRM_Volunteer_BAO_Project::buildProximityWhere()
    *
    * @param array $params
    * @return array of CRM_Volunteer_BAO_Project objects
@@ -454,16 +456,19 @@ class CRM_Volunteer_BAO_Project extends CRM_Volunteer_DAO_Project {
         ->join('civicrm_address', 'INNER JOIN `civicrm_address` ON civicrm_address.id = loc.address_id')
         ->where(self::buildProximityWhere($params['proximity']));
     }
+    
+    if (isset($params['is_active'])) {
+      if (CRM_Volunteer_BAO_Project::isOff($params['is_active'])) {
+        $params['is_active'] = 0;
+      } else {
+        $params['is_active'] = 1;
+      }
+    }
 
-    // This step is here to support both naming conventions for specifying params
-    // (e.g., volunteer_project_id and id) while normalizing how we access them
-    // (e.g., $project->id)
-    $project = new CRM_Volunteer_BAO_Project();
-    $project->copyValues($params);
-
+    // normalize field names and get DAO defaults:
+    $project = new CRM_Volunteer_BAO_Project($params);
     foreach ($project->fields() as $field) {
       $fieldName = $field['name'];
-
       if (!empty($project->$fieldName)) {
         $query->where('!column = @value', array(
           'column' => $fieldName,
@@ -473,11 +478,9 @@ class CRM_Volunteer_BAO_Project extends CRM_Volunteer_DAO_Project {
     }
 
     $dao = self::executeQuery($query->toSQL());
+
     while ($dao->fetch()) {
-      $fetchedProject = new CRM_Volunteer_BAO_Project();
-      $daoClone = clone $dao;
-      $fetchedProject->copyValues($daoClone);
-      $result[(int) $dao->id] = $fetchedProject;
+      $result[(int) $dao->id] = new CRM_Volunteer_BAO_Project($dao);
     }
     $dao->free();
 
@@ -611,40 +614,16 @@ class CRM_Volunteer_BAO_Project extends CRM_Volunteer_DAO_Project {
   }
 
   /**
-   * Returns TRUE if value represents an "off" value, FALSE otherwise
+   * Convert truthy to Boolean.
+   * Empty or null return FALSE (on)
+   * FALSE, 0, '0' return TRUE (Off)
    *
    * @param type $value
    * @return boolean
    * @access public
    */
   public static function isOff($value) {
-    if (in_array($value, array(FALSE, 0, '0'), TRUE)) {
-      return TRUE;
-    } else {
-      return FALSE;
-    }
-  }
-
-  /**
-   * @inheritDoc This override adds a little data massaging prior to calling its
-   * parent.
-   *
-   * @deprecated since version 4.7.21-2.3.0
-   *   Internal core methods should not be extended by third-party code.
-   */
-  public function copyValues(&$params, $serializeArrays = FALSE) {
-    if (is_a($params, 'CRM_Core_DAO')) {
-      $params = get_object_vars($params);
-    }
-
-    if (array_key_exists('is_active', $params)) {
-      /*
-       * don't force is_active to have a value if none was set, to allow searches
-       * where the is_active state of Projects is irrelevant
-       */
-      $params['is_active'] = CRM_Volunteer_BAO_Project::isOff($params['is_active']) ? 0 : 1;
-    }
-    return parent::copyValues($params, $serializeArrays);
+    return in_array($value, array(FALSE, 0, '0'), TRUE);
   }
 
   /**

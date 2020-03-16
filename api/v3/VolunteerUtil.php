@@ -296,7 +296,11 @@ function civicrm_api3_volunteer_util_getcountries($params) {
   foreach ($results as $k => $country) {
     // since we are wrapping CiviCRM's API, and it provides even boolean data
     // as quoted strings, we'll do the same
-    $results[$k]['is_default'] = ($country['id'] === $settings['values'][0]['defaultContactCountry']) ? "1" : "0";
+    $is_default = "0";
+    if (isset($settings['values'][0]['defaultContactCountry']) && $country['id'] === $settings['values'][0]['defaultContactCountry'] ) {
+      $is_default = "1";
+    }
+     $results[$k]['is_default'] = $is_default;
   }
 
   return civicrm_api3_create_success($results, "VolunteerUtil", "getcountries", $params);
