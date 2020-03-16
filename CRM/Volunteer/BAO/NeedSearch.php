@@ -262,8 +262,12 @@ class CRM_Volunteer_BAO_NeedSearch {
         $countryId = $api['api.LocBlock.getsingle']['api.Address.getsingle']['country_id'];
         $country = $countryId ? CRM_Core_PseudoConstant::country($countryId) : NULL;
 
-        $stateProvinceId = $api['api.LocBlock.getsingle']['api.Address.getsingle']['state_province_id'];
-        $stateProvince = $stateProvinceId ? CRM_Core_PseudoConstant::stateProvince($stateProvinceId) : NULL;
+        $stateProvince = NULL;
+        if (isset($api['api.LocBlock.getsingle']['api.Address.getsingle']['state_province_id'])) {
+          $stateProvinceId = $api['api.LocBlock.getsingle']['api.Address.getsingle']['state_province_id'];
+          $stateProvince = CRM_Core_PseudoConstant::stateProvince($stateProvinceId);
+        }
+        
 
         $project['location'] = array(
           'city' => $api['api.LocBlock.getsingle']['api.Address.getsingle']['city'],

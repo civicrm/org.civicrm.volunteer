@@ -419,19 +419,14 @@ class CRM_Volunteer_BAO_Project extends CRM_Volunteer_DAO_Project {
   }
 
   /**
-   * Get a list of Projects matching the params.
+   * Get a list of Projects filtered by project-fields
+   * or related entities: Project-Contacts and Proximity (loc_block)
+   * NOTE: related entities are not returned, just available for filtering.
    *
    * This function is invoked from within the web form layer and also from the
-   * API layer. Special params include:
-   * <ol>
-   *   <li>project_contacts (@see CRM_Volunteer_BAO_Project::create() and
-   *     CRM_Volunteer_BAO_Project::buildContactJoin)</li>
-   *   <li>proximity (@see CRM_Volunteer_BAO_Project::buildProximityWhere)</li>
-   * </ol>
-   *
-   * NOTE: This method does not return data related to the special params
-   * outlined above; however, these parameters can be used to filter the list
-   * of Projects that is returned.
+   * API layer. 
+   * 
+   * @see CRM_Volunteer_BAO_Project::create(), CRM_Volunteer_BAO_Project::buildContactJoin(), CRM_Volunteer_BAO_Project::buildProximityWhere()
    *
    * @param array $params
    * @return array of CRM_Volunteer_BAO_Project objects
@@ -483,6 +478,7 @@ class CRM_Volunteer_BAO_Project extends CRM_Volunteer_DAO_Project {
     }
 
     $dao = self::executeQuery($query->toSQL());
+
     while ($dao->fetch()) {
       $result[(int) $dao->id] = new CRM_Volunteer_BAO_Project($dao);
     }
@@ -618,18 +614,16 @@ class CRM_Volunteer_BAO_Project extends CRM_Volunteer_DAO_Project {
   }
 
   /**
-   * Returns TRUE if value represents an "off" value, FALSE otherwise
+   * Convert truthy to Boolean.
+   * Empty or null return FALSE (on)
+   * FALSE, 0, '0' return TRUE (Off)
    *
    * @param type $value
    * @return boolean
    * @access public
    */
   public static function isOff($value) {
-    if (in_array($value, array(FALSE, 0, '0'), TRUE)) {
-      return TRUE;
-    } else {
-      return FALSE;
-    }
+    return in_array($value, array(FALSE, 0, '0'), TRUE);
   }
 
   /**
