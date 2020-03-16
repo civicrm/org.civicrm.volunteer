@@ -112,8 +112,16 @@ class CRM_Volunteer_BAO_Project extends CRM_Volunteer_DAO_Project {
   /**
    * class constructor
    */
-  function __construct() {
+  function __construct($params=null) {
     parent::__construct();
+
+    if (!empty($params)) {
+      if (is_a($params, 'CRM_Core_DAO')) {
+        $daoClone = clone $params; // seems uncessary: lost in the fog of war
+        $params = get_object_vars($daoClone); // get an array
+      }
+      $this->copyValues($params);
+    }
   }
 
   /**
@@ -623,28 +631,6 @@ class CRM_Volunteer_BAO_Project extends CRM_Volunteer_DAO_Project {
     } else {
       return FALSE;
     }
-  }
-
-  /**
-   * @inheritDoc This override adds a little data massaging prior to calling its
-   * parent.
-   *
-   * @deprecated since version 4.7.21-2.3.0
-   *   Internal core methods should not be extended by third-party code.
-   */
-  public function copyValues(&$params, $serializeArrays = FALSE) {
-    if (is_a($params, 'CRM_Core_DAO')) {
-      $params = get_object_vars($params);
-    }
-
-    if (array_key_exists('is_active', $params)) {
-      /*
-       * don't force is_active to have a value if none was set, to allow searches
-       * where the is_active state of Projects is irrelevant
-       */
-      $params['is_active'] = CRM_Volunteer_BAO_Project::isOff($params['is_active']) ? 0 : 1;
-    }
-    return parent::copyValues($params, $serializeArrays);
   }
 
   /**
