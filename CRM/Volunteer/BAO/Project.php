@@ -277,8 +277,7 @@ class CRM_Volunteer_BAO_Project extends CRM_Volunteer_DAO_Project {
     $params = self::validateCreateParams($params);
     $params = self::supplyDefaults($params);
 
-    $project = new CRM_Volunteer_BAO_Project();
-    $project->copyValues($params);
+    $project = new CRM_Volunteer_BAO_Project($params);
     $project->save();
 
     $customData = CRM_Core_BAO_CustomField::postProcess($params, $project->id, 'VolunteerProject');
@@ -462,16 +461,19 @@ class CRM_Volunteer_BAO_Project extends CRM_Volunteer_DAO_Project {
         ->join('civicrm_address', 'INNER JOIN `civicrm_address` ON civicrm_address.id = loc.address_id')
         ->where(self::buildProximityWhere($params['proximity']));
     }
+    
+    if (isset($params['is_active'])) {
+      if (CRM_Volunteer_BAO_Project::isOff($params['is_active'])) {
+        $params['is_active'] = 0;
+      } else {
+        $params['is_active'] = 1;
+      }
+    }
 
-    // This step is here to support both naming conventions for specifying params
-    // (e.g., volunteer_project_id and id) while normalizing how we access them
-    // (e.g., $project->id)
-    $project = new CRM_Volunteer_BAO_Project();
-    $project->copyValues($params);
-
+    // normalize field names and get DAO defaults:
+    $project = new CRM_Volunteer_BAO_Project($params);
     foreach ($project->fields() as $field) {
       $fieldName = $field['name'];
-
       if (!empty($project->$fieldName)) {
         $query->where('!column = @value', array(
           'column' => $fieldName,
@@ -482,10 +484,7 @@ class CRM_Volunteer_BAO_Project extends CRM_Volunteer_DAO_Project {
 
     $dao = self::executeQuery($query->toSQL());
     while ($dao->fetch()) {
-      $fetchedProject = new CRM_Volunteer_BAO_Project();
-      $daoClone = clone $dao;
-      $fetchedProject->copyValues($daoClone);
-      $result[(int) $dao->id] = $fetchedProject;
+      $result[(int) $dao->id] = new CRM_Volunteer_BAO_Project($dao);
     }
     $dao->free();
 
