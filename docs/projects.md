@@ -8,7 +8,7 @@ To see all the active projects, go to **Volunteers > Manage Volunteer Projects**
 
 In addition to simple settings such as "Title" and "Description", each project has the following characteristics:
 
-* **Multiple [volunteering opportunities](#opportunities):** Within each project, you can define many different opportunities and assign contacts to those opportunities. In turn, each opportunity can be filled by multiple [assignments](assignments) to separate volunteers.
+* **Multiple [volunteering opportunities](/opportunities):** Within each project, you can define many different opportunities and assign contacts to those opportunities. In turn, each opportunity can be filled by multiple [assignments](assignments) to separate volunteers.
 
 * **Ongoing, or event-based:** Projects, by themselves, do not have dates &mdash; so a simple project may be considered "ongoing". If you wish to specify a time frame for a project, you can [associate it with an event](#events).
 
