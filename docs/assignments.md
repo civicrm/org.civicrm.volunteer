@@ -44,7 +44,7 @@ To remove an assignment, use the arrow button and choose **Move to** or **Delete
 
 ### Searching for volunteers based on skill level {:#searching}
 
-If you have set up and collected [custom data](/custom-data) on volunteer skills and interests (using the "Volunteer Infomration" custom data set), you can quickly search for volunteers based on criteria within these fields as follows:
+If you have set up and collected [custom data](/custom-data) on volunteer skills and interests (using the "Volunteer Information" custom data set), you can quickly search for volunteers based on criteria within these fields as follows:
 
 1. Within **Assign Volunteers**, hover over the box for an assignment which is still in need of volunteers
 2. Notice a magnifying glass icon appear at the top right of this box
