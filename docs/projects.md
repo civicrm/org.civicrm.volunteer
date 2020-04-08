@@ -101,7 +101,7 @@ To edit the fields within the profiles go to **Administer > Customize Data and S
 
 ### Group registration
 
-When volunteers sign up (i.e. register), you can also offer them the option of  registering *other* people, too. We call this "group registration", and when it's enabled, the registration form will first ask the user for *their* information and then ask them for the "Number of Additional Volunteers". Subsequetnly, CiviVolunteer will ask questions about each of the additional volunteers and these questions that CiviVolunteer presents to the *additional* volunteers can even be *different* from questions presented at first to the person signing everyone up.
+When volunteers sign up (i.e. register), you can also offer them the option of  registering *other* people, too. We call this "group registration", and when it's enabled, the registration form will first ask the user for *their* information and then ask them for the "Number of Additional Volunteers". Subsequently, CiviVolunteer will ask questions about each of the additional volunteers and these questions that CiviVolunteer presents to the *additional* volunteers can even be *different* from questions presented at first to the person signing everyone up.
 
 To enable group registration, select at least one profile to be used for "Group Registration" or "Both".
 
