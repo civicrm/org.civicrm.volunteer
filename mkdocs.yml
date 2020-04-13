@@ -1,6 +1,7 @@
 site_name: CiviVolunteer
 repo_url: https://github.com/civicrm/org.civicrm.volunteer
-theme: material
+theme: 
+  name: material
 markdown_extensions:
   - attr_list
   - admonition
