@@ -1,12 +1,15 @@
 site_name: CiviVolunteer
 repo_url: https://github.com/civicrm/org.civicrm.volunteer
-theme: material
+theme: 
+  name: material
 markdown_extensions:
   - attr_list
   - admonition
   - def_list
-  - codehilite(guess_lang=false)
-  - toc(permalink=true)
+  - codehilite:
+      guess_lang: false
+  - toc: 
+      permalink: true
   - pymdownx.superfences
   - pymdownx.inlinehilite
   - pymdownx.tilde
