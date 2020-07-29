@@ -12,8 +12,8 @@ class CRM_Volunteer_Hook {
    * @return null
    *   The return value is ignored.
    */
-  static function projectDefaultSettings (array &$defaults) {
-    return CRM_Utils_Hook::singleton()->invoke(1, $defaults, CRM_Utils_Hook::$_nullObject,
+  public static function projectDefaultSettings (array &$defaults) {
+    return CRM_Utils_Hook::singleton()->invoke(['defaults'], $defaults, CRM_Utils_Hook::$_nullObject,
       CRM_Utils_Hook::$_nullObject, CRM_Utils_Hook::$_nullObject, CRM_Utils_Hook::$_nullObject, CRM_Utils_Hook::$_nullObject,
       'civicrm_volunteer_projectDefaultSettings'
     );
