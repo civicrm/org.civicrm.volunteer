@@ -3,6 +3,7 @@
 <table>
   <base>CRM/Volunteer</base>
   <class>Project</class>
+  <title>Volunteer Project</title>
   <name>civicrm_volunteer_project</name>
   <add>4.4</add>
   <log>true</log>

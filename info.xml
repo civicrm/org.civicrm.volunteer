@@ -11,7 +11,6 @@
   <releaseDate>2018-06-29</releaseDate>
   <version>4.7.31-2.3.1</version>
   <compatibility>
-    <ver>4.7</ver>
     <ver>5.0</ver>
   </compatibility>
   <comments>
