@@ -104,7 +104,7 @@
     <name>created</name>
     <type>timestamp</type>
     <title>Date of Creation</title>
-    <default>NULL</default>
+    <default>CURRENT_TIMESTAMP</default>
   </field>
   <field>
     <name>last_updated</name>

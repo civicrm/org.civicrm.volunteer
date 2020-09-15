@@ -101,7 +101,7 @@ CREATE TABLE `civicrm_volunteer_need` (
      `visibility_id` int unsigned   DEFAULT NULL COMMENT ' Indicates whether this need is offered on public volunteer signup forms. Implicit FK to option_value row in visibility option_group.',
      `role_id` int unsigned   DEFAULT NULL COMMENT 'The role associated with this need. Implicit FK to option_value row in volunteer_role option_group.',
      `is_active` tinyint NOT NULL  DEFAULT 1 COMMENT 'Is this need enabled?',
-     `created` timestamp   DEFAULT NULL ,
+     `created` timestamp   DEFAULT CURRENT_TIMESTAMP ,
      `last_updated` timestamp   DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP  
 ,
         PRIMARY KEY (`id`)
