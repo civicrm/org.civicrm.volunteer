@@ -213,7 +213,16 @@ class CRM_Volunteer_BAO_NeedSearch {
    */
   private function setSearchDateParams($userSearchParams) {
     $this->searchParams['need']['date_start'] = strtotime(CRM_Utils_Array::value('date_start', $userSearchParams));
-    $this->searchParams['need']['date_end'] = strtotime(CRM_Utils_Array::value('date_end', $userSearchParams));
+    $date_end = strtotime(CRM_Utils_Array::value('date_end', $userSearchParams));
+    if ($date_end) {
+      // The end date is entered by the user as YYYY-MM-DD. Then, strtotime
+      // converts it to a time stamp represending YYYY-MM-DD 00:00:00.
+      // However, when searching by dates, users expect the end date to be the
+      // *end* of the day entered, not the beginning (i.e. YYYY-MM-DD
+      // 23:59:99), so we add enough seconds to make the search work.
+      $date_end += 85399;
+    }
+    $this->searchParams['need']['date_end'] = $date_end;
   }
 
   /**
