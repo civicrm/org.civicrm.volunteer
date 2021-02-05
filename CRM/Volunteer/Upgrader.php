@@ -55,11 +55,7 @@ class CRM_Volunteer_Upgrader extends CRM_Volunteer_Upgrader_Base {
 
     $this->installCommendationActivityType();
 
-    $this->schemaUpgrade20();
-    $this->addNeedEndDate();
     $this->installVolMsgWorkflowTpls();
-
-    $this->installNeedMetaDateFields();
 
     // uncomment the next line to insert sample data
     // $this->executeSqlFile('sql/volunteer_sample.mysql');
@@ -436,6 +432,15 @@ class CRM_Volunteer_Upgrader extends CRM_Volunteer_Upgrader_Base {
   public function upgrade_2300() {
     $this->ctx->log->info('Applying update 2300 - Adding date meta data fields to volunteer opportunities');
     return $this->installNeedMetaDateFields();
+  }
+
+  /**
+   * Add default value to volunteer_need.created column
+   */
+  public function upgrade_2301() {
+    $this->ctx->log->info('Applying update 2301 - Add default value to volunteer_need.created column');
+    CRM_Core_DAO::executeQuery('ALTER TABLE `civicrm_volunteer_need` CHANGE COLUMN `created` `created` timestamp DEFAULT CURRENT_TIMESTAMP');
+    return TRUE;
   }
 
   public function uninstall() {

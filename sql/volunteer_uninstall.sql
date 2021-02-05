@@ -1,8 +1,3 @@
-/* drop custom tables */
-DROP TABLE IF EXISTS `civicrm_volunteer_need`;
-DROP TABLE IF EXISTS `civicrm_volunteer_project_contact`;
-DROP TABLE IF EXISTS `civicrm_volunteer_project`;
-
 /* drop report-related records */
 DELETE FROM `civicrm_report_instance` WHERE report_id = 'volunteer';
 

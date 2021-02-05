@@ -3,6 +3,7 @@
 <table>
   <base>CRM/Volunteer</base>
   <class>Need</class>
+  <title>Volunteer Need</title>
   <name>civicrm_volunteer_need</name>
   <add>4.4</add>
   <log>true</log>
@@ -103,7 +104,7 @@
     <name>created</name>
     <type>timestamp</type>
     <title>Date of Creation</title>
-    <default>NULL</default>
+    <default>CURRENT_TIMESTAMP</default>
   </field>
   <field>
     <name>last_updated</name>
