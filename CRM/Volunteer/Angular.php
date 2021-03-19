@@ -22,7 +22,7 @@ class CRM_Volunteer_Angular {
       return;
     }
 
-    CRM_Core_Resources::singleton()->addScriptFile('civicrm', 'packages/jquery/plugins/jquery.notify.min.js', 10, 'html-header');
+    CRM_Core_Resources::singleton()->addScriptFile('civicrm.packages', 'jquery/plugins/jquery.notify.min.js', 10, 'html-header');
 
     $loader = new \Civi\Angular\AngularLoader();
     $loader->setModules(array('volunteer'));

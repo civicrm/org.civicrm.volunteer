@@ -157,7 +157,7 @@ class CRM_Volunteer_Form_VolunteerSignUp extends CRM_Core_Form {
 
     CRM_Core_Resources::singleton()
         ->addScriptFile('org.civicrm.volunteer', 'js/CRM_Volunteer_Form_VolunteerSignUp.js')
-        ->addScriptFile('civicrm', 'packages/jquery/plugins/jquery.notify.min.js', -9990, 'html-header', FALSE);
+        ->addScriptFile('civicrm.packages', 'jquery/plugins/jquery.notify.min.js', -9990, 'html-header', FALSE);
 
     $validNeedIds = array();
     $needs = CRM_Utils_Request::retrieve('needs', 'String', $this, TRUE);
