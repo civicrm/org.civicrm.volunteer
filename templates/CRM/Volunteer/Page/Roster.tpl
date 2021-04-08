@@ -38,7 +38,3 @@
 <div class='dateBlock'>
   <p>{ts 1=$endDate|crmDate domain='org.civicrm.volunteer'}Assignments that end before %1 are not shown.{/ts}</p>
 </div>
-
-<a href='{crmURL p='civicrm/vol/#/volunteer/manage'}'>
-  <input type='button' class="crm-vol-modal-closer" value='{ts domain='org.civicrm.volunteer'}Back to Manage Volunteer Projects.{/ts}'/>
-</a>
