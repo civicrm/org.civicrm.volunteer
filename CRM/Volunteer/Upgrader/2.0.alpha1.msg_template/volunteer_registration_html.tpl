@@ -34,6 +34,9 @@
                         <strong>Location:</strong>
                         <table>
                           <tr>
+                            <td>{$volunteer_project.location.address.name}</td>
+                          </tr>                        
+                          <tr>
                             <td>{$volunteer_project.location.address.street_address}</td>
                           </tr>
                           <tr>
