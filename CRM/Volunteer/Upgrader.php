@@ -448,6 +448,10 @@ class CRM_Volunteer_Upgrader extends CRM_Volunteer_Upgrader_Base {
       'name' => array('IN' => array('CiviVolunteer', 'Volunteer_Information', 'volunteer_commendation')),
       'api.CustomGroup.delete' => array(),
     ));
+    civicrm_api3('OptionGroup', 'get', array(
+      'name' => 'msg_tpl_workflow_volunteer';
+      'api.OptionGroup.delete' => array(),
+    ));
   }
 
   /**
