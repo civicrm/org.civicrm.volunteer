@@ -444,14 +444,57 @@ class CRM_Volunteer_Upgrader extends CRM_Volunteer_Upgrader_Base {
   }
 
   public function uninstall() {
-    civicrm_api3('CustomGroup', 'get', array(
-      'name' => array('IN' => array('CiviVolunteer', 'Volunteer_Information', 'volunteer_commendation')),
-      'api.CustomGroup.delete' => array(),
-    ));
-    civicrm_api3('OptionGroup', 'get', array(
-      'name' => 'msg_tpl_workflow_volunteer';
-      'api.OptionGroup.delete' => array(),
-    ));
+    $customgroups = civicrm_api3('CustomGroup', 'get', [
+      'name' => ['IN' => [
+        'CiviVolunteer',
+        'Volunteer_Information',
+        'volunteer_commendation',
+      ]],
+      'return' => ['id']
+    ]);
+    $customgroup_ids = array_keys($customgroups['values'] ?? []);
+    if ($customgroup_ids) {
+      // Found one or more of our custom groups.
+      // Lookup fields for these and delete those first.
+      $customfields = civicrm_api3('CustomField', 'get', [
+        'custom_group_id' => ['IN' => $customgroup_ids],
+        'return'          => ['id'],
+      ]);
+      foreach (array_keys($customfields['values'] ?? []) as $customfield_id) {
+        civicrm_api3('CustomField', 'delete', ['id' => $customfield_id]);
+      }
+
+      // Now delete the groups themselves.
+      foreach ($customgroup_ids as $customgroup_id) {
+        civicrm_api3('CustomGroup', 'delete', ['id' => $customgroup_id]);
+      }
+    }
+    $optiongroups = civicrm_api3('OptionGroup', 'get', [
+      'name' => ['IN' => [
+        'skill_level',
+        'volunteer_project_relationship',
+        'msg_tpl_workflow_volunteer',
+        'volunteer_role',
+      ]],
+      'return' => ['id']
+    ]);
+    $optiongroup_ids = array_keys($optiongroups['values'] ?? []);
+    if ($optiongroup_ids) {
+      // Found one or more of our option groups.
+      // Lookup values for these and delete those first.
+      $optionvalues = civicrm_api3('OptionValue', 'get', [
+        'option_group_id' => ['IN' => $optiongroup_ids],
+        'return'          => ['id'],
+      ]);
+      foreach (array_keys($optionvalues['values'] ?? []) as $optionvalue_id) {
+        civicrm_api3('OptionValue', 'delete', ['id' => $optionvalue_id]);
+      }
+    
+      // Now delete the groups themselves.
+      foreach ($optiongroup_ids as $optiongroup_id) {
+        civicrm_api3('OptionGroup', 'delete', ['id' => $optiongroup_id]);
+      }
+    }
   }
 
   /**
