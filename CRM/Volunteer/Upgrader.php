@@ -56,7 +56,10 @@ class CRM_Volunteer_Upgrader extends CRM_Volunteer_Upgrader_Base {
     $this->installCommendationActivityType();
 
     $this->installVolMsgWorkflowTpls();
-    $this->installProjectRelationships();
+    $this->schemaUpgrade20();
+    $this->addNeedEndDate();
+    $this->installNeedMetaDateFields();
+    
     // uncomment the next line to insert sample data
     // $this->executeSqlFile('sql/volunteer_sample.mysql');
   }
