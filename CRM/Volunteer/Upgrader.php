@@ -192,7 +192,9 @@ class CRM_Volunteer_Upgrader extends CRM_Volunteer_Upgrader_Base {
    */
   public function schemaUpgrade20() {
     $this->installProjectRelationships();
-    $this->executeSqlFile('sql/volunteer_upgrade_2.0.sql');
+    if (CRM_Core_BAO_SchemaHandler::checkIfFieldExists('civicrm_volunteer_project', 'target_contact_id', FALSE)) {
+      $this->executeSqlFile('sql/volunteer_upgrade_2.0.sql');
+    }
   }
 
   /**
@@ -201,7 +203,9 @@ class CRM_Volunteer_Upgrader extends CRM_Volunteer_Upgrader_Base {
    * Used in both the install and the upgrade.
    */
   public function addNeedEndDate() {
-    $this->executeSqlFile('sql/volunteer_need_end_date.sql');
+    if (!CRM_Core_BAO_SchemaHandler::checkIfFieldExists('civicrm_volunteer_need', 'end_time', FALSE)) {
+      $this->executeSqlFile('sql/volunteer_need_end_date.sql');
+    }
   }
 
   /**
