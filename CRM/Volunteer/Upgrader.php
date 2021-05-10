@@ -427,6 +427,9 @@ class CRM_Volunteer_Upgrader extends CRM_Volunteer_Upgrader_Base {
   }
 
   private function installNeedMetaDateFields() {
+    if (CRM_Core_BAO_SchemaHandler::checkIfFieldExists('civicrm_volunteer_need', 'created', FALSE)) {
+      return TRUE;
+    }
     $query = CRM_Core_DAO::executeQuery('
       ALTER TABLE `civicrm_volunteer_need`
       ADD `created` TIMESTAMP NULL
