@@ -24,15 +24,14 @@ class CRM_Volunteer_Angular {
 
     CRM_Core_Resources::singleton()->addScriptFile('civicrm.packages', 'jquery/plugins/jquery.notify.min.js', 10, 'html-header');
 
-    $loader = new \Civi\Angular\AngularLoader();
-    $loader->setModules(array('volunteer'));
+    $loader = Civi::service('angularjs.loader');
+    $loader->addModules(['volunteer']);
     $loader->setPageName('civicrm/vol');
-    $loader->load();
-    \Civi::resources()->addSetting(array(
-      'crmApp' => array(
+    \Civi::resources()->addSetting([
+      'crmApp' => [
         'defaultRoute' => $defaultRoute,
-      ),
-    ));
+      ],
+    ]);
 
     self::$loaded = TRUE;
   }
