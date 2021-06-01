@@ -1,5 +1,5 @@
 {literal}
-    <div ng-app="crmApp" id="crm_volunteer_angular_frame">
-        <div ng-view></div>
-    </div>
+  <crm-angular-js modules="crmApp" id="crm_volunteer_angular_frame">
+    <div ng-view></div>
+  </crm-angular-js>
 {/literal}
