@@ -7,7 +7,7 @@
 
   <div class="help" ng-show="!canAccessAllProjects">
     <p>
-      {{ts("This page displays only the volunteer projects which you have access to edit.")}}
+      {{:: ts("This page displays only the volunteer projects which you have access to edit.") }}
       <!-- not translated because HTML tags in a ts() choke Angular -->
       For a list of all volunteer opportunities on the site, visit the <a href="{{urlPublicVolOppSearch}}">public search form</a>.
     </p>
@@ -17,13 +17,15 @@
     <div class="clear"></div>
     <div class="crm-vol-buttons crm-vol-mange-buttons crm-vol-half-responsive">
 
-      <a href="#/volunteer/manage/0" class="button"><span><div class="icon ui-icon-plus"></div>{{ts('Add Project')}}</span></a><br /><br />
+      <a href="#/volunteer/manage/0" class="button"><span><div class="icon ui-icon-plus"></div>{{:: ts('Add Project') }}</span></a><br /><br />
 
       <select crm-ui-select="{placeholder: ts('Bulk Actions'), allowClear: true, width: '150'}" ng-model="batchAction" id="batchAction">
         <option />
         <option ng-repeat="(key, action) in batchActions" value="{{key}}">{{action.label}}</option>
       </select>
-      <input type="button" value="{{ts('Run')}}" ng-click="runBatch()" />
+      <button type="button" ng-click="runBatch()" >
+        {{:: ts('Run') }}
+      </button>
     </div>
     <div class="crm-vol-search crm-vol-manage-search crm-vol-half-responsive">
       <form name="volProjectSearchForm" crm-ui-id-scope>
@@ -66,11 +68,11 @@
       <thead>
         <tr role="row">
           <th class="ui-state-default crm-vol-manage-toggle"><input type="checkbox" ng-model="allSelected" ng-change="selectAll()" /></th>
-          <th class="ui-state-default crm-vol-manage-project">{{ ts('Volunteer Project') }}</th>
-          <th class="ui-state-default crm-vol-manage-entity">{{ ts('Associated Entity') }}</th>
-          <th class="ui-state-default crm-vol-manage-beneficiaries">{{ ts('Beneficiaries') }}</th>
-          <th class="ui-state-default crm-vol-manage-location">{{ ts('Location') }}</th>
-          <th class="ui-state-default crm-vol-manage-active">{{ ts('Active') }}</th>
+          <th class="ui-state-default crm-vol-manage-project">{{:: ts('Volunteer Project') }}</th>
+          <th class="ui-state-default crm-vol-manage-entity">{{:: ts('Associated Entity') }}</th>
+          <th class="ui-state-default crm-vol-manage-beneficiaries">{{:: ts('Beneficiaries') }}</th>
+          <th class="ui-state-default crm-vol-manage-location">{{:: ts('Location') }}</th>
+          <th class="ui-state-default crm-vol-manage-active">{{:: ts('Active') }}</th>
           <th class="ui-state-default crm-vol-manage-actionlinks"></th>
         </tr>
       </thead>
@@ -89,12 +91,12 @@
         <td class="crm-vol-manage-location" ng-bind-html="formatLocation(project)"></td>
         <td class="crm-vol-manage-active">{{ project.is_active == 1 ? ts("Yes") : ts("No") }}</td>
         <td class="crm-vol-manage-actionlinks right nowrap">
-          <div><a href="#/volunteer/manage/{{project.id}}">{{ ts('Edit') }}</a></div>
-          <div><a ng-click="backbonePopup(ts('Define Volunteer Opportunities'), 'Define', project.id)">{{ ts('Define Volunteer Opportunities') }}</a></div>
-          <div><a ng-click="backbonePopup(ts('Assign Volunteers'), 'Assign', project.id)">{{ ts('Assign Volunteers') }}</a></div>
-          <div><a ng-click="showRoster()">{{ ts('View Volunteer Roster') }}</a></div>
-          <div><a ng-click="showLogHours()">{{ ts('Log Hours') }}</a></div>
-          <div><a target="_blank" href="#/volunteer/opportunities?project={{project.id}}&amp;hideSearch=1">{{ ts('Public Signup') }}</a></div>
+          <div><a href="#/volunteer/manage/{{project.id}}">{{:: ts('Edit') }}</a></div>
+          <div><a ng-click="backbonePopup(ts('Define Volunteer Opportunities'), 'Define', project.id)">{{:: ts('Define Volunteer Opportunities') }}</a></div>
+          <div><a ng-click="backbonePopup(ts('Assign Volunteers'), 'Assign', project.id)">{{:: ts('Assign Volunteers') }}</a></div>
+          <div><a ng-click="showRoster()">{{:: ts('View Volunteer Roster') }}</a></div>
+          <div><a ng-click="showLogHours()">{{:: ts('Log Hours') }}</a></div>
+          <div><a target="_blank" href="#/volunteer/opportunities?project={{project.id}}&amp;hideSearch=1">{{:: ts('Public Signup') }}</a></div>
         </td>
       </tr>
       </tbody>

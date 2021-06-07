@@ -18,11 +18,11 @@ Required vars: volOppData(), searchParams
   <!-- Search Form -->
   <div class="crm-vol-half-responsive crm-vol-opp-show-hidden-search" ng-show="allowShowSearch">
     <div class="crm-buttons">
-      <button crm-icon="search" ng-click="showSearch()">{{ts('Filter this List of Volunteer Opportunities')}}</button>
+      <button crm-icon="search" ng-click="showSearch()">{{:: ts('Filter this List of Volunteer Opportunities') }}</button>
     </div>
   </div>
   <div class="crm-vol-half-responsive crm-vol-opp-search" ng-hide="hideSearch">
-    <h2>{{ts('Find Volunteer Opportunities')}}</h2>
+    <h2>{{:: ts('Find Volunteer Opportunities') }}</h2>
     <form name="volOppSearchForm" crm-ui-id-scope>
       <div class="crm-block ui-tabs ui-widget ui-widget-content ui-corner-all">
         <div class="crm-group" crm-ui-id-scope>
@@ -119,7 +119,7 @@ Required vars: volOppData(), searchParams
           </div>
         </div>
         <div class="crm-buttons">
-          <button crm-icon="search" ng-click="search()">{{ts('Search')}}</button>
+          <button crm-icon="search" ng-click="search()">{{:: ts('Search') }}</button>
         </div>
       </div>
     </form>
@@ -128,25 +128,25 @@ Required vars: volOppData(), searchParams
 
   <!-- Shopping Cart -->
   <div class="crm-vol-half-responsive crm-vol-opp-cart" ng-class="{'floating_cart': cartIsFloating, 'contents_visible': showCartContents}">
-    <h2>{{ts('Your Selected Volunteer Opportunities')}}</h2>
+    <h2>{{:: ts('Your Selected Volunteer Opportunities') }}</h2>
     <div class="crm-block ui-tabs ui-widget ui-widget-content ui-corner-all " ng-form="volOppCheckoutForm" crm-ui-id-scope>
       <div class="crm-vol-opp-cart-message-wrapper">
         <div class="crm-vol-opp-cart-large-indicator">
-          <span>{{itemCountInCart}} {{ts('Commitments')}}</span>
+          <span>{{itemCountInCart}} {{:: ts('Commitments') }}</span>
         </div>
         <div class="crm-vol-opp-cart-message">
-          <span ng-show="itemCountInCart === 0">{{ts('Make a commitment by clicking the checkbox for the volunteer opportunity that interests you.')}}</span>
-          <span ng-hide="itemCountInCart === 0">{{ts('Great! Make as many selections you like, then click \'Sign Up!\' to complete your registration.')}}</span>
+          <span ng-show="itemCountInCart === 0">{{:: ts('Make a commitment by clicking the checkbox for the volunteer opportunity that interests you.') }}</span>
+          <span ng-hide="itemCountInCart === 0">{{:: ts('Great! Make as many selections you like, then click \'Sign Up!\' to complete your registration.') }}</span>
         </div>
       </div>
 
       <table ng-show="showCartContents" class="display dataTable no-footer crm-vol-opp-cart-list" ng-class="{'contents_visible': showCartContents}" role="grid">
         <thead>
         <tr role="row">
-          <th class="ui-state-default crm-vol-opp-project">{{ts('Project')}}</th>
-          <th class="ui-state-default crm-vol-opp-role">{{ts('Role')}}</th>
-          <th class="ui-state-default crm-vol-opp-time">{{ts('Time')}}</th>
-          <th class="ui-state-default crm-vol-opp-toggle">{{ts('Remove')}}</th>
+          <th class="ui-state-default crm-vol-opp-project">{{:: ts('Project') }}</th>
+          <th class="ui-state-default crm-vol-opp-role">{{:: ts('Role') }}</th>
+          <th class="ui-state-default crm-vol-opp-time">{{:: ts('Time') }}</th>
+          <th class="ui-state-default crm-vol-opp-toggle">{{:: ts('Remove') }}</th>
         </tr>
         </thead>
         <tbody>
@@ -180,7 +180,7 @@ Required vars: volOppData(), searchParams
 
       <div class="crm-buttons">
         <button class="crm-vol-button crm-vol-opp-cart-sign-up" crm-icon="check" ng-click="checkout()" ng-disabled="itemCountInCart === 0">
-          {{ts('Sign Up!')}}
+          {{:: ts('Sign Up!') }}
         </button>
         <a class="crm-vol-opp-cart-show-contents" ng-hide="itemCountInCart === 0" ng-click="toggleCartList()">{{showCartContents ? ts('Hide selections') : ts('View selections')}}</a>
       </div>
@@ -192,22 +192,22 @@ Required vars: volOppData(), searchParams
   <!-- Results -->
   <div class="crm-vol-opp-results messages status no-popup" ng-show="_.size(volOppData()) === 0">
     <div class="icon inform-icon"></div>
-    {{ts('No results found. Please try different search criteria.')}}
+    {{:: ts('No results found. Please try different search criteria.') }}
   </div>
   <div class="crm-vol-opp-results" ng-show="_.size(volOppData()) > 0">
-    <h2>{{ts('Available Volunteer Opportunities')}}</h2>
+    <h2>{{:: ts('Available Volunteer Opportunities') }}</h2>
     <p class="description">
-      {{ts('For additional project or role detail, click the corresponding detail icon in the table below.')}}
+      {{:: ts('For additional project or role detail, click the corresponding detail icon in the table below.') }}
       <span class="icon ui-icon-comment"></span>
     </p>
     <table class="display dataTable no-footer" role="grid">
       <thead>
       <tr role="row">
-        <th class="ui-state-default crm-vol-opp-project">{{ts('Project')}}</th>
-        <th class="ui-state-default crm-vol-opp-beneficiary">{{ts('With')}}</th>
-        <th class="ui-state-default crm-vol-opp-role">{{ts('Role')}}</th>
-        <th class="ui-state-default crm-vol-opp-time">{{ts('Time')}}</th>
-        <th class="ui-state-default crm-vol-opp-toggle">{{ts('Sign up!')}}</th>
+        <th class="ui-state-default crm-vol-opp-project">{{:: ts('Project') }}</th>
+        <th class="ui-state-default crm-vol-opp-beneficiary">{{:: ts('With') }}</th>
+        <th class="ui-state-default crm-vol-opp-role">{{:: ts('Role') }}</th>
+        <th class="ui-state-default crm-vol-opp-time">{{:: ts('Time') }}</th>
+        <th class="ui-state-default crm-vol-opp-toggle">{{:: ts('Sign up!') }}</th>
       </tr>
       </thead>
       <tbody>
