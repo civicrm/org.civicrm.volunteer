@@ -1,0 +1,9 @@
+<fieldset class="crm-collapsible" ng-class="::{ collapsed: customGroup.collapse_display }">
+  <legend class="collapsible-title" ng-click="customGroup.collapse_display = !customGroup.collapse_display">{{ ::customGroup.title }}</legend>
+  <div volunteer-edit-custom-data>
+    <div ng-repeat="field in customGroup.fields">
+      <strong>{{ field.label }}:</strong>
+      {{ field.value.display }}
+    </div>
+  </div>
+</fieldset>

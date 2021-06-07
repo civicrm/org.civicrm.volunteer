@@ -1,74 +1,93 @@
 (function(angular, $, _) {
 
-  angular.module('volunteer').config(function($routeProvider) {
-      $routeProvider.when('/volunteer/manage/:projectId', {
-        controller: 'VolunteerProject',
-        templateUrl: '~/volunteer/Project.html',
-        resolve: {
-          countries: function(crmApi) {
-            return crmApi('VolunteerUtil', 'getcountries', {}).then(function(result) {
-              return result.values;
-            });
-          },
-          project: function(crmApi, $route) {
-            if ($route.current.params.projectId == 0) {
-              return {
-                id: 0
-              };
-            } else {
-              return crmApi('VolunteerProject', 'getsingle', {
-                id: $route.current.params.projectId
-              }).then(
-                // success
-                null,
-                // error
-                function () {
-                  CRM.alert(
-                    ts('No volunteer project exists with an ID of %1', {1: $route.current.params.projectId}),
-                    ts('Not Found'),
-                    'error'
-                  );
-                }
-              );
-            }
-          },
-          supporting_data: function(crmApi) {
-            return crmApi('VolunteerUtil', 'getsupportingdata', {
-              controller: 'VolunteerProject'
-            });
-          },
-          campaigns: function(crmApi) {
-            return crmApi('VolunteerUtil', 'getcampaigns').then(function(data) {
-              return data.values;
-            });
-          },
-          relationship_data: function(crmApi, $route) {
-            var params = {
-              "sequential": 1,
-              "project_id": $route.current.params.projectId
-            };
-            return crmApi('VolunteerProjectContact', 'get', params).then(function(result) {
-              var relationships = {};
-              $(result.values).each(function (index, vpc) {
-                if (!relationships.hasOwnProperty(vpc.relationship_type_id)) {
-                  relationships[vpc.relationship_type_id] = [];
-                }
-                relationships[vpc.relationship_type_id].push(vpc.contact_id);
-              });
-              return relationships;
-            });
-          },
-          location_blocks: function(crmApi) {
-            return crmApi('VolunteerProject', 'locations', {});
-          },
-          profile_status: function(crmProfiles) {
-            return crmProfiles.load();
-          }
-        }
-      });
-    }
-  );
+  function processCustomValueTree(customData) {
+    _.each(customData, function(customGroup, index) {
+      customGroup.collapse_display = customGroup.collapse_display === '1';
+    });
+    return customData;
+  }
 
+  angular.module('volunteer').config(function($routeProvider) {
+    $routeProvider.when('/volunteer/manage/:projectId', {
+      controller: 'VolunteerProject',
+      templateUrl: '~/volunteer/Project.html',
+      resolve: {
+        countries: function(crmApi) {
+          return crmApi('VolunteerUtil', 'getcountries', {}).then(function(result) {
+            return result.values;
+          });
+        },
+        project: function(crmApi, $route) {
+          if ($route.current.params.projectId == 0) {
+            return {
+              id: 0
+            };
+          } else {
+            return crmApi('VolunteerProject', 'getsingle', {
+              id: $route.current.params.projectId,
+              'api.CustomValue.gettree': {
+                sequential: 1,
+                entity_id: "$value.id",
+                entity_type: 'VolunteerProject',
+                return: ['custom_group.id', 'custom_group.name', 'custom_group.title', 'custom_group.collapse_display', 'custom_field.name', 'custom_field.label', 'custom_value.display']
+              },
+            }).then(
+              // success
+              function (result) {
+                if(!result.is_error) {
+                  result.customData = processCustomValueTree(result['api.CustomValue.gettree'].values || []);
+                  delete result['api.CustomValue.gettree'];
+                  return result;
+                } else {
+                  CRM.alert(result.error);
+                }
+              },
+              // error
+              function () {
+                CRM.alert(
+                  ts('No volunteer project exists with an ID of %1', {1: $route.current.params.projectId}),
+                  ts('Not Found'),
+                  'error'
+                );
+              }
+            );
+          }
+        },
+        supporting_data: function(crmApi) {
+          return crmApi('VolunteerUtil', 'getsupportingdata', {
+            controller: 'VolunteerProject'
+          });
+        },
+        campaigns: function(crmApi) {
+          return crmApi('VolunteerUtil', 'getcampaigns').then(function(data) {
+            return data.values;
+          });
+        },
+        relationship_data: function(crmApi, $route) {
+          var params = {
+            "sequential": 1,
+            "project_id": $route.current.params.projectId
+          };
+          return crmApi('VolunteerProjectContact', 'get', params).then(function(result) {
+            var relationships = {};
+            $(result.values).each(function (index, vpc) {
+              if (!relationships.hasOwnProperty(vpc.relationship_type_id)) {
+                relationships[vpc.relationship_type_id] = [];
+              }
+              relationships[vpc.relationship_type_id].push(vpc.contact_id);
+            });
+            return relationships;
+          });
+        },
+        location_blocks: function(crmApi) {
+          return crmApi('VolunteerProject', 'locations', {});
+        },
+        profile_status: function(crmProfiles) {
+          return crmProfiles.load();
+        }
+      }
+    });
+  });
 
   angular.module('volunteer').controller('VolunteerProject', function($scope, $sce, $location, $q, $route, crmApi, crmUiAlert, crmUiHelp, countries, project, profile_status, campaigns, relationship_data, supporting_data, location_blocks, volBackbone) {
 
@@ -245,6 +264,39 @@
       }
     }, true);
 
+    /**
+     * Populates project customdata
+     *
+     * Makes an API request.
+     */
+    $scope.refreshCustomData = function() {
+      if (!!$scope.project.id) {
+        crmApi('CustomValue', 'gettree', {
+          sequential: 1,
+          entity_id: $scope.project.id,
+          entity_type: 'VolunteerProject',
+          return: ['custom_group.id', 'custom_group.name', 'custom_group.title', 'custom_group.collapse_display', 'custom_field.name', 'custom_field.label', 'custom_value.display']
+        }).then(
+          // success
+          function (result) {
+            if(!result.is_error) {
+              $scope.project.customData = processCustomValueTree(result.values || []);
+            } else {
+              CRM.alert(result.error);
+            }
+          },
+          // error
+          function () {
+            CRM.alert(
+              ts('No volunteer project custom data exists with an ID of %1', {1: $scope.project.id}),
+              ts('Not Found'),
+              'error'
+            );
+          }
+        );
+      }
+    };
+
     $scope.addProfile = function() {
       $scope.profiles.push({
         "entity_table": "civicrm_volunteer_project",
@@ -324,13 +376,13 @@
       return valid;
     };
 
-  /**
-   * Helper validation function.
-   *
-   * Ensures that a value is set for each required project relationship.
-   *
-   * @returns {Boolean}
-   */
+    /**
+     * Helper validation function.
+     *
+     * Ensures that a value is set for each required project relationship.
+     *
+     * @returns {Boolean}
+     */
     validateRelationships = function() {
       var isValid = true;
 

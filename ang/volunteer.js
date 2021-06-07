@@ -164,6 +164,38 @@
       };
     })
 
+    // Editable custom data blocks
+    .directive('volunteerEditCustomData', function($timeout) {
+      return {
+        restrict: 'A',
+        link: function (scope, elem, attrs) {
+          elem
+            .addClass('crm-editable-enabled')
+            .on('click', function(e) {
+              var url = CRM.url('civicrm/volunteer/cd/edit', {
+                action: 'update',
+                reset: 1,
+                entityName: 'VolunteerProject',
+                entityID: scope.project.id,
+                groupID: scope.customGroup.id,
+                // subType: scope.item.case_type_id,
+              });
+
+              var settings = {
+                dialog: {
+                  width: "85%",
+                  height:"80%",
+                },
+              };
+              CRM
+                .loadForm(url, settings)
+                .on('crmFormSuccess', function(e, data) {
+                  scope.refreshCustomData();
+                });
+            });
+        }
+      };
+    })
 
     /**
      * This is a service for loading the backbone-based volunteer UIs (and their

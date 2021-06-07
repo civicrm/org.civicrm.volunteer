@@ -89,6 +89,11 @@
     <is_public>true</is_public>
   </item>
   <item>
+    <path>civicrm/volunteer/cd/edit</path>
+    <title>Volunteer Custom Set</title>
+    <page_callback>CRM_Volunteer_Form_CustomData</page_callback>
+  </item>
+  <item>
     <path>civicrm/volunteer/roster</path>
     <page_callback>CRM_Volunteer_Page_Roster</page_callback>
     <title>Roster</title>
