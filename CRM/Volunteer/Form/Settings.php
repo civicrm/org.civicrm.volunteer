@@ -84,18 +84,10 @@ class CRM_Volunteer_Form_Settings extends CRM_Core_Form {
       );
     }
 
-    $campaigns = civicrm_api3('VolunteerUtil', 'getcampaigns', array());
-    $campaignList = array();
-    foreach ($campaigns['values'] as $campaign) {
-      $campaignList[$campaign['id']] = $campaign['title'];
-    }
-    $this->add(
-      'select',
+    $this->addEntityRef(
       'volunteer_project_default_campaign',
       ts('Campaign', array('domain' => 'org.civicrm.volunteer')),
-      $campaignList,
-      false, // is required,
-      array("placeholder" => true)
+      ['entity' => 'Campaign', 'select' => ['minimumInputLength' => 0, 'allowClear' => TRUE]]
     );
 
     $locBlocks = civicrm_api3('VolunteerProject', 'locations', array());

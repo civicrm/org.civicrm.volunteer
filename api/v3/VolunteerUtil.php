@@ -222,53 +222,6 @@ function civicrm_api3_volunteer_util_getbeneficiaries($params) {
 }
 
 /**
- * This method returns a list of active campaigns
- *
- * @param array $params
- *   Not presently used.
- * @return array
- */
-function civicrm_api3_volunteer_util_getcampaigns($params) {
-  $filterType = civicrm_api3('Setting', 'getvalue', array(
-    'name' => 'volunteer_general_campaign_filter_type',
-  ));
-  $filterList = civicrm_api3('Setting', 'getvalue', array(
-    'name' => 'volunteer_general_campaign_filter_list',
-  ));
-
-  $campaignParams = array(
-    "options" => array("limit" => 0),
-    "return" => "title,id",
-    "is_active" => 1
-  );
-
-  //Filter the campaigns by Campaign type if the settings
-  //are set to do so.
-  switch($filterType) {
-    case "whitelist":
-      if (empty($filterList)) {
-        $result = array();
-      } else {
-        $campaignParams['campaign_type_id'] = array('IN' => $filterList);
-      }
-      break;
-    case "blacklist":
-    default:
-      if (!empty($filterList)) {
-        $campaignParams['campaign_type_id'] = array('NOT IN' => $filterList);
-      }
-      break;
-  }
-
-  if (!isset($result)) {
-    $api = civicrm_api3('Campaign', 'get', $campaignParams);
-    $result = $api['values'];
-  }
-
-  return civicrm_api3_create_success($result, "VolunteerUtil", "getcampaigns", $params);
-}
-
-/**
  * This function returns the enabled countries in CiviCRM.
  *
  * @param array $params
