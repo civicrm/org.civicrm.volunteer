@@ -37,11 +37,6 @@
               controller: 'VolunteerProject'
             });
           },
-          campaigns: function(crmApi) {
-            return crmApi('VolunteerUtil', 'getcampaigns').then(function(data) {
-              return data.values;
-            });
-          },
           relationship_data: function(crmApi, $route) {
             var params = {
               "sequential": 1,

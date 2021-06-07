@@ -574,7 +574,7 @@ function volunteer_civicrm_angularModules(&$angularModules) {
       ),
     'css' => array (0 => 'ang/volunteer.css'),
     'partials' => array (0 => 'ang/volunteer'),
-    'settings' => array(),
+    'settingsFactory' => ['CRM_Volunteer_Page_Angular', 'loadSettings'],
   );
 
   // Perhaps the placement of this code is a little hackish; unless/until we

@@ -1,9 +1,4 @@
 <div class="crm-container">
-  <!-- TODO for VOL-267: Remove beneficiaries debugging block. -->
-  <div crm-ui-debug="beneficiaries"></div>
-  <div crm-ui-debug="campaigns"></div>
-  <div crm-ui-debug="projects"></div>
-  <div crm-ui-debug="searchParams"></div>
 
   <div class="help" ng-show="!canAccessAllProjects">
     <p>
@@ -41,11 +36,9 @@
               </select>
             </div>
             <div class="crm-vol-field crm-vol-field-projects-search-campaign" crm-ui-field="{name: 'volProjectSearchForm.campaign_id', title: ts('Campaign')}">
-              <select class="big crm-form-select crm-vol-campaign" crm-ui-select="{placeholder: ts('Filter by Campaign'), allowClear:true}"
+              <input class="big crm-form-entityref crm-vol-campaign" crm-entityref="{entity: 'Campaign', api: {params: campaignFilter}, select: {minimumInputLength: 0, placeholder: ts('Filter by Campaign'), allowClear:true}}"
                       ng-change="clearCampaign()"
-                      ng-options="key as value.title for (key , value) in campaigns  track by key" ng-model="searchParams.campaign_id">
-                <option />
-              </select>
+                      ng-model="searchParams.campaign_id">
             </div>
             <div class="crm-vol-field crm-vol-field-projects-search-active" crm-ui-field="{name: 'volProjectSearchForm.is_active', title: ts('Active')}">
               <label>
