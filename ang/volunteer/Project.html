@@ -24,10 +24,7 @@
       </div>
 
       <div class="crm-vol-campaign" crm-ui-field='{name: "projectForm.campaign_id", title: ts("Campaign")}'>
-        <select class="big crm-form-select crm-vol-campaign" crm-ui-select="{placeholder: '', allowClear:true}"
-                ng-options="key as value.title for (key , value) in campaigns track by key" ng-model="project.campaign_id">
-          <option />
-        </select>
+        <input class="big crm-form-entityref crm-vol-campaign" crm-entityref="{entity: 'Campaign', api: {params: campaignFilter}, select: {minimumInputLength: 0, placeholder: ts('Select Campaign'), allowClear:true}}" ng-model="project.campaign_id">
       </div>
 
       <div class="crm-vol-location" crm-ui-field='{name: "projectForm.locBlock", title: ts("Location")}'>
@@ -41,8 +38,8 @@
           <fieldset class="crm-vol-location-address">
             <legend>{{:: ts("Address") }}</legend>
             <div class="crm-vol-location-name" crm-ui-field='{name: "projectForm.locBlock.name", title: ts("Address Name")}'>
-              <input size="30" crm-ui-id="projectForm.locBlock.name"  ng-model="locBlock.address.name" />
-            </div>
+              <input size="30" crm-ui-id="projectForm.locBlock.name"  ng-model="locBlock.address.name" />
+            </div>
             <div class="crm-vol-location-street" crm-ui-field='{name: "projectForm.locBlock.street_address", title: ts("Street Address")}'>
               <input size="30" crm-ui-id="projectForm.locBlock.street_address"  ng-model="locBlock.address.street_address" />
             </div>
