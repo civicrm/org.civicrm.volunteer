@@ -549,46 +549,22 @@ function _volunteer_isVolListingApiCall($entity, $action) {
 }
 
 /**
- * Implementation of hook_civicrm_angularModules.
+ * Implements hook_civicrm_angularModules().
  *
  * @param array $angularModules
  *   An array containing a list of all Angular modules.
  */
 function volunteer_civicrm_angularModules(&$angularModules) {
-  $angularModules['volunteer'] = array(
-    'ext' => 'org.civicrm.volunteer',
-    'basePages' => array('civicrm/vol'),
-    'requires' => array(
-      'crmApp',
-      'crmProfileUtils',
-      'crmUi',
-      'crmUtil',
-      'ngRoute',
-      'ngSanitize',
-    ),
-    'js' =>
-      array (
-        0 => 'ang/volunteer.js',
-        1 => 'ang/volunteer/*.js',
-        2 => 'ang/volunteer/*/*.js'
-      ),
-    'css' => array (0 => 'ang/volunteer.css'),
-    'partials' => array (0 => 'ang/volunteer'),
-    'settingsFactory' => ['CRM_Volunteer_Page_Angular', 'loadSettings'],
-  );
 
-  // Perhaps the placement of this code is a little hackish; unless/until we
-  // extend Civi\Angular\Page\Main, there doesn't appear to be a better
-  // alternative. This populates CRM.permissions on the client side.
-  CRM_Core_Resources::singleton()->addPermissions(array_keys(CRM_Volunteer_Permission::getVolunteerPermissions()))
-
-    // Perhaps the placement of this code is a little hackish; unless/until we
-    // extend Civi\Angular\Page\Main, there doesn't appear to be a better
-    // alternative. This provides access to the current contact id on the
-    // client side.
+  // DEPRECATED clientside variable CRM.vars['org.civicrm.volunteer'].currentContactId
+  // Not used by this extension but kept around in case others depend on it.
+  // They should be updated to use CRM.config.cid
+  CRM_Core_Resources::singleton()
     ->addVars('org.civicrm.volunteer', array(
       'currentContactId' => CRM_Core_Session::singleton()->getLoggedInContactID()
     ));
+
+  return _volunteer_civix_civicrm_angularModules($angularModules);
 }
 
 /**
