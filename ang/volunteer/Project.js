@@ -65,7 +65,7 @@
   );
 
 
-  angular.module('volunteer').controller('VolunteerProject', function($scope, $sce, $location, $q, $route, crmApi, crmUiAlert, crmUiHelp, countries, project, profile_status, campaigns, relationship_data, supporting_data, location_blocks, volBackbone) {
+  angular.module('volunteer').controller('VolunteerProject', function($scope, $sce, $location, $q, $route, crmApi, crmUiAlert, crmUiHelp, countries, project, profile_status, relationship_data, supporting_data, location_blocks, volBackbone) {
 
     /**
      * We use custom "dirty" logic rather than rely on Angular's native
@@ -166,7 +166,7 @@
       });
     }
 
-    $scope.campaigns = campaigns;
+    $scope.campaignFilter = CRM.volunteer.campaignFilter;
     $scope.relationship_types = supporting_data.values.relationship_types;
     $scope.phone_types = supporting_data.values.phone_types;
     $scope.supporting_data = supporting_data.values;
