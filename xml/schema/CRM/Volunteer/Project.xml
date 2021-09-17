@@ -81,11 +81,22 @@
   </foreignKey>
   <field>
     <name>campaign_id</name>
+    <component>CiviCampaign</component>
     <title>Campaign</title>
     <type>int unsigned</type>
     <required>false</required>
     <add>4.5</add>
     <comment>The campaign associated with this Volunteer Project.</comment>
+    <html>
+      <type>EntityRef</type>
+      <label>Campaign</label>
+    </html>
+    <pseudoconstant>
+      <table>civicrm_campaign</table>
+      <keyColumn>id</keyColumn>
+      <labelColumn>title</labelColumn>
+      <prefetch>FALSE</prefetch>
+    </pseudoconstant>
   </field>
   <foreignKey>
     <name>campaign_id</name>
