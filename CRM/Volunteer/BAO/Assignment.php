@@ -249,6 +249,9 @@ class CRM_Volunteer_BAO_Assignment extends CRM_Volunteer_BAO_Activity {
     ));
     $project = CRM_Volunteer_BAO_Project::retrieveByID($need['project_id']);
 
+    //copy over duration to Volunteer activity
+    $defaults['duration'] = CRM_Utils_Array::value('duration', $need, 'null');
+
     $defaults['campaign_id'] = $project ? $project->campaign_id : '';
     // Force NULL campaign ids to be empty strings, since the API ignores NULL values.
     if (empty($defaults['campaign_id'])) {
