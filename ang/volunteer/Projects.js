@@ -107,7 +107,12 @@
       if (_.isEmpty(address)) {
         return result;
       }
+ 
+      if (address.name) {
+        result += address.name + '<br />';
+      }
 
+      
       if (address.street_address) {
         result += address.street_address;
       }
