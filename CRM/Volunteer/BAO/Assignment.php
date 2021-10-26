@@ -248,7 +248,10 @@ class CRM_Volunteer_BAO_Assignment extends CRM_Volunteer_BAO_Activity {
       'id' => $params['volunteer_need_id'],
     ));
     $project = CRM_Volunteer_BAO_Project::retrieveByID($need['project_id']);
-
+   
+    //add Volunteer project description to activity details for context
+    $defaults['details'] = CRM_Core_DAO::getFieldValue('CRM_Volunteer_DAO_Project', $project->id, 'description');
+   
     $defaults['campaign_id'] = $project ? $project->campaign_id : '';
     // Force NULL campaign ids to be empty strings, since the API ignores NULL values.
     if (empty($defaults['campaign_id'])) {
