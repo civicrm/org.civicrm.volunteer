@@ -8,7 +8,7 @@ To see all the active projects, go to **Volunteers > Manage Volunteer Projects**
 
 In addition to simple settings such as "Title" and "Description", each project has the following characteristics:
 
-* **Multiple [volunteering opportunities](/opportunities):** Within each project, you can define many different opportunities and assign contacts to those opportunities. In turn, each opportunity can be filled by multiple [assignments](assignments) to separate volunteers.
+* **Multiple [volunteering opportunities](../opportunities):** Within each project, you can define many different opportunities and assign contacts to those opportunities. In turn, each opportunity can be filled by multiple [assignments](../assignments) to separate volunteers.
 
 * **Ongoing, or event-based:** Projects, by themselves, do not have dates &mdash; so a simple project may be considered "ongoing". If you wish to specify a time frame for a project, you can [associate it with an event](#events).
 
@@ -23,7 +23,7 @@ In addition to simple settings such as "Title" and "Description", each project h
 
 * **Multiple [relationships](#relationships) to contacts:** In order to control editing access and email notifications for each project, we must add relationships from the project to specific CiviCRM contacts.
 
-* **Multiple [registration profiles](#profiles):** Specify which questions to ask volunteers when they [sign up](sign-up-form).
+* **Multiple [registration profiles](#profiles):** Specify which questions to ask volunteers when they [sign up](../sign-up-form).
 
 
 ## Creating a new project {:#new}
@@ -35,7 +35,7 @@ A "stand-alone" project is not associated with an event, and thus can be ongoing
 1. Choose **Volunteer > New Volunteer Project**.
 2. Fill out the settings and click **Save**.
 
-Next, you can define [volunteer opportunities](/opportunities) by finding the project under **Volunteer > Manage Projects**.
+Next, you can define [volunteer opportunities](../opportunities) by finding the project under **Volunteer > Manage Projects**.
 
 ### New event-based project {:#events}
 
@@ -46,10 +46,10 @@ To associate a project with an event, the project must be created from within th
 3. Adjust project settings as necessary.
 3. Click **Save** at the bottom of the Volunteers tab to create the project and associate it with the event.
 
-Next, you can define [volunteer opportunities](/opportunities) by finding the project under **Volunteer > Manage Projects**.
+Next, you can define [volunteer opportunities](../opportunities) by finding the project under **Volunteer > Manage Projects**.
 
 !!! note
-    When an event has an associated volunteer project, the event's info page will show a "Volunteer Now" button which takes users to a [sign-up form](/sign-up-form) showing all the available [volunteer opportunities](/opportunities) defined for this project.
+    When an event has an associated volunteer project, the event's info page will show a "Volunteer Now" button which takes users to a [sign-up form](../sign-up-form) showing all the available [volunteer opportunities](../opportunities) defined for this project.
 
 
 ## Project relationships {:#relationships}
@@ -73,7 +73,7 @@ Contacts listed as "Owner" of a project will have control over editing and delet
 
 ### Manager
 
-Contacts listed as "Manager" will be BCC'd on all confirmation emails sent by CiviCRM to volunteers who fill out the [sign up form](/sign-up-form).
+Contacts listed as "Manager" will be BCC'd on all confirmation emails sent by CiviCRM to volunteers who fill out the [sign up form](../sign-up-form).
 
 ### Beneficiary
 
@@ -83,12 +83,12 @@ The beneficiary relationship can also be used to report the total number of hour
 
 ### Other project relationships
 
-Other types of project relationships can be added for any specific [reporting](/reporting) needs of your organization. To add a new type of project relationship choose **Volunteers > Configure Project Relationships**.
+Other types of project relationships can be added for any specific [reporting](../reporting) needs of your organization. To add a new type of project relationship choose **Volunteers > Configure Project Relationships**.
 
 
 ## Profiles for volunteer registration {:#profiles}
 
-When people sign up to volunter, CiviVolunteer uses profiles to control the questions in the [sign-up form](/sign-up-form).
+When people sign up to volunter, CiviVolunteer uses profiles to control the questions in the [sign-up form](../sign-up-form).
 
 !!! tip
     Read more about [CiviCRM profiles](https://docs.civicrm.org/user/en/stable/organising-your-data/profiles/) (in the User Guide) to learn how to edit the fields within a profile and add new profiles.
@@ -97,7 +97,7 @@ These profiles are set per-project, and multiple profiles can be used in sequenc
 
 Edit the project to select the profile(s) you would like to use.
 
-To edit the fields within the profiles go to **Administer > Customize Data and Screens**. Also read about [custom data](/custom-data) if you want to add fields within these profiles that do not correspond to any fields already in CiviCRM.
+To edit the fields within the profiles go to **Administer > Customize Data and Screens**. Also read about [custom data](../custom-data) if you want to add fields within these profiles that do not correspond to any fields already in CiviCRM.
 
 ### Group registration
 

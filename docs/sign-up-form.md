@@ -1,6 +1,6 @@
 # Self-service volunteer sign-up form
 
-CiviVolunteer allows volunteers to sign themselves up for [opportunities](/opportunities) that you've defined. Each time somone signs up, CiviVolunteer creates an [assignment](assignment). It also makes sure to offer only the opportunites which have not yet reached the desired number of assignments (so that you don't overbook anything).
+CiviVolunteer allows volunteers to sign themselves up for [opportunities](../opportunities) that you've defined. Each time somone signs up, CiviVolunteer creates an [assignment](../assignment). It also makes sure to offer only the opportunites which have not yet reached the desired number of assignments (so that you don't overbook anything).
 
 ## Configuration
 
@@ -14,7 +14,7 @@ To get your sign up form working, make sure to do the following.
         *  CiviVolunteer: register to volunteer
         *  CiviCRM: access AJAX API
 
-* Set up profiles &mdash; the questions on the sign up form are controlled within the [profiles set for the project](/projects#profiles), and these profiles also control whether the form will allow groups to sign up together.
+* Set up profiles &mdash; the questions on the sign up form are controlled within the [profiles set for the project](../projects#profiles), and these profiles also control whether the form will allow groups to sign up together.
 
 
 ## Accessing the sign-up form

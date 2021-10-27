@@ -27,7 +27,6 @@ nav:
 - Custom data: custom-data.md
 - Logging hours: logging-hours.md
 - Reporting: reporting.md
-- Live examples: examples.md
 - Release notes:
   - 2.2 release: release/2.2.md
   - 2.0 release: release/2.0.md

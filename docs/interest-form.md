@@ -1,6 +1,6 @@
 # Volunteer Interest Form
 
-CiviVolunteer provides a public-facing Volunteer Interest Form to allow potential volunteers to express interest in volunteering for your organisation without signing up for a specific volunteer opportunity. This is useful if your organisation doesn't have any volunteer opportunities listed at the time of the potential volunteer's visit, or if none of them are appropriate for the individual in question.
+CiviVolunteer provides a public-facing Volunteer Interest Form to allow potential volunteers to express interest in volunteering for your organization without signing up for a specific volunteer opportunity. This is useful if your organization doesn't have any volunteer opportunities listed at the time of the potential volunteer's visit, or if none of them are appropriate for the individual in question.
 
 This form allows you to collect whatever information you choose about potential volunteers from basic contact information to self-assessment of ability in various skill areas.
 
@@ -25,7 +25,7 @@ To modify this profile:
 1. Click **Fields**
 
 !!! tip
-    If you want to add questions within these this profile that do not correspond to any fields already in CiviCRM, then you'll first need to add [custom data fields](/custom-data).
+    If you want to add questions within these this profile that do not correspond to any fields already in CiviCRM, then you'll first need to add [custom data fields](../custom-data).
 
 !!! caution
     Don't change the title of "Notify Me of Volunteer Opportunities" since the profile is reserved and the title is hardcoded.
