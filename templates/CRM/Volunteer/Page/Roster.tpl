@@ -14,7 +14,8 @@
         <td>{$assignment.role_label}</td>
         <td>
           {if $assignment.email}
-            <a class="button" href="mailto:{$assignment.email}"
+            {assign var='emailParams' value="action=add&reset=1&atype=3&cid=`$assignment.contact_id`"}
+            <a class="button" href="{crmURL p='civicrm/activity/email/add' q=$emailParams}"
                title="{ts 1=$assignment.name domain='org.civicrm.volunteer'}Send %1 an email.{/ts}">
                <i class="crm-i fa-envelope-o"></i>
                {ts}Email{/ts}</a>
