@@ -107,31 +107,6 @@
     };
 
     /**
-     * Populates locBlock fields based on user selection of location.
-     *
-     * Makes an API request.
-     */
-    $scope.changeLocBlock = function() {
-      crmApi("VolunteerProject", "getlocblockdata", {
-        "return": "all",
-        "sequential": 1,
-        "id": $scope.searchParams.loc_block_id
-      }).then(function(result) {
-        if (!result.is_error && result.count) {
-
-          if (!$scope.searchParams.proximity) {
-            $scope.searchParams.proximity = {};
-          }
-
-          $scope.searchParams.proximity.street_address = result.values[0].address.street_address;
-          $scope.searchParams.proximity.city = result.values[0].address.city;
-          $scope.searchParams.proximity.postal_code = result.values[0].address.postal_code;
-          $scope.searchParams.proximity.country = result.values[0].address.country_id;
-        }
-      });
-    };
-
-    /**
      * Returns true if a proximity search has been started; else false.
      * This function ignores units because they shouldn't be used to calculate
      * if a proximity search is started. Because otherwise units is marked as required

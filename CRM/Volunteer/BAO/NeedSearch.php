@@ -192,6 +192,11 @@ class CRM_Volunteer_BAO_NeedSearch {
       $this->searchParams['project']['type_id'] = is_array($type) ? $type : explode(',', $type);
     }
 
+    $locBlock = CRM_Utils_Array::value('loc_block_id', $userSearchParams);
+    if ($locBlock) {
+      $this->searchParams['project']['loc_block_id'] = is_array($locBlock) ? $locBlock : explode(',', $locBlock);
+    }
+
     $beneficiary = CRM_Utils_Array::value('beneficiary', $userSearchParams);
     if ($beneficiary) {
       if (!array_key_exists('project_contacts', $this->searchParams['project'])) {
