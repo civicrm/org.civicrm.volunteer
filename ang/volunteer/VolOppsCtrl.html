@@ -27,6 +27,19 @@ Required vars: volOppData(), searchParams
             <input crm-ui-id="volOppSearchForm.date_end" crm-ui-datepicker="{time: false}" ng-model="searchParams.date_end" />
           </div>
 
+          <div crm-ui-field="{name: 'volOppSearchForm.type_id', title: ts('Type')}" class="crm-vol-opp-type">
+            <select
+                crm-ui-id="volOppSearchForm.type_id"
+                crm-ui-select="{minimumInputLength: 0, placeholder: ts('Select Volunteer Type(s)')}"
+                type="text"
+                multiple="multiple"
+                name="type_id"
+                ng-model="searchParams.type_id"
+                ng-options="key as value for (key , value) in project_types track by key"
+                class="big crm-form-text">
+            </select>
+          </div>
+
           <div crm-ui-field="{name: 'volOppSearchForm.role_id', title: ts('Role')}" class="crm-vol-opp-role">
             <select
               crm-ui-id="volOppSearchForm.role_id"
@@ -76,6 +89,17 @@ Required vars: volOppData(), searchParams
               ng-required="isProximitySearch">
             </select>
             <label crm-ui-for="volOppSearchForm.unit">of:</label>
+          </div>
+          <div crm-ui-field="{name: 'volOppSearchForm.loc_block_id', title: ts('Location')}" class="crm-vol-opp-location">
+            <select
+                crm-ui-id="volOppSearchForm.loc_block_id"
+                crm-ui-select="{placeholder: ts('Select Location'), allowClear:true}"
+                ng-model="searchParams.loc_block_id"
+                ng-change="changeLocBlock()"
+                ng-options="key as value for (key , value) in location_blocks track by key"
+                class="big crm-form-select">
+              <option />
+            </select>
           </div>
           <div crm-ui-field="{name: 'volOppSearchForm.street_address', title: ts('Street Address')}" class="crm-vol-opp-street">
             <input

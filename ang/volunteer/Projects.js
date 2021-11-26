@@ -45,6 +45,11 @@
               });
             });
           },
+          project_types: function(crmApi) {
+            return crmApi('VolunteerUtil', 'getprojecttypeoptions', {}).then(function(result) {
+              return result.values;
+            });
+          },
           volunteerBackbone: function(volBackbone) {
             return volBackbone.load();
           }
@@ -54,7 +59,7 @@
   );
 
   // TODO for VOL-276: Remove reference to beneficiaries object, based on deprecated API.
-  angular.module('volunteer').controller('VolunteerProjects', function ($scope, $filter, crmApi, crmStatus, crmUiHelp, projectData, $location, volunteerBackbone, beneficiaries, $window) {
+  angular.module('volunteer').controller('VolunteerProjects', function ($scope, $filter, crmApi, crmStatus, crmUiHelp, projectData, $location, volunteerBackbone, beneficiaries, project_types, campaigns, $window) {
     // The ts() and hs() functions help load strings for this module.
     var ts = $scope.ts = CRM.ts('org.civicrm.volunteer');
     var hs = $scope.hs = crmUiHelp({file: 'CRM/volunteer/Projects'}); // See: templates/CRM/volunteer/Projects.hlp
@@ -68,6 +73,7 @@
     // TODO for VOL-276: Remove reference to beneficiaries object, based on deprecated API.
     $scope.beneficiaries = beneficiaries;
     $scope.campaignFilter = CRM.volunteer.campaignFilter;
+    $scope.project_types = project_types;
     $scope.needBase = CRM.url("civicrm/volunteer/need");
     $scope.assignBase = CRM.url("civicrm/volunteer/assign");
     $scope.urlPublicVolOppSearch = CRM.url('civicrm/vol/', '', 'front') + '#/volunteer/opportunities';

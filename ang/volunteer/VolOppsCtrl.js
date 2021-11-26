@@ -25,12 +25,20 @@
           return crmApi('VolunteerUtil', 'getsupportingdata', {
             controller: 'VolOppsCtrl'
           });
-        }
+        },
+        project_types: function(crmApi) {
+          return crmApi('VolunteerUtil', 'getprojecttypeoptions', {}).then(function(result) {
+            return result.values;
+          });
+        },
+        location_blocks: function(crmApi) {
+          return crmApi('VolunteerProject', 'locations', {});
+        },
       }
     });
   });
 
-  angular.module('volunteer').controller('VolOppsCtrl', function ($route, $scope, $window, $timeout, crmStatus, crmUiHelp, volOppSearch, countries, settings, supporting_data) {
+  angular.module('volunteer').controller('VolOppsCtrl', function ($route, $scope, $window, $timeout, crmApi, crmStatus, crmUiHelp, volOppSearch, countries, settings, supporting_data, project_types, location_blocks) {
     // The ts() and hs() functions help load strings for this module.
     var ts = $scope.ts = CRM.ts('org.civicrm.volunteer');
     var hs = $scope.hs = crmUiHelp({file: 'ang/VolOppsCtrl'}); // See: templates/ang/VolOppsCtrl.hlp
@@ -59,6 +67,8 @@
 
     $scope.countries = countries;
     $scope.roles = supporting_data.values.roles;
+    $scope.project_types = project_types;
+    $scope.location_blocks = location_blocks.values;
     $scope.searchParams = volOppSearch.params;
     $scope.volOppData = volOppSearch.results;
 
@@ -94,6 +104,31 @@
       help += ' ' + ts('Click the checkbox for each volunteer opportunity you wish to add to your schedule, then click the "Sign Up!" button to supply your contact information and complete your registration.');
 
       return help;
+    };
+
+    /**
+     * Populates locBlock fields based on user selection of location.
+     *
+     * Makes an API request.
+     */
+    $scope.changeLocBlock = function() {
+      crmApi("VolunteerProject", "getlocblockdata", {
+        "return": "all",
+        "sequential": 1,
+        "id": $scope.searchParams.loc_block_id
+      }).then(function(result) {
+        if (!result.is_error && result.count) {
+
+          if (!$scope.searchParams.proximity) {
+            $scope.searchParams.proximity = {};
+          }
+
+          $scope.searchParams.proximity.street_address = result.values[0].address.street_address;
+          $scope.searchParams.proximity.city = result.values[0].address.city;
+          $scope.searchParams.proximity.postal_code = result.values[0].address.postal_code;
+          $scope.searchParams.proximity.country = result.values[0].address.country_id;
+        }
+      });
     };
 
     /**

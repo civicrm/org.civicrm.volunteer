@@ -86,7 +86,12 @@ class CRM_Volunteer_DAO_Project extends CRM_Core_DAO {
    * @var int
    */
   public $campaign_id;
-
+   /**
+   * The type associated with this Volunteer Project. Implicit FK to option_value row in volunteer_project_type option_group.
+   *
+   * @var int unsigned
+   */
+  public $type_id;
   /**
    * Class constructor.
    */
@@ -254,6 +259,20 @@ class CRM_Volunteer_DAO_Project extends CRM_Core_DAO {
             'prefetch' => 'FALSE',
           ],
           'add' => '4.5',
+        ],
+	'type_id' => [
+          'name' => 'type_id',
+          'type' => CRM_Utils_Type::T_INT,
+          'title' => ts('Type', array('domain' => 'org.civicrm.volunteer')) ,
+          'description' => 'Implicit FK to option_value row in volunteer_project_type option_group.',
+          'default' => 'NULL',
+          'table_name' => 'civicrm_volunteer_project',
+          'entity' => 'Project',
+          'bao' => 'CRM_Volunteer_DAO_Project',
+          'pseudoconstant' => array(
+            'optionGroupName' => 'volunteer_project_type',
+            'optionEditPath' => 'civicrm/admin/options/volunteer_project_type',
+          )
         ],
       ];
       CRM_Core_DAO_AllCoreTables::invoke(__CLASS__, 'fields_callback', Civi::$statics[__CLASS__]['fields']);

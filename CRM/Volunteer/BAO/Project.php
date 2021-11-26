@@ -470,7 +470,13 @@ class CRM_Volunteer_BAO_Project extends CRM_Volunteer_DAO_Project {
     foreach ($project->fields() as $field) {
       $fieldName = $field['name'];
       if (!empty($project->$fieldName)) {
-        $query->where('!column = @value', array(
+        if (!is_array($project->$fieldName)) {
+          $exprs = '!column = @value';
+        } else {
+          $exprs = '!column IN (@value)';
+        }
+
+        $query->where($exprs, array(
           'column' => $fieldName,
           'value' => $project->$fieldName,
         ));

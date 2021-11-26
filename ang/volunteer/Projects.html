@@ -30,6 +30,12 @@
             <div class="crm-vol-field crm-vol-field-projects-search-title" crm-ui-field="{name: 'volProjectSearchForm.title', title: ts('Title')}">
               <input crm-ui-id="volProjectSearchForm.title" ng-model="searchParams.title" />
             </div>
+            <div class="crm-vol-field crm-vol-field-projects-search-type" crm-ui-field="{name: 'volProjectSearchForm.type_id', title: ts('Type')}">
+              <select class="big crm-form-select crm-vol-type" crm-ui-select="{placeholder: ts('Filter by Type'), allowClear:true}"
+                      ng-options="key as value for (key , value) in project_types track by key" ng-model="searchParams.type_id">
+                <option />
+              </select>
+            </div>
             <div class="crm-vol-field crm-vol-field-projects-search-beneficiaries" crm-ui-field="{name: 'volProjectSearchForm.beneficiary', title: ts('Beneficiary')}">
               <!-- TODO for VOL-267: Replace this with an entityRef widget. -->
               <select class="big crm-form-select crm-vol-beneficiary" crm-ui-select="{placeholder: ts('Filter by Beneficiary'), allowClear:true}"

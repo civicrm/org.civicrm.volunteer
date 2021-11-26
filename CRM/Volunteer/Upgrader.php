@@ -34,6 +34,7 @@ class CRM_Volunteer_Upgrader extends CRM_Volunteer_Upgrader_Base {
   const customContactGroupName = 'Volunteer_Information';
   const customContactTypeName = 'Volunteer';
   const skillLevelOptionGroupName = 'skill_level';
+  const volProjectTypeOptionGroupName = 'volunteer_project_type';
 
   public function install() {
     $volActivityTypeId = $this->createActivityType(CRM_Volunteer_BAO_Assignment::CUSTOM_ACTIVITY_TYPE);
@@ -59,6 +60,9 @@ class CRM_Volunteer_Upgrader extends CRM_Volunteer_Upgrader_Base {
     $this->schemaUpgrade20();
     $this->addNeedEndDate();
     $this->installNeedMetaDateFields();
+
+    $this->installTypeIdField();
+    $this->createVolProjectTypeOptionGroup();
     
     // uncomment the next line to insert sample data
     // $this->executeSqlFile('sql/volunteer_sample.mysql');
@@ -450,6 +454,32 @@ class CRM_Volunteer_Upgrader extends CRM_Volunteer_Upgrader_Base {
   public function upgrade_2301() {
     $this->ctx->log->info('Applying update 2301 - Add default value to volunteer_need.created column');
     CRM_Core_DAO::executeQuery('ALTER TABLE `civicrm_volunteer_need` CHANGE COLUMN `created` `created` timestamp DEFAULT CURRENT_TIMESTAMP');
+    return TRUE;
+  }
+
+  public function installTypeIdField() {
+    $query = CRM_Core_DAO::executeQuery('
+      ALTER TABLE `civicrm_volunteer_project`
+      ADD `type_id` int(11) DEFAULT NULL COMMENT \'Implicit FK to option_value row in volunteer_project_type option_group.\';');
+    return !is_a($query, 'DB_Error');
+  }
+
+  public function upgrade_2400() {
+    $this->ctx->log->info('Applying update 2400 - Adding type id data field to volunteer project');
+    return $this->installTypeIdField();
+  }
+
+  public function createVolProjectTypeOptionGroup() {
+    $this->createPossibleDuplicateRecord('OptionGroup', array(
+      'is_active' => 1,
+      'name' => self::volProjectTypeOptionGroupName,
+      'title' => ts('Volunteer Project Type', array('domain' => 'org.civicrm.volunteer')),
+    ));
+  }
+
+  public function upgrade_2401() {
+    $this->ctx->log->info('Applying update 2400 - Creating volunteer_project_type Option Group');
+    $this->createVolProjectTypeOptionGroup();
     return TRUE;
   }
 
