@@ -73,15 +73,6 @@ function volunteer_civicrm_navigationMenu(&$menu) {
   ));
 
   _volunteer_civix_insert_navigation_menu($menu, 'volunteer_volunteers', array(
-    'label' => E::ts('Configure Project Types'),
-    'name' => 'volunteer_config_project_types',
-    'url' => 'civicrm/admin/options/volunteer_project_type?reset=1',
-    'permission' => NULL,
-    'operator' => NULL,
-    'separator' => 0,
-  ));
-
-  _volunteer_civix_insert_navigation_menu($menu, 'volunteer_volunteers', array(
     'label' => E::ts('Configure Roles'),
     'name' => 'volunteer_config_roles',
     'url' => 'civicrm/admin/options/volunteer_role?reset=1',
@@ -94,6 +85,15 @@ function volunteer_civicrm_navigationMenu(&$menu) {
     'label' => E::ts('Configure Project Relationships'),
     'name' => 'volunteer_config_projrel',
     'url' => 'civicrm/admin/options/volunteer_project_relationship?reset=1',
+    'permission' => NULL,
+    'operator' => NULL,
+    'separator' => 0,
+  ));
+
+  _volunteer_civix_insert_navigation_menu($menu, 'volunteer_volunteers', array(
+    'label' => E::ts('Configure Project Types'),
+    'name' => 'volunteer_config_project_types',
+    'url' => 'civicrm/admin/options/volunteer_project_type?reset=1',
     'permission' => NULL,
     'operator' => NULL,
     'separator' => 0,
