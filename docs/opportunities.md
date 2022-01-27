@@ -1,6 +1,6 @@
 # Volunteer Opportunities
 
-After creating a [project](../projects), you must define the volunteering *opportunities* associated with the project. An opportunity is essentially a role and a time, but with a few more options and nuances.
+After creating a [project](./projects.md), you must define the volunteering *opportunities* associated with the project. An opportunity is essentially a role and a time, but with a few more options and nuances.
 
 To define opportunities, go to **Volunteers > Manage Projects**, find the project, and choose **Define volunteer opportunities**.
 
@@ -12,10 +12,10 @@ To define opportunities, go to **Volunteers > Manage Projects**, find the projec
 ## Characteristics of a volunteering opportunity
 
 * **Role** - to specify what type of work is to be done, for example "Photographer", or "Clean up" *(more on [roles](#role) below)*
-* **Number of volunteers needed** - when this number is reached with enough [assignments](../assignments), no further assignments will be possible
+* **Number of volunteers needed** - when this number is reached with enough [assignments](./assignments.md), no further assignments will be possible
 * **Time** - to specify when the volunteering is to occur (with the option of having it be open-ended)
-* **Public** - to control which opportunities are available for self-service [sign-up](../sign-up-form).
-* **Enabled** - to control which opportunities are available for [assignment](../assignments) by managers of the project.
+* **Public** - to control which opportunities are available for self-service [sign-up](./sign-up-form.md).
+* **Enabled** - to control which opportunities are available for [assignment](./assignments.md) by managers of the project.
 
 
 
@@ -34,7 +34,7 @@ To add and edit roles, go to **Volunteers > Configure Roles**.
 
 When defining roles, you can use the **Description** field to provide additional information about the role. The description is used in the following places. 
 
-* On the [sign-up form](../sign-up-form), a small quote bubble displays next to each role to activate a pop-up with the role description.
+* On the [sign-up form](./sign-up-form.md), a small quote bubble displays next to each role to activate a pop-up with the role description.
 * The description is also written into the confirmation email sent to the volunteer after signup.
 
 
