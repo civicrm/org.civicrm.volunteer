@@ -14,7 +14,7 @@ Log hours as follows:
 !!! bug
     As of version 2.2.1, a known [bug]( https://issues.civicrm.org/jira/browse/VOL-245) prevents you from logging *some* hours unless you log *all* hours for all assigned volunteers at once.
 
-"Hours worked" are stored within the activity for the [assignment](../assignments). See [reporting](../reporting) for more info about viewing this data after it's logged.
+"Hours worked" are stored within the activity for the [assignment](./assignments.md). See [reporting](./reporting.md) for more info about viewing this data after it's logged.
 
 
 ## Commending volunteers
