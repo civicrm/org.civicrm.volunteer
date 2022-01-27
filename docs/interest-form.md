@@ -25,7 +25,7 @@ To modify this profile:
 1. Click **Fields**
 
 !!! tip
-    If you want to add questions within these this profile that do not correspond to any fields already in CiviCRM, then you'll first need to add [custom data fields](../custom-data).
+    If you want to add questions within these this profile that do not correspond to any fields already in CiviCRM, then you'll first need to add [custom data fields](./custom-data.md).
 
 !!! caution
     Don't change the title of "Notify Me of Volunteer Opportunities" since the profile is reserved and the title is hardcoded.
