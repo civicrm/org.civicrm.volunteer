@@ -6,14 +6,14 @@ The [CiviVolunteer extension](https://github.com/civicrm/org.civicrm.volunteer.g
 
 ### Features
 
-* Define multiple [volunteer projects](./projects).
-    * (Optionally) [associate a project with a CiviCRM event](./projects#events).
-    * Define specific [volunteer opportunities](./opportunities) for each project with distinct roles and shifts.
+* Define multiple [volunteer projects](./projects.md).
+    * (Optionally) [associate a project with a CiviCRM event](./projects.md#events).
+    * Define specific [volunteer opportunities](./opportunities.md) for each project with distinct roles and shifts.
 * Allow volunteers to:
-    * [sign up for specific opportunities](./sign-up-form) themselves.
-    * [express interest](./interest-form) generally in volunteering, without signing up for anything specifically.
-* Manually [assign volunteers to shifts](./assignments)
-* [Log](/.logging-hours) and [report](./reporting) on volunteer hours
+    * [sign up for specific opportunities](./sign-up-form.md) themselves.
+    * [express interest](./interest-form.md) generally in volunteering, without signing up for anything specifically.
+* Manually [assign volunteers to shifts](./assignments.md)
+* [Log](/.logging-hours.md) and [report](./reporting.md) on volunteer hours
 
 This documentation book provides assistance to users, administrators, and developers of CiviVolunteer.
 
