@@ -1,6 +1,6 @@
 # Self-service volunteer sign-up form
 
-CiviVolunteer allows volunteers to sign themselves up for [opportunities](./opportunities.md) that you've defined. Each time somone signs up, CiviVolunteer creates an [assignment](./assignment.md). It also makes sure to offer only the opportunites which have not yet reached the desired number of assignments (so that you don't overbook anything).
+CiviVolunteer allows volunteers to sign themselves up for [opportunities](./opportunities.md) that you've defined. Each time somone signs up, CiviVolunteer creates an [assignment](./assignments.md). It also makes sure to offer only the opportunites which have not yet reached the desired number of assignments (so that you don't overbook anything).
 
 ## Configuration
 
