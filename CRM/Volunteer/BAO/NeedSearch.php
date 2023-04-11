@@ -73,7 +73,7 @@ class CRM_Volunteer_BAO_NeedSearch {
       $flexibleNeed = civicrm_api3('VolunteerNeed', 'getsingle', array(
         'id' => $project->flexible_need_id,
       ));
-      if ($flexibleNeed['visibility_id'] === CRM_Core_OptionGroup::getValue('visibility', 'public', 'name')) {
+      if ($flexibleNeed['visibility_id'] === CRM_Core_PseudoConstant::getKey('CRM_Volunteer_BAO_Need', 'visibility_id', 'public')) {
         $needId = $flexibleNeed['id'];
         $results[$needId] = $flexibleNeed;
       }

@@ -889,7 +889,7 @@ class CRM_Volunteer_BAO_Project extends CRM_Volunteer_DAO_Project {
       $result = civicrm_api3('VolunteerNeed', 'get', array(
         'is_active' => '1',
         'project_id' => $this->id,
-        'visibility_id' => CRM_Core_OptionGroup::getValue('visibility', 'public', 'name'),
+        'visibility_id' => CRM_Core_PseudoConstant::getKey('CRM_Volunteer_BAO_Need', 'visibility_id', 'public'),
         'options' => array(
           'sort' => 'start_time',
           'limit' => 0,

@@ -15,7 +15,7 @@ class CRM_Volunteer_BAO_AssignmentTest extends VolunteerTestAbstract {
     $need = CRM_Core_DAO::createTestObject('CRM_Volunteer_BAO_Need', array(
       'is_active' => 1,
       'project_id' => $project->id,
-      'visibility_id' => CRM_Core_OptionGroup::getValue('visibility', 'public', 'name'),
+      'visibility_id' => CRM_Core_PseudoConstant::getKey('CRM_Volunteer_BAO_Need', 'visibility_id', 'public'),
     ));
     $this->assertObjectHasAttribute('id', $need, 'Failed to prepopulate Volunteer Need');
 
