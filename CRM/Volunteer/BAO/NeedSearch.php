@@ -73,7 +73,7 @@ class CRM_Volunteer_BAO_NeedSearch {
       $flexibleNeed = civicrm_api3('VolunteerNeed', 'getsingle', array(
         'id' => $project->flexible_need_id,
       ));
-      if ($flexibleNeed['visibility_id'] === CRM_Core_OptionGroup::getValue('visibility', 'public', 'name')) {
+      if (\CRM_Core_PseudoConstant::getName('CRM_Volunteer_BAO_Need', 'visibility_id', $flexibleNeed['visibility_id']) === 'public') {
         $needId = $flexibleNeed['id'];
         $results[$needId] = $flexibleNeed;
       }
@@ -276,7 +276,7 @@ class CRM_Volunteer_BAO_NeedSearch {
           $stateProvinceId = $api['api.LocBlock.getsingle']['api.Address.getsingle']['state_province_id'];
           $stateProvince = CRM_Core_PseudoConstant::stateProvince($stateProvinceId);
         }
-        
+
 
         $project['location'] = array(
           'city' => $api['api.LocBlock.getsingle']['api.Address.getsingle']['city'],
