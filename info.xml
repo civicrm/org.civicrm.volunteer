@@ -8,10 +8,10 @@
     <author>Ginkgo Street Labs</author>
     <email>ginkgomzd@fastmail.com</email>
   </maintainer>
-  <releaseDate>2018-06-29</releaseDate>
+  <releaseDate>2023-05-15</releaseDate>
   <version>2.4.3</version>
   <compatibility>
-    <ver>5.28</ver>
+    <ver>5.29</ver>
   </compatibility>
   <comments>
     Developed by Ginkgo Street Labs and CiviCRM, LLC with contributions from the community. Special thanks to Friends of Georgia State Parks &amp; Historic Sites for funding the initial release, and to The Manhattan Neighborhood Network for funding the 1.4 release.
