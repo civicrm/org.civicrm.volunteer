@@ -424,8 +424,8 @@ class CRM_Volunteer_BAO_Project extends CRM_Volunteer_DAO_Project {
    * NOTE: related entities are not returned, just available for filtering.
    *
    * This function is invoked from within the web form layer and also from the
-   * API layer. 
-   * 
+   * API layer.
+   *
    * @see CRM_Volunteer_BAO_Project::create(), CRM_Volunteer_BAO_Project::buildContactJoin(), CRM_Volunteer_BAO_Project::buildProximityWhere()
    *
    * @param array $params
@@ -456,7 +456,7 @@ class CRM_Volunteer_BAO_Project extends CRM_Volunteer_DAO_Project {
         ->join('civicrm_address', 'INNER JOIN `civicrm_address` ON civicrm_address.id = loc.address_id')
         ->where(self::buildProximityWhere($params['proximity']));
     }
-    
+
     if (isset($params['is_active'])) {
       if (CRM_Volunteer_BAO_Project::isOff($params['is_active'])) {
         $params['is_active'] = 0;
@@ -775,7 +775,7 @@ class CRM_Volunteer_BAO_Project extends CRM_Volunteer_DAO_Project {
 
     // the array of settings is keyed by the name of the volunteer project relationship
     foreach ($projectContactsSetting as $optionName => $defaultConfig) {
-      switch (CRM_Utils_Array::value('mode', $defaultConfig)) {
+      switch ($defaultConfig['mode'] ?? NULL) {
         case 'contact':
           $contactIds = explode(',', $defaultConfig['value']);
           break;

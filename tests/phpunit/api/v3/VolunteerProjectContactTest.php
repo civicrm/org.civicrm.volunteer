@@ -25,7 +25,7 @@ class api_v3_VolunteerProjectContactTest extends VolunteerTestAbstract {
       'relationship_type_id' => CRM_Core_OptionGroup::getValue(CRM_Volunteer_BAO_ProjectContact::RELATIONSHIP_OPTION_GROUP, 'volunteer_owner', 'name'),
     );
 
-    $this->callAPIAndDocument('VolunteerProjectContact', 'create', $params, __FUNCTION__, __FILE__);
+    $this->callAPISuccess('VolunteerProjectContact', 'create', $params);
   }
 
   /**
@@ -41,7 +41,7 @@ class api_v3_VolunteerProjectContactTest extends VolunteerTestAbstract {
       'relationship_type_id' => 'volunteer_owner',
     );
 
-    $this->callAPIAndDocument('VolunteerProjectContact', 'create', $params, __FUNCTION__, __FILE__);
+    $this->callAPISuccess('VolunteerProjectContact', 'create', $params);
   }
 
   /**
@@ -51,7 +51,7 @@ class api_v3_VolunteerProjectContactTest extends VolunteerTestAbstract {
     $dao = CRM_Core_DAO::createTestObject('CRM_Volunteer_BAO_ProjectContact');
     $this->assertObjectHasAttribute('id', $dao, 'Failed to prepopulate Volunteer Project Contact');
 
-    $this->callAPIAndDocument('VolunteerProjectContact', 'delete', array('id' => $dao->id), __FUNCTION__, __FILE__);
+    $this->callAPISuccess('VolunteerProjectContact', 'delete', array('id' => $dao->id));
   }
 
   /**
@@ -66,7 +66,7 @@ class api_v3_VolunteerProjectContactTest extends VolunteerTestAbstract {
     ));
     $this->assertObjectHasAttribute('id', $dao, 'Failed to prepopulate Volunteer Project Contact');
 
-    $api = $this->callAPIAndDocument('VolunteerProjectContact', 'get', array('id' => $dao->id), __FUNCTION__, __FILE__);
+    $api = $this->callAPISuccess('VolunteerProjectContact', 'get', array('id' => $dao->id));
 
     // make sure the label and machine name are returned
     $vpc = $api['values'][1];
