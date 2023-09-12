@@ -392,7 +392,8 @@ class CRM_Volunteer_Form_Settings extends CRM_Core_Form {
     // radios and checkboxes are nested inside HTML_QuickForm_group objects;
     // check *their* elements for the data-fieldgroup attribute
     if (is_a($element, 'HTML_QuickForm_group')) {
-      if ($first = CRM_Utils_Array::value(0, $element->_elements)) {
+      $first = $element->_elements[0] ?? NULL;
+      if ($first) {
         $groupName = $first->getAttribute("data-fieldgroup");
       }
     }

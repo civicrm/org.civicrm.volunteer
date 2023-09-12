@@ -8,7 +8,7 @@ class CRM_Volunteer_Page_Router extends CRM_Core_Page {
       return;
     }
 
-    switch (CRM_Utils_Array::value(2, $args)) {
+    switch ($args[2] ?? NULL) {
       /**
        * This routes civicrm/volunteer/join to CiviVolunteer's reserved profile for volunteer interest.
        */

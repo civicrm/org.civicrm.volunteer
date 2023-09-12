@@ -30,7 +30,7 @@ class api_v3_VolunteerNeedTest extends VolunteerTestAbstract {
       "is_active"     => 1,
     );
 
-    $this->callAPIAndDocument('VolunteerNeed', 'create', $params, __FUNCTION__, __FILE__);
+    $this->callAPISuccess('VolunteerNeed', 'create', $params);
   }
 
   /**
@@ -40,7 +40,7 @@ class api_v3_VolunteerNeedTest extends VolunteerTestAbstract {
     $need = CRM_Core_DAO::createTestObject('CRM_Volunteer_BAO_Need');
     $this->assertObjectHasAttribute('id', $need, 'Failed to prepopulate Volunteer Need');
 
-    $this->callAPIAndDocument('VolunteerNeed', 'delete', array('id' => $need->id), __FUNCTION__, __FILE__);
+    $this->callAPISuccess('VolunteerNeed', 'delete', array('id' => $need->id));
   }
 
   /**
@@ -50,7 +50,7 @@ class api_v3_VolunteerNeedTest extends VolunteerTestAbstract {
     $need = CRM_Core_DAO::createTestObject('CRM_Volunteer_BAO_Need');
     $this->assertObjectHasAttribute('id', $need, 'Failed to prepopulate Volunteer Need');
 
-    $this->callAPIAndDocument('VolunteerNeed', 'get', array('id' => $need->id), __FUNCTION__, __FILE__);
+    $this->callAPISuccess('VolunteerNeed', 'get', array('id' => $need->id));
   }
 
   function testGetSearchResult() {

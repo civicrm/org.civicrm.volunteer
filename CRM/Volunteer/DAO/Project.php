@@ -251,7 +251,7 @@ class CRM_Volunteer_DAO_Project extends CRM_Core_DAO {
             'table' => 'civicrm_campaign',
             'keyColumn' => 'id',
             'labelColumn' => 'title',
-            'prefetch' => 'FALSE',
+            'prefetch' => 'disabled',
           ],
           'add' => '4.5',
         ],
