@@ -136,8 +136,8 @@
               <label>{{:: ts("Profile:") }}</label>
             </div>
             <div class="content">
-              <input ng-if="supporting_data.use_profile_editor" crm-profile-selector="{}"
-                     ng-model="profile.uf_group_id" ng-change="validateProfileSelections()"/>
+              <input ng-if="supporting_data.use_profile_editor"
+                     ng-model="profile.uf_group_id" ng-change="validateProfileSelections()" class="crm-profile-selector" id="profile-field" data-entities="{{data_entities}}" data-default="{{data_default}}" data-usedfor="{{data_used_for}}" data-group-type="{{data_group_type}}"/>
 
               <select ng-if="!supporting_data.use_profile_editor" class="big crm-form-select crm-vol-simple-profile-selector"
                       crm-ui-select="{placeholder: '', allowClear:true}" ng-change="validateProfileSelections()"
