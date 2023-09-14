@@ -129,7 +129,7 @@ class CRM_Volunteer_Form_VolunteerSignUp extends CRM_Core_Form {
 
     return $defaults;
   }
- 
+
   /**
    * The "vid" URL parameter for this form was deprecated in CiviVolunteer 2.0.
    *
@@ -138,13 +138,13 @@ class CRM_Volunteer_Form_VolunteerSignUp extends CRM_Core_Form {
    */
   function redirectLegacyRequests() {
     $vid = CRM_Utils_Request::retrieve('vid', 'Int', $this, FALSE, NULL, 'GET');
-    
+
     if($vid != NULL) {
       $path = "civicrm/vol/";
       $fragment =  "/volunteer/opportunities?project=$vid&dest=event";
       $newURL = CRM_Utils_System::url($path, NULL, FALSE, $fragment, FALSE, TRUE);
       CRM_Utils_System::redirect($newURL);
-    }    
+    }
   }
 
   /**
@@ -350,7 +350,7 @@ class CRM_Volunteer_Form_VolunteerSignUp extends CRM_Core_Form {
 
     $this->addButtons(array(
       array(
-        'type' => 'done',
+        'type' => 'upload',
         'name' => ts('Submit', array('domain' => 'org.civicrm.volunteer')),
         'isDefault' => TRUE,
       ),
@@ -432,7 +432,7 @@ class CRM_Volunteer_Form_VolunteerSignUp extends CRM_Core_Form {
    */
   function postProcess() {
     $cid = CRM_Utils_Array::value('userID', $_SESSION['CiviCRM'], NULL);
-    $values = $this->controller->exportValues();
+    $values = $this->controller->exportValues($this->_name);
 
     $profileFields = $this->getProfileFields($this->getPrimaryVolunteerProfileIDs());
     $profileFieldsByType = array_reduce($profileFields, array($this, 'reduceByType'), array());
