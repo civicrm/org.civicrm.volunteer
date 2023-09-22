@@ -7,7 +7,7 @@ use Civi\Test\TransactionalInterface;
 /**
  * Abstract class for Volunteer tests
  */
-abstract class VolunteerTestAbstract extends \PHPUnit_Framework_TestCase implements HeadlessInterface, HookInterface, TransactionalInterface {
+abstract class VolunteerTestAbstract extends \PHPUnit\Framework\TestCase implements HeadlessInterface, HookInterface, TransactionalInterface {
 
   /**
    * The ID of a contact mocked as the acting user.

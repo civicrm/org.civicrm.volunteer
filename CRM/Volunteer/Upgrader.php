@@ -29,7 +29,7 @@
 /**
  * Collection of upgrade steps
  */
-class CRM_Volunteer_Upgrader extends CRM_Volunteer_Upgrader_Base {
+class CRM_Volunteer_Upgrader extends CRM_Extension_Upgrader_Base {
 
   const customContactGroupName = 'Volunteer_Information';
   const customContactTypeName = 'Volunteer';
