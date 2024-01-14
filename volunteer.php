@@ -347,7 +347,7 @@ function volunteer_civicrm_postProcess($formName, &$form) {
  */
 function _volunteer_civicrm_pageRun_CRM_Event_Page_EventInfo(&$page) {
   $params = array(
-    'entity_id' => $page->_id,
+    'entity_id' => $page->getVar('_id'),
     'entity_table' => 'civicrm_event',
     'is_active' => 1,
   );
