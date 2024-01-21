@@ -59,7 +59,7 @@ class CRM_Volunteer_Upgrader extends CRM_Volunteer_Upgrader_Base {
     $this->schemaUpgrade20();
     $this->addNeedEndDate();
     $this->installNeedMetaDateFields();
-    
+
     // uncomment the next line to insert sample data
     // $this->executeSqlFile('sql/volunteer_sample.mysql');
   }
@@ -453,6 +453,15 @@ class CRM_Volunteer_Upgrader extends CRM_Volunteer_Upgrader_Base {
     return TRUE;
   }
 
+  /**
+   * Fix entity_table and entity_id which should not be required on project table
+   */
+  public function upgrade_2302() {
+    $this->ctx->log->info('Applying update 2302 - Fix entity_table and entity_id which should not be required on project table');
+    CRM_Core_DAO::executeQuery('ALTER TABLE `civicrm_volunteer_project` MODIFY `entity_table` varchar(64) NULL, MODIFY `entity_id` int(10) NULL');
+    return TRUE;
+  }
+
   public function uninstall() {
     $customgroups = civicrm_api3('CustomGroup', 'get', [
       'name' => ['IN' => [
@@ -499,7 +508,7 @@ class CRM_Volunteer_Upgrader extends CRM_Volunteer_Upgrader_Base {
       foreach (array_keys($optionvalues['values'] ?? []) as $optionvalue_id) {
         civicrm_api3('OptionValue', 'delete', ['id' => $optionvalue_id]);
       }
-    
+
       // Now delete the groups themselves.
       foreach ($optiongroup_ids as $optiongroup_id) {
         civicrm_api3('OptionGroup', 'delete', ['id' => $optiongroup_id]);
