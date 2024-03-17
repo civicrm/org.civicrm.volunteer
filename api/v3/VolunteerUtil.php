@@ -187,6 +187,19 @@ function civicrm_api3_volunteer_util_getsupportingdata($params) {
 }
 
 /**
+ * This method returns a list of project type options
+ *
+ * @param array $params
+ *   Not presently used.
+ * @return array
+ */
+function civicrm_api3_volunteer_util_getprojecttypeoptions($params) {
+  $result = CRM_Core_OptionGroup::values(CRM_Volunteer_Upgrader::volProjectTypeOptionGroupName, FALSE, FALSE, TRUE);
+
+  return civicrm_api3_create_success($result, "VolunteerUtil", "getprojecttypeoptions", $params);
+}
+
+/**
  * This method returns a list of beneficiaries
  *
  * @deprecated since version 2.3
