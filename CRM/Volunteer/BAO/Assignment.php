@@ -112,27 +112,32 @@ class CRM_Volunteer_BAO_Assignment extends CRM_Volunteer_BAO_Activity {
     $whereClause = NULL;
     foreach ($filtered_params as $key => $value) {
 
-      if (CRM_Utils_Array::value($key, $activity_fields)) {
+      if (!empty($activity_fields[$key])) {
         $dataType = CRM_Utils_Type::typeToString($activity_fields[$key]['type']);
         $fieldName = $activity_fields[$key]['name'];
-        $tableName = CRM_Activity_DAO_Activity::$_tableName;
-      } elseif (CRM_Utils_Array::value($key, $contact_fields)) {
+        $tableName = 'civicrm_activity';
+      }
+      elseif (!empty($contact_fields[$key])) {
         $dataType = CRM_Utils_Type::typeToString($contact_fields[$key]['type']);
         $fieldName = $contact_fields[$key]['name'];
-        $tableName = CRM_Contact_DAO_Contact::$_tableName;
-      } elseif (CRM_Utils_Array::value($key, $custom_fields)) {
+        $tableName = 'civicrm_contact';
+      }
+      elseif (!empty($custom_fields[$key])) {
         $dataType = $custom_fields[$key]['data_type'];
         $fieldName = $custom_fields[$key]['column_name'];
         $tableName = $customTableName;
-      } elseif($key == 'project_id') {
+      }
+      elseif ($key == 'project_id') {
         $dataType = 'Int';
         $fieldName = 'id';
-        $tableName = CRM_Volunteer_DAO_Project::$_tableName;
-      } elseif ($key == 'target_contact_id') {
+        $tableName = 'civicrm_volunteer_project';
+      }
+      elseif ($key == 'target_contact_id') {
         $dataType = 'Int';
         $fieldName = 'contact_id';
         $tableName = 'tgt'; // this is an alias for civicrm_activity_contact
-      } elseif ($key == 'assignee_contact_id') {
+      }
+      elseif ($key == 'assignee_contact_id') {
         $dataType = 'Int';
         $fieldName = 'contact_id';
         $tableName = 'assignee'; // this is an alias for civicrm_activity_contact
