@@ -203,7 +203,7 @@ class CRM_Volunteer_Form_Log extends CRM_Core_Form {
       if (!$duration) {
         $errors["field[$key][actual_duration]"] =
           ts('Please enter the actual duration volunteered.', array('domain' => 'org.civicrm.volunteer'));
-      } elseif (!ctype_digit($duration)) {
+      } elseif (!CRM_Utils_Rule::numeric($duration)) {
         $errors["field[$key][actual_duration]"] =
           ts('Please enter duration as a number.', array('domain' => 'org.civicrm.volunteer'));
       }
@@ -233,8 +233,8 @@ class CRM_Volunteer_Form_Log extends CRM_Core_Form {
     $volunteerStatus = CRM_Activity_BAO_Activity::buildOptions('status_id', 'validate');
 
     foreach ($this->_volunteerData as $data) {
-      $defaults['field'][$i]['scheduled_duration'] = $data['time_scheduled_minutes'];
-      $defaults['field'][$i]['actual_duration'] = $data['time_completed_minutes'];
+      $defaults['field'][$i]['scheduled_duration'] = $data['time_scheduled_minutes'] / 60;
+      $defaults['field'][$i]['actual_duration'] = $data['time_completed_minutes'] / 60;
       $defaults['field'][$i]['volunteer_role'] = CRM_Utils_Array::value($data['volunteer_role_id'], $volunteerRole);
       $defaults['field'][$i]['volunteer_status'] = $data['status_id'];
       $defaults['field'][$i]['activity_id'] = $data['id'];
@@ -273,8 +273,8 @@ class CRM_Volunteer_Form_Log extends CRM_Core_Form {
         $volunteer = array(
           'status_id' => $value['volunteer_status'],
           'id' => $value['activity_id'],
-          'time_completed_minutes' => CRM_Utils_Array::value('actual_duration', $value),
-          'time_scheduled_minutes' => CRM_Utils_Array::value('scheduled_duration', $value),
+          'time_completed_minutes' => CRM_Utils_Array::value('actual_duration', $value) * 60,
+          'time_scheduled_minutes' => CRM_Utils_Array::value('scheduled_duration', $value) * 60,
         );
         CRM_Volunteer_BAO_Assignment::createVolunteerActivity($volunteer);
       } else {
@@ -286,8 +286,8 @@ class CRM_Volunteer_Form_Log extends CRM_Core_Form {
           'subject' => $this->_title . ' Volunteering',
           'volunteer_need_id' => $flexibleNeedId,
           'volunteer_role_id' => CRM_Utils_Array::value('volunteer_role', $value),
-          'time_completed_minutes' => CRM_Utils_Array::value('actual_duration', $value),
-          'time_scheduled_minutes' => CRM_Utils_Array::value('scheduled_duration', $value),
+          'time_completed_minutes' => CRM_Utils_Array::value('actual_duration', $value) * 60,
+          'time_scheduled_minutes' => CRM_Utils_Array::value('scheduled_duration', $value) * 60,
         );
         if (!empty($value['start_date'])) {
           $volunteer['activity_date_time'] = CRM_Utils_Date::processDate($value['start_date'], $value['start_date_time'], TRUE);
