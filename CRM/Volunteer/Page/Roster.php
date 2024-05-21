@@ -97,13 +97,15 @@ class CRM_Volunteer_Page_Roster extends CRM_Core_Page {
       return TRUE;
     }
 
-    // In case there is no end time and no duration, we use the start date as
-    // our default end date.
-    $endTime = new DateTime($assignment['start_time']);
+    $startTime = new DateTime($assignment['start_time']);
     if (!empty($assignment['end_time'])) {
       $endTime = new DateTime($assignment['end_time']);
     } elseif (!empty($assignment['duration'])) {
-      $endTime = date_add($assignment['start_time'], new DateInterval('PT' . $assignment['duration'] . 'M'));
+      $endTime = date_add($startTime, new DateInterval('PT' . $assignment['duration'] . 'M'));
+    } else {
+      // In case there is no end time and no duration, we use the start date as
+      // our default end date.
+      $endTime = $startTime;
     }
 
     return $this->todaysDate > $endTime;
