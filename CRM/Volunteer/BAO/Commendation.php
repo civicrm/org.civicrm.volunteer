@@ -134,11 +134,11 @@ class CRM_Volunteer_BAO_Commendation extends CRM_Volunteer_BAO_Activity {
       if (CRM_Utils_Array::value($key, $activity_fields)) {
         $dataType = CRM_Utils_Type::typeToString($activity_fields[$key]['type']);
         $fieldName = $activity_fields[$key]['name'];
-        $tableName = CRM_Activity_DAO_Activity::$_tableName;
+        $tableName = 'civicrm_activity';
       } elseif (CRM_Utils_Array::value($key, $contact_fields)) {
         $dataType = CRM_Utils_Type::typeToString($contact_fields[$key]['type']);
         $fieldName = $contact_fields[$key]['name'];
-        $tableName = CRM_Contact_DAO_Contact::$_tableName;
+        $tableName = 'civicrm_contact';
       } elseif (CRM_Utils_Array::value($key, $custom_fields)) {
         $dataType = $custom_fields[$key]['data_type'];
         $fieldName = $custom_fields[$key]['column_name'];
