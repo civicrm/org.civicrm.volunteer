@@ -84,7 +84,7 @@
   <item>
     <path>civicrm/vol</path>
     <page_callback>CRM_Volunteer_Page_Angular</page_callback>
-    <title>CiviVolunteer</title>
+    <title>CiviCRM</title>
     <access_callback>1</access_callback>
     <is_public>true</is_public>
   </item>
