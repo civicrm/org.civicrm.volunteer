@@ -310,7 +310,13 @@ function _volunteer_civicrm_pageRun_CRM_Event_Page_EventInfo(&$page) {
       //VOL-191: Skip "shopping cart" if only one need
       if ($openNeeds['count'] == 1) {
         $need = $openNeeds['values'][0];
-        $url = CRM_Utils_System::url('civicrm/volunteer/signup', "reset=1&needs[]={$need['id']}&dest=event");
+        $url = CRM_Utils_System::url('civicrm/volunteer/signup',
+          "reset=1&needs[]={$need['id']}&dest=event", // query string
+          FALSE, // absolute
+          NULL, // fragment
+          TRUE, // FrontEnd
+          FALSE // Backend
+        );
       } else {
         //VOL-190: Hide search pane in "shopping cart" for low role count projects
         $hideSearch = ($openNeeds['count'] < 10) ? "hideSearch=always" : (($openNeeds['count'] < 25) ? "hideSearch=1" : "hideSearch=0");
@@ -318,8 +324,8 @@ function _volunteer_civicrm_pageRun_CRM_Event_Page_EventInfo(&$page) {
           NULL, // query string
           FALSE, // absolute?
           "/volunteer/opportunities?project={$project->id}&dest=event&{$hideSearch}", // fragment
-          TRUE, // htmlize?
-          TRUE // is frontend?
+          TRUE, // Frontend
+          TRUE // Backend?
         );
       }
 
