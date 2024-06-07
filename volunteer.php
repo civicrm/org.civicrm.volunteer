@@ -325,7 +325,7 @@ function _volunteer_civicrm_pageRun_CRM_Event_Page_EventInfo(&$page) {
           FALSE, // absolute?
           "/volunteer/opportunities?project={$project->id}&dest=event&{$hideSearch}", // fragment
           TRUE, // Frontend
-          TRUE // Backend?
+          FALSE // Backend?
         );
       }
 

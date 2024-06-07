@@ -142,7 +142,7 @@ class CRM_Volunteer_Form_VolunteerSignUp extends CRM_Core_Form {
     if($vid != NULL) {
       $path = "civicrm/vol/";
       $fragment =  "/volunteer/opportunities?project=$vid&dest=event";
-      $newURL = CRM_Utils_System::url($path, NULL, FALSE, $fragment, FALSE, TRUE);
+      $newURL = CRM_Utils_System::url($path, NULL, FALSE, $fragment, TRUE, FALSE);
       CRM_Utils_System::redirect($newURL);
     }    
   }
@@ -766,7 +766,7 @@ class CRM_Volunteer_Form_VolunteerSignUp extends CRM_Core_Form {
         $fragment = '/volunteer/opportunities';
     }
 
-    $this->_destination = CRM_Utils_System::url($path, $query, FALSE, $fragment);
+    $this->_destination = CRM_Utils_System::url($path, $query, FALSE, $fragment, TRUE, FALSE);
   }
 
   /**
