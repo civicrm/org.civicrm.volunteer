@@ -115,11 +115,11 @@ class CRM_Volunteer_BAO_Assignment extends CRM_Volunteer_BAO_Activity {
       if (CRM_Utils_Array::value($key, $activity_fields)) {
         $dataType = CRM_Utils_Type::typeToString($activity_fields[$key]['type']);
         $fieldName = $activity_fields[$key]['name'];
-        $tableName = CRM_Activity_DAO_Activity::$_tableName;
+        $tableName = CRM_Activity_DAO_Activity::getTableName();
       } elseif (CRM_Utils_Array::value($key, $contact_fields)) {
         $dataType = CRM_Utils_Type::typeToString($contact_fields[$key]['type']);
         $fieldName = $contact_fields[$key]['name'];
-        $tableName = CRM_Contact_DAO_Contact::$_tableName;
+        $tableName = CRM_Contact_DAO_Contact::getTableName();
       } elseif (CRM_Utils_Array::value($key, $custom_fields)) {
         $dataType = $custom_fields[$key]['data_type'];
         $fieldName = $custom_fields[$key]['column_name'];
@@ -127,7 +127,7 @@ class CRM_Volunteer_BAO_Assignment extends CRM_Volunteer_BAO_Activity {
       } elseif($key == 'project_id') {
         $dataType = 'Int';
         $fieldName = 'id';
-        $tableName = CRM_Volunteer_DAO_Project::$_tableName;
+        $tableName = CRM_Volunteer_DAO_Project::getTableName();
       } elseif ($key == 'target_contact_id') {
         $dataType = 'Int';
         $fieldName = 'contact_id';
