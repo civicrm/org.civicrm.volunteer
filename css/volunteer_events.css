@@ -9,3 +9,7 @@
 .crm-span-button .crm-span-button-text {
   padding: 2px 7px 2px 20px;
 }
+
+div#crm-volunteer-event-action-items > span.crm-span-button {
+  background-color: rgb(62, 62, 62);
+}

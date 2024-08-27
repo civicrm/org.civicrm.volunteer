@@ -14,7 +14,7 @@ class CRM_Volunteer_Angular_Tab_Event extends CRM_Core_Page {
     $project = new CRM_Volunteer_BAO_Project();
     $project->id = 0;
     $project->entity_id = $eventId;
-    $project->entity_table = 'civicrm_event';
+    $project->entity_table = CRM_Event_DAO_Event::getTableName();
 
     return $project;
   }
@@ -33,7 +33,7 @@ class CRM_Volunteer_Angular_Tab_Event extends CRM_Core_Page {
 
     $project = current(CRM_Volunteer_BAO_Project::retrieve(array(
           'entity_id' => $eventId,
-          'entity_table' => 'civicrm_event',
+          'entity_table' => CRM_Event_DAO_Event::getTableName(),
     )));
     if (!$project) {
       $project = self::initializeProject($eventId);
