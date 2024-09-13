@@ -528,7 +528,12 @@ function volunteer_civicrm_angularModules(&$angularModules) {
  * @param $params
  */
 function volunteer_civicrm_fieldOptions($entity, $field, &$options, $params) {
-  if ($entity == "UFJoin" && $field == "entity_table" && $params['context'] == "validate") {
-    $options[CRM_Volunteer_DAO_Project::getTableName()] = CRM_Volunteer_DAO_Project::getTableName();
+  if ($entity == 'UFJoin' && $field == 'entity_table') {
+    if ($params['context'] == 'validate') {
+      $options[CRM_Volunteer_DAO_Project::getTableName()] = CRM_Volunteer_DAO_Project::getTableName();
+    }
+    else {
+      $options[CRM_Volunteer_DAO_Project::getTableName()] = 'Project';
+    }
   }
 }
