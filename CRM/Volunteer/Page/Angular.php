@@ -7,6 +7,9 @@ class CRM_Volunteer_Page_Angular extends \CRM_Core_Page {
       'template' => 'CRM/common/notifications.tpl',
     ));
     CRM_Volunteer_Angular::load('/volunteer/manage');
+    // Ensure this setting exists even if it's an empty object (https://github.com/civicrm/org.civicrm.volunteer/issues/613)
+    Civi::resources()
+      ->addVars('org.civicrm.volunteer', []);
     parent::run();
   }
 
