@@ -499,25 +499,6 @@ function _volunteer_isVolListingApiCall($entity, $action) {
 }
 
 /**
- * Implements hook_civicrm_angularModules().
- *
- * @param array $angularModules
- *   An array containing a list of all Angular modules.
- */
-function volunteer_civicrm_angularModules(&$angularModules) {
-
-  // DEPRECATED clientside variable CRM.vars['org.civicrm.volunteer'].currentContactId
-  // Not used by this extension but kept around in case others depend on it.
-  // They should be updated to use CRM.config.cid
-  CRM_Core_Resources::singleton()
-    ->addVars('org.civicrm.volunteer', array(
-      'currentContactId' => CRM_Core_Session::singleton()->getLoggedInContactID()
-    ));
-
-  return;
-}
-
-/**
  * This is an implementation of hook_civicrm_fieldOptions
  * It includes `civicrm_volunteer_project` in the whitelist
  * of tables allowed to have UFJoins
