@@ -11,14 +11,14 @@
   <releaseDate>2024-02-10</releaseDate>
   <version>2.4.5</version>
   <compatibility>
-    <ver>5.60</ver>
+    <ver>5.71</ver>
   </compatibility>
   <comments>
     Developed by Ginkgo Street Labs and CiviCRM, LLC with contributions from the community. Special thanks to Friends of Georgia State Parks &amp; Historic Sites for funding the initial release, and to The Manhattan Neighborhood Network for funding the 1.4 release.
   </comments>
   <civix>
     <namespace>CRM/Volunteer</namespace>
-    <format>23.02.1</format>
+    <format>24.09.1</format>
   </civix>
   <urls>
     <url desc="Documentation">https://docs.civicrm.org/volunteer/en/latest/</url>
@@ -31,8 +31,8 @@
     <mixin>menu-xml@1.0.0</mixin>
     <mixin>mgd-php@1.0.0</mixin>
     <mixin>setting-php@1.0.0</mixin>
-    <mixin>smarty-v2@1.0.0</mixin>
     <mixin>entity-types-php@1.0.0</mixin>
+    <mixin>smarty@1.0.3</mixin>
   </mixins>
   <classloader>
     <psr0 prefix="CRM_" path="."/>

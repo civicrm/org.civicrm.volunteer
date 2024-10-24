@@ -25,8 +25,6 @@
  +--------------------------------------------------------------------+
  */
 
-require_once 'CRM/Core/Form.php';
-
 /**
  * Form controller class
  *

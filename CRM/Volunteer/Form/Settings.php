@@ -1,7 +1,5 @@
 <?php
 
-require_once 'CRM/Core/Form.php';
-
 /**
  * Form controller class
  *
@@ -364,10 +362,9 @@ class CRM_Volunteer_Form_Settings extends CRM_Core_Form {
 
     foreach ($this->_elements as $element) {
       $groupName = $this->getGroupName($element);
-
       $label = $element->getLabel();
-      if (!empty($label)) {
 
+      if (!empty($label)) {
         if (!array_key_exists($groupName, $elementGroups)) {
           $elementGroups[$groupName] = array();
         }
@@ -403,8 +400,8 @@ class CRM_Volunteer_Form_Settings extends CRM_Core_Form {
 
     // otherwise fallback to settings metadata
     if (empty($groupName)) {
-      $setting = CRM_Utils_Array::value($element->getName(), $this->_settingsMetadata);
-      $groupName = $setting['group_name'];
+      $elName = $element->getName();
+      $groupName = $this->_settingsMetadata[$elName]['group_name'] ?? NULL;
     }
 
     return $groupName;
