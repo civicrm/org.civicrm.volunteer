@@ -35,7 +35,7 @@ class CRM_Volunteer_Upgrader extends CRM_Extension_Upgrader_Base {
   const customContactTypeName = 'Volunteer';
   const skillLevelOptionGroupName = 'skill_level';
 
-  public function install() {
+  public function postInstall() {
     $volActivityTypeId = $this->createActivityType(CRM_Volunteer_BAO_Assignment::CUSTOM_ACTIVITY_TYPE);
     $smarty = CRM_Core_Smarty::singleton();
     $smarty->assign('volunteer_custom_activity_type_name', CRM_Volunteer_BAO_Assignment::CUSTOM_ACTIVITY_TYPE);
@@ -62,6 +62,17 @@ class CRM_Volunteer_Upgrader extends CRM_Extension_Upgrader_Base {
     
     // uncomment the next line to insert sample data
     // $this->executeSqlFile('sql/volunteer_sample.mysql');
+
+    // See VOL-237. Avoid order of operation problems by assigning a value to the
+    // slider_widget_fields setting after the install, which is responsible for
+    // creating both the setting and the custom field whose ID is used in the
+    // initial value.
+    $customFieldId = civicrm_api3('customField', 'getvalue', array(
+      'custom_group_id' => 'Volunteer_Information',
+      'name' => 'camera_skill_level',
+      'return' => 'id',
+    ));
+    _volunteer_update_slider_fields(array(CRM_Core_Action::ADD => $customFieldId));
   }
 
   /**
@@ -508,23 +519,6 @@ class CRM_Volunteer_Upgrader extends CRM_Extension_Upgrader_Base {
   }
 
   /**
-   * Perform post-install tasks.
-   *
-   * See VOL-237. Avoid order of operation problems by assigning a value to the
-   * slider_widget_fields setting after the install, which is responsible for
-   * creating both the setting and the custom field whose ID is used in the
-   * initial value.
-   */
-  public function postInstall() {
-    $customFieldId = civicrm_api3('customField', 'getvalue', array(
-      'custom_group_id' => 'Volunteer_Information',
-      'name' => 'camera_skill_level',
-      'return' => 'id',
-    ));
-    _volunteer_update_slider_fields(array(CRM_Core_Action::ADD => $customFieldId));
-  }
-
-  /**
    * Example: Run a simple query when a module is enabled
    *
   public function enable() {
@@ -893,7 +887,6 @@ class CRM_Volunteer_Upgrader extends CRM_Extension_Upgrader_Base {
       $xmlCode = $smarty->fetch($relativePath);
       $xml = simplexml_load_string($xmlCode);
 
-      require_once 'CRM/Utils/Migrate/Import.php';
       $import = new CRM_Utils_Migrate_Import();
       $import->runXmlElement($xml);
       return TRUE;
