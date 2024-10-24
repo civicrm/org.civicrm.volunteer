@@ -6,6 +6,7 @@
       <is_active>1</is_active>
       <group_type>Individual,Contact</group_type>
       <title>Volunteer Sign Up</title>
+      <frontend_title>Volunteer Sign Up</frontend_title>
       <add_captcha>0</add_captcha>
       <is_map>0</is_map>
       <is_edit_link>0</is_edit_link>
