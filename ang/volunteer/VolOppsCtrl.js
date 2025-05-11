@@ -25,12 +25,20 @@
           return crmApi('VolunteerUtil', 'getsupportingdata', {
             controller: 'VolOppsCtrl'
           });
-        }
+        },
+        project_types: function(crmApi) {
+          return crmApi('VolunteerUtil', 'getprojecttypeoptions', {}).then(function(result) {
+            return result.values;
+          });
+        },
+        location_blocks: function(crmApi) {
+          return crmApi('VolunteerProject', 'locations', {});
+        },
       }
     });
   });
 
-  angular.module('volunteer').controller('VolOppsCtrl', function ($route, $scope, $window, $timeout, crmStatus, crmUiHelp, volOppSearch, countries, settings, supporting_data) {
+  angular.module('volunteer').controller('VolOppsCtrl', function ($route, $scope, $window, $timeout, crmApi, crmStatus, crmUiHelp, volOppSearch, countries, settings, supporting_data, project_types, location_blocks) {
     // The ts() and hs() functions help load strings for this module.
     var ts = $scope.ts = CRM.ts('org.civicrm.volunteer');
     var hs = $scope.hs = crmUiHelp({file: 'ang/VolOppsCtrl'}); // See: templates/ang/VolOppsCtrl.hlp
@@ -59,6 +67,8 @@
 
     $scope.countries = countries;
     $scope.roles = supporting_data.values.roles;
+    $scope.project_types = project_types;
+    $scope.location_blocks = location_blocks.values;
     $scope.searchParams = volOppSearch.params;
     $scope.volOppData = volOppSearch.results;
 

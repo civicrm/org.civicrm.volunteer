@@ -37,6 +37,11 @@
               controller: 'VolunteerProject'
             });
           },
+	  project_types: function(crmApi) {
+            return crmApi('VolunteerUtil', 'getprojecttypeoptions', {}).then(function(result) {
+              return result.values;
+            });
+          },
           relationship_data: function(crmApi, $route) {
             var params = {
               "sequential": 1,
@@ -64,8 +69,7 @@
     }
   );
 
-
-  angular.module('volunteer').controller('VolunteerProject', function($scope, $sce, $location, $q, $route, crmApi, crmUiAlert, crmUiHelp, countries, project, profile_status, relationship_data, supporting_data, location_blocks, volBackbone) {
+  angular.module('volunteer').controller('VolunteerProject', function($scope, $sce, $location, $q, $route, crmApi, crmUiAlert, crmUiHelp, countries, project, profile_status, project_types, campaigns, relationship_data, supporting_data, location_blocks, volBackbone) {
 
     /**
      * We use custom "dirty" logic rather than rely on Angular's native
@@ -167,6 +171,7 @@
     }
 
     $scope.campaignFilter = CRM.volunteer.campaignFilter;
+    $scope.project_types = project_types;
     $scope.relationship_types = supporting_data.values.relationship_types;
     $scope.phone_types = supporting_data.values.phone_types;
     $scope.supporting_data = supporting_data.values;
