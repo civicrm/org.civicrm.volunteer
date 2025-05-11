@@ -632,39 +632,30 @@ class CRM_Volunteer_Upgrader extends CRM_Extension_Upgrader_Base {
    * @throws CRM_Core_Exception
    */
   public function createActivityType($machineName, $label = NULL) {
-    $id = NULL;
-    $optionGroup = civicrm_api3('OptionGroup', 'getsingle', array(
-      'name' => 'activity_type',
-      'return' => 'id'
-    ));
+    $optionValue = \Civi\Api4\OptionValue::get(FALSE)
+      ->addWhere('option_group_id:name', '=', 'activity_type')
+      ->addWhere('name', '=', $machineName)
+      ->execute()
+      ->first();
 
-    try {
-      $optionValue = civicrm_api3('OptionValue', 'getsingle', array(
-        'name' => $machineName,
-        'option_group_id' => $optionGroup['id'],
-        'return' => 'value'
-      ));
-      $id = $optionValue['value'];
-    } catch(Exception $e) {
-      if (is_null($label)) {
-        $label = $machineName;
-      }
-
-      $result = civicrm_api('ActivityType', 'create', array(
-        'name' => $machineName,
-        'label' => $label,
-        'is_active' => '1',
-        'version' => 3,
-        'weight' => 0,
-      ));
-      if (CRM_Utils_Array::value('is_error', $result, FALSE)) {
-        CRM_Core_Error::debug_var('activityTypeResult', $result, TRUE, TRUE, 'org.civicrm.volunteer');
-        throw new CRM_Core_Exception('Failed to register activity type ' . $machineName);
-      }
-      $id = $result['values'][$result['id']]['value'];
+    if (!empty($optionValue)) {
+      return $optionValue['value'];
     }
 
-    return (int) $id;
+    if (is_null($label)) {
+      $label = $machineName;
+    }
+
+    $result = \Civi\Api4\OptionValue::create(FALSE)
+      ->addValue('option_group_id.name', 'activity_type')
+      ->addValue('name', $machineName)
+      ->addValue('label', $label)
+      ->addValue('is_active', TRUE)
+      ->addValue('weight', 0)
+      ->execute()
+      ->first();
+
+    return (int) $result['value'];
   }
 
   /**
