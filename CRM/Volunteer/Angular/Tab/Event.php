@@ -44,6 +44,9 @@ class CRM_Volunteer_Angular_Tab_Event extends CRM_Core_Page {
     $event = $project->getEntityAttributes();
     $entityTitle = $event['title'];
 
+    CRM_UF_Page_ProfileEditor::registerProfileScripts();
+    extract(CRM_Volunteer_Form_IncludeProfile::getProfileSelectorTypes());
+    CRM_UF_Page_ProfileEditor::registerSchemas(CRM_Utils_Array::collect('entity_type', $profileEntities));
     CRM_Core_Resources::singleton()
         ->addStyleFile('org.civicrm.volunteer', 'css/volunteer_app.css')
         ->addStyleFile('org.civicrm.volunteer', 'css/volunteer_events.css')
@@ -54,6 +57,11 @@ class CRM_Volunteer_Angular_Tab_Event extends CRM_Core_Page {
           'entityId' => $project->entity_id,
           'entityTitle' => $entityTitle,
           'context' => 'eventTab',
+          'dataGroupType' => CRM_Core_BAO_UFGroup::encodeGroupType($allowCoreTypes, $allowSubTypes, ';;'),
+          'dataEntities' => json_encode($profileEntities),
+          'dataDefault' => FALSE,
+          'dataUsedFor' => json_encode($usedFor),
+
     ));
   }
 
