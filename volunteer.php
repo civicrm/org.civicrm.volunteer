@@ -422,7 +422,7 @@ function _volunteer_civicrm_buildForm_CRM_Activity_Form_Activity($formName, &$fo
   }
   // In "View" mode
   elseif (isset($form->_activityTypeName) && $form->_activityTypeName == 'Volunteer') {
-    $custom = $form->get_template_vars('viewCustomData');
+    $custom = $form->getTemplateVars('viewCustomData');
     if (!empty($custom[$group_id])) {
       $index = key($custom[$group_id]);
       if (!empty($custom[$group_id][$index]['fields'][$field_id]['field_value'])) {
