@@ -79,7 +79,7 @@
           {$form.field.$rowNumber.volunteer_status.html}
         </div>
         <div class="crm-grid-cell">
-          <button crm-icon="fa-times" class="crm-button crm-vol-remove-row"><i class="crm-i fa-times"></i>
+          <button crm-icon="fa-times" class="crm-button crm-vol-remove-row"><i class="crm-i fa-times" role="img" aria-hidden="true"></i>
             {ts domain='org.civicrm.volunteer'}Remove{/ts}
           </button>
         </div>
