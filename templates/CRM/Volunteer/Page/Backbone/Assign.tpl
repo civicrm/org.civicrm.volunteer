@@ -36,7 +36,7 @@
     <span class="icon crm-vol-drag"></span>
     <a target="_blank" href="<%= contactUrl(contact_id) %>"><%- display_name %></a>
     {literal}<%if (details){%><a href="#" class="icon crm-vol-info"> </a><%}%>{/literal}
-    <div class="crm-vol-menu"><a class="crm-vol-menu-button" href="#" title="{ts domain='org.civicrm.volunteer'}Actions{/ts}"><span></span></a></div>
+    <div class="crm-vol-menu"><a class="crm-vol-menu-button" href="#" title="{ts escape='htmlattribute' domain='org.civicrm.volunteer'}Actions{/ts}"><span></span></a></div>
   </td>
   <td><%= email %></td>
   <td><%= phone %></td>
@@ -47,7 +47,7 @@
     <span class="icon crm-vol-drag"></span>
     <a target="_blank" href="<%= contactUrl(contact_id) %>"><%- display_name %></a>
     {literal}<%if (details){%><a href="#" class="icon crm-vol-info"> </a><%}%>{/literal}
-    <div class="crm-vol-menu"><a class="crm-vol-menu-button" href="#" title="{ts domain='org.civicrm.volunteer'}Actions{/ts}"><span></span></a></div>
+    <div class="crm-vol-menu"><a class="crm-vol-menu-button" href="#" title="{ts escape='htmlattribute' domain='org.civicrm.volunteer'}Actions{/ts}"><span></span></a></div>
   </td>
 </script>
 
@@ -64,7 +64,7 @@
       <div class="crm-vol-circle"><div class="icon"></div></div>
     </div>
   </div>
-  <h3><%= pseudoConstant.volunteer_role[role_id] %> (<%= quantity || '{ts domain='org.civicrm.volunteer' escape='js'}Any{/ts}' %>): <%= display_time %></h3>
+  <h3><%= pseudoConstant.volunteer_role[role_id] %> (<%= quantity || '{ts escape='htmlattribute' domain='org.civicrm.volunteer' escape='js'}Any{/ts}' %>): <%= display_time %></h3>
   <table class="row-highlight">
     <thead><tr>
       <th>{ts domain='org.civicrm.volunteer'}Name{/ts}</th>
@@ -84,7 +84,7 @@
     <tbody class="crm-vol-assignment-list"></tbody>
   </table>
   <hr style="margin: 1em 1px;"/>
-  <input name="add-volunteer" class="crm-action-menu action-icon-plus" placeholder="{ts domain='org.civicrm.volunteer' escape='js'}Add Volunteer{/ts}..." style="width: 100%; max-width: 30em;" />
+  <input name="add-volunteer" class="crm-action-menu action-icon-plus" placeholder="{ts escape='htmlattribute' domain='org.civicrm.volunteer' escape='js'}Add Volunteer{/ts}..." style="width: 100%; max-width: 30em;" />
 </script>
 
 <script type="text/template" id="crm-vol-menu-tpl">

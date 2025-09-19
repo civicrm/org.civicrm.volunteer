@@ -33,7 +33,7 @@
       <div class="crm-grid-cell"></div>
       <div class="crm-grid-cell">
         {ts domain='org.civicrm.volunteer'}Contact{/ts}
-        <span class="crm-marker" title="{ts domain='org.civicrm.volunteer'}This field is required.{/ts}">*</span>
+        <span class="crm-marker" title="{ts escape='htmlattribute' domain='org.civicrm.volunteer'}This field is required.{/ts}">*</span>
       </div>
       <div class="crm-grid-cell">{ts domain='org.civicrm.volunteer'}Role{/ts}</div>
       <div class="crm-grid-cell">{ts domain='org.civicrm.volunteer'}Start Date{/ts}</div>
@@ -44,7 +44,7 @@
              fname="actual_duration" class="action-icon"
              title="{ts domain='org.civicrm.volunteer'}Click here to copy the Actual Duration value in row one to ALL rows.{/ts}" />
         {ts}Actual Duration <br/> (in minutes){/ts}
-        <span class="crm-marker" title="{ts domain='org.civicrm.volunteer'}This field is required.{/ts}">*</span>
+        <span class="crm-marker" title="{ts escape='htmlattribute' domain='org.civicrm.volunteer'}This field is required.{/ts}">*</span>
       </div>
       <div class="crm-grid-cell"><img src="{$config->resourceBase}i/copy.png"
                                       alt="{ts domain='org.civicrm.volunteer'}Click to copy Volunteer Status from row one to all rows.{/ts}"

@@ -48,10 +48,10 @@
 </script>
 
 <script type="text/template" id="crm-vol-search-result-tpl">
-  <table summary="{ts domain='org.civicrm.volunteer'}Search results listings.{/ts}" class="selector row-highlight">
+  <table summary="{ts escape='htmlattribute' domain='org.civicrm.volunteer'}Search results listings.{/ts}" class="selector row-highlight">
     <thead class="sticky">
       <tr>
-        <th scope="col"><input type="checkbox" name="select_all_contacts" title="{ts domain='org.civicrm.volunteer'}Select All Rows{/ts}" /></th>
+        <th scope="col"><input type="checkbox" name="select_all_contacts" title="{ts escape='htmlattribute' domain='org.civicrm.volunteer'}Select All Rows{/ts}" /></th>
         <th scope="col">{ts domain='org.civicrm.volunteer'}Name{/ts}</th>
         <th scope="col">{ts domain='org.civicrm.volunteer'}City{/ts}</th>
         <th scope="col">{ts domain='org.civicrm.volunteer'}State{/ts}</th>
