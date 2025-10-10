@@ -17,17 +17,17 @@
             {assign var='emailParams' value="action=add&reset=1&atype=3&cid=`$assignment.contact_id`"}
             <a class="button" href="{crmURL p='civicrm/activity/email/add' q=$emailParams}"
                title="{ts escape='htmlattribute' 1=$assignment.name domain='org.civicrm.volunteer'}Send %1 an email.{/ts}">
-               <i class="crm-i fa-envelope-o"></i>
+               <i class="crm-i fa-envelope-o" role="img" aria-hidden="true"></i>
                {ts}Email{/ts}</a>
           {/if}
           {if $assignment.phone}
             <a class="button" href="tel:{$assignment.phone}"
                title="{ts escape='htmlattribute' 1=$assignment.name domain='org.civicrm.volunteer'}Telephone %1.{/ts}">
-            <i class="crm-i fa-phone"></i>
+            <i class="crm-i fa-phone" role="img" aria-hidden="true"></i>
             {ts}Call{/ts}</a>
             <a class="button" href="sms:{$assignment.phone}"
                title="{ts escape='htmlattribute' 1=$assignment.name domain='org.civicrm.volunteer'}Send %1 an SMS message.{/ts}">
-            <i class="crm-i fa-mobile"></i>
+            <i class="crm-i fa-mobile" role="img" aria-hidden="true"></i>
             {ts}SMS{/ts}</a>
             {/if}
         </td>
