@@ -230,18 +230,18 @@ class CRM_Volunteer_Form_Settings extends CRM_Core_Form {
   function setDefaultValues() {
     $defaults = array();
 
-    $defaults['volunteer_project_default_is_active'] = CRM_Utils_Array::value('volunteer_project_default_is_active', $this->_settings);
-    $defaults['volunteer_project_default_campaign'] = CRM_Utils_Array::value('volunteer_project_default_campaign', $this->_settings);
-    $defaults['volunteer_project_default_locblock'] = CRM_Utils_Array::value('volunteer_project_default_locblock', $this->_settings);
+    $defaults['volunteer_project_default_is_active'] = $this->_settings['volunteer_project_default_is_active'] ?? NULL;
+    $defaults['volunteer_project_default_campaign'] = $this->_settings['volunteer_project_default_campaign'] ?? NULL;
+    $defaults['volunteer_project_default_locblock'] = $this->_settings['volunteer_project_default_locblock'] ?? NULL;
 
     // Break the profiles out into their own fields
-    $profiles = CRM_Utils_Array::value('volunteer_project_default_profiles', $this->_settings);
+    $profiles = $this->_settings['volunteer_project_default_profiles'] ?? NULL;
     foreach (CRM_Volunteer_BAO_Project::getProjectProfileAudienceTypes() as $audience) {
-      $defaults["volunteer_project_default_profiles_" . $audience['type']] = CRM_Utils_Array::value($audience['type'], $profiles, array());
+      $defaults["volunteer_project_default_profiles_" . $audience['type']] = $profiles[$audience['type']] ?? [];
     }
 
     // Break out contact defaults into their own fields
-    $defaultContacts = CRM_Utils_Array::value('volunteer_project_default_contacts', $this->_settings);
+    $defaultContacts = $this->_settings['volunteer_project_default_contacts'] ?? NULL;
     foreach ($defaultContacts as $name => $data) {
       $mode = $data['mode'];
       $defaults["volunteer_project_default_contacts_mode_{$name}"] = $mode;
@@ -252,9 +252,9 @@ class CRM_Volunteer_Form_Settings extends CRM_Core_Form {
     }
 
     // General Settings
-    $defaults['volunteer_general_campaign_filter_type'] = CRM_Utils_Array::value('volunteer_general_campaign_filter_type', $this->_settings);
-    $defaults['volunteer_general_campaign_filter_list'] = CRM_Utils_Array::value('volunteer_general_campaign_filter_list', $this->_settings);
-    $defaults['volunteer_general_project_settings_help_text'] = CRM_Utils_Array::value('volunteer_general_project_settings_help_text', $this->_settings);
+    $defaults['volunteer_general_campaign_filter_type'] = $this->_settings['volunteer_general_campaign_filter_type'] ?? NULL;
+    $defaults['volunteer_general_campaign_filter_list'] = $this->_settings['volunteer_general_campaign_filter_list'] ?? NULL;
+    $defaults['volunteer_general_project_settings_help_text'] = $this->_settings['volunteer_general_project_settings_help_text'] ?? NULL;
 
     return $defaults;
   }
@@ -272,7 +272,7 @@ class CRM_Volunteer_Form_Settings extends CRM_Core_Form {
 
     foreach ($this->getProjectRelationshipTypes() as $relTypeData) {
       $name = $relTypeData['name'];
-      $selectedMode = CRM_Utils_Array::value("volunteer_project_default_contacts_mode_{$name}", $values);
+      $selectedMode = $values["volunteer_project_default_contacts_mode_{$name}"] ?? NULL;
 
       // skip this check if user did not select a mode; that field is required
       // and there's no sense displaying two messages for the same error
@@ -300,7 +300,7 @@ class CRM_Volunteer_Form_Settings extends CRM_Core_Form {
     $profiles = array();
 
     foreach (CRM_Volunteer_BAO_Project::getProjectProfileAudienceTypes() as $audience) {
-      $profiles[$audience['type']] = CRM_Utils_Array::value('volunteer_project_default_profiles_' . $audience['type'], $values);
+      $profiles[$audience['type']] = $values['volunteer_project_default_profiles_' . $audience['type']] ?? NULL;
     }
 
     civicrm_api3('Setting', 'create', array(
@@ -308,16 +308,16 @@ class CRM_Volunteer_Form_Settings extends CRM_Core_Form {
     ));
 
     civicrm_api3('Setting', 'create', array(
-      "volunteer_project_default_campaign" => CRM_Utils_Array::value('volunteer_project_default_campaign', $values)
+      "volunteer_project_default_campaign" => $values['volunteer_project_default_campaign'] ?? NULL
     ));
     civicrm_api3('Setting', 'create', array(
-      "volunteer_project_default_locblock" => CRM_Utils_Array::value('volunteer_project_default_locblock', $values)
+      "volunteer_project_default_locblock" => $values['volunteer_project_default_locblock'] ?? NULL
     ));
 
-    Civi::settings()->set('volunteer_general_project_settings_help_text', CRM_Utils_Array::value('volunteer_general_project_settings_help_text', $values));
+    Civi::settings()->set('volunteer_general_project_settings_help_text', $values['volunteer_general_project_settings_help_text'] ?? NULL);
 
     civicrm_api3('Setting', 'create', array(
-      "volunteer_project_default_is_active" => CRM_Utils_Array::value('volunteer_project_default_is_active', $values, 0)
+      "volunteer_project_default_is_active" => $values['volunteer_project_default_is_active'] ?? 0
     ));
 
     civicrm_api3('Setting', 'create', array(
@@ -326,10 +326,10 @@ class CRM_Volunteer_Form_Settings extends CRM_Core_Form {
 
     //Whitelist/Blacklist settings
     civicrm_api3('Setting', 'create', array(
-      "volunteer_general_campaign_filter_type" => CRM_Utils_Array::value('volunteer_general_campaign_filter_type', $values)
+      "volunteer_general_campaign_filter_type" => $values['volunteer_general_campaign_filter_type'] ?? NULL
     ));
     civicrm_api3('Setting', 'create', array(
-      "volunteer_general_campaign_filter_list" => CRM_Utils_Array::value('volunteer_general_campaign_filter_list', $values, array())
+      "volunteer_general_campaign_filter_list" => $values['volunteer_general_campaign_filter_list'] ?? []
     ));
 
     CRM_Core_Session::setStatus(ts("Changes Saved", array('domain' => 'org.civicrm.volunteer')), "Saved", "success");
@@ -348,8 +348,8 @@ class CRM_Volunteer_Form_Settings extends CRM_Core_Form {
     if (!$settingName || !$attr) {
       return false;
     }
-    $setting = CRM_Utils_Array::value($settingName, $this->_settingsMetadata, array());
-    return CRM_Utils_Array::value($attr, $setting);
+    $setting = $this->_settingsMetadata[$settingName] ?? [];
+    return $setting[$attr] ?? NULL;
   }
 
   /**

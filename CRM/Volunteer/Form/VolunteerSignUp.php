@@ -237,7 +237,7 @@ class CRM_Volunteer_Form_VolunteerSignUp extends CRM_Core_Form {
     $allowedValues = array('primary', 'additional', 'both');
     $audience = 'primary';
 
-    $moduleData = json_decode(CRM_Utils_Array::value("module_data", $profile));
+    $moduleData = json_decode($profile["module_data"] ?? '');
     if (property_exists($moduleData, 'audience') && in_array($moduleData->audience, $allowedValues)) {
       $audience = $moduleData->audience;
     }
@@ -324,7 +324,7 @@ class CRM_Volunteer_Form_VolunteerSignUp extends CRM_Core_Form {
 
     CRM_Utils_System::setTitle(ts('Sign Up to Volunteer', array('domain' => 'org.civicrm.volunteer')));
 
-    $contactID = CRM_Utils_Array::value('userID', $_SESSION['CiviCRM']);
+    $contactID = $_SESSION['CiviCRM']['userID'] ?? NULL;
     $profiles = $this->buildCustom($this->getPrimaryVolunteerProfileIDs(), $contactID);
     $this->assign('customProfiles', $profiles);
 
@@ -379,7 +379,7 @@ class CRM_Volunteer_Form_VolunteerSignUp extends CRM_Core_Form {
 
       if(!empty($this->_submitValues)) {
 
-        $additionalVolunteerQuantity = CRM_Utils_Array::value("additionalVolunteerQuantity", $this->_submitValues, 0);
+        $additionalVolunteerQuantity = $this->_submitValues["additionalVolunteerQuantity"] ?? 0;
         if ($additionalVolunteerQuantity > 0) {
           $i = 0;
           $additionalVolunteerProfiles = array();
@@ -429,12 +429,12 @@ class CRM_Volunteer_Form_VolunteerSignUp extends CRM_Core_Form {
    * see http://wiki.civicrm.org/confluence/display/CRMDOC43/Transaction+Reference
    */
   function postProcess() {
-    $cid = CRM_Utils_Array::value('userID', $_SESSION['CiviCRM'], NULL);
+    $cid = $_SESSION['CiviCRM']['userID'] ?? NULL;
     $values = $this->controller->exportValues();
 
     $profileFields = $this->getProfileFields($this->getPrimaryVolunteerProfileIDs());
     $profileFieldsByType = array_reduce($profileFields, array($this, 'reduceByType'), array());
-    $activityFields = CRM_Utils_Array::value('Activity', $profileFieldsByType, array());
+    $activityFields = $profileFieldsByType['Activity'] ?? [];
     $activityValues = array_intersect_key($values, $activityFields);
     $contactValues = array_diff_key($values, $activityValues);
 
@@ -530,19 +530,19 @@ class CRM_Volunteer_Form_VolunteerSignUp extends CRM_Core_Form {
 
     foreach($this->_needs as $need) {
       $activityValues['volunteer_need_id'] = $need['id'];
-      $activityValues['activity_date_time'] = CRM_Utils_Array::value('start_time', $need);
+      $activityValues['activity_date_time'] = $need['start_time'] ?? NULL;
       $activityValues['assignee_contact_id'] = $cid;
       $activityValues['is_test'] = ($this->_mode === 'test' ? 1 : 0);
       $activityValues['source_contact_id'] = $this->_primary_volunteer_id;
 
       // Set status to Available if user selected Flexible Need, else set to Scheduled.
-      if (CRM_Utils_Array::value('is_flexible', $need)) {
+      if (!empty($need['is_flexible'])) {
         $activityValues['status_id'] = CRM_Utils_Array::key('Available', $activity_statuses);
       } else {
         $activityValues['status_id'] = CRM_Utils_Array::key('Scheduled', $activity_statuses);
       }
 
-      $activityValues['time_scheduled_minutes'] = CRM_Utils_Array::value('duration', $need);
+      $activityValues['time_scheduled_minutes'] = $need['duration'] ?? NULL;
       CRM_Volunteer_BAO_Assignment::createVolunteerActivity($activityValues);
 
       if(!array_key_exists($need['project_id'], $projectNeeds)) {
@@ -551,7 +551,7 @@ class CRM_Volunteer_Form_VolunteerSignUp extends CRM_Core_Form {
 
       $need['role'] = $need['role_label'];
       $need['description'] = $need['role_description'];
-      $need['duration'] = CRM_Utils_Array::value('duration', $need);
+      $need['duration'] = $need['duration'] ?? NULL;
       $projectNeeds[$need['project_id']][$need['id']] = $need;
     }
     return $projectNeeds;
@@ -597,7 +597,7 @@ class CRM_Volunteer_Form_VolunteerSignUp extends CRM_Core_Form {
    *   The form data that was submitted
    */
   function processAdditionalVolunteers(array $data) {
-    $qty = CRM_Utils_Array::value('additionalVolunteerQuantity', $data, 0);
+    $qty = $data['additionalVolunteerQuantity'] ?? 0;
     $qty = CRM_Utils_Type::validate($qty, 'Integer', FALSE);
 
     if ($qty === NULL) {
@@ -606,11 +606,11 @@ class CRM_Volunteer_Form_VolunteerSignUp extends CRM_Core_Form {
 
     $profileFields = $this->getProfileFields($this->getAdditionalVolunteerProfileIDs());
     $profileFieldsByType = array_reduce($profileFields, array($this, 'reduceByType'), array());
-    $activityProfileFields = CRM_Utils_Array::value('Activity', $profileFieldsByType, array());
+    $activityProfileFields = $profileFieldsByType['Activity'] ?? [];
 
     $index = 0;
     while ($index < $qty) {
-      $profileData = CRM_Utils_Array::value('additionalVolunteers_' . $index, $data, array());
+      $profileData = $data['additionalVolunteers_' . $index] ?? [];
       $activityData = array_intersect_key($profileData, $activityProfileFields);
       $contactData = array_diff_key($profileData, $activityData);
 

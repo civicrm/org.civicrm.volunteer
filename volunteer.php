@@ -127,7 +127,7 @@ function volunteer_civicrm_navigationMenu(&$menu) {
  * appropriate.
  */
 function volunteer_civicrm_tabset($tabsetName, &$tabs, $context) {
-  $eventId = CRM_Utils_Array::value('event_id', $context);
+  $eventId = $context['event_id'] ?? NULL;
 
   if ($tabsetName == 'civicrm/event/manage') {
     if ($eventId) {

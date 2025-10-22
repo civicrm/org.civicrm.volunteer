@@ -50,7 +50,7 @@ abstract class CRM_Volunteer_BAO_Activity extends CRM_Activity_DAO_Activity {
 
       $fields = civicrm_api3('CustomField', 'get', $params);
 
-      if (CRM_Utils_Array::value('count', $fields) < 1) {
+      if (($fields['count'] ?? 0) < 1) {
         CRM_Core_Error::fatal('CiviVolunteer-defined custom fields appear to be missing (custom field group' . static::CUSTOM_GROUP_NAME . ').');
       }
 

@@ -147,7 +147,7 @@ function _civicrm_api3_volunteer_util_getsupportingdata_spec(&$params) {
 function civicrm_api3_volunteer_util_getsupportingdata($params) {
   $results = array();
 
-  $controller = CRM_Utils_Array::value('controller', $params);
+  $controller = $params['controller'] ?? NULL;
   if ($controller === 'VolunteerProject') {
     $relTypes = civicrm_api3('OptionValue', 'get', array(
       'option_group_id' => CRM_Volunteer_BAO_ProjectContact::RELATIONSHIP_OPTION_GROUP,
@@ -295,7 +295,7 @@ function civicrm_api3_volunteer_util_getcustomfields($params) {
 
   $optionData = _volunteer_util_groupBy($optionValueAPI['values'], 'option_group_id');
   foreach($customFields as &$field) {
-    $optionGroupId = CRM_Utils_Array::value('option_group_id', $field);
+    $optionGroupId = $field['option_group_id'] ?? NULL;
     if ($optionGroupId) {
       $field['options'] = $optionData[$optionGroupId];
 
@@ -344,13 +344,13 @@ function _volunteer_util_getOptionGroupIds(array $customFields) {
  * Inspired by underscorejs's _.groupBy function.
  *
  * @param array $collection
- * @param type $property
+ * @param string $property
  * @return array
  */
 function _volunteer_util_groupBy(array $collection, $property) {
   $result = array();
   foreach ($collection as $item) {
-    $key = CRM_Utils_Array::value($property, $item);
+    $key = $item[$property] ?? NULL;
     if (!array_key_exists($key, $result)) {
       $result[$key] = array();
     }
