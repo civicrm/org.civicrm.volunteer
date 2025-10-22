@@ -7,7 +7,7 @@
  */
 class CRM_Volunteer_Form_IncludeProfile extends CRM_Core_Form {
   function buildQuickForm() {
-    $profileCount = CRM_Utils_Array::value('profileCount', $_GET, FALSE);
+    $profileCount = $_GET['profileCount'] ?? FALSE;
     self::buildProfileWidget($this, $profileCount);
     $this->assign('profileCount', $profileCount);
 

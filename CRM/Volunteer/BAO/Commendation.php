@@ -36,17 +36,17 @@ class CRM_Volunteer_BAO_Commendation extends CRM_Volunteer_BAO_Activity {
       'status_id' => CRM_Utils_Array::key('Completed', $activity_statuses),
     );
 
-    $aid = CRM_Utils_Array::value('aid', $params);
+    $aid = $params['aid'] ?? NULL;
     if ($aid) {
       $api_params['id'] = $aid;
     }
 
-    $cid = CRM_Utils_Array::value('cid', $params);
+    $cid = $params['cid'] ?? NULL;
     if ($cid) {
       $api_params['target_contact_id'] = $cid;
     }
 
-    $vid = CRM_Utils_Array::value('vid', $params);
+    $vid = $params['vid'] ?? NULL;
     if ($vid) {
       $project = CRM_Volunteer_BAO_Project::retrieveByID($vid);
       $api_params['subject'] = ts('Volunteer Commendation for %1', array('1' => $project->title, 'domain' => 'org.civicrm.volunteer'));
@@ -57,7 +57,7 @@ class CRM_Volunteer_BAO_Commendation extends CRM_Volunteer_BAO_Activity {
     }
 
     if (array_key_exists('details', $params)) {
-      $api_params['details'] = CRM_Utils_Array::value('details', $params);
+      $api_params['details'] = $params['details'] ?? NULL;
     }
 
     return civicrm_api3('Activity', 'create', $api_params);
@@ -73,9 +73,9 @@ class CRM_Volunteer_BAO_Commendation extends CRM_Volunteer_BAO_Activity {
    */
   private static function requiredParamsArePresent($params) {
     if (
-      CRM_Utils_Array::value('aid', $params) || ( // activity id
-        CRM_Utils_Array::value('cid', $params) && // contact id
-        CRM_Utils_Array::value('vid', $params) // volunteer project id
+      !empty($params['aid']) || ( // activity id
+        !empty($params['cid']) && // contact id
+        !empty($params['vid']) // volunteer project id
       )
     ) {
       return TRUE;
@@ -131,15 +131,15 @@ class CRM_Volunteer_BAO_Commendation extends CRM_Volunteer_BAO_Activity {
     $whereClause = NULL;
     foreach ($filtered_params as $key => $value) {
 
-      if (CRM_Utils_Array::value($key, $activity_fields)) {
+      if (!empty($activity_fields[$key])) {
         $dataType = CRM_Utils_Type::typeToString($activity_fields[$key]['type']);
         $fieldName = $activity_fields[$key]['name'];
         $tableName = CRM_Activity_DAO_Activity::getTableName();
-      } elseif (CRM_Utils_Array::value($key, $contact_fields)) {
+      } elseif (!empty($contact_fields[$key])) {
         $dataType = CRM_Utils_Type::typeToString($contact_fields[$key]['type']);
         $fieldName = $contact_fields[$key]['name'];
         $tableName = CRM_Contact_DAO_Contact::getTableName();
-      } elseif (CRM_Utils_Array::value($key, $custom_fields)) {
+      } elseif (!empty($custom_fields[$key])) {
         $dataType = $custom_fields[$key]['data_type'];
         $fieldName = $custom_fields[$key]['column_name'];
         $tableName = $customTableName;

@@ -81,8 +81,8 @@ function civicrm_api3_volunteer_need_get($params) {
     foreach ($result['values'] as &$need) {
       if (!empty($need['start_time'])) {
         $need['display_time'] = CRM_Volunteer_BAO_Need::getTimes($need['start_time'],
-          CRM_Utils_Array::value('duration', $need),
-          CRM_Utils_Array::value('end_time', $need));
+          $need['duration'] ?? NULL,
+          $need['end_time'] ?? NULL);
       }
       else {
         $need['display_time'] = CRM_Volunteer_BAO_Need::getFlexibleDisplayTime();
@@ -94,7 +94,7 @@ function civicrm_api3_volunteer_need_get($params) {
         );
         $need['role_label'] = $role['label'];
         $need['role_description'] = $role['description'];
-      } elseif (CRM_Utils_Array::value('is_flexible', $need)) {
+      } elseif (!empty($need['is_flexible'])) {
         $need['role_label'] = CRM_Volunteer_BAO_Need::getFlexibleRoleLabel();
         $need['role_description'] = NULL;
       }

@@ -30,7 +30,7 @@ function _volunteer_civicrm_buildForm_CRM_Custom_Form_Field($formName, CRM_Core_
  * Handles the "Use Slider Widget?" field added to the custom fields UI
  */
 function _volunteer_civicrm_postProcess_CRM_Custom_Form_Field($formName, &$form) {
-  $is_slider_widget = CRM_Utils_Array::value('is_slider_widget', $form->_submitValues);
+  $is_slider_widget = $form->_submitValues['is_slider_widget'] ?? NULL;
   $custom_field_id = $form->getVar('_id');
 
   $verb = $is_slider_widget ? CRM_Core_Action::ADD : CRM_Core_Action::DELETE;
@@ -65,7 +65,7 @@ function _volunteer_addSliderWidget(CRM_Core_Form &$form) {
     $widgetized_fields = array_intersect($form_element_names, $db_widgetized_fields);
 
     foreach ($widgetized_fields as $field_name) {
-      $css_classes = CRM_Utils_Array::value('class', $form->getElement($field_name)->_attributes);
+      $css_classes = $form->getElement($field_name)->_attributes['class'] ?? '';
       $form->getElement($field_name)->_attributes['class'] = trim($css_classes . ' volunteer_slider');
     }
 
@@ -101,12 +101,12 @@ function _volunteer_get_slider_fields() {
  *              and CRM_Core_Action::DELETE arrays, it will be removed.
  */
 function _volunteer_update_slider_fields(array $params) {
-  $add = CRM_Utils_Array::value(CRM_Core_Action::ADD, $params, array());
+  $add = $params[CRM_Core_Action::ADD] ?? [];
   if (!is_array($add)) {
     $add = array($add);
   }
 
-  $remove = CRM_Utils_Array::value(CRM_Core_Action::DELETE, $params, array());
+  $remove = $params[CRM_Core_Action::DELETE] ?? [];
   if (!is_array($remove)) {
     $remove = array($remove);
   }

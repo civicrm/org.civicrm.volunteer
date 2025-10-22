@@ -235,7 +235,7 @@ class CRM_Volunteer_Form_Log extends CRM_Core_Form {
     foreach ($this->_volunteerData as $data) {
       $defaults['field'][$i]['scheduled_duration'] = $data['time_scheduled_minutes'];
       $defaults['field'][$i]['actual_duration'] = $data['time_completed_minutes'];
-      $defaults['field'][$i]['volunteer_role'] = CRM_Utils_Array::value($data['volunteer_role_id'], $volunteerRole);
+      $defaults['field'][$i]['volunteer_role'] = $volunteerRole[$data['volunteer_role_id']] ?? NULL;
       $defaults['field'][$i]['volunteer_status'] = $data['status_id'];
       $defaults['field'][$i]['activity_id'] = $data['id'];
       $defaults['field'][$i]['start_date'] = $data['activity_date_time'];
@@ -273,8 +273,8 @@ class CRM_Volunteer_Form_Log extends CRM_Core_Form {
         $volunteer = array(
           'status_id' => $value['volunteer_status'],
           'id' => $value['activity_id'],
-          'time_completed_minutes' => CRM_Utils_Array::value('actual_duration', $value),
-          'time_scheduled_minutes' => CRM_Utils_Array::value('scheduled_duration', $value),
+          'time_completed_minutes' => $value['actual_duration'] ?? NULL,
+          'time_scheduled_minutes' => $value['scheduled_duration'] ?? NULL,
         );
         CRM_Volunteer_BAO_Assignment::createVolunteerActivity($volunteer);
       } else {
@@ -285,9 +285,9 @@ class CRM_Volunteer_Form_Log extends CRM_Core_Form {
           'status_id' => $value['volunteer_status'],
           'subject' => $this->_title . ' Volunteering',
           'volunteer_need_id' => $flexibleNeedId,
-          'volunteer_role_id' => CRM_Utils_Array::value('volunteer_role', $value),
-          'time_completed_minutes' => CRM_Utils_Array::value('actual_duration', $value),
-          'time_scheduled_minutes' => CRM_Utils_Array::value('scheduled_duration', $value),
+          'volunteer_role_id' => $value['volunteer_role'] ?? NULL,
+          'time_completed_minutes' => $value['actual_duration'] ?? NULL,
+          'time_scheduled_minutes' => $value['scheduled_duration'] ?? NULL,
         );
         if (!empty($value['start_date'])) {
           $volunteer['activity_date_time'] = CRM_Utils_Date::processDate($value['start_date'], $value['start_date_time'], TRUE);

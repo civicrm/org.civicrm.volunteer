@@ -112,15 +112,15 @@ class CRM_Volunteer_BAO_Assignment extends CRM_Volunteer_BAO_Activity {
     $whereClause = NULL;
     foreach ($filtered_params as $key => $value) {
 
-      if (CRM_Utils_Array::value($key, $activity_fields)) {
+      if (!empty($activity_fields[$key])) {
         $dataType = CRM_Utils_Type::typeToString($activity_fields[$key]['type']);
         $fieldName = $activity_fields[$key]['name'];
         $tableName = CRM_Activity_DAO_Activity::getTableName();
-      } elseif (CRM_Utils_Array::value($key, $contact_fields)) {
+      } elseif (!empty($contact_fields[$key])) {
         $dataType = CRM_Utils_Type::typeToString($contact_fields[$key]['type']);
         $fieldName = $contact_fields[$key]['name'];
         $tableName = CRM_Contact_DAO_Contact::getTableName();
-      } elseif (CRM_Utils_Array::value($key, $custom_fields)) {
+      } elseif (!empty($custom_fields[$key])) {
         $dataType = $custom_fields[$key]['data_type'];
         $fieldName = $custom_fields[$key]['column_name'];
         $tableName = $customTableName;
@@ -250,7 +250,7 @@ class CRM_Volunteer_BAO_Assignment extends CRM_Volunteer_BAO_Activity {
     $project = CRM_Volunteer_BAO_Project::retrieveByID($need['project_id']);
 
     //copy over duration to Volunteer activity
-    $defaults['duration'] = CRM_Utils_Array::value('duration', $need, 'null');
+    $defaults['duration'] = $need['duration'] ?? 'null';
 
     $defaults['campaign_id'] = $project ? $project->campaign_id : '';
     // Force NULL campaign ids to be empty strings, since the API ignores NULL values.
@@ -258,16 +258,16 @@ class CRM_Volunteer_BAO_Assignment extends CRM_Volunteer_BAO_Activity {
       $defaults['campaign_id'] = '';
     }
     if (empty($params['volunteer_role_id'])) {
-      $defaults['volunteer_role_id'] = CRM_Utils_Array::value('role_id', $need, 'null');
+      $defaults['volunteer_role_id'] = $need['role_id'] ?? 'null';
     }
     if ($op === CRM_Core_Action::ADD) {
-      $defaults['time_scheduled_minutes'] = CRM_Utils_Array::value('duration', $need);
+      $defaults['time_scheduled_minutes'] = $need['duration'] ?? NULL;
       $defaults['target_contact_id'] = CRM_Volunteer_BAO_Project::getContactsByRelationship($project->id, 'volunteer_beneficiary');
 
       // If the related entity doesn't provide a good default, use tomorrow.
       if (empty($params['activity_date_time'])) {
         $tomorrow = date('Y-m-d H:i:s', strtotime('tomorrow'));
-        $defaults['activity_date_time'] = CRM_Utils_Array::value('start_time', $project->getEntityAttributes(), $tomorrow);
+        $defaults['activity_date_time'] = $project->getEntityAttributes()['start_time'] ?? $tomorrow;
       }
 
       if (empty($params['subject'])) {

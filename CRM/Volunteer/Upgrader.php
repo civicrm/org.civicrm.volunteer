@@ -684,7 +684,7 @@ class CRM_Volunteer_Upgrader extends CRM_Extension_Upgrader_Base {
           'return' => 'id',
          )),
       ));
-      if (CRM_Utils_Array::value('is_error', $create)) {
+      if (!empty($create['is_error'])) {
         CRM_Core_Error::debug_var('contactTypeResult', $create, TRUE, TRUE, 'org.civicrm.volunteer');
         throw new CRM_Core_Exception('Failed to register contact type');
       }
@@ -719,7 +719,7 @@ class CRM_Volunteer_Upgrader extends CRM_Extension_Upgrader_Base {
         'name' => self::customContactGroupName,
         'title' => ts('Volunteer Information', array('domain' => 'org.civicrm.volunteer')),
       ));
-      if (CRM_Utils_Array::value('is_error', $create)) {
+      if (!empty($create['is_error'])) {
         CRM_Core_Error::debug_var('customGroupResult', $create, TRUE, TRUE, 'org.civicrm.volunteer');
         throw new CRM_Core_Exception('Failed to register custom group for volunteer subtype');
       }
@@ -746,7 +746,7 @@ class CRM_Volunteer_Upgrader extends CRM_Extension_Upgrader_Base {
       'name' => self::skillLevelOptionGroupName,
       'title' => ts('Skill Level', array('domain' => 'org.civicrm.volunteer')),
     ));
-    $skillLevelOptionGroupId = CRM_Utils_Array::value('id', $skillLevelOptionGroup);
+    $skillLevelOptionGroupId = $skillLevelOptionGroup['id'] ?? NULL;
     // option group ID needs to be fetched if creation attempt was a duplicate
     if (!$skillLevelOptionGroupId) {
       $skillLevelOptionGroupId = civicrm_api3('OptionGroup', 'getvalue', array(
@@ -783,7 +783,7 @@ class CRM_Volunteer_Upgrader extends CRM_Extension_Upgrader_Base {
       'name' => 'camera_skill_level',
       'option_group_id' => $skillLevelOptionGroupId,
     ));
-    $customFieldId = CRM_Utils_Array::value('id', $customField);
+    $customFieldId = $customField['id'] ?? NULL;
     // custom field ID needs to be fetched if creation attempt was a duplicate
     if (!$customFieldId) {
       $customFieldId = civicrm_api3('customField', 'getvalue', array(
@@ -812,13 +812,13 @@ class CRM_Volunteer_Upgrader extends CRM_Extension_Upgrader_Base {
    */
   private function createPossibleDuplicateRecord($entityType, array $params) {
     $apiResult = civicrm_api3($entityType, 'create', $params);
-    if (CRM_Utils_Array::value('is_error', $apiResult)) {
+    if (!empty($apiResult['is_error'])) {
       if ($apiResult['error_code'] == 'already exists') {
         CRM_Core_Session::setStatus(
           ts('CiviVolunteer tried to create a(n) %1 named %2, but it already exists. This may lead to unexpected behavior.',
               array(
                 1 => $entityType,
-                2 => CRM_Utils_Array::value('name', $params),
+                2 => $params['name'] ?? NULL,
                 'domain' => 'org.civicrm.volunteer',
               )),
           ts('Field already exists', array('domain' => 'org.civicrm.volunteer'))
@@ -865,7 +865,7 @@ class CRM_Volunteer_Upgrader extends CRM_Extension_Upgrader_Base {
         );
         $result = civicrm_api('OptionValue', 'create', $params);
 
-        if (CRM_Utils_Array::value('is_error', $result, FALSE)) {
+        if (!empty($result['is_error'])) {
           CRM_Core_Error::debug_var('activityStatusResult', $result, TRUE, TRUE, 'org.civicrm.volunteer');
           throw new CRM_Core_Exception('Failed to register activity status');
         }

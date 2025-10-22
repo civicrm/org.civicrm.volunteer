@@ -3,7 +3,7 @@
 class CRM_Volunteer_Page_Router extends CRM_Core_Page {
 
   function run($args = NULL) {
-    if (CRM_Utils_Array::value(0, $args) !== 'civicrm' || CRM_Utils_Array::value(1, $args) !== 'volunteer') {
+    if (($args[0] ?? NULL) !== 'civicrm' || ($args[1] ?? NULL) !== 'volunteer') {
       CRM_Core_Error::fatal('Invalid page callback config.');
       return;
     }

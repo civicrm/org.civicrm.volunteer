@@ -109,8 +109,8 @@ class CRM_Volunteer_BAO_NeedSearch {
    * @return boolean
    */
   private function needFitsDateCriteria(array $need) {
-    $needStartTime = strtotime(CRM_Utils_Array::value('start_time', $need));
-    $needEndTime = strtotime(CRM_Utils_Array::value('end_time', $need));
+    $needStartTime = strtotime(($need['start_time'] ?? ''));
+    $needEndTime = strtotime(($need['end_time'] ?? ''));
 
     // There are no date-related search criteria, so we're done here.
     if ($this->searchParams['need']['date_start'] === FALSE && $this->searchParams['need']['date_end'] === FALSE) {
@@ -177,17 +177,17 @@ class CRM_Volunteer_BAO_NeedSearch {
   private function setSearchParams($userSearchParams) {
     $this->setSearchDateParams($userSearchParams);
 
-    $projectId = CRM_Utils_Array::value('project', $userSearchParams);
+    $projectId = $userSearchParams['project'] ?? NULL;
     if (CRM_Utils_Type::validate($projectId, 'Positive', FALSE)) {
       $this->searchParams['project']['id'] = $projectId;
     }
 
-    $proximity = CRM_Utils_Array::value('proximity', $userSearchParams);
+    $proximity = $userSearchParams['proximity'] ?? NULL;
     if (is_array($proximity)) {
       $this->searchParams['project']['proximity'] = $proximity;
     }
 
-    $beneficiary = CRM_Utils_Array::value('beneficiary', $userSearchParams);
+    $beneficiary = $userSearchParams['beneficiary'] ?? NULL;
     if ($beneficiary) {
       if (!array_key_exists('project_contacts', $this->searchParams['project'])) {
         $this->searchParams['project']['project_contacts'] = array();
@@ -196,7 +196,7 @@ class CRM_Volunteer_BAO_NeedSearch {
       $this->searchParams['project']['project_contacts']['volunteer_beneficiary'] = $beneficiary;
     }
 
-    $role = CRM_Utils_Array::value('role_id', $userSearchParams);
+    $role = $userSearchParams['role_id'] ?? NULL;
     if ($role) {
       $this->searchParams['need']['role_id'] = is_array($role) ? $role : explode(',', $role);
     }
@@ -212,8 +212,8 @@ class CRM_Volunteer_BAO_NeedSearch {
    *     - date_end: date
    */
   private function setSearchDateParams($userSearchParams) {
-    $this->searchParams['need']['date_start'] = strtotime(CRM_Utils_Array::value('date_start', $userSearchParams));
-    $date_end = strtotime(CRM_Utils_Array::value('date_end', $userSearchParams));
+    $this->searchParams['need']['date_start'] = strtotime(($userSearchParams['date_start'] ?? ''));
+    $date_end = strtotime(($userSearchParams['date_end'] ?? ''));
     if ($date_end) {
       // The end date is entered by the user as YYYY-MM-DD. Then, strtotime
       // converts it to a time stamp represending YYYY-MM-DD 00:00:00.

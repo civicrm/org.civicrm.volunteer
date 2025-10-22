@@ -263,7 +263,7 @@ class CRM_Volunteer_BAO_Project extends CRM_Volunteer_DAO_Project {
    * @return CRM_Volunteer_BAO_Project object
    */
   public static function create(array $params) {
-    $projectId = CRM_Utils_Array::value('id', $params);
+    $projectId = $params['id'] ?? NULL;
     $op = empty($projectId) ? CRM_Core_Action::ADD : CRM_Core_Action::UPDATE;
 
     if (!empty($params['check_permissions']) && !CRM_Volunteer_Permission::checkProjectPerms($op, $projectId)) {
@@ -434,8 +434,8 @@ class CRM_Volunteer_BAO_Project extends CRM_Volunteer_DAO_Project {
   public static function retrieve(array $params) {
     $result = array();
 
-    $projectId = CRM_Utils_Array::value('id', $params);
-    $checkPerms = CRM_Utils_Array::value('check_permissions', $params);
+    $projectId = $params['id'] ?? NULL;
+    $checkPerms = $params['check_permissions'] ?? NULL;
     if ($checkPerms && !self::allowedToRetrieve($projectId)) {
       CRM_Utils_System::permissionDenied();
       return;
@@ -678,7 +678,7 @@ class CRM_Volunteer_BAO_Project extends CRM_Volunteer_DAO_Project {
         'return' => 'id',
         'version' => 3,
       ));
-      if (CRM_Utils_Array::value('is_error', $flexibleNeed) !== 1) {
+      if (($flexibleNeed['is_error'] ?? NULL) !== 1) {
         $result = (int) $flexibleNeed;
       }
     }
@@ -870,7 +870,7 @@ class CRM_Volunteer_BAO_Project extends CRM_Volunteer_DAO_Project {
               'return' => array('end_date'),
             );
             $result = civicrm_api3('Event', 'get', $params);
-            $this->end_date = CRM_Utils_Array::value('end_date', $result['values'][$this->entity_id]);
+            $this->end_date = $result['values'][$this->entity_id]['end_date'] ?? NULL;
             break;
         }
       }
@@ -919,10 +919,10 @@ class CRM_Volunteer_BAO_Project extends CRM_Volunteer_DAO_Project {
       }
 
       foreach ($this->needs as $need) {
-        if (CRM_Utils_Array::value('is_flexible', $need) == '1') {
+        if (!empty($need['is_flexible'])) {
           $roles[CRM_Volunteer_BAO_Need::FLEXIBLE_ROLE_ID] = CRM_Volunteer_BAO_Need::getFlexibleRoleLabel();
         } else {
-          $role_id = CRM_Utils_Array::value('role_id', $need);
+          $role_id = $need['role_id'] ?? NULL;
           $roles[$role_id] = CRM_Core_OptionGroup::getLabel(
             CRM_Volunteer_BAO_Assignment::ROLE_OPTION_GROUP,
             $role_id
@@ -961,7 +961,7 @@ class CRM_Volunteer_BAO_Project extends CRM_Volunteer_DAO_Project {
             // 1) start after now,
             strtotime($need['start_time']) >= $now
             // 2) end after now, or
-            || strtotime(CRM_Utils_Array::value('end_time', $need)) >= $now
+            || strtotime($need['end_time'] ?? '') >= $now
             // 3) be open until filled
             || (empty($need['end_time']) && empty($need['duration']))
           )
