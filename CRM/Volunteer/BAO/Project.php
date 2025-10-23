@@ -710,7 +710,7 @@ class CRM_Volunteer_BAO_Project extends CRM_Volunteer_DAO_Project {
    * to the angular front-end
    *
    * @return array
-   * @throws CiviCRM_API3_Exception
+   * @throws CRM_Core_Exception
    */
   public static function composeDefaultSettingsArray() {
     $defaults = array();
