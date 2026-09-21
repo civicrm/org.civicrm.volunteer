@@ -777,7 +777,8 @@ class CRM_Volunteer_Upgrader extends CRM_Extension_Upgrader_Base {
     $customField = $this->createPossibleDuplicateRecord('customField', array(
       'custom_group_id' => $customGroupID,
       'data_type' => 'String',
-      'html_type' => 'Multi-Select',
+      'html_type' => 'Select',
+      'serialize' => 1,
       'is_searchable' => 1,
       'label' => ts('Camera Skill Level', array('domain' => 'org.civicrm.volunteer')),
       'name' => 'camera_skill_level',
