@@ -26,7 +26,7 @@ class CRM_Volunteer_Page_Roster extends CRM_Core_Page {
    * Builds the page.
    */
   public function run() {
-    $this->projectId = CRM_Utils_Request::retrieve('project_id', 'Positive', CRM_Core_DAO::$_nullObject, TRUE);
+    $this->projectId = CRM_Utils_Request::retrieve('project_id', 'Positive', NULL, TRUE);
     $this->project = CRM_Volunteer_BAO_Project::retrieveByID($this->projectId);
     CRM_Utils_System::setTitle(ts('Volunteer Roster for %1', array(
       1 => $this->project->title,
