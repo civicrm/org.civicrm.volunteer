@@ -45,14 +45,14 @@
     <name>entity_table</name>
     <type>varchar</type>
     <length>64</length>
-    <required>true</required>
+    <required>false</required>
     <add>4.4</add>
     <comment>Entity table for entity_id (initially civicrm_event)</comment>
   </field>
   <field>
     <name>entity_id</name>
     <type>int unsigned</type>
-    <required>true</required>
+    <required>false</required>
     <add>4.4</add>
     <comment>Implicit FK project entity (initially eventID).</comment>
   </field>
