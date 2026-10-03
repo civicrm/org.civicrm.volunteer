@@ -72,7 +72,7 @@
       var path = 'civicrm/volunteer/signup';
       var query = {
         reset: 1,
-        needs: _.keys(volOppsInCart),
+        needs: Object.keys(volOppsInCart),
         dest: dest
       };
 
