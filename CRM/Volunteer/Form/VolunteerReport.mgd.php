@@ -32,6 +32,14 @@ return array(
       'title' => $labelVolunteerReport,
       'description' => $labelVolunteerReport,
       'report_id' => 'volunteer',
+      // SR-007 (security review 2026-08-23): core treats an empty
+      // instance permission as "allowed for anyone who can reach the
+      // report route" (access CiviCRM). This report exposes volunteer
+      // names, emails, phones, and hours; require the extension's own
+      // project-administration grant, matching the roster and the
+      // SearchKit hours report. Managed reconciliation updates existing
+      // installs.
+      'permission' => 'edit all volunteer projects',
       'form_values' => serialize(array(
         'fields' => array(
           'contact_assignee' => '1',

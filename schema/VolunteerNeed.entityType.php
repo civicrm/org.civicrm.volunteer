@@ -1,0 +1,135 @@
+<?php
+
+use CRM_Volunteer_ExtensionUtil as E;
+
+return [
+  'name' => 'VolunteerNeed',
+  'table' => 'civicrm_volunteer_need',
+  'class' => 'CRM_Volunteer_DAO_Need',
+  'getInfo' => fn() => [
+    'title' => E::ts('Volunteer Need'),
+    'title_plural' => E::ts('Volunteer Needs'),
+    'description' => E::ts('A role, schedule, and capacity offered by a volunteer project.'),
+    'log' => TRUE,
+    'add' => '4.4',
+  ],
+  'getIndices' => fn() => [
+    'index_volunteer_need_search' => [
+      'fields' => [
+        'is_active' => TRUE,
+        'is_flexible' => TRUE,
+        'start_time' => TRUE,
+        'end_time' => TRUE,
+      ],
+      'add' => '2.5',
+    ],
+  ],
+  'getFields' => fn() => [
+    'id' => [
+      'title' => E::ts('Volunteer Need ID'),
+      'sql_type' => 'int unsigned',
+      'input_type' => 'Number',
+      'required' => TRUE,
+      'description' => E::ts('Unique volunteer need ID.'),
+      'add' => '4.4',
+      'primary_key' => TRUE,
+      'auto_increment' => TRUE,
+    ],
+    'project_id' => [
+      'title' => E::ts('Volunteer Project'),
+      'sql_type' => 'int unsigned',
+      'input_type' => 'EntityRef',
+      'description' => E::ts('Volunteer project which owns this need.'),
+      'add' => '4.4',
+      'entity_reference' => [
+        'entity' => 'VolunteerProject',
+        'key' => 'id',
+        'on_delete' => 'SET NULL',
+      ],
+    ],
+    'start_time' => [
+      'title' => E::ts('Start Date and Time'),
+      'sql_type' => 'datetime',
+      'input_type' => 'Select Date',
+      'add' => '4.4',
+    ],
+    'end_time' => [
+      'title' => E::ts('End Date and Time'),
+      'sql_type' => 'datetime',
+      'input_type' => 'Select Date',
+      'description' => E::ts('End of the need or flexible completion period.'),
+      'add' => '4.4',
+    ],
+    'duration' => [
+      'title' => E::ts('Duration'),
+      'sql_type' => 'int',
+      'input_type' => 'Number',
+      'description' => E::ts('Length in minutes of this volunteer time slot.'),
+      'add' => '4.4',
+    ],
+    'is_flexible' => [
+      'title' => E::ts('Flexible'),
+      'sql_type' => 'boolean',
+      'input_type' => 'CheckBox',
+      'required' => TRUE,
+      'description' => E::ts('Whether time and role are flexible.'),
+      'default' => FALSE,
+      'add' => '4.4',
+    ],
+    'quantity' => [
+      'title' => E::ts('Quantity'),
+      'sql_type' => 'int',
+      'input_type' => 'Number',
+      'description' => E::ts('Number of volunteers needed.'),
+      'default' => NULL,
+      'add' => '4.4',
+    ],
+    'visibility_id' => [
+      'title' => E::ts('Visibility'),
+      'sql_type' => 'int unsigned',
+      'input_type' => 'Select',
+      'description' => E::ts('Whether this need appears on public signup forms.'),
+      'default' => NULL,
+      'add' => '4.4',
+      'pseudoconstant' => [
+        'option_group_name' => 'visibility',
+      ],
+    ],
+    'role_id' => [
+      'title' => E::ts('Role'),
+      'sql_type' => 'int unsigned',
+      'input_type' => 'Select',
+      'description' => E::ts('Volunteer role associated with this need.'),
+      'default' => NULL,
+      'add' => '4.4',
+      'pseudoconstant' => [
+        'option_group_name' => 'volunteer_role',
+      ],
+    ],
+    'is_active' => [
+      'title' => E::ts('Enabled'),
+      'sql_type' => 'boolean',
+      'input_type' => 'CheckBox',
+      'required' => TRUE,
+      'description' => E::ts('Whether this need is active.'),
+      'default' => TRUE,
+      'add' => '4.4',
+    ],
+    'created' => [
+      'title' => E::ts('Date of Creation'),
+      'sql_type' => 'timestamp',
+      'input_type' => NULL,
+      'readonly' => TRUE,
+      'default' => 'CURRENT_TIMESTAMP',
+      'add' => '2.3',
+    ],
+    'last_updated' => [
+      'title' => E::ts('Date of Last Update'),
+      'sql_type' => 'timestamp',
+      'input_type' => NULL,
+      'readonly' => TRUE,
+      'default' => 'CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP',
+      'add' => '2.3',
+    ],
+  ],
+];

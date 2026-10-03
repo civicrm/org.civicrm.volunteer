@@ -1,7 +1,536 @@
-/** Keeps the help text/project description wrapper from screwing up the UI on signup **/
+/*
+ * Signup-page-specific styling. Shared public-workflow primitives (hero,
+ * two-column grid, commitments panel, Riverlea tokens) live in
+ * css/public_workflow.css and are loaded alongside this file.
+ */
 
-.vol-project-description-wrapper,
-.vol-role-description-wrapper
- {
+.crm-vol-signup-page,
+.crm-vol-signup-page * {
+  box-sizing: border-box;
+}
+
+.crm-vol-signup-page {
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+}
+
+/* Compact progress trail inside the wireframe's shallow hero. */
+.crm-vol-signup-page .crm-vol-signup-hero {
+  padding-bottom: 1.25rem;
+  /* Off the containing block, not the viewport -- see the note on
+   * .crm-vol-public-hero in public_workflow.css. The +1.5rem matches
+   * .crm-vol-public-content's own inline padding below, so the progress trail
+   * and the "Your details" card share a left edge. */
+  padding-left: max(2.5rem, calc((100% - 80rem) / 2 + 1.5rem));
+  padding-right: max(2.5rem, calc((100% - 80rem) / 2 + 1.5rem));
+  padding-top: 1.35rem;
+}
+
+.crm-vol-signup-page .crm-vol-signup-hero h1 {
+  font-size: clamp(1.55rem, 3vw, 1.8rem);
+  line-height: 1.15;
+  margin: 0.35rem 0 0;
+  max-width: none;
+}
+
+.crm-vol-signup-page .crm-vol-signup-steps {
+  align-items: center;
+  display: flex;
+  flex-wrap: wrap;
+  font-size: 0.75rem;
+  gap: 0.45rem;
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.crm-vol-signup-page .crm-vol-signup-steps li {
+  align-items: center;
+  background: transparent;
+  border: 0;
+  color: inherit;
+  display: flex;
+  font-weight: 400;
+  gap: 0.25rem;
+  padding: 0;
+}
+
+.crm-vol-signup-page .crm-vol-signup-steps li + li::before {
+  color: inherit;
+  content: '\2192';
+  margin-right: 0.15rem;
+  opacity: 0.7;
+}
+
+.crm-vol-signup-page .crm-vol-signup-steps a {
+  color: inherit;
+  display: flex;
+  gap: 0.25rem;
+  opacity: 0.75;
+  text-decoration: none;
+}
+
+.crm-vol-signup-page .crm-vol-signup-steps a:hover,
+.crm-vol-signup-page .crm-vol-signup-steps a:focus {
+  opacity: 1;
+  text-decoration: underline;
+}
+
+.crm-vol-signup-page .crm-vol-signup-steps li.is-current {
+  font-weight: 600;
+}
+
+.crm-vol-signup-page .crm-vol-signup-layout {
+  grid-template-columns: minmax(0, 1fr) minmax(17rem, 19.75rem);
+  justify-content: space-between;
+}
+
+.crm-vol-signup-page .crm-vol-public-content {
+  padding-left: 1.5rem;
+  padding-right: 1.5rem;
+  width: 100%;
+}
+
+/* Main column cards. */
+.crm-vol-signup-page .crm-vol-signup-main {
+  display: flex;
+  flex-direction: column;
+  gap: var(--crm-l-reg, 1rem);
+  min-width: 0;
+}
+
+.crm-vol-signup-page .help,
+.crm-vol-signup-page .panel,
+.crm-vol-signup-page .description {
+  margin-bottom: 0;
+}
+
+.crm-vol-signup-page .panel {
+  background: var(--crm-vol-paper, var(--crm-paper, #fff));
+  border: 1px solid var(--crm-vol-border, #d5dee8);
+  border-radius: var(--crm-l-radius, 6px);
+  box-shadow: none;
+}
+
+.crm-vol-signup-page .panel .panel-heading {
+  background: transparent;
+  border: 0;
+  padding: 1.3rem 1.4rem 0;
+}
+
+.crm-vol-signup-page .panel .panel-heading .panel-title {
+  font-size: 2rem;
+  margin: 0;
+}
+
+.crm-vol-signup-page .panel .panel-body {
+  padding: 1rem 1.4rem 1.25rem;
+}
+
+.crm-vol-signup-page .crm-volunteer-signup-profiles .panel-body {
+  background: transparent;
+  padding-bottom: 0.8125rem;
+  padding-top: 0.8125rem;
+}
+
+/* Riverlea gives every public-form fieldset its own surface and shadow. The
+ * Profile is content within this card, so it should inherit the card surface
+ * rather than look like a second nested card. */
+.crm-container.crm-public .crm-vol-signup-page .crm-volunteer-signup-profiles .panel-body,
+.crm-container.crm-public .crm-vol-signup-page .crm-volunteer-signup-profiles fieldset.crm-profile {
+  background-color: transparent !important;
+  box-shadow: none !important;
+}
+
+.crm-vol-signup-page .crm-vol-profile-help,
+.crm-vol-signup-page .crm-vol-signup-confirmation-help {
+  color: var(--crm-vol-muted, var(--crm-inactive-color, #718195));
+  font-size: 0.8rem;
+  line-height: 1.4;
+}
+
+.crm-vol-signup-page .crm-vol-profile-help {
+  margin: 0.35rem 0 0;
+}
+
+.crm-vol-signup-page .crm-vol-signup-confirmation-help {
+  margin: -0.25rem 0 0;
+}
+
+.crm-vol-signup-page .crm-volunteer-signup-profiles fieldset.crm-profile {
+  background: transparent;
+  border: 0;
+  display: grid;
+  gap: 0.8rem 0.9rem;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  margin: 0;
+  padding: 0;
+}
+
+.crm-vol-signup-page .crm-volunteer-signup-profiles.has-single-profile fieldset.crm-profile > legend {
   display: none;
+}
+
+.crm-vol-signup-page .crm-volunteer-signup-profiles fieldset.crm-profile > legend {
+  background: transparent;
+  color: var(--crm-text-color, #25313e);
+  font-size: 0.9rem;
+  grid-column: 1 / -1;
+  margin: 0;
+  padding: 0;
+  width: 100%;
+}
+
+.crm-vol-signup-page .crm-volunteer-signup-profiles fieldset.crm-profile > .crm-section {
+  background: transparent;
+  margin: 0;
+  min-width: 0;
+  padding: 0;
+}
+
+.crm-vol-signup-page .crm-volunteer-signup-profiles fieldset.crm-profile > :is(.help, .helprow-pre, .helprow-post),
+.crm-vol-signup-page .crm-volunteer-signup-profiles fieldset.crm-profile > .crm-section:has(textarea),
+.crm-vol-signup-page .crm-volunteer-signup-profiles fieldset.crm-profile > .crm-section:has(.crm-multiple-checkbox-radio-options) {
+  grid-column: 1 / -1;
+}
+
+.crm-vol-signup-page .crm-volunteer-signup-profiles .crm-section > :is(.label, .content) {
+  float: none;
+  margin: 0;
+  padding: 0;
+  text-align: left;
+  width: 100%;
+}
+
+.crm-vol-signup-page .crm-volunteer-signup-profiles .crm-section > .label {
+  color: var(--crm-text-color, #25313e);
+  font-size: 0.8rem;
+  margin-bottom: 0.15rem;
+}
+
+.crm-vol-signup-page .crm-volunteer-signup-profiles :is(input:not([type="checkbox"]):not([type="radio"]):not([type="file"]), select, textarea, .select2-container) {
+  background: var(--crm-vol-paper, var(--crm-paper, #fff));
+  border: 1px solid var(--crm-vol-border, #d5dee8);
+  border-radius: var(--crm-l-radius, 5px);
+  box-sizing: border-box;
+  max-width: 100%;
+  width: 100% !important;
+}
+
+.crm-vol-signup-page .crm-volunteer-signup-profiles :is(input:not([type="checkbox"]):not([type="radio"]):not([type="file"]), select) {
+  height: 2.5rem;
+}
+
+.crm-vol-signup-page .crm-volunteer-signup-profiles textarea {
+  min-height: 5.2rem;
+  resize: vertical;
+}
+
+.crm-vol-signup-page .crm-volunteer-signup-profiles fieldset.crm-profile + fieldset.crm-profile {
+  border-top: var(--crm-border, 1px solid #d5d5d5);
+  margin-top: 1.25rem;
+  padding-top: 1.25rem;
+}
+
+.crm-vol-signup-page :is(input, select, textarea).error,
+.crm-vol-signup-page :is(input, select, textarea).crm-error,
+.crm-vol-signup-page :is(input, select, textarea).crm-inline-error {
+  border-color: var(--crm-danger-color, #91223c);
+  outline: 3px solid var(--crm-danger-light-color, #f9d9e1);
+  outline-offset: 1px;
+}
+
+/* Description detail controls visually equivalent to standard CiviCRM icon
+ * actions. */
+.crm-container .crm-vol-signup-page .crm-vol-icon-button {
+  align-items: center;
+  appearance: none;
+  background: transparent;
+  border: 0;
+  border-radius: var(--crm-l-radius, 4px);
+  color: var(--crm-vol-muted, var(--crm-inactive-color, #718195));
+  cursor: pointer;
+  display: inline-flex;
+  font-size: 0.9em;
+  justify-content: center;
+  line-height: 1;
+  margin-left: 0.2rem;
+  /* Had min-width but no min-height, leaving roughly 32x18. */
+  min-height: 2rem;
+  min-width: 2rem;
+  padding: var(--crm-l-small, 0.25rem);
+  vertical-align: text-bottom;
+}
+
+/* The description text is read out of this span by
+ * js/CRM_Volunteer_Form_VolunteerSignUp.js and shown in a CRM.alert; it was
+ * never meant to render in place. Nothing hid it, so a project description
+ * printed inline and blew out the 17rem sidebar. */
+.crm-container .crm-vol-signup-page .crm-vol-icon-button [class$="-description-wrapper"] {
+  display: none;
+}
+
+.crm-container .crm-vol-signup-page .crm-vol-icon-button:hover,
+.crm-container .crm-vol-signup-page .crm-vol-icon-button:focus {
+  background: var(--crm-layer1-bg-color, #eaeaea);
+  color: var(--crm-link-hover-color, #154f7d);
+}
+
+.crm-vol-signup-page :is(.crm-vol-icon-button, .crm-vol-back-to-shifts, .crm-button):focus-visible,
+.crm-vol-signup-page .crm-vol-bringing-toggle:has(input:focus-visible) {
+  outline: 2px solid var(--crm-focus-color, #0878c9);
+  outline-offset: 2px;
+}
+
+/* Additional volunteers disclosure. */
+.crm-vol-signup-page .crm-volunteer-additional-volunteers-section {
+  margin: 0;
+  padding: 0;
+}
+
+.crm-vol-signup-page .crm-vol-visually-hidden {
+  clip: rect(0 0 0 0);
+  clip-path: inset(50%);
+  height: 1px;
+  overflow: hidden;
+  position: absolute;
+  white-space: nowrap;
+  width: 1px;
+}
+
+.crm-vol-signup-page .crm-volunteer-additional-volunteers-section .panel-body {
+  padding-bottom: 1rem;
+  padding-top: 1rem;
+}
+
+.crm-vol-signup-page .crm-vol-bringing-toggle {
+  align-items: flex-start;
+  display: flex;
+  gap: 0.85rem;
+  margin: 0;
+}
+
+.crm-vol-signup-page .crm-vol-bringing-toggle input {
+  box-sizing: border-box;
+  flex: none;
+  height: 1rem;
+  margin: 0.1rem 0 0;
+  width: 1rem;
+}
+
+.crm-vol-signup-page .crm-vol-bringing-copy {
+  display: flex;
+  flex-direction: column;
+  gap: 0.2rem;
+}
+
+.crm-vol-signup-page .crm-vol-bringing-copy strong {
+  color: var(--crm-text-color, #25313e);
+  font-size: 0.9rem;
+}
+
+.crm-vol-signup-page .crm-vol-bringing-copy small {
+  color: var(--crm-vol-muted, var(--crm-inactive-color, #718195));
+  font-size: 0.8rem;
+  font-weight: 400;
+  line-height: 1.35;
+}
+
+.crm-vol-signup-page .crm-vol-additional-people {
+  border-top: var(--crm-border, 1px solid #d5d5d5);
+  margin-top: 1rem;
+  padding-top: 1rem;
+}
+
+/* Hidden until the disclosure is checked. This was JS-only, so the quantity
+ * field flashed on every load and stayed visible with JS disabled -- the exact
+ * quantity-first UI the disclosure replaced. The server ignores the quantity
+ * unless the checkbox is set, so hiding it here changes no behaviour.
+ * js/VolunteerSignUp.js clears the attribute via .slideDown(). */
+.crm-vol-signup-page .crm-vol-additional-people[hidden] {
+  display: none;
+}
+
+.crm-vol-signup-page .crm-vol-additional-quantity {
+  align-items: center;
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--crm-flex-gap, 0.5rem);
+  margin: var(--crm-l-reg, 1rem) 0;
+}
+
+.crm-vol-signup-page .crm-vol-additional-quantity > :is(.label, .content) {
+  float: none;
+  margin: 0;
+  text-align: left;
+  width: auto;
+}
+
+.crm-vol-signup-page .crm-vol-additional-quantity label {
+  margin: 0;
+}
+
+/* Commitments sidebar groups. */
+.crm-vol-signup-page .crm-vol-commitment-groups {
+  max-height: 28rem;
+  overflow: auto;
+  padding: 0;
+}
+
+.crm-vol-signup-page .crm-vol-commitment-project + .crm-vol-commitment-project {
+  border-top: 1px solid var(--crm-vol-border, #d5dee8);
+}
+
+.crm-vol-signup-page .crm-vol-commitment-list {
+  list-style: none;
+  margin: 0;
+  padding: 1.5rem 1.15rem 0.625rem;
+}
+
+.crm-vol-signup-page .crm-vol-commitment + .crm-vol-commitment {
+  border-top: 1px solid var(--crm-vol-border, #d5dee8);
+  margin-top: 1rem;
+  padding-top: 1rem;
+}
+
+.crm-vol-signup-page .crm-vol-commitment-role {
+  align-items: center;
+  display: flex;
+  gap: 0.2rem;
+}
+
+.crm-vol-signup-page .crm-vol-commitment-list time {
+  color: var(--crm-vol-muted, var(--crm-inactive-color, #718195));
+  display: block;
+  font-size: 0.8rem;
+  line-height: 1.4;
+  margin-top: 0.2rem;
+}
+
+.crm-vol-signup-page .crm-vol-flexible-summary {
+  color: var(--crm-vol-muted, var(--crm-inactive-color, #718195));
+  font-size: 0.8rem;
+  line-height: 1.45;
+  margin: 0.25rem 0 0;
+}
+
+.crm-vol-signup-page .crm-vol-pick-shift-instead {
+  display: inline-block;
+  font-size: 0.8rem;
+  margin-top: 0.35rem;
+}
+
+.crm-vol-signup-page .crm-vol-commitment-meta {
+  background: var(--crm-layer1-bg-color, #f7f9fb);
+  border-top: 1px solid var(--crm-vol-border, #d5dee8);
+  color: var(--crm-vol-muted, var(--crm-inactive-color, #718195));
+  font-size: 0.75rem;
+  line-height: 1.35;
+  padding: 0.9rem 1.15rem;
+}
+
+.crm-vol-signup-page .crm-vol-signup-commitments > header {
+  background: var(--crm-vol-info-surface, #eff6fb);
+  padding-bottom: 0.65rem;
+}
+
+.crm-vol-signup-page .crm-vol-signup-commitments > header h2 {
+  color: var(--crm-link-color, #0878c9);
+  line-height: 1.2;
+}
+
+.crm-vol-signup-page .crm-vol-signup-commitments > header span {
+  font-size: 0.8rem;
+  line-height: 1.3;
+}
+
+/* Responsive actions. */
+.crm-vol-signup-page .crm-vol-signup-actions {
+  align-items: center;
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--crm-l-medium-2, 0.75rem);
+  justify-content: flex-start;
+}
+
+.crm-vol-signup-page .crm-vol-signup-primary-action,
+.crm-vol-signup-page .crm-vol-signup-actions .crm-submit-buttons {
+  display: contents;
+  padding: 0;
+}
+
+.crm-vol-signup-page .crm-vol-signup-actions .crm-vol-back-to-shifts {
+  align-items: center;
+  border-radius: var(--crm-l-radius, 5px);
+  display: inline-flex;
+  flex: none;
+  justify-content: center;
+  min-height: 2.5rem;
+  padding: 0.45rem 1rem;
+}
+
+.crm-vol-signup-page .crm-vol-signup-actions .crm-button {
+  font-size: 0.9rem;
+  margin: 0;
+  min-height: 2.5rem;
+  padding: 0.5rem 1.5rem;
+}
+
+/* Must match the shared stack breakpoint in public_workflow.css. This
+ * selector is more specific than the shared one, so if the two disagree the
+ * signup page keeps two columns through the gap. */
+@media (max-width: 900px) {
+  .crm-vol-signup-page .crm-vol-signup-layout {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  /* "You are signing up for" belongs above the form, not after the confirm
+   * button -- otherwise the volunteer confirms before seeing what they are
+   * confirming. */
+  .crm-vol-signup-page .crm-vol-signup-commitments {
+    order: -1;
+  }
+
+  .crm-vol-signup-page .crm-vol-commitment-groups {
+    max-height: none;
+  }
+}
+
+@media (max-width: 767px) {
+  .crm-vol-signup-page .crm-vol-signup-hero {
+    padding-left: var(--crm-l-reg, 1rem);
+    padding-right: var(--crm-l-reg, 1rem);
+  }
+
+  .crm-vol-signup-page .crm-vol-public-content {
+    padding-left: var(--crm-l-reg, 1rem);
+    padding-right: var(--crm-l-reg, 1rem);
+  }
+
+  .crm-vol-signup-page .crm-volunteer-signup-profiles fieldset.crm-profile {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .crm-vol-signup-page .crm-vol-signup-actions {
+    flex-direction: column;
+  }
+
+  .crm-vol-signup-page .crm-vol-signup-actions .crm-submit-buttons,
+  .crm-vol-signup-page .crm-vol-signup-actions .crm-vol-back-to-shifts {
+    width: 100%;
+  }
+
+  .crm-vol-signup-page .crm-vol-signup-actions :is(.crm-button, button, input[type="submit"], .crm-vol-back-to-shifts) {
+    justify-content: center;
+    width: 100%;
+  }
+
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .crm-vol-signup-page .crm-vol-additional-people,
+  .crm-vol-signup-page .additional-volunteer-profile {
+    transition: none;
+  }
 }

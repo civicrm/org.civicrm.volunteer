@@ -37,6 +37,8 @@
 /**
  * Create or update a project
  *
+ * @deprecated Use the VolunteerProject.commit API4 action.
+ *
  * @param array $params  Associative array of property
  *                       name/value pairs to insert in new 'project'
  * @example
@@ -46,9 +48,12 @@
  * @access public
  */
 function civicrm_api3_volunteer_project_create($params) {
-  $project = CRM_Volunteer_BAO_Project::create($params);
+  $project = \Civi\Api4\VolunteerProject::commit(CRM_Volunteer_Permission::shouldCheckPermissions($params))
+    ->setValues(CRM_Volunteer_Api4::stripApi3Envelope($params))
+    ->execute()
+    ->single();
 
-  return civicrm_api3_create_success($project->toArray(), $params, 'VolunteerProject', 'create');
+  return civicrm_api3_create_success($project, $params, 'VolunteerProject', 'create');
 }
 
 /**
@@ -58,7 +63,9 @@ function civicrm_api3_volunteer_project_create($params) {
  * @param array $params array or parameters determined by getfields
  */
 function _civicrm_api3_volunteer_project_create_spec(&$params) {
-  $params['title']['api.required'] = 1;
+  // Title is required for new records by the aggregate service. It is not
+  // marked unconditionally required here because APIv3 uses create for partial
+  // updates as well.
   $params['project_contacts'] = array(
     'title' => 'Project Contacts',
     'description' => 'Create or replace the project contact associations with
@@ -72,6 +79,11 @@ function _civicrm_api3_volunteer_project_create_spec(&$params) {
       this project. Array of arrays, where each child array is a set of
       parameters that could be passed to api.UFJoin.create. See
       CRM_Volunteer_BAO_Project::create().',
+    'type' => CRM_Utils_Type::T_STRING,
+  );
+  $params['location'] = array(
+    'title' => 'Project Location',
+    'description' => 'Optional nested LocBlock data saved atomically with the project.',
     'type' => CRM_Utils_Type::T_STRING,
   );
 }
@@ -88,34 +100,21 @@ function _civicrm_api3_volunteer_project_create_spec(&$params) {
  * @access public
  */
 function civicrm_api3_volunteer_project_get($params) {
-
-  //If we are in an editing context only show projects they can edit.
+  $checkPermissions = CRM_Volunteer_Permission::shouldCheckPermissions($params);
   $context = $params['context'] ?? NULL;
-  if ($context === 'edit' && !CRM_Volunteer_Permission::check('edit all volunteer projects')) {
 
-    if (!isset($params['project_contacts'])) {
-      $params['project_contacts'] = array();
-    }
+  // APIv3 chains are not translated: API4 expresses related data as joins, so a
+  // caller must request it explicitly. Untrusted requests had their chains
+  // stripped or force-checked before; dropping them is the safe equivalent.
+  $filters = CRM_Volunteer_Api4::stripApi3Envelope($params);
+  unset($filters['context']);
 
-    $params['project_contacts']['volunteer_owner'] = array(CRM_Core_Session::getLoggedInContactID());
-    unset($params['context']);
-  }
-
-
-  $result = CRM_Volunteer_BAO_Project::retrieve($params);
-  foreach ($result as $k => $bao) {
-
-    $result[$k] = $bao->toArray();
-    $result[$k]['entity_attributes'] = $bao->getEntityAttributes();
-
-    $profiles = civicrm_api3("UFJoin", "get", array(
-      "entity_id" => $bao->id,
-      "entity_table" => "civicrm_volunteer_project",
-      "options" => array("limit" => 0),
-      "sequential" => 1
-    ));
-    $result[$k]['profiles'] = $profiles['values'];
-  }
+  $result = \Civi\Api4\VolunteerProject::search($checkPermissions)
+    ->setContext($context)
+    ->setFilters($filters)
+    ->execute()
+    ->indexBy('id')
+    ->getArrayCopy();
 
   return civicrm_api3_create_success($result, $params, 'VolunteerProject', 'get');
 }
@@ -159,11 +158,11 @@ function _civicrm_api3_volunteer_project_get_spec(&$params) {
  * @access public
  */
 function civicrm_api3_volunteer_project_delete($params) {
-  if (CRM_Volunteer_Permission::checkProjectPerms(CRM_Core_Action::DELETE, $params['id'])) {
-    return _civicrm_api3_basic_delete(_civicrm_api3_get_BAO(__FUNCTION__), $params);
-  } else {
-    return civicrm_api3_create_error(ts('You do not have permission to delete this event'));
-  }
+  \Civi\Api4\VolunteerProject::delete(CRM_Volunteer_Permission::shouldCheckPermissions($params))
+    ->addWhere('id', '=', $params['id'])
+    ->execute();
+
+  return civicrm_api3_create_success(TRUE, $params, 'VolunteerProject', 'delete');
 }
 
 function _civicrm_api3_volunteer_project_delete_spec(&$params) {
@@ -183,7 +182,27 @@ function _civicrm_api3_volunteer_project_delete_spec(&$params) {
  *                message otherwise
  */
 function civicrm_api3_volunteer_project_removeprofile($params) {
-  return _civicrm_api3_basic_delete('CRM_Core_BAO_UFJoin', $params);
+  if (empty($params['id']) || empty($params['project_id'])) {
+    throw new API_Exception(ts('Both profile assignment ID and project ID are required.', array('domain' => 'org.civicrm.volunteer')));
+  }
+
+  // This action has always enforced permissions regardless of the request's
+  // check_permissions flag, because it removes a project's public signup form.
+  \Civi\Api4\VolunteerProject::removeProfile()
+    ->setId($params['id'])
+    ->setProjectId($params['project_id'])
+    ->execute();
+
+  return civicrm_api3_create_success(TRUE, $params, 'VolunteerProject', 'removeprofile');
+}
+
+function _civicrm_api3_volunteer_project_removeprofile_spec(&$params) {
+  $params['id']['api.required'] = 1;
+  $params['project_id'] = array(
+    'title' => 'Volunteer Project ID',
+    'type' => CRM_Utils_Type::T_INT,
+    'api.required' => 1,
+  );
 }
 
 /**
@@ -196,21 +215,16 @@ function civicrm_api3_volunteer_project_removeprofile($params) {
  *
  */
 function civicrm_api3_volunteer_project_locations($params) {
+  // This action has always enforced project permissions regardless of the
+  // request's check_permissions flag.
+  $rows = \Civi\Api4\VolunteerProject::getLocationOptions()
+    ->setProjectId($params['project_id'] ?? NULL)
+    ->execute();
 
+  // APIv3 returned an id => title map rather than rows.
   $locations = array();
-
-  $query = "
-SELECT CONCAT_WS(' :: ' , ca.name, ca.street_address, ca.city, sp.name, ca.supplemental_address_1, ca.supplemental_address_2) title, lb.id
-FROM   civicrm_loc_block lb
-INNER JOIN civicrm_address ca   ON lb.address_id = ca.id
-LEFT  JOIN civicrm_state_province sp ON ca.state_province_id = sp.id
-ORDER BY sp.name, ca.city, ca.street_address ASC
-";
-
-  $dao = CRM_Core_DAO::executeQuery($query);
-  while ($dao->fetch()) {
-    //todo: Some sort of per-location permission check
-    $locations[$dao->id] = $dao->title;
+  foreach ($rows as $row) {
+    $locations[$row['id']] = $row['title'];
   }
 
   return civicrm_api3_create_success($locations, $params, 'VolunteerProject', 'locations');
@@ -224,9 +238,6 @@ ORDER BY sp.name, ca.city, ca.street_address ASC
  *
  */
 function civicrm_api3_volunteer_project_getlocblockdata($params) {
-  //todo VOL-159: Check Permissions
-  unset($params['check_permissions']);
-
   // Prevent chaining problems: for instance, if this API is chained to
   // api.volunteer_project.get, and the returned project has no loc_block_id,
   // we should return 0 loc_blocks instead of 25 (the API default limit).
@@ -234,7 +245,20 @@ function civicrm_api3_volunteer_project_getlocblockdata($params) {
     return civicrm_api3_create_success(array(), $params, 'VolunteerProject', 'getlocblockdata');
   }
 
-  return civicrm_api3("LocBlock", "get", $params);
+  // This action has always enforced project permissions regardless of the
+  // request's check_permissions flag.
+  $rows = \Civi\Api4\VolunteerProject::getLocation()
+    ->setId($params['id'])
+    ->setProjectId($params['project_id'] ?? NULL)
+    ->execute();
+
+  // APIv3's LocBlock.get keyed its values by loc block ID.
+  $locBlocks = array();
+  foreach ($rows as $row) {
+    $locBlocks[$row['id']] = $row;
+  }
+
+  return civicrm_api3_create_success($locBlocks, $params, 'VolunteerProject', 'getlocblockdata');
 }
 
 /**
@@ -246,36 +270,13 @@ function civicrm_api3_volunteer_project_getlocblockdata($params) {
  *
  */
 function civicrm_api3_volunteer_project_savelocblock($params) {
-  if (!empty($params['address']) && empty($params['address']['location_type_id'])) {
-    $params['address']['location_type_id'] = 1;
-  }
+  // This action has always enforced project permissions regardless of the
+  // request's check_permissions flag.
+  $saved = \Civi\Api4\VolunteerProject::saveLocation()
+    ->setProjectId($params['project_id'] ?? NULL)
+    ->setValues(CRM_Volunteer_Api4::stripApi3Envelope($params))
+    ->execute()
+    ->single();
 
-  if (!empty($params['address_2']) && empty($params['address_2']['location_type_id'])) {
-    $params['address']['location_type_id'] = 2;
-  }
-
-  if (!empty($params['email']) && empty($params['email']['location_type_id'])) {
-    $params['email']['location_type_id'] = 1;
-  }
-
-  if (!empty($params['email_2']) && empty($params['email_2']['location_type_id'])) {
-    $params['email']['location_type_id'] = 2;
-  }
-
-  if (!empty($params['phone']) && empty($params['phone']['location_type_id'])) {
-    $params['phone']['location_type_id'] = 1;
-  }
-
-  if (!empty($params['phone_2']) && empty($params['phone_2']['location_type_id'])) {
-    $params['phone']['location_type_id'] = 2;
-  }
-
-  // Permissions check is not required; the purpose of this wrapper API is to
-  // allow CiviVolunteer to determine whether the user should be able to create
-  // a locblock. This is managed via the permissions checks around
-  // api.volunteerProject.savelocblock. TODO: Check permissions on the project
-  // in question in addition to general permission.
-  $params['check_permissions'] = 0;
-  $location = civicrm_api3('LocBlock', 'create', $params);
-  return civicrm_api3_create_success($location, $params, "VolunteerProject", "savelocblock");
+  return civicrm_api3_create_success(array('id' => $saved['id']), $params, 'VolunteerProject', 'savelocblock');
 }

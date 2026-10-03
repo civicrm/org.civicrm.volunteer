@@ -6,41 +6,1197 @@
   min-height: 3em;
 }
 
-.crm-vol-half-responsive {
+/* Shared volunteer-project workflow. The reusable body templates also render
+ * in dialogs and standalone compatibility pages; the design tokens they read
+ * are declared for every host in css/volunteer-tokens.css. */
+.crm-vol-workflow,
+.crm-vol-workflow-dialog,
+.crm-vol-workflow-standalone {
+  background: var(--crm-paper, #fff);
+  color: var(--crm-text-color, #263342);
+}
+
+.crm-vol-workflow-header {
+  align-items: flex-start;
+  background: var(--crm-vol-panel);
+  border-bottom: 1px solid var(--crm-vol-border);
+  display: flex;
+  gap: 1.5rem;
+  justify-content: space-between;
+  padding: 1rem 1.75rem .8rem;
+}
+
+.crm-vol-workflow-heading h1 {
+  font-size: 1.65rem;
+  margin: .25rem 0 .4rem;
+}
+
+.crm-vol-breadcrumb,
+.crm-vol-project-meta,
+.crm-vol-workflow-actions,
+.crm-vol-section-header,
+.crm-vol-roster-actions,
+.crm-vol-roster-filters,
+.crm-vol-hours-bulk,
+.crm-vol-add-person {
+  align-items: center;
+  display: flex;
+  flex-wrap: wrap;
+  gap: .65rem;
+}
+
+.crm-vol-breadcrumb,
+.crm-vol-project-meta,
+.crm-vol-workflow-section > .crm-vol-section-header p,
+.crm-vol-secondary-text {
+  color: var(--crm-vol-muted);
+}
+
+.crm-vol-project-meta select {
+  border-color: #add5b8;
+  border-radius: 1rem;
+  color: #17633a;
+  padding: .25rem 1.8rem .25rem .65rem;
+}
+
+.crm-vol-capacity-meta {
+  color: #8a5b00;
+  font-weight: 600;
+}
+
+.crm-vol-workflow-actions {
+  justify-content: flex-end;
+}
+
+.crm-vol-workflow-tabs {
+  background: var(--crm-vol-panel);
+  border-bottom: 1px solid var(--crm-vol-border);
+  padding: 0 1.75rem;
+}
+
+/* Two variants of the same step list. Owning the page it is a tab bar
+ * (`nav nav-tabs`); embedded in CiviEvent's Volunteers tab it is
+ * `crm-vol-workflow-steps`, because a second row of page tabs nested inside
+ * the host's own tab bar reads as a navigation error. Layout is shared; only
+ * the selected-state treatment differs. */
+.crm-vol-workflow-tabs .nav-tabs,
+.crm-vol-workflow-tabs .crm-vol-workflow-steps {
+  border: 0;
+  display: flex;
+  gap: .15rem;
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.crm-vol-workflow-tabs .nav-tabs > li > a,
+.crm-vol-workflow-tabs .crm-vol-workflow-steps > li > a {
+  border: 0;
+  border-bottom: 3px solid transparent;
+  color: var(--crm-vol-muted);
+  display: block;
+  font-weight: 600;
+  padding: .85rem 1rem .65rem;
+}
+
+.crm-vol-workflow-tabs .nav-tabs > li.active > a,
+.crm-vol-workflow-tabs .crm-vol-workflow-steps > li.active > a {
+  border-bottom-color: var(--crm-link-color, #0878c9);
+  color: var(--crm-link-color, #075f9e);
+}
+
+.crm-vol-workflow-tabs li.disabled a {
+  cursor: not-allowed;
+  opacity: .45;
+}
+
+/* Embedded: the host page supplies the outer frame, so drop the shell's own
+ * panel background and horizontal gutters and tighten the step row into a
+ * segmented sub-navigation. */
+.crm-vol-workflow--embedded {
+  background: none;
+}
+
+.crm-vol-workflow--embedded .crm-vol-workflow-header {
+  background: none;
+  padding: .35rem 0 .6rem;
+}
+
+.crm-vol-workflow--embedded .crm-vol-workflow-tabs {
+  background: none;
+  padding: 0;
+}
+
+.crm-vol-workflow--embedded .crm-vol-workflow-steps > li > a {
+  border-bottom-width: 2px;
+  padding: .5rem .85rem .4rem;
+}
+
+.crm-vol-workflow--embedded .crm-vol-workflow-content {
+  padding: 1.1rem 0 0;
+}
+
+.crm-vol-workflow-content,
+.crm-vol-workflow-dialog,
+.crm-vol-workflow-standalone {
+  padding: 1.4rem 1.75rem;
+}
+
+.crm-vol-workflow-dialog,
+.crm-vol-workflow-standalone {
+  padding: .25rem;
+}
+
+/* jQuery-UI wrapper for the workflow dialogs -- the dialogClass set in
+ * ang/volunteer/Workflow.js. Distinct from .crm-vol-workflow-dialog above,
+ * which is the content div *inside* it. The dialogs open from Manage
+ * Volunteer Projects as well as the CiviEvent tab, so their paper background,
+ * content padding and sticky button pane ship with the Angular bundle. */
+.crm-volunteer-workflow-dialog,
+.crm-volunteer-search-workflow-dialog {
+  --crm-dialog-bg-color: var(--crm-paper, #fff);
+  --crm-dialog-body-bg-color: var(--crm-paper, #fff);
+  background: var(--crm-paper, #fff);
+}
+
+.crm-volunteer-workflow-dialog .ui-dialog-content,
+.crm-volunteer-search-workflow-dialog .ui-dialog-content {
+  background: var(--crm-paper, #fff);
+  padding: var(--crm-l-reg, 1rem);
+}
+
+.crm-volunteer-workflow-dialog .ui-dialog-buttonpane,
+.crm-volunteer-search-workflow-dialog .ui-dialog-buttonpane {
+  background: var(--crm-page-bg-color, #fff);
+  border-top: 1px solid var(--crm-border-color, #c2c0c0);
+  bottom: 0;
+  position: sticky;
+  z-index: 20;
+}
+
+@media (max-width: 767px) {
+  .crm-volunteer-workflow-dialog,
+  .crm-volunteer-search-workflow-dialog {
+    height: calc(100vh - 1rem) !important;
+    left: .5rem !important;
+    max-width: none !important;
+    top: .5rem !important;
+    width: calc(100vw - 1rem) !important;
+  }
+
+  .crm-volunteer-workflow-dialog .ui-dialog-content,
+  .crm-volunteer-search-workflow-dialog .ui-dialog-content {
+    height: calc(100vh - 8rem) !important;
+  }
+}
+
+.crm-vol-project-context {
+  border-bottom: 1px solid var(--crm-vol-border);
+  margin-bottom: 1rem;
+  padding-bottom: .75rem;
+}
+
+.crm-vol-project-context span,
+.crm-vol-project-context strong,
+.crm-vol-secondary-text {
+  display: block;
+}
+
+.crm-vol-section-header {
+  justify-content: space-between;
+  margin-bottom: 1rem;
+}
+
+.crm-vol-section-header h2,
+.crm-vol-section-header p {
+  margin: 0 0 .25rem;
+}
+
+.crm-vol-details-layout {
+  display: grid;
+  gap: 2rem;
+  grid-template-columns: minmax(0, 2.3fr) minmax(220px, 1fr);
+}
+
+.crm-vol-setup-card,
+.crm-vol-selected-shift,
+.crm-vol-shift-rail,
+.crm-vol-available-pool,
+.crm-vol-hours-scope,
+.crm-vol-hours-bulk,
+.crm-vol-roster-group {
+  border: 1px solid var(--crm-vol-border);
+  border-radius: var(--crm-l-radius, 4px);
+}
+
+.crm-vol-setup-card {
+  align-self: start;
+  background: var(--crm-vol-panel);
+  padding: 1rem;
+}
+
+.crm-vol-setup-card h2 {
+  font-size: .8rem;
+  letter-spacing: .08em;
+  margin: 0 0 .7rem;
+  text-transform: uppercase;
+}
+
+.crm-vol-setup-card ol {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.crm-vol-setup-card li {
+  align-items: center;
+  color: var(--crm-vol-muted);
+  display: flex;
+  gap: .5rem;
+  padding: .35rem 0;
+}
+
+.crm-vol-setup-card li.is-complete .crm-i {
+  color: var(--crm-success-ink-color, #287a4b);
+}
+
+.crm-vol-shift-table {
+  border: 1px solid var(--crm-vol-border);
+  border-radius: var(--crm-l-radius, 4px);
+  overflow: hidden;
+}
+
+.crm-vol-shift-filter-panel {
+  background: var(--crm-vol-panel);
+  border: 1px solid var(--crm-vol-border);
+  border-radius: var(--crm-l-radius, 4px);
+  margin-bottom: 1rem;
+  padding: .85rem 1rem .65rem;
+}
+
+.crm-vol-shift-quick-filters,
+.crm-vol-shift-custom-range,
+.crm-vol-shift-option-filters,
+.crm-vol-shift-empty {
+  align-items: center;
+  display: flex;
+  flex-wrap: wrap;
+  gap: .5rem;
+}
+
+.crm-vol-shift-quick-filters > strong,
+.crm-vol-shift-custom-range > strong {
+  margin-right: .2rem;
+}
+
+.crm-vol-shift-quick-filters button {
+  background: var(--crm-paper, #fff);
+  border: 1px solid var(--crm-vol-border);
+  border-radius: var(--crm-btn-radius, 3px);
+  color: var(--crm-link-color, #075f9e);
+  padding: .35rem .65rem;
+}
+
+.crm-vol-shift-quick-filters button.is-active {
+  background: var(--crm-link-color, #075f9e);
+  border-color: var(--crm-link-color, #075f9e);
+  color: var(--crm-paper, #fff);
+  font-weight: 600;
+}
+
+.crm-vol-shift-filter-form {
+  border-top: 1px solid var(--crm-vol-border);
+  margin-top: .75rem;
+  padding-top: .75rem;
+}
+
+.crm-vol-shift-option-filters {
+  margin-top: .65rem;
+}
+
+.crm-vol-shift-custom-range label,
+.crm-vol-shift-option-filters label {
+  align-items: center;
+  display: flex;
+  gap: .35rem;
+  margin: 0;
+}
+
+.crm-vol-shift-custom-range input {
+  width: 9.5rem;
+}
+
+.crm-vol-shift-option-filters select {
+  min-width: 10rem;
+}
+
+.crm-vol-shift-option-filters > .crm-vol-link-button {
+  margin-left: auto;
+}
+
+.crm-vol-shift-filter-error {
+  color: var(--crm-danger-ink-color, #b52626);
+  margin: .65rem 0 0;
+}
+
+.crm-vol-shift-result-count {
+  color: var(--crm-vol-muted);
+  margin: .65rem 0 0;
+  text-align: right;
+}
+
+.crm-vol-shift-header,
+.crm-vol-shift-row {
+  display: grid;
+  gap: .75rem;
+  grid-template-columns: minmax(150px, 1.15fr) 80px minmax(300px, 2fr) minmax(170px, .9fr) minmax(120px, .7fr);
+  padding: .8rem 1rem;
+}
+
+.crm-vol-shift-header {
+  background: var(--crm-vol-panel);
+  color: var(--crm-vol-muted);
+  font-size: .75rem;
+  font-weight: 700;
+  letter-spacing: .06em;
+  text-transform: uppercase;
+}
+
+.crm-vol-shift-row {
+  border-top: 1px solid var(--crm-vol-border);
+}
+
+.crm-vol-shift-row input,
+.crm-vol-shift-row select {
   box-sizing: border-box;
-  width: 49%;
-  display: inline-block;
+  max-width: 100%;
 }
-.crm-vol-half-responsive.crm-vol-opp-search {
-  float: left;
+
+.crm-vol-shift-when,
+.crm-vol-shift-visibility,
+.crm-vol-shift-actions {
+  display: flex;
+  flex-direction: column;
+  gap: .4rem;
 }
-.crm-vol-half-responsive.crm-vol-opp-cart {
+
+.crm-vol-segmented {
+  display: flex;
+}
+
+.crm-vol-segmented label {
+  border: 1px solid var(--crm-vol-border);
+  margin-right: -1px;
+  padding: .35rem .5rem;
+}
+
+.crm-vol-segmented input {
+  margin: 0 .2rem 0 0;
+}
+
+.crm-vol-schedule-inputs,
+.crm-vol-flexible-row {
+  align-items: center;
+  display: flex;
+  flex-wrap: wrap;
+  gap: .45rem;
+}
+
+.crm-vol-schedule-label {
+  color: var(--crm-vol-muted);
+  font-weight: 600;
+}
+
+.crm-vol-duration input {
+  width: 4.5rem;
+}
+
+.crm-vol-flexible-row {
+  background: var(--crm-vol-panel);
+  border-top: 1px solid var(--crm-vol-border);
+  justify-content: space-between;
+  padding: .9rem 1rem;
+}
+
+.crm-vol-shift-empty {
+  border-top: 1px solid var(--crm-vol-border);
+  color: var(--crm-vol-muted);
+  padding: 1.25rem 1rem;
+}
+
+.crm-vol-shift-empty > .crm-i {
+  font-size: 1.25rem;
+}
+
+.crm-vol-shift-empty p {
+  margin: .2rem 0 0;
+}
+
+.crm-vol-shift-empty .crm-vol-link-button {
+  margin-left: auto;
+}
+
+.crm-vol-save-state.is-error,
+.crm-vol-destructive-action {
+  color: var(--crm-danger-ink-color, #b52626) !important;
+}
+
+.crm-vol-add-person {
+  padding: .7rem 1rem;
+}
+
+.crm-vol-add-person .crm-form-entityref {
+  flex: 1;
+  min-width: 180px;
+}
+
+.crm-vol-assignment-table,
+.crm-vol-roster-table,
+.crm-vol-hours-table {
+  border-collapse: collapse;
+  margin: 0;
+  width: 100%;
+}
+
+.crm-vol-assignment-table th,
+.crm-vol-assignment-table td,
+.crm-vol-roster-table th,
+.crm-vol-roster-table td,
+.crm-vol-hours-table th,
+.crm-vol-hours-table td {
+  border-top: 1px solid var(--crm-vol-border);
+  padding: .7rem 1rem;
+  text-align: left;
+  vertical-align: middle;
+}
+
+.crm-vol-assignment-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: .4rem;
+}
+
+.crm-vol-roster-actions {
+  background: var(--crm-vol-panel);
+  border: 1px solid var(--crm-vol-border);
+  border-radius: var(--crm-l-radius, 4px);
+  margin-bottom: 1rem;
+  padding: 0.65rem 0.9rem;
+}
+
+.crm-vol-roster-filters {
+  background: var(--crm-vol-panel);
+  border: 1px solid var(--crm-vol-border);
+  justify-content: space-between;
+  margin-bottom: 1rem;
+  padding: .75rem 1rem;
+}
+
+.crm-vol-roster-group {
+  margin-bottom: 1rem;
+  overflow: hidden;
+}
+
+.crm-vol-roster-group h3 {
+  background: var(--crm-vol-panel);
+  margin: 0;
+  padding: .75rem 1rem;
+}
+
+.crm-vol-roster-group h3 span {
+  color: var(--crm-vol-muted);
   float: right;
+  font-size: .85rem;
+  font-weight: normal;
+}
+
+.crm-vol-hours-scope {
+  background: #f0f7ff;
+  border-color: #afd1f3;
+  margin-bottom: 1rem;
+  padding: 1rem;
+}
+
+.crm-vol-hours-scope label,
+.crm-vol-hours-scope label span {
+  display: block;
+  margin-bottom: .55rem;
+}
+
+.crm-vol-hours-scope label span {
+  color: var(--crm-vol-muted);
+  font-weight: normal;
+}
+
+.crm-vol-hours-scope select {
+  min-width: min(440px, 100%);
+}
+
+.crm-vol-hours-bulk {
+  background: var(--crm-vol-panel);
+  margin-bottom: 1rem;
+  padding: .75rem 1rem;
+}
+
+.crm-vol-divider {
+  align-self: stretch;
+  border-left: 1px solid var(--crm-vol-border);
+}
+
+.crm-vol-hours-table-wrap {
+  border: 1px solid var(--crm-vol-border);
+  border-radius: var(--crm-l-radius, 4px);
+  overflow-x: auto;
+}
+
+.crm-vol-hours-table th {
+  background: var(--crm-vol-panel);
+  color: var(--crm-vol-muted);
+  font-size: .75rem;
+  letter-spacing: .05em;
+  text-transform: uppercase;
+}
+
+.crm-vol-hours-table tfoot td {
+  background: var(--crm-vol-panel);
+}
+
+.crm-vol-hours-input {
+  align-items: center;
+  display: flex;
+  gap: .3rem;
+  white-space: nowrap;
+}
+
+.crm-vol-hours-input input,
+.crm-vol-hours-bulk input {
+  width: 5rem;
+}
+
+.crm-vol-hours-total {
+  float: right;
+  padding-top: .5rem;
+}
+
+.crm-vol-commendation-button {
+  background: transparent;
+  border: 0;
+  color: var(--crm-vol-muted);
+  padding: .2rem;
+}
+
+.crm-vol-commendation-button.is-commended {
+  color: #d99a00;
+}
+
+.crm-vol-empty-row {
+  color: var(--crm-vol-muted);
+  text-align: center !important;
 }
 
 @media (max-width: 1000px) {
-  .crm-vol-half-responsive {
-    width: 100%;
-    float: none;
+  .crm-vol-details-layout,
+  .crm-vol-assign-board {
+    grid-template-columns: 1fr;
   }
 
-  .crm-vol-opp-cart {
-    margin-top: 2em;
+  .crm-vol-setup-card {
+    order: -1;
   }
+
+  .crm-vol-shift-header {
+    display: none;
+  }
+
+  .crm-vol-shift-row {
+    grid-template-columns: 1fr 100px;
+  }
+
+  .crm-vol-shift-when,
+  .crm-vol-shift-visibility,
+  .crm-vol-shift-actions {
+    grid-column: 1 / -1;
+  }
+}
+
+@media (max-width: 600px) {
+  .crm-vol-workflow-header {
+    display: block;
+    padding: 1rem;
+  }
+
+  .crm-vol-workflow-actions {
+    justify-content: flex-start;
+    margin-top: .8rem;
+  }
+
+  .crm-vol-workflow-tabs,
+  .crm-vol-workflow-content {
+    padding-left: 1rem;
+    padding-right: 1rem;
+  }
+
+  .crm-vol-workflow-tabs {
+    overflow-x: auto;
+  }
+
+  .crm-vol-workflow-tabs .nav-tabs,
+  .crm-vol-workflow-tabs .crm-vol-workflow-steps {
+    min-width: 560px;
+  }
+
+  .crm-vol-shift-row {
+    grid-template-columns: 1fr;
+  }
+
+  .crm-vol-shift-row > * {
+    grid-column: 1;
+  }
+
+  .crm-vol-shift-quick-filters > strong,
+  .crm-vol-shift-custom-range > strong {
+    flex-basis: 100%;
+  }
+
+  .crm-vol-shift-custom-range label,
+  .crm-vol-shift-option-filters label {
+    justify-content: space-between;
+    width: 100%;
+  }
+
+  .crm-vol-shift-custom-range input,
+  .crm-vol-shift-option-filters select {
+    flex: 1;
+    min-width: 0;
+  }
+
+  .crm-vol-shift-option-filters > .crm-vol-link-button,
+  .crm-vol-shift-empty .crm-vol-link-button {
+    margin-left: 0;
+  }
+}
+
+@media print {
+  .crm-menubar,
+  #civicrm-menu,
+  .crm-vol-workflow-header,
+  .crm-vol-workflow-tabs,
+  .crm-vol-screen-only,
+  .crm-vol-roster-actions,
+  .crm-vol-shift-filter-panel,
+  .crm-submit-buttons {
+    display: none !important;
+  }
+
+  .crm-vol-workflow-content {
+    padding: 0;
+  }
+
+  .crm-vol-roster-group {
+    break-inside: avoid;
+  }
+}
+
+.crm-vol-page,
+.crm-vol-page * {
+  box-sizing: border-box;
+}
+
+.crm-vol-page .crm-form-block {
+  display: flex;
+  flex-direction: column;
+  gap: var(--crm-l-reg, 1rem);
+}
+
+.crm-vol-page-actions,
+.crm-vol-bulk-bar {
+  align-items: center;
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--crm-flex-gap, 0.5rem);
+}
+
+.crm-vol-page-actions {
+  justify-content: space-between;
+}
+
+.crm-container a.crm-vol-secondary-action,
+.crm-container .crm-vol-secondary-button {
+  background: var(--crm-secondary-color, #5d677b);
+  color: var(--crm-secondary-text-color, #fff);
+}
+
+.crm-container a.crm-vol-secondary-action:hover,
+.crm-container a.crm-vol-secondary-action:focus,
+.crm-container .crm-vol-secondary-button:hover,
+.crm-container .crm-vol-secondary-button:focus {
+  background: var(--crm-secondary-hover-color, #3e4657);
+  color: var(--crm-secondary-hover-text-color, #fff);
+}
+
+.crm-vol-filter-panel.crm-container,
+.crm-vol-filter-panel.panel,
+.crm-vol-page .crm-vol-filter-panel {
+  margin: 0;
+}
+
+.crm-vol-filter-grid,
+.crm-vol-proximity-grid {
+  display: grid;
+  gap: var(--crm-l-reg, 1rem);
+  grid-template-columns: repeat(auto-fit, minmax(14rem, 1fr));
+}
+
+.crm-vol-filter-grid .crm-section,
+.crm-vol-proximity-grid .crm-section {
+  display: block;
+  min-width: 0;
+  padding: 0;
+}
+
+.crm-vol-filter-grid .crm-section > .label,
+.crm-vol-filter-grid .crm-section > .content,
+.crm-vol-proximity-grid .crm-section > .label,
+.crm-vol-proximity-grid .crm-section > .content {
+  float: none;
+  margin: 0;
+  text-align: left;
+  width: 100%;
+}
+
+.crm-vol-filter-grid :is(input:not([type="radio"]):not([type="checkbox"]), select, .select2-container),
+.crm-vol-proximity-grid :is(input:not(.four):not([type="radio"]):not([type="checkbox"]), select.big, .select2-container) {
+  max-width: 100%;
+  width: 100% !important;
+}
+
+.crm-vol-choice-group,
+.crm-vol-date-range,
+.crm-vol-radius-fields {
+  align-items: center;
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--crm-l-medium, 0.5rem);
+}
+
+.crm-vol-choice-group label {
+  align-items: center;
+  display: inline-flex !important;
+  font-weight: normal !important;
+  gap: var(--crm-l-small, 0.25rem);
+  margin: 0 !important;
+  padding: var(--crm-l-small, 0.25rem) 0;
+}
+
+.crm-vol-date-range input {
+  flex: 1 1 8rem;
+  min-width: 8rem;
+}
+
+.crm-vol-radius-fields input {
+  width: 6rem !important;
+}
+
+.crm-vol-radius-fields select {
+  width: auto !important;
+}
+
+.crm-vol-proximity {
+  margin-top: var(--crm-l-reg, 1rem);
+}
+
+.crm-vol-proximity .crm-accordion-body {
+  padding: var(--crm-padding-reg, 1rem);
+}
+
+.crm-vol-filter-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--crm-flex-gap, 0.5rem);
+}
+
+.crm-vol-result-count,
+.crm-vol-selection-count {
+  background: var(--crm-vol-info-surface, #e9f5fb);
+  border-radius: 999px;
+  color: var(--crm-info-ink-color, #133f51);
+  display: inline-flex;
+  font-weight: bold;
+  padding: var(--crm-l-small, 0.25rem) var(--crm-l-medium-2, 0.75rem);
+}
+
+.crm-vol-bulk-bar {
+  background: var(--crm-layer1-bg-color, #eaeaea);
+  border: var(--crm-border, 1px solid #d5d5d5);
+  padding: var(--crm-l-medium-2, 0.75rem);
+}
+
+.crm-vol-bulk-label {
+  margin: 0 0 0 auto !important;
+  padding: 0 !important;
+}
+
+.crm-vol-table-wrap {
+  min-width: 0;
+  /* Deliberately NOT a scroll container. `overflow-x: auto` forces computed
+   * overflow-y from `visible` to `auto`, which makes this element the
+   * scrollport for the table's `position: sticky` thead (.crm-sticky). The
+   * thead then resolves its `top: var(--crm-menubar-bottom)` against this box
+   * instead of the viewport, and since it already sits at the box's top edge
+   * sticky pushes it down by the menubar height -- permanently covering the
+   * first data row. The six-column table is kept off small viewports by the
+   * stacked-card breakpoint below instead. */
+  position: relative;
+}
+
+.crm-vol-manage-project-title,
+.crm-vol-cell-title {
+  font-weight: bold;
+}
+
+.crm-vol-manage-project-id {
+  color: var(--crm-inactive-color, #696969);
+  display: block;
+  font-size: var(--crm-font-small-size, 0.75rem);
+  margin-top: var(--crm-l-xsmall-1, 0.125rem);
+}
+
+.crm-vol-status-badge {
+  border-radius: 999px;
+  display: inline-flex;
+  font-size: var(--crm-font-small-size, 0.75rem);
+  font-weight: bold;
+  padding: var(--crm-l-small, 0.25rem) var(--crm-l-medium-2, 0.75rem);
+}
+
+.crm-vol-status-badge.is-active {
+  background: var(--crm-vol-success-surface, #dfefdc);
+  color: var(--crm-success-ink-color, #2e562e);
+}
+
+.crm-vol-status-badge.is-inactive {
+  background: var(--crm-layer1-bg-color, #eaeaea);
+  color: var(--crm-inactive-color, #696969);
+}
+
+.crm-vol-actions-menu {
+  display: inline-block;
+  position: relative;
+}
+
+.crm-vol-actions-menu > summary {
+  align-items: center;
+  background: transparent;
+  border-radius: var(--crm-btn-radius, 3px);
+  color: var(--crm-link-color, #2786c2);
+  cursor: pointer;
+  display: inline-flex;
+  gap: var(--crm-l-small, 0.25rem);
+  list-style: none;
+  padding: var(--crm-btn-small-padding, 0.1rem 0.5rem);
+  white-space: nowrap;
+}
+
+.crm-vol-actions-menu > summary::-webkit-details-marker {
+  display: none;
+}
+
+.crm-vol-actions-menu > summary:hover,
+.crm-vol-actions-menu > summary:focus,
+.crm-vol-actions-menu[open] > summary {
+  background: var(--crm-secondary-color, #5d677b);
+  color: var(--crm-secondary-text-color, #fff);
+}
+
+.crm-vol-actions-menu[open] > summary .crm-i {
+  transform: rotate(180deg);
+}
+
+.crm-vol-actions-menu > ul {
+  background: var(--crm-paper, #fff);
+  border: var(--crm-border, 1px solid #d5d5d5);
+  border-radius: var(--crm-l-radius, 0.25rem);
+  box-shadow: var(--crm-shadow-popup, 0 3px 18px rgba(48, 40, 40, 0.25));
+  list-style: none;
+  margin: var(--crm-l-small, 0.25rem) 0 0;
+  min-width: 16rem;
+  padding: var(--crm-l-small, 0.25rem);
+  position: absolute;
+  right: 0;
+  text-align: left;
+  z-index: 20;
+}
+
+.crm-vol-actions-menu li {
+  margin: 0;
+}
+
+.crm-vol-actions-menu li > a,
+.crm-container .crm-vol-actions-menu li > .crm-vol-link-button {
+  background: transparent;
+  border: 0;
+  border-radius: var(--crm-btn-radius, 3px);
+  color: var(--crm-link-color, #2786c2);
+  display: block;
+  height: auto;
+  max-width: none;
+  padding: var(--crm-l-medium, 0.5rem);
+  text-align: left;
+  text-decoration: none;
+  width: 100%;
+}
+
+.crm-vol-actions-menu li > a:hover,
+.crm-vol-actions-menu li > a:focus,
+.crm-container .crm-vol-actions-menu li > .crm-vol-link-button:hover,
+.crm-container .crm-vol-actions-menu li > .crm-vol-link-button:focus {
+  background: var(--crm-layer1-bg-color, #eaeaea);
+  color: var(--crm-link-hover-color, #154f7d);
+}
+
+.crm-vol-signup-steps {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  list-style: none;
+  margin: 0 0 var(--crm-l-reg, 1rem);
+  padding: 0;
+}
+
+.crm-vol-signup-steps li {
+  align-items: center;
+  background: var(--crm-layer1-bg-color, #eaeaea);
+  border-bottom: 3px solid var(--crm-border-color, #d5d5d5);
+  color: var(--crm-inactive-color, #696969);
+  display: flex;
+  font-weight: bold;
+  gap: var(--crm-l-medium, 0.5rem);
+  padding: var(--crm-l-medium-2, 0.75rem) var(--crm-l-reg, 1rem);
+}
+
+.crm-vol-signup-steps li > span {
+  align-items: center;
+  background: var(--crm-paper, #fff);
+  border: var(--crm-border, 1px solid #d5d5d5);
+  border-radius: 50%;
+  display: inline-flex;
+  height: 1.75rem;
+  justify-content: center;
+  width: 1.75rem;
+}
+
+.crm-vol-signup-steps li.is-current {
+  border-bottom-color: var(--crm-primary-color, #20576f);
+  color: var(--crm-primary-ink-color, #20576f);
+}
+
+.crm-vol-page-intro {
+  margin-bottom: var(--crm-l-reg, 1rem);
+}
+
+.crm-vol-opp-show-hidden-search {
+  margin-bottom: var(--crm-l-reg, 1rem);
+}
+
+.crm-vol-selection-heading {
+  align-items: center;
+  display: flex;
+  gap: var(--crm-l-medium-2, 0.75rem);
+}
+
+.crm-vol-selection-heading .crm-vol-selection-count {
+  align-items: center;
+  font-size: var(--crm-font-medium-size, 1.25rem);
+  height: 2.5rem;
+  justify-content: center;
+  min-width: 2.5rem;
+  padding: var(--crm-l-small, 0.25rem);
+}
+
+.crm-vol-selection-heading h2,
+.crm-vol-selection-heading p {
+  margin: 0;
+}
+
+.crm-vol-selection-heading h2 {
+  background: transparent;
+  color: var(--crm-text-color, #464354);
+  font-size: var(--crm-font-size, 1rem);
+  padding: 0;
+}
+
+.crm-vol-selection-heading p {
+  color: var(--crm-inactive-color, #696969);
+  margin-top: var(--crm-l-xsmall-1, 0.125rem);
+}
+
+.crm-vol-selection-details {
+  border-top: var(--crm-border, 1px solid #d5d5d5);
+  padding: var(--crm-l-reg, 1rem);
+}
+
+.crm-vol-selection-details table {
+  margin-bottom: 0 !important;
+}
+
+.crm-vol-opp-results {
+  margin-top: var(--crm-l-large, 2rem);
 }
 
 .crm-vol-opp-results span.beneficiary {
   display: block;
 }
 
-.crm-vol-opp-cart table .icon,
-.crm-vol-opp-results table .icon
-{
-  cursor: pointer;
+.crm-vol-empty-state {
+  align-items: flex-start;
+  display: flex;
+  gap: var(--crm-l-medium-2, 0.75rem);
+  margin: var(--crm-l-reg, 1rem) 0;
 }
 
-.crm-vol-opp-results {
-  margin-top: 2em;
+.crm-vol-empty-state > .crm-i {
+  font-size: var(--crm-font-medium-size, 1.25rem);
+  margin-top: var(--crm-l-xsmall-1, 0.125rem);
+}
+
+.crm-vol-empty-state p {
+  margin: var(--crm-l-small, 0.25rem) 0 0;
+}
+
+/* The manage table collapses to cards at 900px, not 767px. Six real columns --
+ * select, project with its subtitle and badges, beneficiary, next shift,
+ * staffing, and Edit plus the overflow menu -- do not fit a landscape tablet or
+ * a small laptop, and the wrap cannot be given overflow-x to compensate without
+ * breaking the sticky header (see .crm-vol-table-wrap). */
+@media (max-width: 900px) {
+  .crm-vol-manage-page table {
+    background: transparent;
+    border: 0;
+    box-shadow: none;
+  }
+
+  .crm-vol-manage-page table thead {
+    clip: rect(0 0 0 0);
+    clip-path: inset(50%);
+    height: 1px;
+    overflow: hidden;
+    position: absolute;
+    white-space: nowrap;
+    width: 1px;
+  }
+
+  .crm-vol-manage-page table tbody {
+    display: block;
+  }
+
+  .crm-vol-manage-page table tbody tr {
+    background: var(--crm-table-row-bg-color, #fff);
+    border: var(--crm-border, 1px solid #d5d5d5);
+    border-radius: var(--crm-l-radius, 0.25rem);
+    box-shadow: var(--crm-shadow-block, none);
+    display: block;
+    margin-bottom: var(--crm-l-reg, 1rem);
+    padding: var(--crm-l-medium-2, 0.75rem);
+  }
+
+  .crm-vol-manage-page table tbody td {
+    background: transparent !important;
+    border: 0;
+    display: block;
+    min-height: 2rem;
+    padding: var(--crm-l-medium, 0.5rem) 0 var(--crm-l-medium, 0.5rem) 8rem;
+    position: relative;
+    text-align: left;
+    white-space: normal;
+    width: 100%;
+  }
+
+  .crm-vol-manage-page table tbody td::before {
+    color: var(--crm-text-color, #464354);
+    content: attr(data-label);
+    font-weight: bold;
+    left: 0;
+    padding-top: var(--crm-l-xsmall-1, 0.125rem);
+    position: absolute;
+    width: 7.25rem;
+  }
+
+  /* The project cell leads each card, so it needs neither the label gutter nor
+   * a repeated "Project" caption. Kept alongside the stacking rules they
+   * belong with, so no breakpoint can apply one without the other. */
+  .crm-vol-manage-page table tbody td.crm-vol-manage-project {
+    padding-left: 0;
+  }
+
+  .crm-vol-manage-page table tbody td.crm-vol-manage-project::before {
+    display: none;
+  }
+}
+
+@media (max-width: 767px) {
+  .crm-vol-page-actions,
+  .crm-vol-bulk-bar {
+    align-items: stretch;
+    flex-direction: column;
+  }
+
+  .crm-vol-page-actions > *,
+  .crm-vol-filter-actions {
+    max-width: none !important;
+    width: 100%;
+  }
+
+  .crm-vol-filter-actions > * {
+    flex: 1 1 auto;
+    justify-content: center;
+    max-width: none !important;
+  }
+
+  .crm-vol-bulk-label {
+    margin-left: 0 !important;
+  }
+
+  .crm-vol-filter-grid,
+  .crm-vol-proximity-grid {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .crm-vol-signup-steps li {
+    padding: var(--crm-l-medium, 0.5rem);
+  }
+
+  .crm-vol-actions-menu > ul {
+    left: 0;
+    right: auto;
+  }
+
+  /* .crm-vol-manage-page .crm-vol-bulk-bar sets align-items: center and is more
+   * specific than the shared .crm-vol-bulk-bar rule above, so the stretch never
+   * reached it and the stacked controls sat centred and shrink-wrapped. */
+  .crm-vol-manage-page .crm-vol-bulk-bar {
+    align-items: stretch;
+  }
+
+  .crm-vol-manage-page .crm-vol-bulk-bar > select,
+  .crm-vol-manage-page .crm-vol-bulk-bar > button {
+    width: 100%;
+  }
+
+  .crm-vol-bulk-count {
+    margin-left: 0;
+  }
+
+  /* Select2 copies the element width inline, which overflows once the filter
+   * row stacks. */
+  .crm-vol-manage-filters > * {
+    width: 100%;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  
+  .crm-vol-actions-menu[open] > summary .crm-i {
+    transition: none;
+  }
 }
 
 .crm-profile-selector-container .crm-button-remove-profile {
@@ -48,7 +1204,7 @@
 }
 
 .crm-container fieldset.crm-vol-ui-fieldset, fieldset.crm-vol-ui-fieldset {
-  border: 1px solid #aaa;
+  border: var(--crm-border, 1px solid #aaa);
 }
 
 .crm-button-remove-profile {
@@ -95,59 +1251,895 @@ span.crm-button-text {
   min-height: 26px;
 }
 
-.crm-vol-opp-cart .ui-widget-content {
-  padding: 20px;
-}
-
-.crm-vol-opp-cart .crm-vol-opp-cart-message {
-  padding: 20px 0px;
-}
-
-.crm-vol-opp-cart-show-contents {
-  cursor: pointer;
-  font-size: 0.75rem;
-}
-
-.crm-vol-half-responsive.crm-vol-opp-cart.floating_cart {
-  position: fixed;
-  top: 50px;
-  right: 0;
-  min-width: 200px;
-  width: 20%;
-  -webkit-transition: width 1s, -webkit-transform 1s;
-  transition: width 1s, transform 1s;
-  border-radius: 4px;
-  -webkit-box-shadow: -1px 1px 3px 0px rgba(0,0,0,0.45);
-  -moz-box-shadow: -1px 1px 3px 0px rgba(0,0,0,0.45);
-  box-shadow: -1px 1px 3px 0px rgba(0,0,0,0.45);
-}
-
-.crm-vol-half-responsive.crm-vol-opp-cart.floating_cart h2 {
-  display: none;
-}
-
-.crm-vol-half-responsive.crm-vol-opp-cart.floating_cart.contents_visible {
-  width: 50%;
-}
-
 .crm-container .crm-button.crm-vol-opp-cart-sign-up {
-  font-size: 1.25rem;
-}
-
-.crm-vol-opp-cart-large-indicator {
-  font-size: 2rem;
-  line-height: 1;
   font-weight: bold;
-  text-align: center;
-  margin: 10px auto;
-}
-
-.crm-vol-opp-cart-transfer {
-  border: 1px solid rgba(255, 255, 0, 0.5);
-  border-radius: 4px;
-  background: rgba(255, 255, 0, 0.1);
 }
 
 #crm-vol-form-textarea-wrapper {
   clear: left;
+}
+
+.crm-vol-profile-tools {
+  margin-top: 0.5rem;
+}
+
+.crm-vol-profile-tools > .crm-hover-button {
+  margin-right: 0.5rem;
+}
+
+.crm-vol-profile-fields {
+  margin-top: 0.5rem;
+  color: var(--crm-inactive-color, #555);
+}
+
+.crm-vol-profile-fields-label {
+  font-weight: bold;
+}
+
+.crm-vol-link-button,
+.crm-vol-icon-button {
+  appearance: none;
+  background: transparent;
+  border: 0;
+  color: inherit;
+  cursor: pointer;
+  font: inherit;
+  margin: 0;
+  padding: 0;
+}
+
+/* Riverlea applies its primary-button treatment to every button element.
+ * Keep these accessible icon-only controls visually consistent with CiviCRM's
+ * standard hover icons, and avoid depending on retired jQuery UI sprites. */
+.crm-container .crm-vol-icon-button {
+  background: transparent;
+  border: 0;
+  color: var(--crm-link-color, #2786c2);
+  height: 2rem;
+  justify-content: center;
+  min-width: 2rem;
+  padding: var(--crm-l-small, 0.25rem);
+  vertical-align: text-bottom;
+}
+
+.crm-container .crm-vol-icon-button:hover,
+.crm-container .crm-vol-icon-button:focus {
+  background: transparent;
+  color: var(--crm-link-hover-color, #154f7d);
+}
+
+.crm-container .crm-vol-icon-button > .crm-i {
+  background: transparent;
+  border: 0;
+  display: inline-block;
+  height: auto;
+  min-width: 0;
+  padding: 0;
+}
+
+.crm-container .crm-vol-link-button {
+  background: transparent;
+  border: 0;
+  color: var(--crm-link-color, #2786c2);
+  display: inline;
+  height: auto;
+  max-width: none;
+  min-width: 0;
+  padding: 0;
+  text-decoration: underline;
+}
+
+.crm-container .crm-vol-link-button:hover,
+.crm-container .crm-vol-link-button:focus {
+  background: transparent;
+  color: var(--crm-link-hover-color, #154f7d);
+  text-decoration: none;
+}
+
+.crm-button-add-profile,
+.crm-button-create-profile,
+.crm-button-refresh-profiles {
+  display: inline-block;
+  margin-right: 0.5rem;
+}
+
+/*
+ * Hooks that the workflow templates reference. Riverlea already paints
+ * .crm-button as the primary action, so .crm-vol-primary-action only marks the
+ * step's forward action and spaces its trailing arrow; the rest had no rule at
+ * all.
+ */
+.crm-container .crm-vol-primary-action {
+  font-weight: 600;
+  gap: 0.4rem;
+}
+
+.crm-vol-capacity-summary {
+  color: var(--crm-inactive-color, #617287);
+  font-size: var(--crm-font-small-size, 0.85rem);
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+.crm-vol-capacity-summary.is-full {
+  color: var(--crm-success-ink-color, #287a4b);
+}
+
+.crm-vol-autosave-state {
+  align-items: center;
+  color: var(--crm-inactive-color, #617287);
+  display: inline-flex;
+  font-size: var(--crm-font-small-size, 0.85rem);
+  gap: 0.35rem;
+  white-space: nowrap;
+}
+
+.crm-vol-autosave-state .fa-check {
+  color: var(--crm-success-ink-color, #287a4b);
+}
+
+.crm-vol-autosave-state .fa-exclamation-triangle {
+  color: var(--crm-danger-ink-color, #b52626);
+}
+
+/*
+ * The print rules hide the workflow header, which carries the project name, so
+ * the roster prints its own title from the data attribute instead.
+ */
+@media print {
+  .crm-vol-print-heading[data-print-title]::before {
+    content: attr(data-print-title);
+    display: block;
+    font-size: 1.25rem;
+    font-weight: 700;
+    margin-bottom: 0.35rem;
+  }
+}
+
+/* Roster: wireframe action bar, per-row actions and footnote. */
+.crm-vol-selection-label {
+  color: var(--crm-inactive-color, #617287);
+  font-weight: 600;
+  margin-right: auto;
+}
+
+.crm-vol-include-past {
+  align-items: center;
+  color: var(--crm-inactive-color, #617287);
+  display: inline-flex;
+  gap: 0.4rem;
+  white-space: nowrap;
+}
+
+.crm-vol-roster-groups {
+  display: grid;
+  gap: 1rem;
+}
+
+.crm-vol-roster-row-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.35rem;
+  justify-content: flex-end;
+}
+
+.crm-vol-roster-footnote {
+  margin-top: 0.75rem;
+}
+
+/* A bare badge (no is-* modifier) still needs a readable ground. */
+.crm-vol-status-badge {
+  background: var(--crm-layer1-bg-color, #f6f8fa);
+  border: 1px solid var(--crm-border-color, #d5dee8);
+  color: var(--crm-inactive-color, #617287);
+  margin-left: 0.4rem;
+}
+
+/* ---------------------------------------------------------------------------
+ * Assign volunteers: metric tiles, shift rail, selected-shift panel and the
+ * draggable available-volunteer pool.
+ * ------------------------------------------------------------------------- */
+
+.crm-vol-assign-metrics {
+  display: grid;
+  gap: 0.75rem;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  list-style: none;
+  margin: 0 0 1rem;
+  padding: 0;
+}
+
+.crm-vol-metric {
+  background: var(--crm-paper, #fff);
+  border: 1px solid var(--crm-vol-border);
+  border-radius: var(--crm-l-radius, 4px);
+  display: flex;
+  flex-direction: column;
+  gap: 0.15rem;
+  margin: 0;
+  padding: 0.9rem 1.1rem;
+}
+
+.crm-vol-metric strong {
+  font-size: 1.85rem;
+  font-weight: 700;
+  line-height: 1.1;
+}
+
+.crm-vol-metric span {
+  color: var(--crm-inactive-color, #617287);
+  font-size: var(--crm-font-small-size, 0.85rem);
+}
+
+.crm-vol-metric.is-attention {
+  background: var(--crm-vol-warning-surface, #fdf6e3);
+  border-color: var(--crm-warning-color, #d9a406);
+}
+
+.crm-vol-metric.is-attention strong {
+  color: var(--crm-warning-ink-color, #8a6400);
+}
+
+.crm-vol-assign-board {
+  align-items: start;
+  display: grid;
+  gap: 1rem;
+  grid-template-columns: minmax(220px, 0.85fr) minmax(0, 2.4fr);
+}
+
+/* -- shift rail ----------------------------------------------------------- */
+
+.crm-vol-shift-rail {
+  overflow: hidden;
+}
+
+.crm-vol-rail-heading {
+  background: var(--crm-vol-panel);
+  border-bottom: 1px solid var(--crm-vol-border);
+  color: var(--crm-inactive-color, #617287);
+  font-size: var(--crm-font-small-size, 0.75rem);
+  letter-spacing: 0.04em;
+  margin: 0;
+  padding: 0.7rem 1rem;
+  text-transform: uppercase;
+}
+
+.crm-vol-shift-rail > ul {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.crm-vol-rail-shift {
+  border-bottom: 1px solid var(--crm-vol-border);
+  border-left: 3px solid transparent;
+  margin: 0;
+}
+
+.crm-vol-rail-shift.is-selected {
+  background: var(--crm-vol-panel);
+  border-left-color: var(--crm-link-color, #0878c9);
+}
+
+.crm-container .crm-vol-rail-button {
+  background: transparent;
+  border: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.15rem;
+  height: auto;
+  max-width: none;
+  padding: 0.75rem 1rem;
+  text-align: left;
+  width: 100%;
+}
+
+.crm-vol-rail-role {
+  color: var(--crm-link-color, #0878c9);
+  font-weight: 600;
+}
+
+.crm-vol-rail-shift.is-selected .crm-vol-rail-role {
+  color: var(--crm-text-color, #263342);
+}
+
+.crm-vol-rail-time {
+  color: var(--crm-inactive-color, #617287);
+  font-size: var(--crm-font-small-size, 0.85rem);
+}
+
+.crm-container .crm-vol-add-shift {
+  background: transparent;
+  border: 0;
+  color: var(--crm-link-color, #0878c9);
+  display: block;
+  height: auto;
+  max-width: none;
+  padding: 0.8rem 1rem;
+  text-align: left;
+  width: 100%;
+}
+
+/* -- selected shift panel ------------------------------------------------- */
+
+.crm-vol-selected-shift > header {
+  align-items: flex-start;
+  background: var(--crm-vol-panel);
+  border-bottom: 1px solid var(--crm-vol-border);
+  display: flex;
+  gap: 1rem;
+  justify-content: space-between;
+  padding: 0.85rem 1rem;
+}
+
+.crm-vol-selected-shift > header h3 {
+  margin: 0 0 0.15rem;
+}
+
+.crm-vol-selected-shift > header p {
+  margin: 0;
+}
+
+.crm-vol-selected-shift .crm-vol-add-person {
+  align-items: stretch;
+  flex-direction: column;
+  gap: 0.35rem;
+}
+
+.crm-vol-selected-shift .crm-vol-add-person label {
+  font-weight: 600;
+}
+
+.crm-vol-selected-shift-footer {
+  align-items: center;
+  border-top: 1px solid var(--crm-vol-border);
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.65rem;
+  justify-content: space-between;
+  padding: 0.7rem 1rem;
+}
+
+.crm-vol-avatar {
+  align-items: center;
+  background: var(--crm-layer1-bg-color, #f6f8fa);
+  border: 1px solid var(--crm-vol-border);
+  border-radius: 999px;
+  color: var(--crm-inactive-color, #617287);
+  display: inline-flex;
+  font-size: var(--crm-font-small-size, 0.7rem);
+  font-weight: 700;
+  height: 1.9rem;
+  justify-content: center;
+  margin-right: 0.5rem;
+  width: 1.9rem;
+}
+
+.crm-vol-assigned-row {
+  cursor: grab;
+}
+
+.crm-vol-open-spot > td {
+  background: var(--crm-vol-warning-surface, #fdf6e3);
+}
+
+.crm-vol-open-marker {
+  border: 2px dashed var(--crm-warning-color, #d9a406);
+  border-radius: 999px;
+  display: inline-block;
+  height: 1.5rem;
+  margin-right: 0.6rem;
+  vertical-align: middle;
+  width: 1.5rem;
+}
+
+/* -- available pool ------------------------------------------------------- */
+
+.crm-vol-available-pool {
+  margin-top: 1.25rem;
+  padding: 1rem;
+}
+
+.crm-vol-available-pool h3 {
+  color: var(--crm-inactive-color, #617287);
+  font-size: var(--crm-font-small-size, 0.75rem);
+  letter-spacing: 0.04em;
+  margin: 0 0 0.2rem;
+  text-transform: uppercase;
+}
+
+.crm-vol-available-cards {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.65rem;
+  list-style: none;
+  margin: 0.75rem 0 0;
+  padding: 0;
+}
+
+.crm-vol-available-card-item {
+  align-items: center;
+  background: var(--crm-paper, #fff);
+  border: 1px solid var(--crm-vol-border);
+  border-radius: var(--crm-l-radius, 4px);
+  cursor: grab;
+  display: flex;
+  gap: 0.35rem;
+  margin: 0;
+  padding: 0.6rem 0.75rem;
+}
+
+.crm-vol-available-identity {
+  display: flex;
+  flex-direction: column;
+}
+
+/* -- drag and drop feedback ----------------------------------------------- */
+
+.crm-vol-drag-helper {
+  background: var(--crm-paper, #fff);
+  border: 1px solid var(--crm-link-color, #0878c9);
+  border-radius: var(--crm-l-radius, 4px);
+  box-shadow: var(--crm-shadow-popup, 0 3px 18px rgba(48, 40, 40, 0.25));
+  cursor: grabbing;
+  list-style: none;
+  padding: 0.5rem 0.7rem;
+}
+
+.crm-vol-drop-active {
+  outline: 2px dashed var(--crm-border-color, #d5dee8);
+  outline-offset: -3px;
+}
+
+.crm-vol-drop-hover {
+  background: var(--crm-vol-info-surface, #eaf4fc) !important;
+  outline: 2px solid var(--crm-link-color, #0878c9);
+  outline-offset: -3px;
+}
+
+@media (max-width: 700px) {
+  .crm-vol-assign-metrics {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* Project list and dashboard -------------------------------------------- */
+.crm-vol-manage-page {
+  color: var(--crm-text-color, #25313e);
+}
+
+.crm-vol-manage-header,
+.crm-vol-manage-header-actions,
+.crm-vol-manage-filters,
+.crm-vol-section-heading,
+.crm-vol-manage-actionlinks {
+  align-items: center;
+  display: flex;
+}
+
+.crm-vol-manage-header {
+  justify-content: space-between;
+  margin-bottom: 1.25rem;
+}
+
+.crm-vol-manage-header h1 {
+  background: transparent;
+  color: var(--crm-text-color, #25313e);
+  margin: 0;
+  padding: 0;
+}
+
+.crm-vol-manage-header p {
+  color: var(--crm-vol-muted);
+  margin: 0.25rem 0 0;
+  max-width: 34rem;
+}
+
+.crm-vol-manage-header-actions {
+  gap: 0.6rem;
+}
+
+.crm-vol-view-toggle,
+.crm-vol-status-toggle {
+  display: inline-flex;
+}
+
+.crm-vol-view-toggle button,
+.crm-vol-status-toggle label {
+  background: var(--crm-paper, #fff);
+  border: 1px solid var(--crm-vol-border);
+  color: var(--crm-text-color, #25313e);
+  cursor: pointer;
+  margin: 0 0 0 -1px;
+  /* Comfortable as a touch target; the segmented control is the primary way
+   * to switch view and status on a phone. */
+  min-height: 2.5rem;
+  padding: 0.45rem 0.8rem;
+  position: relative;
+}
+
+.crm-vol-view-toggle button:first-child,
+.crm-vol-status-toggle label:first-child {
+  border-radius: var(--crm-l-radius, 4px) 0 0 var(--crm-l-radius, 4px);
+  margin-left: 0;
+}
+
+.crm-vol-view-toggle button:last-child,
+.crm-vol-status-toggle label:last-child {
+  border-radius: 0 var(--crm-l-radius, 4px) var(--crm-l-radius, 4px) 0;
+}
+
+.crm-vol-view-toggle button.is-active,
+.crm-vol-status-toggle label.is-active {
+  background: var(--crm-vol-info-surface, #eaf4fc);
+  color: var(--crm-link-color, #0878c9);
+  font-weight: bold;
+  position: relative;
+}
+
+.crm-vol-status-toggle input {
+  clip: rect(0 0 0 0);
+  clip-path: inset(50%);
+  position: absolute;
+}
+
+.crm-vol-manage-metrics {
+  display: grid;
+  gap: 0.9rem;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  margin-bottom: 1.35rem;
+}
+
+.crm-vol-manage-metric {
+  background: var(--crm-layer1-bg-color, #f5f7f9);
+  border: 1px solid var(--crm-vol-border);
+  border-radius: var(--crm-l-radius, 5px);
+  display: flex;
+  flex-direction: column;
+  padding: 1rem 1.15rem;
+}
+
+.crm-vol-manage-metric strong {
+  color: var(--crm-text-color, #25313e);
+  font-size: 1.8rem;
+  line-height: 1;
+}
+
+.crm-vol-manage-metric strong small {
+  color: var(--crm-vol-muted);
+  font-size: 0.9rem;
+  font-weight: normal;
+}
+
+.crm-vol-manage-metric span {
+  color: var(--crm-vol-muted);
+  margin-top: 0.35rem;
+}
+
+.crm-vol-manage-metric.is-warning {
+  background: var(--crm-vol-warning-surface, #fff8e8);
+  border-color: var(--crm-warning-color, #d99b22);
+}
+
+.crm-vol-manage-metric.is-warning strong {
+  color: var(--crm-warning-ink-color, #805300);
+}
+
+.crm-vol-manage-filters {
+  gap: 0.65rem;
+  margin-bottom: 0.75rem;
+}
+
+.crm-vol-manage-filters > input,
+.crm-vol-manage-filters > select,
+.crm-vol-manage-filters > .select2-container {
+  min-width: 12rem;
+}
+
+.crm-vol-manage-filters > input[type="search"] {
+  flex: 1 1 18rem;
+}
+
+.crm-vol-manage-filters .crm-vol-status-toggle {
+  margin-left: auto;
+}
+
+.crm-vol-manage-page .crm-vol-bulk-bar {
+  align-items: center;
+  display: flex;
+  gap: 0.65rem;
+}
+
+.crm-vol-bulk-count {
+  color: var(--crm-vol-muted);
+  margin-left: auto;
+}
+
+.crm-vol-manage-project-subtitle,
+.crm-vol-staffing > span,
+.crm-vol-up-next-grid time,
+.crm-vol-this-week li div > span {
+  color: var(--crm-vol-muted);
+  display: block;
+  font-size: 0.85rem;
+  margin-top: 0.15rem;
+}
+
+/* Event and campaign context under a project's title in the manage listing. */
+.crm-vol-manage-project-context {
+  align-items: center;
+  color: var(--crm-vol-muted);
+  display: flex;
+  flex-wrap: wrap;
+  font-size: 0.85rem;
+  gap: 0.15rem 0.85rem;
+  margin-top: 0.2rem;
+}
+
+.crm-vol-manage-project-context .crm-i {
+  font-size: 0.78rem;
+  margin-right: 0.15rem;
+}
+
+.crm-vol-needs-badge,
+.crm-vol-archived-badge {
+  border-radius: 3px;
+  display: inline-flex;
+  font-size: 0.68rem;
+  font-weight: bold;
+  margin-left: 0.35rem;
+  padding: 0.12rem 0.4rem;
+  text-transform: uppercase;
+}
+
+.crm-vol-needs-badge {
+  background: var(--crm-vol-warning-tint, #fff0cc);
+  color: var(--crm-warning-ink-color, #805300);
+}
+
+.crm-vol-archived-badge {
+  background: var(--crm-layer1-bg-color, #edf0f3);
+  color: var(--crm-vol-muted);
+}
+
+.crm-vol-staffing strong,
+.crm-vol-week-staffing {
+  display: block;
+}
+
+.crm-vol-manage-page .is-short {
+  color: var(--crm-warning-ink-color, #805300);
+}
+
+.crm-vol-manage-page .is-full {
+  color: var(--crm-success-ink-color, #287441);
+}
+
+.crm-vol-manage-actionlinks {
+  gap: 0.4rem;
+  justify-content: flex-end;
+}
+
+.crm-vol-edit-button {
+  border: 1px solid var(--crm-vol-border);
+  border-radius: var(--crm-l-radius, 4px);
+  padding: 0.35rem 0.65rem;
+}
+
+.crm-vol-manage-actionlinks .crm-vol-actions-menu > summary {
+  border: 1px solid var(--crm-vol-border);
+  font-size: 1.2rem;
+  justify-content: center;
+  min-width: 2rem;
+}
+
+.crm-vol-list-footer {
+  background: var(--crm-layer1-bg-color, #f5f7f9);
+  border: 1px solid var(--crm-vol-border);
+  border-top: 0;
+  color: var(--crm-vol-muted);
+  padding: 0.75rem 1rem;
+}
+
+.crm-vol-dashboard-grid {
+  display: grid;
+  gap: 1.25rem;
+  grid-template-columns: minmax(0, 1.4fr) minmax(19rem, 1fr);
+}
+
+.crm-vol-dashboard-section + .crm-vol-dashboard-section {
+  margin-top: 1.35rem;
+}
+
+.crm-vol-dashboard-section h2,
+.crm-vol-this-week h2 {
+  background: transparent;
+  color: var(--crm-vol-muted);
+  font-size: 0.85rem;
+  letter-spacing: 0.08em;
+  margin: 0 0 0.55rem;
+  padding: 0;
+  text-transform: uppercase;
+}
+
+.crm-vol-section-heading {
+  justify-content: space-between;
+}
+
+.crm-vol-attention-list {
+  display: grid;
+  gap: 0.65rem;
+}
+
+.crm-vol-attention-card {
+  align-items: center;
+  background: var(--crm-vol-warning-surface, #fffaf0);
+  border: 1px solid var(--crm-warning-color, #d99b22);
+  border-left-width: 3px;
+  border-radius: var(--crm-l-radius, 5px);
+  display: flex;
+  justify-content: space-between;
+  padding: 0.85rem 1rem;
+}
+
+.crm-vol-attention-card h3,
+.crm-vol-attention-card p,
+.crm-vol-up-next-grid p {
+  margin: 0;
+}
+
+.crm-vol-attention-card h3 {
+  background: transparent;
+  color: var(--crm-text-color, #25313e);
+  font-size: 1rem;
+  padding: 0;
+}
+
+.crm-vol-attention-card p {
+  color: var(--crm-warning-ink-color, #805300);
+  margin-top: 0.25rem;
+}
+
+.crm-vol-up-next-grid {
+  display: grid;
+  gap: 0.75rem;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+.crm-vol-up-next-grid article,
+.crm-vol-this-week {
+  background: var(--crm-paper, #fff);
+  border: 1px solid var(--crm-vol-border);
+  border-radius: var(--crm-l-radius, 5px);
+  padding: 0.9rem 1rem;
+}
+
+.crm-vol-up-next-grid article > a {
+  display: block;
+  font-weight: bold;
+  margin-bottom: 0.35rem;
+}
+
+.crm-vol-up-next-grid p {
+  color: var(--crm-vol-muted);
+  margin-top: 0.6rem;
+}
+
+.crm-vol-up-next-grid p strong {
+  font-size: 1.3rem;
+}
+
+.crm-vol-this-week {
+  align-self: start;
+  background: var(--crm-layer1-bg-color, #f8fafb);
+  padding: 1rem 1.15rem;
+}
+
+.crm-vol-this-week ol {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.crm-vol-this-week li {
+  align-items: start;
+  border-bottom: 1px solid var(--crm-vol-border);
+  display: grid;
+  gap: 0.65rem;
+  /* 3rem is 48px and "Wed 19" needs about 52px, so every row wrapped. */
+  grid-template-columns: 4rem minmax(0, 1fr) auto;
+  padding: 0.75rem 0;
+}
+
+.crm-vol-this-week li > time {
+  white-space: nowrap;
+}
+
+.crm-vol-dashboard-empty {
+  border: 1px dashed var(--crm-vol-border);
+  border-radius: var(--crm-l-radius, 5px);
+  color: var(--crm-vol-muted);
+  padding: 1rem;
+}
+
+.crm-vol-sr-only {
+  clip: rect(0 0 0 0);
+  clip-path: inset(50%);
+  height: 1px;
+  overflow: hidden;
+  position: absolute;
+  white-space: nowrap;
+  width: 1px;
+}
+
+/* Keyboard focus ------------------------------------------------------- */
+/* The extension's controls are restyled buttons, summaries and label-wrapped
+ * inputs, none of which inherit core's link focus ring, so without these a
+ * keyboard user has no idea where they are. */
+.crm-vol-manage-page :is(
+  .crm-vol-view-toggle button,
+  .crm-vol-actions-menu > summary,
+  .crm-vol-edit-button,
+  .crm-vol-link-button,
+  .crm-vol-attention-card button
+):focus-visible {
+  outline: 2px solid var(--crm-focus-color, #0878c9);
+  outline-offset: 2px;
+}
+
+/* The radio itself is clipped to a 1px box, so its own ring is clipped with
+ * it. Ring the label the user can actually see instead. */
+.crm-vol-status-toggle label:has(input:focus-visible) {
+  outline: 2px solid var(--crm-focus-color, #0878c9);
+  outline-offset: 2px;
+  /* Sit above the -1px sibling overlap so the ring is not clipped. */
+  z-index: 1;
+}
+
+@media (max-width: 900px) {
+  .crm-vol-manage-metrics {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .crm-vol-dashboard-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 700px) {
+  .crm-vol-manage-header,
+  .crm-vol-manage-header-actions,
+  .crm-vol-manage-filters {
+    align-items: stretch;
+    flex-direction: column;
+  }
+
+  .crm-vol-manage-header-actions {
+    margin-top: 0.75rem;
+  }
+
+  .crm-vol-view-toggle,
+  .crm-vol-view-toggle button,
+  .crm-vol-manage-header-actions > a,
+  .crm-vol-status-toggle,
+  .crm-vol-status-toggle label {
+    flex: 1 1 auto;
+    justify-content: center;
+    text-align: center;
+  }
+
+  .crm-vol-manage-filters .crm-vol-status-toggle {
+    margin-left: 0;
+  }
+
+  .crm-vol-manage-metrics,
+  .crm-vol-up-next-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .crm-vol-attention-card {
+    align-items: stretch;
+    flex-direction: column;
+    gap: 0.75rem;
+  }
 }

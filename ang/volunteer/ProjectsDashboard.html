@@ -1,0 +1,29 @@
+<div class="crm-vol-dashboard-grid">
+  <main>
+    <section class="crm-vol-dashboard-section" aria-labelledby="crm-vol-attention-heading">
+      <h2 id="crm-vol-attention-heading">{{:: ts('Needs attention') }}</h2>
+      <div class="crm-vol-attention-list" ng-if="attention.length">
+        <article class="crm-vol-attention-card" ng-repeat="item in attention track by item.action_type + '-' + item.need_id">
+          <div><h3>{{item.project_title}}<span ng-if="item.role_label"> · {{item.role_label}}</span></h3>
+            <p ng-if="item.action_type === 'staffing'">{{ ts('%1 of %2 spots still open for %3.', {1: item.open, 2: item.total, 3: item.display_time}) }}</p>
+            <p ng-if="item.action_type === 'hours'">{{ ts('Hours have not been logged for %1 volunteer(s).', {1: item.missing_hours}) }}</p>
+          </div>
+          <button type="button" ng-click="openAttention(item)">{{item.action_type === 'hours' ? ts('Log hours') : ts('Fill spots')}}</button>
+        </article>
+      </div>
+      <div class="crm-vol-dashboard-empty" ng-if="!attention.length">{{:: ts('Nothing needs immediate attention.') }}</div>
+    </section>
+    <section class="crm-vol-dashboard-section" aria-labelledby="crm-vol-up-next-heading">
+      <div class="crm-vol-section-heading"><h2 id="crm-vol-up-next-heading">{{:: ts('Up next') }}</h2><button type="button" class="crm-vol-link-button" ng-click="setView('list')">{{:: ts('See all projects') }}</button></div>
+      <div class="crm-vol-up-next-grid" ng-if="upNext.length">
+        <article ng-repeat="item in upNext track by item.project_id"><a href="#/volunteer/manage/{{item.project_id}}/details">{{item.project_title}}</a><time>{{shortDateTime(item.start_time)}}</time><p><strong ng-class="{'is-short': item.open, 'is-full': item.total && !item.open}">{{item.filled}}</strong> {{ ts('of %1 spots filled', {1: item.total}) }}</p></article>
+      </div>
+      <div class="crm-vol-dashboard-empty" ng-if="!upNext.length">{{:: ts('No upcoming project shifts.') }}</div>
+    </section>
+  </main>
+  <aside class="crm-vol-this-week" aria-labelledby="crm-vol-this-week-heading">
+    <h2 id="crm-vol-this-week-heading">{{:: ts('This week') }}</h2>
+    <ol ng-if="thisWeek.length"><li ng-repeat="item in thisWeek track by item.need_id"><time>{{weekDay(item.start_time)}}</time><div><strong>{{item.role_label}}</strong><span>{{item.project_title}} · {{shortTime(item.start_time)}}</span></div><span class="crm-vol-week-staffing" ng-class="{'is-short': item.open, 'is-full': item.total && !item.open}">{{item.filled}} {{:: ts('of') }} {{item.total}}</span></li></ol>
+    <div class="crm-vol-dashboard-empty" ng-if="!thisWeek.length">{{:: ts('No shifts in the next seven days.') }}</div>
+  </aside>
+</div>

@@ -1,6 +1,6 @@
 <div class="error messages">
   <p>
-    {ts}You cannot proceed to register because of the following problem(s):{/ts}
+    {ts domain="org.civicrm.volunteer"}You cannot proceed to register because of the following problem(s):{/ts}
   </p>
   <ul>
     {foreach from=$errors item=errorMsg}
@@ -10,7 +10,7 @@
 </div>
 <div class="action-link">
   <a href="{crmURL p='civicrm/vol/#/volunteer/opportunities'}" class="button">
-    <i class="crm-i fa-search" role="img" aria-hidden="true"></i> {ts}Find more volunteer opportunities{/ts}
+    <i class="crm-i fa-search" role="img" aria-hidden="true"></i> {ts domain="org.civicrm.volunteer"}Find more volunteer opportunities{/ts}
   </a>
-  <a href="{crmURL p=''}" class="button"><i class="crm-i fa-home" role="img" aria-hidden="true"></i> {ts}Home{/ts}</a>
+  <a href="{crmURL p=''}" class="button"><i class="crm-i fa-home" role="img" aria-hidden="true"></i> {ts domain="org.civicrm.volunteer"}Home{/ts}</a>
 </div>

@@ -103,24 +103,28 @@
      */
     function fetchCommendations(vid) {
       lockContacts();
-      CRM.api3('VolunteerCommendation', 'get', {
-        volunteer_project_id: vid
-      }).done(function(result) {
+      // API4 resolves to the rows themselves, each carrying its own id, rather
+      // than to APIv3's envelope keyed by commendation ID.
+      CRM.api4('VolunteerCommendation', 'get', {
+        where: [['volunteer_project_id', '=', vid]]
+      }).then(function(commendations) {
         // wipe the slate clean
         $('#crm-log-entry-table').find('.volunteer-commendation').data('commendation_id', null)
-          .removeClass('commended');
+          .removeClass('commended').attr('aria-pressed', 'false');
         // populate the table with the fetched data
         var addedRows = getAddedVolunteerRows();
-        $.each(result.values, function(commendation_id, data){
+        $.each(commendations, function(index, data){
+          var commendation_id = data.id;
           if (addedRows.hasOwnProperty(data.volunteer_contact_id)) {
             $.each(addedRows[data.volunteer_contact_id], function(){
               $(this).find('.volunteer-commendation').data('commendation_id', commendation_id).addClass('commended');
+              $(this).find('.volunteer-commendation').attr('aria-pressed', 'true');
             });
           }
           var contactRows = getRowsByContactID(data.volunteer_contact_id);
           contactRows.each(function(){
             $(this).find('.volunteer-commendation').data('commendation_id', commendation_id)
-              .addClass('commended');
+              .addClass('commended').attr('aria-pressed', 'true');
           });
         });
         unlockContacts();

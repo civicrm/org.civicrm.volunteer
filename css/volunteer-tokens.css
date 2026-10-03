@@ -1,0 +1,50 @@
+/* CiviVolunteer design tokens.
+ *
+ * Every stylesheet in the extension reads its colours through these names, so
+ * the mapping from Riverlea's theme variables -- and the fallback used on a
+ * theme that does not define them -- is declared once. Load this file before
+ * any other CiviVolunteer stylesheet.
+ *
+ * The tokens are declared on .crm-container and on each CiviVolunteer root
+ * class rather than on :root. Riverlea publishes its variables on the CiviCRM
+ * container, so a value resolved at :root would see none of them and freeze
+ * the fallback into the computed value; resolving inside the container picks
+ * up the active theme, including its dark palette. */
+.crm-container,
+.crm-vol-page,
+.crm-vol-workflow,
+.crm-vol-workflow-dialog,
+.crm-vol-workflow-standalone,
+.crm-vol-manage-page,
+.crm-vol-public-workflow,
+.crm-vol-signup-page,
+.crm-vol-hours-report,
+.crm-vol-log-hours,
+.crm-vol-roster {
+  /* Structure */
+  --crm-vol-border: var(--crm-border-color, #d5dee8);
+  --crm-vol-muted: var(--crm-inactive-color, #617287);
+  --crm-vol-paper: var(--crm-paper, #fff);
+  --crm-vol-panel: var(--crm-layer1-bg-color, #f6f8fa);
+  --crm-vol-panel-subtle: var(--crm-layer2-bg-color, #f5f5f5);
+
+  /* Public page hero */
+  --crm-vol-hero: var(--crm-secondary-color, #2f4558);
+  --crm-vol-hero-text: var(--crm-secondary-text-color, #fff);
+
+  /* Tinted status surfaces.
+   *
+   * Mixed against --crm-paper rather than taken from Riverlea's
+   * --crm-*-light-color tokens. Dark mode redefines the matching
+   * --crm-*-ink-color tokens to point AT the light colours but leaves the
+   * light colours themselves alone, so a light surface carrying ink-coloured
+   * text renders light-on-light. Riverlea publishes its dark palette by
+   * redefining variables -- there is no class or attribute to hang an
+   * override on -- so the pairing itself has to be palette-agnostic.
+   * --crm-paper IS redefined for dark, so mixing against it keeps every
+   * surface/ink pair legible in both palettes. */
+  --crm-vol-success-surface: color-mix(in srgb, var(--crm-success-color, #287441) 12%, var(--crm-paper, #fff));
+  --crm-vol-warning-surface: color-mix(in srgb, var(--crm-warning-color, #d99b22) 12%, var(--crm-paper, #fff));
+  --crm-vol-warning-tint: color-mix(in srgb, var(--crm-warning-color, #d99b22) 22%, var(--crm-paper, #fff));
+  --crm-vol-info-surface: color-mix(in srgb, var(--crm-info-color, #0878c9) 12%, var(--crm-paper, #fff));
+}

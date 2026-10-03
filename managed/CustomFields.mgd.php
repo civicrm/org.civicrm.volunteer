@@ -12,15 +12,19 @@
 
 return array(
   array(
-    'module' => 'org.civicrm.volunteer',
     'name' => 'CiviVolunteer - Volunteer Project Extensibility Registration',
     'entity' => 'OptionValue',
+    'cleanup' => 'unused',
+    'update' => 'unmodified',
     'params' => array(
-      'version' => 3,
-      'option_group_id' => 'cg_extend_objects',
-      'label' => 'Volunteer Project',
-      'value' => 'VolunteerProject',
-      'name' => 'civicrm_volunteer_project',
+      'version' => 4,
+      'values' => array(
+        'option_group_id.name' => 'cg_extend_objects',
+        'label' => 'Volunteer Project',
+        'value' => 'VolunteerProject',
+        'name' => 'civicrm_volunteer_project',
+      ),
+      'match' => array('option_group_id', 'name'),
     ),
   ),
 );

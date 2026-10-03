@@ -1,0 +1,89 @@
+<section class="crm-vol-project-list-view" aria-label="{{:: ts('Project list') }}">
+  <form class="crm-vol-manage-filters" aria-label="{{:: ts('Filter projects') }}">
+    <label class="crm-vol-sr-only" for="crm-vol-project-search">{{:: ts('Search projects') }}</label>
+    <input id="crm-vol-project-search" type="search" ng-model="filters.search" placeholder="{{:: ts('Search projects') }}" />
+    <input ng-if="isCampaignEnabled" class="crm-form-entityref" crm-entityref="{entity: 'Campaign', api: {params: campaignFilter}, select: {minimumInputLength: 0, placeholder: ts('All campaigns'), allowClear: true}}" ng-model="filters.campaign_id" aria-label="{{:: ts('Campaign') }}" />
+    <select ng-model="filters.beneficiary" aria-label="{{:: ts('Beneficiary') }}">
+      <option value="">{{:: ts('Any beneficiary') }}</option>
+      <option ng-repeat="(id, name) in beneficiaries" value="{{id}}">{{name}}</option>
+    </select>
+    <div class="crm-vol-status-toggle" role="radiogroup" aria-label="{{:: ts('Project status') }}">
+      <label ng-class="{'is-active': filters.status === 'active'}"><input type="radio" ng-model="filters.status" value="active" />{{:: ts('Active') }}</label>
+      <label ng-class="{'is-active': filters.status === 'archived'}"><input type="radio" ng-model="filters.status" value="archived" />{{:: ts('Archived') }}</label>
+      <label ng-class="{'is-active': filters.status === 'all'}"><input type="radio" ng-model="filters.status" value="all" />{{:: ts('All') }}</label>
+    </div>
+  </form>
+
+  <div class="crm-vol-bulk-bar" ng-show="projects.length">
+    <strong>{{:: ts('Select projects for a bulk action') }}</strong>
+    <select ng-model="ui.batchAction" ng-disabled="selectedProjectCount() === 0 || ui.batchActionRunning" id="batchAction">
+      <option value="">{{:: ts('Bulk actions…') }}</option>
+      <option ng-repeat="(key, action) in batchActions" value="{{key}}">{{action.label}}</option>
+    </select>
+    <button type="button" class="crm-vol-secondary-button" ng-click="runBatch()" ng-disabled="!ui.batchAction || selectedProjectCount() === 0 || ui.batchActionRunning">{{:: ts('Apply') }}</button>
+    <span class="crm-vol-bulk-count" aria-live="polite" ng-show="selectedProjectCount()">{{ ts('%1 selected', {1: selectedProjectCount()}) }}</span>
+  </div>
+
+  <div class="crm-vol-table-wrap" ng-show="visibleProjects().length">
+    <table id="crm-vol-project-list" class="display dataTable no-footer crm-sticky">
+      <thead><tr>
+        <th><input type="checkbox" ng-model="ui.allSelected" ng-change="selectAll()" aria-label="{{:: ts('Select all projects shown') }}" /></th>
+        <th>{{:: ts('Project') }}</th><th>{{:: ts('Beneficiary') }}</th><th>{{:: ts('Next shift') }}</th><th>{{:: ts('Staffing') }}</th><th>{{:: ts('Actions') }}</th>
+      </tr></thead>
+      <tbody>
+        <tr ng-repeat="project in visibleProjects() track by project.id" ng-class="{'is-archived': project.is_active != 1}">
+          <td class="crm-vol-manage-toggle" data-label="{{:: ts('Select') }}"><input type="checkbox" ng-model="project.selected" ng-change="watchSelected()" aria-label="{{ ts('Select project %1', {1: project.title}) }}" /></td>
+          <td class="crm-vol-manage-project" data-label="{{:: ts('Project') }}">
+            <a class="crm-vol-manage-project-title" href="#/volunteer/manage/{{project.id}}/details">{{project.title}}</a>
+            <span class="crm-vol-needs-badge" ng-if="project.needs_volunteers">{{:: ts('Needs volunteers') }}</span>
+            <span class="crm-vol-archived-badge" ng-if="project.is_active != 1">{{:: ts('Archived') }}</span>
+            <span class="crm-vol-manage-project-subtitle">{{(project.upcoming_roles || []).join(', ') || ts('No upcoming roles')}}</span>
+            <!-- The event a project was created from, and its campaign. Both
+                 were computed server-side but rendered nowhere, so the campaign
+                 filter above searched a value the user could not see and there
+                 was no route back to the event. -->
+            <span class="crm-vol-manage-project-context" ng-if="project.associated_entity || (isCampaignEnabled && project.campaign_label)">
+              <a class="crm-vol-manage-project-event" ng-if="associatedEntityUrl(project)" ng-href="{{associatedEntityUrl(project)}}" title="{{:: ts('Configure this event') }}">
+                <i class="crm-i fa-calendar" role="img" aria-hidden="true"></i> {{associatedEntityTitle(project)}}
+              </a>
+              <span class="crm-vol-manage-project-event" ng-if="project.associated_entity && !associatedEntityUrl(project)">
+                <i class="crm-i fa-calendar" role="img" aria-hidden="true"></i> {{associatedEntityTitle(project)}}
+              </span>
+              <span class="crm-vol-manage-project-campaign" ng-if="isCampaignEnabled && project.campaign_label">
+                <i class="crm-i fa-bullhorn" role="img" aria-hidden="true"></i> {{project.campaign_label}}
+              </span>
+            </span>
+          </td>
+          <td data-label="{{:: ts('Beneficiary') }}">{{(project.beneficiary_names || []).join(', ') || '—'}}</td>
+          <td data-label="{{:: ts('Next shift') }}">{{project.next_shift ? shortDateTime(project.next_shift.start_time) : ts('No upcoming shift')}}</td>
+          <td class="crm-vol-staffing" data-label="{{:: ts('Staffing') }}">
+            <strong ng-class="{'is-full': project.staffing.total && !project.staffing.open, 'is-short': project.staffing.open}">{{project.staffing.filled}} {{:: ts('of') }} {{project.staffing.total}} {{:: ts('filled') }}</strong>
+            <span ng-if="project.staffing.open">{{ ts('%1 spots open', {1: project.staffing.open}) }}</span>
+            <span ng-if="project.staffing.total && !project.staffing.open">{{:: ts('fully staffed') }}</span>
+            <span ng-if="!project.staffing.total">{{:: ts('No finite shifts') }}</span>
+          </td>
+          <td class="crm-vol-manage-actionlinks" data-label="{{:: ts('Actions') }}">
+            <a class="crm-vol-edit-button" href="#/volunteer/manage/{{project.id}}/details">{{:: ts('Edit') }}</a>
+            <details class="crm-vol-actions-menu">
+              <summary class="crm-hover-button" aria-label="{{ ts('More actions for %1', {1: project.title}) }}"><span aria-hidden="true">…</span></summary>
+              <ul>
+                <li><button type="button" class="crm-vol-link-button" ng-click="openProjectDialog('shifts', project)">{{:: ts('Shifts & roles') }}</button></li>
+                <li><button type="button" class="crm-vol-link-button" ng-click="openProjectDialog('assign', project)">{{:: ts('Assign volunteers') }}</button></li>
+                <li><button type="button" class="crm-vol-link-button" ng-click="openProjectDialog('roster', project)">{{:: ts('View roster') }}</button></li>
+                <li><button type="button" class="crm-vol-link-button" ng-click="openProjectDialog('hours', project)">{{:: ts('Log hours') }}</button></li>
+                <li><a target="_blank" rel="noopener" ng-href="{{publicSignupUrl(project)}}">{{:: ts('Public signup') }}</a></li>
+              </ul>
+            </details>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="crm-vol-list-footer" ng-show="projects.length">
+    {{ ts('Showing %1 of %2 projects', {1: visibleProjects().length, 2: projects.length}) }}
+    <button type="button" class="crm-vol-link-button" ng-if="filters.status === 'active'" ng-click="filters.status = 'all'">{{:: ts('show archived') }}</button>
+  </div>
+  <div class="messages status no-popup crm-vol-empty-state" ng-show="projects.length === 0"><i class="crm-i fa-info-circle" role="img" aria-hidden="true"></i><div><strong>{{:: ts('No volunteer projects yet') }}</strong><p>{{:: ts('Add a project to begin defining volunteer opportunities.') }}</p></div></div>
+  <div class="messages status no-popup crm-vol-empty-state" ng-show="projects.length && !visibleProjects().length"><i class="crm-i fa-search" role="img" aria-hidden="true"></i><div><strong>{{:: ts('No projects match these filters') }}</strong><p><button type="button" class="crm-vol-link-button" ng-click="resetFilters()">{{:: ts('Reset filters') }}</button></p></div></div>
+</section>

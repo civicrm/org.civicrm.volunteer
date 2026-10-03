@@ -1,98 +1,34 @@
-<div class="crm-container">
+<div class="crm-container crm-vol-page crm-vol-manage-page">
+  <header class="crm-vol-manage-header">
+    <div>
+      <h1>{{:: ts('Volunteer projects') }}</h1>
+      <p>{{:: ts('Every project, how well it is staffed, and what needs your attention this week.') }}</p>
+    </div>
+    <div class="crm-vol-manage-header-actions">
+      <div class="crm-vol-view-toggle" role="group" aria-label="{{:: ts('Project view') }}">
+        <button type="button" ng-class="{'is-active': view === 'list'}" ng-click="setView('list')">{{:: ts('List') }}</button>
+        <button type="button" ng-class="{'is-active': view === 'dashboard'}" ng-click="setView('dashboard')">{{:: ts('Dashboard') }}</button>
+      </div>
+      <a ng-if="canViewHoursReport" ng-href="{{hoursReportUrl}}" class="button">
+        <i class="crm-i fa-clock-o" role="img" aria-hidden="true"></i>{{:: ts('Hours report') }}
+      </a>
+      <a href="#/volunteer/manage/0/details" class="button crm-vol-primary-action">
+        <i class="crm-i fa-plus" role="img" aria-hidden="true"></i>{{:: ts('New project') }}
+      </a>
+    </div>
+  </header>
 
   <div class="help" ng-show="!canAccessAllProjects">
-    <p>
-      {{:: ts("This page displays only the volunteer projects which you have access to edit.") }}
-      <!-- not translated because HTML tags in a ts() choke Angular -->
-      For a list of all volunteer opportunities on the site, visit the <a href="{{urlPublicVolOppSearch}}">public search form</a>.
-    </p>
+    <p>{{:: ts('This page displays only the volunteer projects which you have access to edit.') }}</p>
   </div>
-  <div class="crm-form-block">
-    <div class="crm-vol-widgets crm-vol-manage-widgets"></div>
-    <div class="clear"></div>
-    <div class="crm-vol-buttons crm-vol-mange-buttons crm-vol-half-responsive">
 
-      <a href="#/volunteer/manage/0" class="button"><span><div class="icon ui-icon-plus"></div>{{:: ts('Add Project') }}</span></a><br /><br />
+  <section class="crm-vol-manage-metrics" aria-label="{{:: ts('Volunteer project summary') }}">
+    <article class="crm-vol-manage-metric"><strong>{{summary.active_projects || 0}}</strong><span>{{:: ts('Active projects') }}</span></article>
+    <article class="crm-vol-manage-metric"><strong>{{summary.filled_spots_14_days || 0}} <small>/ {{summary.total_spots_14_days || 0}}</small></strong><span>{{:: ts('Shift spots filled, next 14 days') }}</span></article>
+    <article class="crm-vol-manage-metric is-warning"><strong>{{summary.projects_short || 0}}</strong><span>{{:: ts('Projects short of volunteers') }}</span></article>
+    <article class="crm-vol-manage-metric"><strong>{{summary.shifts_awaiting_hours || 0}}</strong><span>{{:: ts('Shifts awaiting logged hours') }}</span></article>
+  </section>
 
-      <select crm-ui-select="{placeholder: ts('Bulk Actions'), allowClear: true, width: '150'}" ng-model="batchAction" id="batchAction">
-        <option />
-        <option ng-repeat="(key, action) in batchActions" value="{{key}}">{{action.label}}</option>
-      </select>
-      <button type="button" ng-click="runBatch()" >
-        {{:: ts('Run') }}
-      </button>
-    </div>
-    <div class="crm-vol-search crm-vol-manage-search crm-vol-half-responsive">
-      <form name="volProjectSearchForm" crm-ui-id-scope>
-        <fieldset class="crm-vol-ui-fieldset ui-corner-all">
-          <legend>Find Volunteer Projects</legend>
-          <div class="crm-group" crm-ui-id-scope>
-            <div class="crm-vol-field crm-vol-field-projects-search-title" crm-ui-field="{name: 'volProjectSearchForm.title', title: ts('Title')}">
-              <input crm-ui-id="volProjectSearchForm.title" ng-model="searchParams.title" />
-            </div>
-            <div class="crm-vol-field crm-vol-field-projects-search-beneficiaries" crm-ui-field="{name: 'volProjectSearchForm.beneficiary', title: ts('Beneficiary')}">
-              <!-- TODO for VOL-267: Replace this with an entityRef widget. -->
-              <select class="big crm-form-select crm-vol-beneficiary" crm-ui-select="{placeholder: ts('Filter by Beneficiary'), allowClear:true}"
-                      ng-options="key as value.display_name for (key , value) in beneficiaries track by key" ng-model="searchParams.beneficiaries">
-                <option />
-              </select>
-            </div>
-            <div class="crm-vol-field crm-vol-field-projects-search-campaign" crm-ui-field="{name: 'volProjectSearchForm.campaign_id', title: ts('Campaign')}">
-              <input class="big crm-form-entityref crm-vol-campaign" crm-entityref="{entity: 'Campaign', api: {params: campaignFilter}, select: {minimumInputLength: 0, placeholder: ts('Filter by Campaign'), allowClear:true}}"
-                      ng-change="clearCampaign()"
-                      ng-model="searchParams.campaign_id">
-            </div>
-            <div class="crm-vol-field crm-vol-field-projects-search-active" crm-ui-field="{name: 'volProjectSearchForm.is_active', title: ts('Active')}">
-              <label>
-                <input type="radio" ng-model="searchParams.is_active" value="1" /> Yes
-              </label>
-              <label>
-                <input type="radio" ng-model="searchParams.is_active" value="0" /> No
-              </label>
-            </div>
-          </div>
-        </fieldset>
-      </form>
-    </div>
-
-
-    <div class="clear"></div>
-    <table id="crm-vol-project-list" class="display dataTable no-footer" role="grid">
-      <thead>
-        <tr role="row">
-          <th class="ui-state-default crm-vol-manage-toggle"><input type="checkbox" ng-model="allSelected" ng-change="selectAll()" /></th>
-          <th class="ui-state-default crm-vol-manage-project">{{:: ts('Volunteer Project') }}</th>
-          <th class="ui-state-default crm-vol-manage-entity">{{:: ts('Associated Entity') }}</th>
-          <th class="ui-state-default crm-vol-manage-beneficiaries">{{:: ts('Beneficiaries') }}</th>
-          <th class="ui-state-default crm-vol-manage-location">{{:: ts('Location') }}</th>
-          <th class="ui-state-default crm-vol-manage-active">{{:: ts('Active') }}</th>
-          <th class="ui-state-default crm-vol-manage-actionlinks"></th>
-        </tr>
-      </thead>
-      <tbody>
-      <tr ng-repeat="project in projects | filter:searchParams" role="row">
-        <td class="crm-vol-manage-toggle"><input type="checkbox" ng-model="project.selected" ng-change="watchSelected()" /></td>
-        <td class="crm-vol-manage-project">
-          <span class="crm-vol-manage-project-title">{{ project.title }}</span>
-          <span class="crm-vol-manage-project-id">{{ ts('(ID: %1)', {1: project.id}) }}</span>
-        </td>
-        <td class="crm-vol-manage-entity">
-          <a ng-if="canLinkToAssociatedEntity(project)" ng-click="linkToAssociatedEntity(project)">{{associatedEntityTitle(project)}}</a>
-          <span ng-if="!canLinkToAssociatedEntity(project)">{{associatedEntityTitle(project)}}</span>
-        </td>
-        <td class="crm-vol-manage-beneficiaries" ng-bind-html="formatBeneficiaries(project)"></td>
-        <td class="crm-vol-manage-location" ng-bind-html="formatLocation(project)"></td>
-        <td class="crm-vol-manage-active">{{ project.is_active == 1 ? ts("Yes") : ts("No") }}</td>
-        <td class="crm-vol-manage-actionlinks right nowrap">
-          <div><a href="#/volunteer/manage/{{project.id}}">{{:: ts('Edit') }}</a></div>
-          <div><a ng-click="backbonePopup(ts('Define Volunteer Opportunities'), 'Define', project.id)">{{:: ts('Define Volunteer Opportunities') }}</a></div>
-          <div><a ng-click="backbonePopup(ts('Assign Volunteers'), 'Assign', project.id)">{{:: ts('Assign Volunteers') }}</a></div>
-          <div><a ng-click="showRoster()">{{:: ts('View Volunteer Roster') }}</a></div>
-          <div><a ng-click="showLogHours()">{{:: ts('Log Hours') }}</a></div>
-          <div><a target="_blank" href="#/volunteer/opportunities?project={{project.id}}&amp;hideSearch=1">{{:: ts('Public Signup') }}</a></div>
-        </td>
-      </tr>
-      </tbody>
-    </table>
-  </div>
+  <ng-include ng-if="view === 'list'" src="'~/volunteer/ProjectsList.html'"></ng-include>
+  <ng-include ng-if="view === 'dashboard'" src="'~/volunteer/ProjectsDashboard.html'"></ng-include>
 </div>

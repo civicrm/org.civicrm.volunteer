@@ -1,0 +1,14 @@
+<div class="crm-container crm-vol-workflow-dialog" crm-dialog="volunteerWorkflowDialog" ng-controller="VolunteerWorkflowDialog">
+  <div class="crm-vol-project-context" ng-if="model.project.title">
+    <span>{{:: ts('Volunteer project') }}</span>
+    <strong>{{model.project.title}}</strong>
+  </div>
+  <div ng-switch="model.step">
+    <div ng-switch-when="shifts"><div ng-include="'~/volunteer/ShiftsBody.html'"></div></div>
+    <div ng-switch-when="assign"><div ng-include="'~/volunteer/AssignBody.html'"></div></div>
+    <div ng-switch-when="roster"><div ng-include="'~/volunteer/RosterBody.html'"></div></div>
+    <div ng-switch-when="hours"><div ng-include="'~/volunteer/HoursBody.html'"></div></div>
+  </div>
+  <crm-dialog-button ng-if="model.step === 'hours'" text="ts('Save hours')" icons="{primary: 'fa-check'}" on-click="saveHours()" />
+  <crm-dialog-button text="ts('Close')" icons="{primary: 'fa-times'}" on-click="closeWorkflowDialog()" />
+</div>

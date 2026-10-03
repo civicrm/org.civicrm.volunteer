@@ -1,0 +1,52 @@
+<section class="crm-vol-workflow-section crm-vol-hours" aria-labelledby="crm-vol-hours-heading">
+  <header class="crm-vol-section-header">
+    <div>
+      <h2 id="crm-vol-hours-heading">{{:: ts('Log hours') }}</h2>
+      <p>{{:: ts('Record what actually happened after a shift: who turned up, and how long they worked.') }}</p>
+    </div>
+  </header>
+
+  <div class="crm-vol-hours-scope">
+    <label for="crm-vol-hours-shift"><strong>{{:: ts('Which shift are you logging hours for?') }}</strong><span>{{:: ts('Pick a shift to load the volunteers assigned to it. Choose “All shifts” to log everything at once.') }}</span></label>
+    <select id="crm-vol-hours-shift" ng-model="ui.scopeNeedId" ng-change="changeScope()">
+      <option value="all">{{:: ts('All shifts') }}</option>
+      <option ng-repeat="need in needs" value="{{need.id}}">{{needLabel ? needLabel(need) : (need.role_label + ' — ' + need.display_time)}}</option>
+    </select>
+  </div>
+
+  <div class="crm-vol-hours-bulk">
+    <button type="button" class="crm-hover-button" ng-click="markAllAttended()">{{:: ts('Mark everyone Attended') }}</button>
+    <span class="crm-vol-divider" aria-hidden="true"></span>
+    <label>{{:: ts('Set hours for everyone attended:') }} <input type="number" min="0" step="any" ng-model="ui.bulkHours"> {{:: ts('hours') }}</label>
+    <button type="button" class="crm-hover-button" ng-click="applyBulkHours()">{{:: ts('Apply') }}</button>
+  </div>
+
+  <div class="crm-loading-element" ng-if="loading">{{:: ts('Loading…') }}</div>
+  <div class="crm-vol-hours-table-wrap" ng-if="!loading">
+    <table class="display crm-vol-hours-table">
+      <thead><tr><th>{{:: ts('Status') }}</th><th>{{:: ts('Volunteer') }}</th><th>{{:: ts('Shift') }}</th><th>{{:: ts('Scheduled') }}</th><th>{{:: ts('Hours worked') }}</th><th>{{:: ts('Note') }}</th><th><span class="sr-only">{{:: ts('Actions') }}</span></th></tr></thead>
+      <tbody>
+        <tr ng-repeat="row in rows track by (row.id || $index)">
+          <td><select ng-model="row.status_id" ng-options="status.id as status.label for status in statuses"></select></td>
+          <td>
+            <input ng-if="row._new" class="crm-form-entityref" crm-entityref="{entity: 'Contact', select: {create: true, placeholder: ts('Find or create a volunteer')}}" ng-model="row.assignee_contact_id">
+            <div ng-if="!row._new"><strong>{{row.assignee_display_name}}</strong><span class="crm-vol-secondary-text">{{row.assignee_email}}</span></div>
+            <button type="button" class="crm-vol-commendation-button" ng-class="{'is-commended': hasCommendation(row)}" ng-click="commendVolunteer(row)" title="{{:: ts('Add or edit a commendation') }}"><i class="crm-i fa-star" aria-hidden="true"></i><span class="sr-only">{{:: ts('Commend volunteer') }}</span></button>
+          </td>
+          <td>{{row.role_label}}<span class="crm-vol-secondary-text">{{row.display_time || row.start_time}}</span></td>
+          <td>{{row.time_scheduled_minutes === null ? '—' : ts('%1 hrs', {1: row.time_scheduled_minutes / 60})}}</td>
+          <td><label class="crm-vol-hours-input"><input type="number" min="0" step="any" ng-model="row.hours"><span>{{:: ts('hrs') }}</span></label></td>
+          <td><input type="text" ng-model="row.details" placeholder="{{:: ts('Optional') }}"></td>
+          <td><button ng-if="row._new" type="button" class="crm-vol-link-button crm-vol-destructive-action" ng-click="removeNewRow(row)">{{:: ts('Remove') }}</button></td>
+        </tr>
+        <tr ng-if="!rows.length"><td colspan="7" class="crm-vol-empty-row">{{:: ts('No volunteer assignments in this scope yet.') }}</td></tr>
+      </tbody>
+      <tfoot><tr><td colspan="7"><button type="button" class="crm-hover-button crm-vol-add-row" ng-click="addVolunteer()"><i class="crm-i fa-plus" aria-hidden="true"></i> {{:: ts('Add someone who wasn’t signed up') }}</button><strong class="crm-vol-hours-total">{{attendedSummary()}}</strong></td></tr></tfoot>
+    </table>
+  </div>
+
+  <div class="crm-submit-buttons" ng-if="!dialogMode">
+    <button type="button" class="crm-button crm-vol-primary-action" ng-click="saveHours()" ng-disabled="workflow.saving">{{:: ts('Save hours') }}</button>
+    <button type="button" class="crm-hover-button" ng-click="cancelWorkflow()">{{:: ts('Cancel') }}</button>
+  </div>
+</section>

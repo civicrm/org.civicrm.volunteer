@@ -4,34 +4,20 @@
   <item>
      <path>civicrm/volunteer/loghours</path>
      <title>Batch Data Entry for Logging Volunteer</title>
-     <page_callback>CRM_Volunteer_Form_Log</page_callback>
-     <path_arguments>action=add</path_arguments>
+     <page_callback>CRM_Volunteer_Page_AngularHours</page_callback>
      <!-- Access is further restricted in the preprocessor -->
      <access_callback>CRM_Volunteer_Permission::check</access_callback>
      <access_arguments>edit own volunteer projects</access_arguments>
      <is_public>1</is_public>
   </item>
   <item>
-     <path>civicrm/volunteer/need</path>
-     <title>Define Volunteer Opportunities</title>
-     <page_callback>CRM_Volunteer_Form_Need</page_callback>
-     <path_arguments>action=add</path_arguments>
-     <access_arguments>access CiviEvent,edit all events</access_arguments>
-     <component>CiviEvent</component>
-  </item>
-  <item>
-     <path>civicrm/volunteer/assign</path>
-     <title>Assign Volunteers</title>
-     <page_callback>CRM_Volunteer_Form_Assign</page_callback>
-     <path_arguments>action=add</path_arguments>
-     <access_arguments>access CiviEvent,edit all events</access_arguments>
-     <component>CiviEvent</component>
-  </item>
-  <item>
      <path>civicrm/event/manage/volunteer</path>
      <title>Manage Volunteer</title>
      <page_callback>CRM_Volunteer_Form_Volunteer</page_callback>
-     <access_arguments>access CiviEvent,edit all events</access_arguments>
+     <!-- Must agree with the gate hook_civicrm_tabset() applies to the tab
+          that links here; `access CiviEvent,edit all events` alone did not. -->
+     <access_callback>CRM_Volunteer_Permission::checkEventTabAccess</access_callback>
+     <component>CiviEvent</component>
      <is_ssl>true</is_ssl>
      <weight>935</weight>
   </item>
@@ -44,11 +30,20 @@
     <is_public>true</is_public>
   </item>
   <item>
+    <path>civicrm/volunteer/manage/includeprofile</path>
+    <page_callback>CRM_Core_Page_Redirect</page_callback>
+    <page_arguments>url=civicrm/admin/uf/group?reset=1</page_arguments>
+    <title>Profile Management</title>
+    <access_callback>CRM_Volunteer_Permission::check</access_callback>
+    <access_arguments>edit volunteer registration profiles</access_arguments>
+  </item>
+  <item>
     <path>civicrm/admin/options/volunteer_role</path>
     <title>Volunteer Roles</title>
     <desc>Roles available to volunteer projects.</desc>
     <path_arguments>group=volunteer_role</path_arguments>
     <page_callback>CRM_Admin_Page_Options</page_callback>
+    <access_arguments>administer CiviCRM</access_arguments>
     <adminGroup>Customize Data and Screens</adminGroup>
     <icon>admin/small/08.png</icon>
     <weight>80</weight>
@@ -63,12 +58,6 @@
     <is_public>true</is_public>
   </item>
   <item>
-    <path>civicrm/volunteer/manage/includeprofile</path>
-    <page_callback>CRM_Volunteer_Form_IncludeProfile</page_callback>
-    <title>Profile Widget</title>
-    <access_arguments>access CiviCRM</access_arguments>
-  </item>
-  <item>
     <path>civicrm/volunteer/join</path>
     <title>Notify Me of Volunteer Opportunities</title>
     <access_callback>1</access_callback>
@@ -76,25 +65,24 @@
     <is_public>true</is_public>
   </item>
   <item>
-    <path>civicrm/volunteer/backbonetemplates</path>
-    <title>Load Backbone Templates</title>
-    <page_callback>CRM_Volunteer_Page_Backbone</page_callback>
-    <access_arguments>create volunteer projects</access_arguments>
-  </item>
-  <item>
     <path>civicrm/vol</path>
     <page_callback>CRM_Volunteer_Page_Angular</page_callback>
-    <title>CiviVolunteer</title>
-    <access_callback>1</access_callback>
+    <title>Volunteer Opportunities</title>
+    <access_callback>CRM_Volunteer_Permission::check</access_callback>
+    <access_arguments>register to volunteer</access_arguments>
     <is_public>true</is_public>
   </item>
   <item>
+    <path>civicrm/volunteer/manage</path>
+    <page_callback>CRM_Volunteer_Page_AngularManage</page_callback>
+    <title>Manage Volunteer Projects</title>
+    <access_callback>CRM_Volunteer_Permission::checkProjectManagement</access_callback>
+  </item>
+  <item>
     <path>civicrm/volunteer/roster</path>
-    <page_callback>CRM_Volunteer_Page_Roster</page_callback>
+    <page_callback>CRM_Volunteer_Page_AngularRoster</page_callback>
     <title>Roster</title>
-    <!-- Access is further restricted in CRM_Volunteer_BAO_Project::retrieve() -->
-    <access_callback>CRM_Volunteer_Permission::check</access_callback>
-    <access_arguments>edit own volunteer projects</access_arguments>
+    <access_callback>CRM_Volunteer_Permission::checkRosterAccess</access_callback>
     <is_public>true</is_public>
   </item>
   <item>

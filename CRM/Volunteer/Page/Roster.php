@@ -2,10 +2,17 @@
 
 class CRM_Volunteer_Page_Roster extends CRM_Core_Page {
   /**
-   * @var array
+   * @var array<int, array<string, mixed>>
    *   Array of volunteer assignments as retrieved from api.VolunteerAssignment.get
    */
   private $assignments = array();
+
+  /**
+   * Contact IDs the current user is allowed to view.
+   *
+   * @var array<int, bool>
+   */
+  private $viewableContactIds = array();
 
   /**
    * @var Int
@@ -24,6 +31,8 @@ class CRM_Volunteer_Page_Roster extends CRM_Core_Page {
 
   /**
    * Builds the page.
+   *
+   * @return void
    */
   public function run() {
     $this->projectId = CRM_Utils_Request::retrieve('project_id', 'Positive', NULL, TRUE);
@@ -33,50 +42,73 @@ class CRM_Volunteer_Page_Roster extends CRM_Core_Page {
      'domain' => 'org.civicrm.volunteer'
     )));
 
+    $this->todaysDate = new DateTime();
+    $this->todaysDate->setTime(0, 0, 0);
+
     $this->fetchAssignments();
     $sortedAssignments = $this->getAssignmentsGroupedByTime();
+    $this->assign('projectTitle', $this->project->title);
+    $this->assign('assignmentCount', count($this->assignments));
+    $this->assign('shiftCount', count($sortedAssignments));
     $this->assign('sortedResults', $sortedAssignments);
-    if (!count($sortedAssignments)) {
-     CRM_Core_Session::setStatus(ts('No volunteers have been assigned to this project yet!', array(
-         'domain' => 'org.civicrm.volunteer')), '', 'no-popup');
-    }
 
-    $this->todaysDate = new DateTime();
-    $this->todaysDate->setTime(0, 0, 0); // just the date.
     $this->assign('endDate', $this->todaysDate->format('Y-m-d'));
 
-    CRM_Core_Resources::singleton()->addScriptFile('org.civicrm.volunteer', 'js/roster.js', 0, 'html-header');
+    $resources = CRM_Core_Resources::singleton();
+    $resources
+      ->addScriptFile('org.civicrm.volunteer', 'js/roster.js', 0, 'html-header')
+      ->addScriptFile('org.civicrm.volunteer', 'js/roster.js', 0, 'ajax-snippet')
+      ->addStyleFile('org.civicrm.volunteer', 'css/volunteer-tokens.css', 0, 'html-header')
+      ->addStyleFile('org.civicrm.volunteer', 'css/volunteer-tokens.css', 0, 'ajax-snippet')
+      ->addStyleFile('org.civicrm.volunteer', 'css/roster.css', 0, 'html-header')
+      ->addStyleFile('org.civicrm.volunteer', 'css/roster.css', 0, 'ajax-snippet');
 
     parent::run();
   }
 
   /**
    * Retrieves the volunteer assignments for this project's roster.
+   *
+   * @return void
    */
   private function fetchAssignments(){
     try {
-      $volunteerAssignments = civicrm_api3('VolunteerAssignment', 'get', array(
-        'sequential' => 1,
-        'project_id' => $this->projectId,
-        'count' => 0,
-      ));
+      $volunteerAssignments = \Civi\Api4\VolunteerAssignment::get()
+        ->addWhere('project_id', '=', $this->projectId)
+        ->execute()
+        ->getArrayCopy();
     }
     catch (Exception $e){
-      CRM_Core_Error::fatal('Unable to retrieve assignments for Volunteer Project.');
+      throw new CRM_Core_Exception(ts('Unable to retrieve assignments for the volunteer project.', array('domain' => 'org.civicrm.volunteer')), 0, array(), $e);
     }
 
-    foreach($volunteerAssignments['values'] as $assignmentKey => &$assignment) {
+    /** @var array<int, array<string, mixed>> $needs */
+    $needs = $this->project->__get('needs');
+    foreach ($volunteerAssignments as $assignmentKey => &$assignment) {
       if ($this->isAssignmentInThePast($assignment)) {
-        unset($volunteerAssignments['values'][$assignmentKey]);
+        unset($volunteerAssignments[$assignmentKey]);
         continue;
       }
 
       $needId = $assignment['volunteer_need_id'];
-      $assignment['display_time'] = $this->project->needs[$needId]['display_time'];
-      $assignment['role_label'] = $this->project->needs[$needId]['role_label'];
+      $assignment['display_time'] = $needs[$needId]['display_time'];
+      $assignment['role_label'] = $needs[$needId]['role_label'];
     }
+    unset($assignment);
 
-    $this->assignments = $volunteerAssignments['values'];
+    $this->assignments = $volunteerAssignments;
+
+    $contactIds = array_values(array_unique(array_filter(array_map(
+      'intval',
+      array_column($this->assignments, 'assignee_contact_id')
+    ))));
+    if ($contactIds) {
+      $allowedContactIds = CRM_Contact_BAO_Contact_Permission::allowList(
+        $contactIds,
+        CRM_Core_Permission::VIEW
+      );
+      $this->viewableContactIds = array_fill_keys($allowedContactIds, TRUE);
+    }
   }
 
   /**
@@ -89,7 +121,9 @@ class CRM_Volunteer_Page_Roster extends CRM_Core_Page {
    *   time and take duration minutes. Example: I need 5 hours of filing completed between December 1 and December 31.
    * Just start date: If we just have the start date then we'll compare that to today.
    *
-   * @param array $assignment
+   * @param array<string, mixed> $assignment
+   *
+   * @return bool
    */
   private function isAssignmentInThePast(array $assignment){
     // If we don't have the crucial data then we assume that it's not in the future.
@@ -114,7 +148,7 @@ class CRM_Volunteer_Page_Roster extends CRM_Core_Page {
   /**
    * Sorts the volunteer assignments grouping them into timeslots.
    *
-   * @return array
+   * @return array<string, array<string, mixed>>
    */
   private function getAssignmentsGroupedByTime() {
     $sortedResults = array();
@@ -134,8 +168,19 @@ class CRM_Volunteer_Page_Roster extends CRM_Core_Page {
         'role_label' => $assignment['role_label'],
         'email' => $assignment['assignee_email'],
         'phone' => $assignment['assignee_phone'],
+        'phone_ext' => $assignment['assignee_phone_ext'] ?? '',
+        'can_view_contact' => !empty($this->viewableContactIds[(int) $assignment['assignee_contact_id']]),
       );
     }
+
+    foreach ($sortedResults as &$group) {
+      usort($group['values'], static function(array $a, array $b) {
+        $nameComparison = strnatcasecmp((string) $a['name'], (string) $b['name']);
+        return $nameComparison ?: strnatcasecmp((string) $a['role_label'], (string) $b['role_label']);
+      });
+      $group['assignment_count'] = count($group['values']);
+    }
+    unset($group);
 
     uasort($sortedResults, function($a, $b) {
       if ($a['start_time'] == $b['start_time']) {

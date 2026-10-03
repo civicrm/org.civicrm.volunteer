@@ -36,6 +36,12 @@ class CRM_Volunteer_Upgrader extends CRM_Extension_Upgrader_Base {
   const skillLevelOptionGroupName = 'skill_level';
 
   public function postInstall() {
+    // Managed entities (managed/Registry.mgd.php) own the Volunteer activity
+    // type and the Available / No-show activity statuses, and CiviCRM
+    // reconciles them during installation before this hook runs. This call is
+    // therefore a get-or-create acting as a lookup: it returns the managed
+    // record's stored value, and only creates anything if reconciliation has
+    // not happened yet.
     $volActivityTypeId = $this->createActivityType(CRM_Volunteer_BAO_Assignment::CUSTOM_ACTIVITY_TYPE);
     $smarty = CRM_Core_Smarty::singleton();
     $smarty->assign('volunteer_custom_activity_type_name', CRM_Volunteer_BAO_Assignment::CUSTOM_ACTIVITY_TYPE);
@@ -47,19 +53,26 @@ class CRM_Volunteer_Upgrader extends CRM_Extension_Upgrader_Base {
     $smarty->assign('customIDs', $customIDs);
     $this->executeCustomDataTemplateFile('volunteer-customdata.xml.tpl');
 
-    $this->createVolunteerActivityStatus();
-
     $this->createVolunteerContactType();
     $volContactTypeCustomGroupID = $this->createVolunteerContactCustomGroup();
     $this->createVolunteerContactCustomFields($volContactTypeCustomGroupID);
 
     $this->installCommendationActivityType();
 
+    // xml/auto_install.xml holds the shipped volunteer_sign_up profile. Older
+    // civix loaded that filename by convention; civix 25.10 does not, and
+    // nothing replaced it -- so a fresh installation ended up with no signup
+    // profile at all, even though the volunteer_default_profile setting and
+    // CRM_Volunteer_BAO_Project's audience resolution both look for it. Sites
+    // that reached 2.5 by upgrading still have it from years ago, which is why
+    // this went unnoticed.
+    $this->executeCustomDataFileByAbsPath($this->extensionDir . '/xml/auto_install.xml');
+
     $this->installVolMsgWorkflowTpls();
-    $this->schemaUpgrade20();
-    $this->addNeedEndDate();
-    $this->installNeedMetaDateFields();
-    
+    // Fresh extension tables come from schema/*.entityType.php. Historical
+    // migration helpers remain available to their numbered upgrade steps but
+    // are not rerun against a canonical fresh installation.
+
     // uncomment the next line to insert sample data
     // $this->executeSqlFile('sql/volunteer_sample.mysql');
 
@@ -67,11 +80,15 @@ class CRM_Volunteer_Upgrader extends CRM_Extension_Upgrader_Base {
     // slider_widget_fields setting after the install, which is responsible for
     // creating both the setting and the custom field whose ID is used in the
     // initial value.
-    $customFieldId = civicrm_api3('customField', 'getvalue', array(
-      'custom_group_id' => 'Volunteer_Information',
-      'name' => 'camera_skill_level',
-      'return' => 'id',
-    ));
+    $customFieldId = \Civi\Api4\CustomField::get(FALSE)
+      ->addSelect('id')
+      ->addWhere('custom_group_id.name', '=', 'Volunteer_Information')
+      ->addWhere('name', '=', 'camera_skill_level')
+      ->execute()
+      ->first()['id'] ?? NULL;
+    if (!$customFieldId) {
+      throw new CRM_Core_Exception(ts('The camera skill level custom field was not installed.', array('domain' => 'org.civicrm.volunteer')));
+    }
     _volunteer_update_slider_fields(array(CRM_Core_Action::ADD => $customFieldId));
   }
 
@@ -79,23 +96,28 @@ class CRM_Volunteer_Upgrader extends CRM_Extension_Upgrader_Base {
    * Installs option group and options for project relationships.
    */
   public function installProjectRelationships() {
-    try {
-      civicrm_api3('OptionGroup', 'create', array(
-        'name' => CRM_Volunteer_BAO_ProjectContact::RELATIONSHIP_OPTION_GROUP,
-        'title' => 'Volunteer Project Relationship',
-        'description' => ts("Used to describe a contact's relationship to a project at large (e.g., beneficiary, manager). Not to be confused with contact-to-contact relationships.", array('domain' => 'org.civicrm.volunteer')),
-        'is_reserved' => 1,
-        'is_active' => 1,
-      ));
-    } catch (Exception $e) {
-      $msg = 'Exception thrown in ' . __METHOD__ . '. Likely the option group already exists.';
-      CRM_Core_Error::debug_log_message($msg, FALSE, 'org.civicrm.volunteer');
+    $groupName = CRM_Volunteer_BAO_ProjectContact::RELATIONSHIP_OPTION_GROUP;
+    $optionGroup = \Civi\Api4\OptionGroup::get(FALSE)
+      ->addSelect('id')
+      ->addWhere('name', '=', $groupName)
+      ->execute()
+      ->first();
+    if (!$optionGroup) {
+      $optionGroup = \Civi\Api4\OptionGroup::create(FALSE)
+        ->addValue('name', $groupName)
+        ->addValue('title', 'Volunteer Project Relationship')
+        ->addValue('description', ts("Used to describe a contact's relationship to a project at large (e.g., beneficiary, manager). Not to be confused with contact-to-contact relationships.", array('domain' => 'org.civicrm.volunteer')))
+        ->addValue('is_reserved', TRUE)
+        ->addValue('is_active', TRUE)
+        ->execute()
+        ->first();
     }
+    $optionGroupId = (int) $optionGroup['id'];
 
     $optionDefaults = array(
       'is_active' => 1,
       'is_reserved' => 1,
-      'option_group_id' => CRM_Volunteer_BAO_ProjectContact::RELATIONSHIP_OPTION_GROUP,
+      'option_group_id' => $optionGroupId,
     );
 
     $options = array(
@@ -123,36 +145,44 @@ class CRM_Volunteer_Upgrader extends CRM_Extension_Upgrader_Base {
     );
 
     foreach ($options as $opt) {
-      $optionValueParams = array_merge($optionDefaults, $opt);
-      $getOptionValues = civicrm_api3('OptionValue', 'get', $optionValueParams);
-
-      // In the case of a user reinstalling CiviVolunteer we don't want duplicate options.
-      if ($getOptionValues['count'] == 0) {
-        civicrm_api3('OptionValue', 'create', $optionValueParams);
+      // Managed records run before postInstall on a fresh installation. Match
+      // only immutable identity fields so translated or administrator-edited
+      // labels/descriptions do not make an existing option look absent.
+      $existing = \Civi\Api4\OptionValue::get(FALSE)
+        ->addSelect('id')
+        ->addWhere('option_group_id', '=', $optionGroupId)
+        ->addWhere('name', '=', $opt['name'])
+        ->execute()
+        ->first();
+      if (!$existing) {
+        \Civi\Api4\OptionValue::create(FALSE)
+          ->setValues(array_merge($optionDefaults, $opt))
+          ->execute();
       }
     }
   }
 
   public function installVolMsgWorkflowTpls() {
-    try {
-      $optionGroup = civicrm_api3('OptionGroup', 'create', array(
-        'name' => 'msg_tpl_workflow_volunteer',
-        'title' => ts("Message Template Workflow for Volunteers", array('domain' => 'org.civicrm.volunteer')),
-        'description' => ts("Message Template Workflow for Volunteers", array('domain' => 'org.civicrm.volunteer')),
-        'is_reserved' => 1,
-        'is_active' => 1,
-      ));
-      $optionGroupId = $optionGroup['id'];
+    // Reuse the option group when it already exists rather than relying on a
+    // create attempt failing: API4 reports a duplicate as a DB-level error
+    // whose code cannot be matched as reliably as APIv3's 'already exists'.
+    $optionGroupId = \Civi\Api4\OptionGroup::get(FALSE)
+      ->addSelect('id')
+      ->addWhere('name', '=', 'msg_tpl_workflow_volunteer')
+      ->execute()
+      ->first()['id'] ?? NULL;
+    if (!$optionGroupId) {
+      $optionGroupId = \Civi\Api4\OptionGroup::create(FALSE)
+        ->addValue('name', 'msg_tpl_workflow_volunteer')
+        ->addValue('title', ts("Message Template Workflow for Volunteers", array('domain' => 'org.civicrm.volunteer')))
+        ->addValue('description', ts("Message Template Workflow for Volunteers", array('domain' => 'org.civicrm.volunteer')))
+        ->addValue('is_reserved', TRUE)
+        ->addValue('is_active', TRUE)
+        ->execute()
+        ->first()['id'];
 
       // VOL-288: Prevent caching-related CRM_Core_Exception: "N is not a valid option for field option_group_id"
-      CRM_Core_Invoke::rebuildMenuAndCaches();
-    } catch (Exception $e) {
-      // if an exception is thrown, most likely the option group already exists,
-      // in which case we'll just use that one
-      $optionGroupId = civicrm_api3('OptionGroup', 'getvalue', array(
-        'name' => 'msg_tpl_workflow_volunteer',
-        'return' => 'id',
-      ));
+      Civi::rebuild(array('metadata' => TRUE))->execute();
     }
 
     $msgTplDefaults = array(
@@ -172,16 +202,19 @@ class CRM_Volunteer_Upgrader extends CRM_Extension_Upgrader_Base {
 
     $baseDir = CRM_Extension_System::singleton()->getMapper()->keyToBasePath('org.civicrm.volunteer') . '/';
     foreach ($msgTpls as $i => $msgTpl) {
-      $optionValue = civicrm_api3('OptionValue', 'create', array(
-        'description' => $msgTpl['description'],
-        'is_active' => 1,
-        'is_reserved' => 1,
-        'label' => $msgTpl['label'],
-        'name' => $msgTpl['name'],
-        'option_group_id' => $optionGroupId,
-        'value' => ++$i,
-        'weight' => $i,
-      ));
+      $optionValue = \Civi\Api4\OptionValue::create(FALSE)
+        ->setValues(array(
+          'description' => $msgTpl['description'],
+          'is_active' => TRUE,
+          'is_reserved' => TRUE,
+          'label' => $msgTpl['label'],
+          'name' => $msgTpl['name'],
+          'option_group_id' => $optionGroupId,
+          'value' => ++$i,
+          'weight' => $i,
+        ))
+        ->execute()
+        ->first();
       $txt = file_get_contents($baseDir . 'CRM/Volunteer/Upgrader/2.0.alpha1.msg_template/' . $msgTpl['name'] . '_text.tpl');
       $html = file_get_contents($baseDir . 'CRM/Volunteer/Upgrader/2.0.alpha1.msg_template/' . $msgTpl['name'] . '_html.tpl');
 
@@ -192,7 +225,9 @@ class CRM_Volunteer_Upgrader extends CRM_Extension_Upgrader_Base {
         'msg_html' => $html,
         'workflow_id' => $optionValue['id'],
       ));
-      civicrm_api3('MessageTemplate', 'create', $params);
+      \Civi\Api4\MessageTemplate::create(FALSE)
+        ->setValues($params)
+        ->execute();
     }
   }
 
@@ -231,6 +266,13 @@ class CRM_Volunteer_Upgrader extends CRM_Extension_Upgrader_Base {
       FROM `civicrm_volunteer_project`
     ');
     while ($dao->fetch()) {
+      // SR-004 (security review 2026-08-23): the value is spliced into the
+      // query below as a table identifier. It is only ever written by this
+      // extension ('civicrm_event' or NULL), but validate before use so a
+      // corrupted row cannot inject through this legacy upgrade step.
+      if (!preg_match('/^[a-z_][a-z0-9_]*$/', (string) $dao->entity_table)) {
+        continue;
+      }
       $query = '
         UPDATE `civicrm_volunteer_project` AS `project`
         INNER JOIN ' . $dao->entity_table . ' AS `entity`
@@ -248,7 +290,7 @@ class CRM_Volunteer_Upgrader extends CRM_Extension_Upgrader_Base {
       ts('Volunteer Commendation', array('domain' => 'org.civicrm.volunteer'))
     );
 
-    $this->createPossibleDuplicateRecord('CustomGroup', array(
+    $customGroup = $this->createPossibleDuplicateRecord('CustomGroup', array(
       'extends' => 'Activity',
       'extends_entity_column_value' => $activityTypeID,
       'is_reserved' => 1,
@@ -256,8 +298,19 @@ class CRM_Volunteer_Upgrader extends CRM_Extension_Upgrader_Base {
       'title' => ts('Volunteer Commendation', array('domain' => 'org.civicrm.volunteer')),
     ));
 
-    $this->createPossibleDuplicateRecord('customField', array(
-      'custom_group_id' => CRM_Volunteer_BAO_Commendation::CUSTOM_GROUP_NAME,
+    // 'CustomField', not 'customField': createPossibleDuplicateRecord() scopes
+    // its duplicate lookup by owning group only for the exact entity name, so
+    // the lowercase spelling searched every custom group for the field name.
+    //
+    // And the group's ID, not its name. APIv3 resolved a group name in
+    // custom_group_id; API4 requires the integer and rejects the string with
+    // "One of the parameters (value: volunteer_commendation) is not of the type
+    // Int". install() calls this method, so a fresh installation of the
+    // extension failed outright -- invisible on sites that reached 2.5 by
+    // upgrading, because upgrade_1403 had already created the field years
+    // earlier and the lookup above short-circuits.
+    $this->createPossibleDuplicateRecord('CustomField', array(
+      'custom_group_id' => $customGroup['id'],
       'data_type' => 'Int',
       'html_type' => 'Text',
       'is_searchable' => 0,
@@ -332,10 +385,11 @@ class CRM_Volunteer_Upgrader extends CRM_Extension_Upgrader_Base {
     $this->ctx->log->info('Applying update 1404 - Replacing null values in
       civicrm_volunteer_project.target_contact_id with the ID of the default organization');
 
-    $domainContactId = civicrm_api3('Domain', 'getvalue', array(
-      'current_domain' => 1,
-      'return' => "contact_id",
-    ));
+    $domainContactId = \Civi\Api4\Domain::get(FALSE)
+      ->addSelect('contact_id')
+      ->addWhere('id', '=', CRM_Core_Config::domainID())
+      ->execute()
+      ->first()['contact_id'] ?? NULL;
     $placeholders = array(
       1 => array($domainContactId, 'Integer'),
     );
@@ -464,159 +518,370 @@ class CRM_Volunteer_Upgrader extends CRM_Extension_Upgrader_Base {
     return TRUE;
   }
 
+  /**
+   * Allow volunteer projects which are not associated with another entity.
+   */
+  public function upgrade_2302() {
+    $this->ctx->log->info('Applying update 2302 - Allowing standalone volunteer projects');
+    CRM_Core_DAO::executeQuery("
+      ALTER TABLE `civicrm_volunteer_project`
+      MODIFY `entity_table` VARCHAR(64) NULL
+        COMMENT 'Entity table for entity_id (initially civicrm_event)',
+      MODIFY `entity_id` INT UNSIGNED NULL
+        COMMENT 'Implicit FK project entity (initially eventID).'
+    ");
+    return TRUE;
+  }
+
+  /**
+   * Register PHP entity metadata and reconcile additive schema constraints.
+   *
+   * This upgrade is intentionally additive. It validates invariants before
+   * adding constraints and never recreates an extension table or chooses a
+   * duplicate record on the administrator's behalf.
+   *
+   * @return bool
+   * @throws CRM_Core_Exception
+   */
+  public function upgrade_2500() {
+    $this->ctx->log->info('Applying update 2500 - Registering API4 entity metadata and reconciling schema indexes');
+
+    $tables = [
+      'civicrm_volunteer_project',
+      'civicrm_volunteer_need',
+      'civicrm_volunteer_project_contact',
+    ];
+    foreach ($tables as $table) {
+      if (!CRM_Core_DAO::checkTableExists($table)) {
+        throw new CRM_Core_Exception(ts('CiviVolunteer cannot upgrade because the required table %1 is missing.', [
+          1 => $table,
+          'domain' => 'org.civicrm.volunteer',
+        ]));
+      }
+    }
+
+    $duplicateContacts = CRM_Core_DAO::executeQuery('SELECT project_id, contact_id, relationship_type_id, GROUP_CONCAT(id ORDER BY id) AS row_ids
+      FROM civicrm_volunteer_project_contact
+      GROUP BY project_id, contact_id, relationship_type_id
+      HAVING COUNT(*) > 1
+      LIMIT 10');
+    $contactConflicts = [];
+    while ($duplicateContacts->fetch()) {
+      $contactConflicts[] = $duplicateContacts->row_ids;
+    }
+    if ($contactConflicts) {
+      throw new CRM_Core_Exception(ts('CiviVolunteer found duplicate project-contact relationships in row sets %1. Merge these records before retrying the upgrade.', [
+        1 => implode('; ', $contactConflicts),
+        'domain' => 'org.civicrm.volunteer',
+      ]));
+    }
+
+    // project_id is nullable with ON DELETE SET NULL, so every project deleted
+    // before this release left its needs behind with a NULL project_id. MySQL
+    // collapses all NULLs into a single GROUP BY bucket, so without the IS NOT
+    // NULL guard a site that had deleted two projects would fail this check
+    // against unrelated orphans -- and the error would name row IDs that have
+    // nothing to do with duplicate flexible needs.
+    $duplicateFlexibleNeeds = CRM_Core_DAO::executeQuery('SELECT project_id, GROUP_CONCAT(id ORDER BY id) AS row_ids
+      FROM civicrm_volunteer_need
+      WHERE is_flexible = 1 AND project_id IS NOT NULL
+      GROUP BY project_id
+      HAVING COUNT(*) > 1
+      LIMIT 10');
+    $needConflicts = [];
+    while ($duplicateFlexibleNeeds->fetch()) {
+      $needConflicts[] = $duplicateFlexibleNeeds->row_ids;
+    }
+    if ($needConflicts) {
+      throw new CRM_Core_Exception(ts('CiviVolunteer found projects with multiple flexible needs in row sets %1. Resolve these records before retrying the upgrade.', [
+        1 => implode('; ', $needConflicts),
+        'domain' => 'org.civicrm.volunteer',
+      ]));
+    }
+
+    $this->addIndexIfMissing(
+      'civicrm_volunteer_project_contact',
+      'UI_project_contact_rel',
+      ['project_id', 'contact_id', 'relationship_type_id'],
+      TRUE,
+      'ALTER TABLE civicrm_volunteer_project_contact ADD UNIQUE INDEX UI_project_contact_rel (project_id, contact_id, relationship_type_id)'
+    );
+    $this->addIndexIfMissing(
+      'civicrm_volunteer_project',
+      'index_volunteer_project_entity',
+      ['entity_table', 'entity_id'],
+      FALSE,
+      'ALTER TABLE civicrm_volunteer_project ADD INDEX index_volunteer_project_entity (entity_table, entity_id)'
+    );
+    $this->addIndexIfMissing(
+      'civicrm_volunteer_need',
+      'index_volunteer_need_search',
+      ['is_active', 'is_flexible', 'start_time', 'end_time'],
+      FALSE,
+      'ALTER TABLE civicrm_volunteer_need ADD INDEX index_volunteer_need_search (is_active, is_flexible, start_time, end_time)'
+    );
+
+    $this->assertNoOrphans('civicrm_volunteer_project', 'loc_block_id', 'civicrm_loc_block');
+    $this->addForeignKeyIfMissing(
+      'civicrm_volunteer_project',
+      'FK_civicrm_volunteer_project_loc_block_id',
+      'loc_block_id',
+      'civicrm_loc_block',
+      'id',
+      'SET NULL',
+      'ALTER TABLE civicrm_volunteer_project ADD CONSTRAINT FK_civicrm_volunteer_project_loc_block_id FOREIGN KEY (loc_block_id) REFERENCES civicrm_loc_block (id) ON DELETE SET NULL'
+    );
+    if (CRM_Core_DAO::checkTableExists('civicrm_campaign')) {
+      $this->assertNoOrphans('civicrm_volunteer_project', 'campaign_id', 'civicrm_campaign');
+      $this->addForeignKeyIfMissing(
+        'civicrm_volunteer_project',
+        'FK_civicrm_volunteer_project_campaign_id',
+        'campaign_id',
+        'civicrm_campaign',
+        'id',
+        'SET NULL',
+        'ALTER TABLE civicrm_volunteer_project ADD CONSTRAINT FK_civicrm_volunteer_project_campaign_id FOREIGN KEY (campaign_id) REFERENCES civicrm_campaign (id) ON DELETE SET NULL'
+      );
+    }
+    $this->assertNoOrphans('civicrm_volunteer_need', 'project_id', 'civicrm_volunteer_project');
+    $this->addForeignKeyIfMissing(
+      'civicrm_volunteer_need',
+      'FK_civicrm_volunteer_need_project_id',
+      'project_id',
+      'civicrm_volunteer_project',
+      'id',
+      'SET NULL',
+      'ALTER TABLE civicrm_volunteer_need ADD CONSTRAINT FK_civicrm_volunteer_need_project_id FOREIGN KEY (project_id) REFERENCES civicrm_volunteer_project (id) ON DELETE SET NULL'
+    );
+    $this->assertNoOrphans('civicrm_volunteer_project_contact', 'project_id', 'civicrm_volunteer_project');
+    $this->addForeignKeyIfMissing(
+      'civicrm_volunteer_project_contact',
+      'FK_civicrm_volunteer_project_contact_project_id',
+      'project_id',
+      'civicrm_volunteer_project',
+      'id',
+      'CASCADE',
+      'ALTER TABLE civicrm_volunteer_project_contact ADD CONSTRAINT FK_civicrm_volunteer_project_contact_project_id FOREIGN KEY (project_id) REFERENCES civicrm_volunteer_project (id) ON DELETE CASCADE'
+    );
+    $this->assertNoOrphans('civicrm_volunteer_project_contact', 'contact_id', 'civicrm_contact');
+    $this->addForeignKeyIfMissing(
+      'civicrm_volunteer_project_contact',
+      'FK_civicrm_volunteer_project_contact_contact_id',
+      'contact_id',
+      'civicrm_contact',
+      'id',
+      'CASCADE',
+      'ALTER TABLE civicrm_volunteer_project_contact ADD CONSTRAINT FK_civicrm_volunteer_project_contact_contact_id FOREIGN KEY (contact_id) REFERENCES civicrm_contact (id) ON DELETE CASCADE'
+    );
+
+    Civi::rebuild([
+      'metadata' => TRUE,
+      'entities' => TRUE,
+    ])->execute();
+
+    return TRUE;
+  }
+
+  /**
+   * Add an index unless an equivalent index already exists.
+   */
+  private function addIndexIfMissing(string $table, string $index, array $columns, bool $unique, string $sql): void {
+    $indices = CRM_Core_DAO::executeQuery('SELECT INDEX_NAME AS index_name,
+        NON_UNIQUE AS non_unique,
+        GROUP_CONCAT(COLUMN_NAME ORDER BY SEQ_IN_INDEX) AS indexed_columns
+      FROM information_schema.STATISTICS
+      WHERE TABLE_SCHEMA = DATABASE()
+        AND TABLE_NAME = %1
+      GROUP BY INDEX_NAME, NON_UNIQUE', [
+          1 => [$table, 'String'],
+        ]);
+    $expectedColumns = implode(',', $columns);
+    $namedIndexExists = FALSE;
+    while ($indices->fetch()) {
+      $namedIndexExists = $namedIndexExists || $indices->index_name === $index;
+      $isEquivalent = $indices->indexed_columns === $expectedColumns
+        && (!$unique || !(int) $indices->non_unique);
+      if ($isEquivalent) {
+        return;
+      }
+    }
+    if ($namedIndexExists) {
+      throw new CRM_Core_Exception(ts('CiviVolunteer cannot add index %1 because an index with that name has different columns. Rename the existing index before retrying the upgrade.', [
+        1 => $index,
+        'domain' => 'org.civicrm.volunteer',
+      ]));
+    }
+    CRM_Core_DAO::executeQuery($sql);
+  }
+
+  /**
+   * Add a foreign key unless an equivalent constraint already exists.
+   */
+  private function addForeignKeyIfMissing(
+    string $table,
+    string $constraint,
+    string $column,
+    string $referencedTable,
+    string $referencedColumn,
+    string $deleteRule,
+    string $sql
+  ): void {
+    $constraints = CRM_Core_DAO::executeQuery('SELECT kcu.CONSTRAINT_NAME AS constraint_name,
+        kcu.COLUMN_NAME AS column_name,
+        kcu.REFERENCED_TABLE_NAME AS referenced_table_name,
+        kcu.REFERENCED_COLUMN_NAME AS referenced_column_name,
+        rc.DELETE_RULE AS delete_rule
+      FROM information_schema.KEY_COLUMN_USAGE kcu
+      INNER JOIN information_schema.REFERENTIAL_CONSTRAINTS rc
+        ON rc.CONSTRAINT_SCHEMA = kcu.CONSTRAINT_SCHEMA
+        AND rc.CONSTRAINT_NAME = kcu.CONSTRAINT_NAME
+        AND rc.TABLE_NAME = kcu.TABLE_NAME
+      WHERE kcu.CONSTRAINT_SCHEMA = DATABASE()
+        AND kcu.TABLE_NAME = %1
+        AND kcu.REFERENCED_TABLE_NAME IS NOT NULL', [
+          1 => [$table, 'String'],
+        ]);
+    $namedConstraintExists = FALSE;
+    while ($constraints->fetch()) {
+      $namedConstraintExists = $namedConstraintExists || $constraints->constraint_name === $constraint;
+      if ($constraints->column_name === $column
+        && $constraints->referenced_table_name === $referencedTable
+        && $constraints->referenced_column_name === $referencedColumn
+        && strtoupper($constraints->delete_rule) === strtoupper($deleteRule)) {
+        return;
+      }
+    }
+    if ($namedConstraintExists) {
+      throw new CRM_Core_Exception(ts('CiviVolunteer cannot add foreign key %1 because a constraint with that name has a different definition. Rename the existing constraint before retrying the upgrade.', [
+        1 => $constraint,
+        'domain' => 'org.civicrm.volunteer',
+      ]));
+    }
+    CRM_Core_DAO::executeQuery($sql);
+  }
+
+  /**
+   * Fail with actionable row IDs before MySQL emits a generic FK error.
+   */
+  private function assertNoOrphans(string $table, string $column, string $referencedTable): void {
+    $rows = CRM_Core_DAO::executeQuery("SELECT child.id
+      FROM {$table} child
+      LEFT JOIN {$referencedTable} parent ON parent.id = child.{$column}
+      WHERE child.{$column} IS NOT NULL AND parent.id IS NULL
+      ORDER BY child.id LIMIT 10");
+    $ids = [];
+    while ($rows->fetch()) {
+      $ids[] = (int) $rows->id;
+    }
+    if ($ids) {
+      throw new CRM_Core_Exception(ts('CiviVolunteer found orphaned rows in %1 for %2 (row IDs: %3). Repair these references before retrying the upgrade.', [
+        1 => $table,
+        2 => $column,
+        3 => implode(', ', $ids),
+        'domain' => 'org.civicrm.volunteer',
+      ]));
+    }
+  }
+
   public function uninstall() {
-    $customgroups = civicrm_api3('CustomGroup', 'get', [
-      'name' => ['IN' => [
+    $customgroup_ids = \Civi\Api4\CustomGroup::get(FALSE)
+      ->addSelect('id')
+      ->addWhere('name', 'IN', [
         'CiviVolunteer',
         'Volunteer_Information',
         'volunteer_commendation',
-      ]],
-      'return' => ['id']
-    ]);
-    $customgroup_ids = array_keys($customgroups['values'] ?? []);
+      ])
+      ->execute()
+      ->column('id');
     if ($customgroup_ids) {
       // Found one or more of our custom groups.
       // Lookup fields for these and delete those first.
-      $customfields = civicrm_api3('CustomField', 'get', [
-        'custom_group_id' => ['IN' => $customgroup_ids],
-        'return'          => ['id'],
-      ]);
-      foreach (array_keys($customfields['values'] ?? []) as $customfield_id) {
-        civicrm_api3('CustomField', 'delete', ['id' => $customfield_id]);
+      $customfield_ids = \Civi\Api4\CustomField::get(FALSE)
+        ->addSelect('id')
+        ->addWhere('custom_group_id', 'IN', $customgroup_ids)
+        ->execute()
+        ->column('id');
+      foreach ($customfield_ids as $customfield_id) {
+        \Civi\Api4\CustomField::delete(FALSE)
+          ->addWhere('id', '=', $customfield_id)
+          ->execute();
       }
 
       // Now delete the groups themselves.
       foreach ($customgroup_ids as $customgroup_id) {
-        civicrm_api3('CustomGroup', 'delete', ['id' => $customgroup_id]);
+        \Civi\Api4\CustomGroup::delete(FALSE)
+          ->addWhere('id', '=', $customgroup_id)
+          ->execute();
       }
     }
-    $optiongroups = civicrm_api3('OptionGroup', 'get', [
-      'name' => ['IN' => [
+    // The message templates reference the workflow option values below;
+    // deleting the option group alone leaves them orphaned.
+    $workflowValueIds = \Civi\Api4\OptionValue::get(FALSE)
+      ->addSelect('id')
+      ->addWhere('option_group_id:name', '=', 'msg_tpl_workflow_volunteer')
+      ->execute()
+      ->column('id');
+    if ($workflowValueIds) {
+      \Civi\Api4\MessageTemplate::delete(FALSE)
+        ->addWhere('workflow_id', 'IN', $workflowValueIds)
+        ->execute();
+    }
+
+    $optiongroup_ids = \Civi\Api4\OptionGroup::get(FALSE)
+      ->addWhere('name', 'IN', [
         'skill_level',
         'volunteer_project_relationship',
         'msg_tpl_workflow_volunteer',
         'volunteer_role',
-      ]],
-      'return' => ['id']
-    ]);
-    $optiongroup_ids = array_keys($optiongroups['values'] ?? []);
+      ])
+      ->execute()
+      ->column('id');
     if ($optiongroup_ids) {
       // Found one or more of our option groups.
       // Lookup values for these and delete those first.
-      $optionvalues = civicrm_api3('OptionValue', 'get', [
-        'option_group_id' => ['IN' => $optiongroup_ids],
-        'return'          => ['id'],
-      ]);
-      foreach (array_keys($optionvalues['values'] ?? []) as $optionvalue_id) {
-        civicrm_api3('OptionValue', 'delete', ['id' => $optionvalue_id]);
+      $optionvalue_ids = \Civi\Api4\OptionValue::get(FALSE)
+        ->addSelect('id')
+        ->addWhere('option_group_id', 'IN', $optiongroup_ids)
+        ->execute()
+        ->column('id');
+      foreach ($optionvalue_ids as $optionvalue_id) {
+        \Civi\Api4\OptionValue::delete(FALSE)
+          ->addWhere('id', '=', $optionvalue_id)
+          ->execute();
       }
-    
+
       // Now delete the groups themselves.
       foreach ($optiongroup_ids as $optiongroup_id) {
-        civicrm_api3('OptionGroup', 'delete', ['id' => $optiongroup_id]);
+        \Civi\Api4\OptionGroup::delete(FALSE)
+          ->addWhere('id', '=', $optiongroup_id)
+          ->execute();
       }
     }
   }
 
-  /**
-   * Example: Run a simple query when a module is enabled
-   *
-  public function enable() {
-    CRM_Core_DAO::executeQuery('UPDATE foo SET is_active = 1 WHERE bar = "whiz"');
-  }
-
-  /**
-   * Example: Run a simple query when a module is disabled
-   *
-  public function disable() {
-    CRM_Core_DAO::executeQuery('UPDATE foo SET is_active = 0 WHERE bar = "whiz"');
-  }
-
-  /**
-   * Example: Run a couple simple queries
-   *
-   * @return TRUE on success
-   * @throws Exception
-   *
-  public function upgrade_4200() {
-    $this->ctx->log->info('Applying update 4200');
-    CRM_Core_DAO::executeQuery('UPDATE foo SET bar = "whiz"');
-    CRM_Core_DAO::executeQuery('DELETE FROM bang WHERE willy = wonka(2)');
-    return TRUE;
-  } // */
-
-
-  /**
-   * Example: Run an external SQL script
-   *
-   * @return TRUE on success
-   * @throws Exception
-  public function upgrade_4201() {
-    $this->ctx->log->info('Applying update 4201');
-    // this path is relative to the extension base dir
-    $this->executeSqlFile('sql/upgrade_4201.sql');
-    return TRUE;
-  } // */
-
-
-  /**
-   * Example: Run a slow upgrade process by breaking it up into smaller chunk
-   *
-   * @return TRUE on success
-   * @throws Exception
-  public function upgrade_4202() {
-    $this->ctx->log->info('Planning update 4202'); // PEAR Log interface
-
-    $this->addTask(ts('Process first step'), 'processPart1', $arg1, $arg2);
-    $this->addTask(ts('Process second step'), 'processPart2', $arg3, $arg4);
-    $this->addTask(ts('Process second step'), 'processPart3', $arg5);
-    return TRUE;
-  }
-  public function processPart1($arg1, $arg2) { sleep(10); return TRUE; }
-  public function processPart2($arg3, $arg4) { sleep(10); return TRUE; }
-  public function processPart3($arg5) { sleep(10); return TRUE; }
-  // */
-
-
-  /**
-   * Example: Run an upgrade with a query that touches many (potentially
-   * millions) of records by breaking it up into smaller chunks.
-   *
-   * @return TRUE on success
-   * @throws Exception
-  public function upgrade_4203() {
-    $this->ctx->log->info('Planning update 4203'); // PEAR Log interface
-
-    $minId = CRM_Core_DAO::singleValueQuery('SELECT coalesce(min(id),0) FROM civicrm_contribution');
-    $maxId = CRM_Core_DAO::singleValueQuery('SELECT coalesce(max(id),0) FROM civicrm_contribution');
-    for ($startId = $minId; $startId <= $maxId; $startId += self::BATCH_SIZE) {
-      $endId = $startId + self::BATCH_SIZE - 1;
-      $title = ts('Upgrade Batch (%1 => %2)', array(
-        1 => $startId,
-        2 => $endId,
-      ));
-      $sql = '
-        UPDATE civicrm_contribution SET foobar = whiz(wonky()+wanker)
-        WHERE id BETWEEN %1 and %2
-      ';
-      $params = array(
-        1 => array($startId, 'Integer'),
-        2 => array($endId, 'Integer'),
-      );
-      $this->addTask($title, 'executeSql', $sql, $params);
-    }
-    return TRUE;
-  } // */
+  // Removed here: the civix enable/disable/upgrade_420x examples.
+  //
+  // Each was "commented out" by opening a docblock and never terminating it --
+  // the closing marker sat on the example function's own brace line -- so the
+  // blocks chained into one another and the whole run was only terminated by
+  // the last one. Deleting any single block therefore silently swallowed the
+  // next real method (findCustomGroupValueIDs) while still passing php -l, and
+  // PHPStan had been attaching an example's "@return TRUE" to it. They also
+  // carried placeholder SQL against tables named foo and bang.
+  //
+  // See the civix documentation for current install/upgrade task patterns.
 
   public function findCustomGroupValueIDs() {
     $result = array();
 
-    $query = "SELECT `table_name`, `AUTO_INCREMENT` FROM `information_schema`.`TABLES`
+    $query = "SELECT `TABLE_NAME` AS cv_table_name,
+        `AUTO_INCREMENT` AS cv_auto_increment
+      FROM `information_schema`.`TABLES`
       WHERE `table_schema` = DATABASE()
       AND `table_name` IN ('civicrm_custom_group', 'civicrm_custom_field')";
     $dao = CRM_Core_DAO::executeQuery($query);
     while ($dao->fetch()) {
-      $result[$dao->table_name] = (int) $dao->AUTO_INCREMENT;
+      $result[$dao->cv_table_name] = (int) $dao->cv_auto_increment;
     }
 
     return $result;
@@ -666,30 +931,24 @@ class CRM_Volunteer_Upgrader extends CRM_Extension_Upgrader_Base {
    * @throws CRM_Core_Exception
    */
   public function createVolunteerContactType() {
-    $id = NULL;
-    $get = civicrm_api3('ContactType', 'get', array(
-      'name' => self::customContactTypeName,
-      'return' => 'id',
-      'sequential' => 1,
-    ));
+    $id = \Civi\Api4\ContactType::get(FALSE)
+      ->addSelect('id')
+      ->addWhere('name', '=', self::customContactTypeName)
+      ->execute()
+      ->first()['id'] ?? NULL;
 
-    if ($get['count']) {
-      $id = $get['values'][0]['id'];
-    } else {
-      $create = civicrm_api3('ContactType', 'create', array(
-        'label' => ts('Volunteer', array('domain' => 'org.civicrm.volunteer')),
-        'name' => self::customContactTypeName,
-        'parent_id' => civicrm_api3('ContactType', 'getvalue', array(
-          'name' => 'Individual',
-          'return' => 'id',
-         )),
-      ));
-      if (!empty($create['is_error'])) {
-        CRM_Core_Error::debug_var('contactTypeResult', $create, TRUE, TRUE, 'org.civicrm.volunteer');
-        throw new CRM_Core_Exception('Failed to register contact type');
-      }
-
-      $id = $create['id'];
+    if (!$id) {
+      $parentId = \Civi\Api4\ContactType::get(FALSE)
+        ->addSelect('id')
+        ->addWhere('name', '=', 'Individual')
+        ->execute()
+        ->first()['id'] ?? NULL;
+      $id = \Civi\Api4\ContactType::create(FALSE)
+        ->addValue('label', ts('Volunteer', array('domain' => 'org.civicrm.volunteer')))
+        ->addValue('name', self::customContactTypeName)
+        ->addValue('parent_id', $parentId)
+        ->execute()
+        ->first()['id'];
     }
 
     return (int) $id;
@@ -703,28 +962,20 @@ class CRM_Volunteer_Upgrader extends CRM_Extension_Upgrader_Base {
    * @throws CRM_Core_Exception
    */
   public function createVolunteerContactCustomGroup() {
-    $id = NULL;
-    $get = civicrm_api3('CustomGroup', 'get', array(
-      'name' => self::customContactGroupName,
-      'return' => 'id',
-      'sequential' => 1,
-    ));
+    $id = \Civi\Api4\CustomGroup::get(FALSE)
+      ->addSelect('id')
+      ->addWhere('name', '=', self::customContactGroupName)
+      ->execute()
+      ->first()['id'] ?? NULL;
 
-    if ($get['count']) {
-      $id = $get['values'][0]['id'];
-    } else {
-      $create = civicrm_api3('CustomGroup', 'create', array(
-        'extends' => 'Individual',
-        'extends_entity_column_value' => 'Volunteer',
-        'name' => self::customContactGroupName,
-        'title' => ts('Volunteer Information', array('domain' => 'org.civicrm.volunteer')),
-      ));
-      if (!empty($create['is_error'])) {
-        CRM_Core_Error::debug_var('customGroupResult', $create, TRUE, TRUE, 'org.civicrm.volunteer');
-        throw new CRM_Core_Exception('Failed to register custom group for volunteer subtype');
-      }
-
-      $id = $create['id'];
+    if (!$id) {
+      $id = \Civi\Api4\CustomGroup::create(FALSE)
+        ->addValue('extends', 'Individual')
+        ->addValue('extends_entity_column_value', array('Volunteer'))
+        ->addValue('name', self::customContactGroupName)
+        ->addValue('title', ts('Volunteer Information', array('domain' => 'org.civicrm.volunteer')))
+        ->execute()
+        ->first()['id'];
     }
 
     return (int) $id;
@@ -746,14 +997,7 @@ class CRM_Volunteer_Upgrader extends CRM_Extension_Upgrader_Base {
       'name' => self::skillLevelOptionGroupName,
       'title' => ts('Skill Level', array('domain' => 'org.civicrm.volunteer')),
     ));
-    $skillLevelOptionGroupId = $skillLevelOptionGroup['id'] ?? NULL;
-    // option group ID needs to be fetched if creation attempt was a duplicate
-    if (!$skillLevelOptionGroupId) {
-      $skillLevelOptionGroupId = civicrm_api3('OptionGroup', 'getvalue', array(
-        'name' => self::skillLevelOptionGroupName,
-        'return' => 'id',
-      ));
-    }
+    $skillLevelOptionGroupId = $skillLevelOptionGroup['id'];
 
     $values = array(
       1 => ts('Not interested', array('domain' => 'org.civicrm.volunteer')),
@@ -765,16 +1009,18 @@ class CRM_Volunteer_Upgrader extends CRM_Extension_Upgrader_Base {
 
     $weight = 1;
     foreach ($values as $k => $v) {
-      civicrm_api3('OptionValue', 'create', array(
-        'is_active' => 1,
-        'label' => $v,
-        'option_group_id' => $skillLevelOptionGroupId,
-        'value' => $k,
-        'weight' => $weight++,
-      ));
+      \Civi\Api4\OptionValue::create(FALSE)
+        ->setValues(array(
+          'is_active' => TRUE,
+          'label' => $v,
+          'option_group_id' => $skillLevelOptionGroupId,
+          'value' => $k,
+          'weight' => $weight++,
+        ))
+        ->execute();
     }
 
-    $customField = $this->createPossibleDuplicateRecord('customField', array(
+    $customField = $this->createPossibleDuplicateRecord('CustomField', array(
       'custom_group_id' => $customGroupID,
       'data_type' => 'String',
       'html_type' => 'Select',
@@ -784,95 +1030,85 @@ class CRM_Volunteer_Upgrader extends CRM_Extension_Upgrader_Base {
       'name' => 'camera_skill_level',
       'option_group_id' => $skillLevelOptionGroupId,
     ));
-    $customFieldId = $customField['id'] ?? NULL;
-    // custom field ID needs to be fetched if creation attempt was a duplicate
-    if (!$customFieldId) {
-      $customFieldId = civicrm_api3('customField', 'getvalue', array(
-        'custom_group_id' => $customGroupID,
-        'name' => 'camera_skill_level',
-        'return' => 'id',
-      ));
-    }
 
-    return $customFieldId;
+    return $customField['id'];
   }
 
   /**
-   * Wraps api.*.create to handle duplicate records in an upgrade-appropriate manner.
+   * Creates a record, reusing an identically named one when it already exists.
    *
-   * Sets status message if entity already exists, throws exception in case of
-   * other error.
+   * APIv3 signalled a duplicate with the error code 'already exists', which the
+   * former implementation caught; API4 surfaces the same collision as a
+   * DB-level error with no comparable code. Looking the record up first is both
+   * more portable and cheaper, and it always yields the record's ID -- the
+   * APIv3 version returned an empty array and left callers to re-query.
    *
    * @param string $entityType
-   *   $entity argument to civicrm_api3()
+   *   An API4 entity name.
    * @param array $params
-   *   $params argument to civicrm_api3()
+   *   Values for the new record. `name` identifies it; for CustomField the
+   *   owning `custom_group_id` scopes that name.
    * @return array
-   *   API result
+   *   The existing or newly created record, including its ID.
    * @throws CRM_Core_Exception
    */
   private function createPossibleDuplicateRecord($entityType, array $params) {
-    $apiResult = civicrm_api3($entityType, 'create', $params);
-    if (!empty($apiResult['is_error'])) {
-      if ($apiResult['error_code'] == 'already exists') {
-        CRM_Core_Session::setStatus(
-          ts('CiviVolunteer tried to create a(n) %1 named %2, but it already exists. This may lead to unexpected behavior.',
-              array(
-                1 => $entityType,
-                2 => $params['name'] ?? NULL,
-                'domain' => 'org.civicrm.volunteer',
-              )),
-          ts('Field already exists', array('domain' => 'org.civicrm.volunteer'))
-        );
-      } else {
-        CRM_Core_Error::debug_var('apiResult', $apiResult, TRUE, TRUE, 'org.civicrm.volunteer');
-        throw new CRM_Core_Exception("Failed to create $entityType.");
-      }
+    $where = array();
+    if (isset($params['name'])) {
+      $where[] = array('name', '=', $params['name']);
     }
-    return $apiResult;
+    if ($entityType === 'CustomField' && isset($params['custom_group_id'])) {
+      $where[] = array('custom_group_id', '=', $params['custom_group_id']);
+    }
+    if (!$where) {
+      throw new CRM_Core_Exception("Cannot identify an existing $entityType without a name.");
+    }
+
+    $existing = civicrm_api4($entityType, 'get', array(
+      'checkPermissions' => FALSE,
+      'select' => array('id'),
+      'where' => $where,
+    ))->first();
+    if ($existing) {
+      CRM_Core_Session::setStatus(
+        ts('CiviVolunteer tried to create a(n) %1 named %2, but it already exists. This may lead to unexpected behavior.',
+            array(
+              1 => $entityType,
+              2 => $params['name'] ?? NULL,
+              'domain' => 'org.civicrm.volunteer',
+            )),
+        ts('Field already exists', array('domain' => 'org.civicrm.volunteer'))
+      );
+      return $existing;
+    }
+
+    try {
+      return civicrm_api4($entityType, 'create', array(
+        'checkPermissions' => FALSE,
+        'values' => $params,
+      ))->single();
+    }
+    catch (Throwable $e) {
+      // Carry the cause's message. Without it an install or upgrade failure
+      // here reports only "Failed to create CustomField.", which says nothing
+      // about which field or why.
+      throw new CRM_Core_Exception(
+        sprintf(
+          'Failed to create %s %s: %s',
+          $entityType,
+          $params['name'] ?? '(unnamed)',
+          $e->getMessage()
+        ),
+        0,
+        array(),
+        $e
+      );
+    }
   }
 
   /**
    * @throws CRM_Core_Exception
    */
-  public function createVolunteerActivityStatus() {
-    $activityStatus = civicrm_api('OptionGroup', 'Get', array(
-      'version' => 3,
-      'name' => 'activity_status',
-      'return' => 'id'
-    ));
-    $activityStatusID = $activityStatus['id'];
-
-    $activityStatuses = array(
-      'Available' => ts('Available', array('domain' => 'org.civicrm.volunteer')),
-      'No_show' => ts('No-show', array('domain' => 'org.civicrm.volunteer')),
-    );
-
-    foreach($activityStatuses as $name => $label) {
-      $activityStatus = civicrm_api('OptionValue', 'Get', array(
-        'version' => 3,
-        'name' => $name,
-        'option_group_id' => $activityStatusID,
-        'return' => 'value'
-      ));
-
-      if (!$activityStatus['count']) {
-        $params = array(
-          'version' => 3,
-          'sequential' => 1,
-          'option_group_id'=> $activityStatusID,
-          'name' => $name,
-          'label' => $label,
-        );
-        $result = civicrm_api('OptionValue', 'create', $params);
-
-        if (!empty($result['is_error'])) {
-          CRM_Core_Error::debug_var('activityStatusResult', $result, TRUE, TRUE, 'org.civicrm.volunteer');
-          throw new CRM_Core_Exception('Failed to register activity status');
-        }
-      }
-    }
-  }
 
   public function executeCustomDataTemplateFile($relativePath) {
       $smarty = CRM_Core_Smarty::singleton();
@@ -884,52 +1120,4 @@ class CRM_Volunteer_Upgrader extends CRM_Extension_Upgrader_Base {
       return TRUE;
   }
 
-  /**
-   * Look up extension dependency error messages and display as Core Session Status
-   *
-   * @param array $unmet
-   */
-  public static function displayDependencyErrors(array $unmet){
-    foreach ($unmet as $ext) {
-      $message = self::getUnmetDependencyErrorMessage($ext);
-      CRM_Core_Session::setStatus($message, ts('Prerequisite check failed.', array('domain' => 'org.civicrm.volunteer')), 'error');
-    }
-  }
-
-  /**
-   * Mapping of extensions names to localized dependency error messages
-   *
-   * @param string $unmet an extension name
-   */
-  public static function getUnmetDependencyErrorMessage($unmet) {
-    switch ($unmet) {
-      case 'org.civicrm.angularprofiles':
-        return ts('CiviVolunteer was installed successfully, but you must also install and enable the <a href="%1">Angular Profiles Extension</a> before you can manage volunteer projects.', array(1 => 'https://github.com/ginkgostreet/org.civicrm.angularprofiles', 'domain' => 'org.civicrm.volunteer'));
-    }
-
-    CRM_Core_Error::fatal(ts('Unknown error key: %1', array(1 => $unmet, 'domain' => 'org.civicrm.volunteer')));
-  }
-
-  /**
-   * Extension Dependency Check
-   *
-   * @return Array of names of unmet extension dependencies; NOTE: returns an
-   *         empty array when all dependencies are met.
-   */
-  public static function checkExtensionDependencies() {
-    $manager = CRM_Extension_System::singleton()->getManager();
-
-    $dependencies = array(
-      // @TODO move this config out of code
-      'org.civicrm.angularprofiles',
-    );
-
-    $unmet = array();
-    foreach($dependencies as $ext) {
-      if($manager->getStatus($ext) != CRM_Extension_Manager::STATUS_INSTALLED) {
-        array_push($unmet, $ext);
-      }
-    }
-    return $unmet;
-  }
 }

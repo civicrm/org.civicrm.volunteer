@@ -1,4 +1,18 @@
 CRM.$(function($) {
+  // Bind translations to this extension's domain; the global ts() resolves
+  // against CiviCRM core's catalogue.
+  var ts = CRM.ts('org.civicrm.volunteer');
+
+  function updateProfileHeadings() {
+    $('#additionalVolunteers .additional-volunteer-profile').each(function(index) {
+      var profile = $(this);
+      var heading = profile.children('.crm-vol-additional-profile-heading');
+      if (!heading.length) {
+        heading = $('<h3 class="crm-vol-additional-profile-heading"></h3>').prependTo(profile);
+      }
+      heading.text(ts('Additional volunteer %1', {1: index + 1}));
+    });
+  }
 
   function addProfileRow() {
     var newRowIndex = $("#additionalVolunteers .additional-volunteer-profile").length;
@@ -37,15 +51,52 @@ CRM.$(function($) {
     //Hide the form so that it animates down nicely.
     container.hide();
     $("#additionalVolunteers").append(container);
+    updateProfileHeadings();
   }
 
+  /*****[ "I am bringing other people" disclosure ]*****/
+  var $disclosureToggle = $("#bringingAdditionalVolunteers");
+  var $additionalPeople = $(".crm-vol-additional-people");
 
+  function clearAdditionalVolunteers() {
+    // An unchecked disclosure must not submit anything: drop the quantity and
+    // every generated row so their inputs never reach the server.
+    $("#additionalVolunteerQuantity").val('');
+    $("#additionalVolunteers .additional-volunteer-profile").remove();
+    updateProfileHeadings();
+  }
 
+  function applyDisclosure() {
+    var expanded = $disclosureToggle.is(':checked');
+    $disclosureToggle.attr('aria-expanded', expanded ? 'true' : 'false');
+    if (expanded) {
+      // The panel ships with the `hidden` attribute so it cannot flash before
+      // this runs, or stay open without JS. jQuery's slide sets an inline
+      // display, which `hidden` would otherwise override.
+      $additionalPeople.removeAttr('hidden').stop(true, true).slideDown();
+    }
+    else {
+      clearAdditionalVolunteers();
+      $additionalPeople.stop(true, true).slideUp(function() {
+        $(this).attr('hidden', 'hidden');
+      });
+    }
+  }
 
-
+  $disclosureToggle.on('change', applyDisclosure);
+  // Server-rendered round-trips arrive with the rows already rebuilt for the
+  // checked state; settle the initial visibility to match the checkbox.
+  if ($disclosureToggle.is(':checked')) {
+    $additionalPeople.removeAttr('hidden').show();
+  }
+  else {
+    clearAdditionalVolunteers();
+    $additionalPeople.attr('hidden', 'hidden').hide();
+  }
+  $disclosureToggle.attr('aria-expanded', $disclosureToggle.is(':checked') ? 'true' : 'false');
 
   /*****[ Change the number of additional volunteers ]*****/
-  $("#additionalVolunteerQuantity").keyup(function(event) {
+  $("#additionalVolunteerQuantity").on('input change', function() {
 
     var numberRequested = $(this).val();
 
@@ -55,9 +106,11 @@ CRM.$(function($) {
       return;
     }
 
-    // VOL-282: Cap how many additional volunteers can be added based on the opp with the fewest openings
+    // VOL-282: Cap how many additional volunteers can be added based on the opp
+    // with the fewest openings. Flexible-only selections have no finite shift,
+    // so the server supplies no maximum and any quantity is allowed.
     var max = CRM.vars['org.civicrm.volunteer'].maxAddtlReg;
-    if (numberRequested > max) {
+    if (max !== null && max !== undefined && numberRequested > max) {
       $(this).val(max);
       CRM.confirm({
         message: ts('This opportunity can accommodate only %1 more volunteer(s). Click a button below to select a course of action.', {1: max}),
@@ -111,4 +164,6 @@ CRM.$(function($) {
     var labelText = $(this).closest('.form-item').find('.label label').text().replace("*", "").trim();
     $(this).attr("placeholder", labelText);
   });
+
+  updateProfileHeadings();
 });

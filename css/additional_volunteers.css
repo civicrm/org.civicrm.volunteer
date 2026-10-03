@@ -1,40 +1,83 @@
-.crm-volunteer-additional-volunteers .additional-volunteer-profile div.crm-section div.label {
-  text-align: left;
-  float: none;
-  width: 100%;
+.crm-volunteer-additional-volunteers {
+  display: grid;
+  gap: var(--crm-l-reg, 1rem);
 }
-.crm-volunteer-additional-volunteers .additional-volunteer-profile div.crm-section div.label label {
-  display: block;
-  width: 100%;
+
+.crm-volunteer-additional-volunteers .additional-volunteer-profile {
+  background: var(--crm-layer1-bg-color, #eaeaea);
+  border: var(--crm-border, 1px solid #d5d5d5);
+  border-radius: var(--crm-l-radius, 0.25rem);
+  min-width: 0;
+  padding: var(--crm-l-reg, 1rem);
 }
+
+.crm-volunteer-additional-volunteers .crm-vol-additional-profile-heading {
+  background: transparent;
+  color: var(--crm-text-color, #464354);
+  font-size: var(--crm-font-size, 1rem);
+  margin: 0 0 var(--crm-l-medium-2, 0.75rem);
+  padding: 0 0 var(--crm-l-medium, 0.5rem);
+  border-bottom: var(--crm-border, 1px solid #d5d5d5);
+}
+
 .crm-volunteer-additional-volunteers .additional-volunteer-profile fieldset.crm-profile {
-  border: none;
-  margin: 0px;
+  border: 0;
+  display: grid;
+  gap: var(--crm-l-medium-2, 0.75rem);
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  margin: 0;
+  min-width: 0;
+  padding: 0;
+  width: 100%;
 }
+
 .crm-volunteer-additional-volunteers .additional-volunteer-profile fieldset.crm-profile legend {
   display: none;
 }
-.crm-volunteer-additional-volunteers .additional-volunteer-profile div.crm-section div.content {
-  margin: 0px;
+
+.crm-volunteer-additional-volunteers .additional-volunteer-profile .crm-section {
+  float: none;
+  margin: 0;
+  min-width: 0;
+  padding: 0;
 }
-.crm-volunteer-additional-volunteers .additional-volunteer-profile div.crm-section {
-  margin: 5px;
-  margin-top: 0px;
-  float: left;
-  padding-top: 0px;
+
+.crm-volunteer-additional-volunteers .additional-volunteer-profile fieldset.crm-profile > :is(.help, .helprow-pre, .helprow-post),
+.crm-volunteer-additional-volunteers .additional-volunteer-profile fieldset.crm-profile > .crm-section:has(textarea),
+.crm-volunteer-additional-volunteers .additional-volunteer-profile fieldset.crm-profile > .crm-section:has(.crm-multiple-checkbox-radio-options) {
+  grid-column: 1 / -1;
 }
+
+.crm-volunteer-additional-volunteers .additional-volunteer-profile .crm-section .label,
+.crm-volunteer-additional-volunteers .additional-volunteer-profile .crm-section .content {
+  float: none;
+  margin: 0;
+  min-width: 0;
+  text-align: left;
+  width: 100%;
+}
+
+.crm-volunteer-additional-volunteers .additional-volunteer-profile .crm-section .label label {
+  display: block;
+  width: 100%;
+}
+
+.crm-volunteer-additional-volunteers .additional-volunteer-profile :is(input:not([type="checkbox"]):not([type="radio"]):not([type="file"]), select, textarea, .select2-container) {
+  box-sizing: border-box;
+  max-width: 100%;
+  width: 100% !important;
+}
+
 .crm-volunteer-additional-volunteers .additional-volunteer-profile .crm-option-edit-link {
-  display: none;
-}
-
-.additional-volunteer-profile {
-  border-bottom: 1px solid #9a9b9a;
-}
-
-.additional-volunteer-profile:nth-child(n+2) div.crm-section div.label {
   display: none;
 }
 
 .crm-volunteer-additional-volunteers-template {
   display: none;
+}
+
+@media (max-width: 767px) {
+  .crm-volunteer-additional-volunteers .additional-volunteer-profile fieldset.crm-profile {
+    grid-template-columns: minmax(0, 1fr);
+  }
 }

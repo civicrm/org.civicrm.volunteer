@@ -4,8 +4,7 @@ class CRM_Volunteer_Page_Router extends CRM_Core_Page {
 
   function run($args = NULL) {
     if (($args[0] ?? NULL) !== 'civicrm' || ($args[1] ?? NULL) !== 'volunteer') {
-      CRM_Core_Error::fatal('Invalid page callback config.');
-      return;
+      throw new CRM_Core_Exception(ts('Invalid volunteer page callback configuration.', array('domain' => 'org.civicrm.volunteer')));
     }
 
     switch ($args[2] ?? NULL) {
@@ -13,14 +12,16 @@ class CRM_Volunteer_Page_Router extends CRM_Core_Page {
        * This routes civicrm/volunteer/join to CiviVolunteer's reserved profile for volunteer interest.
        */
       case 'join':
-        // the profile expects the ID (and some other parameters) to be passed via URL; since we are providing
-        // a nice clean URL, these parameters won't be there, so we fake it
-        $_REQUEST['gid'] = civicrm_api3('UFGroup', 'getvalue', array(
-          'sequential' => 1,
-          'name' => "volunteer_interest",
-          'return' => "id",
-        ));
-        $_REQUEST['force'] = '1';
+        // The profile ID is controller state rather than caller input because
+        // this route intentionally provides a stable, clean URL.
+        $profileId = \Civi\Api4\UFGroup::get(FALSE)
+          ->addSelect('id')
+          ->addWhere('name', '=', 'volunteer_interest')
+          ->execute()
+          ->first()['id'] ?? NULL;
+        if (!$profileId) {
+          throw new CRM_Core_Exception(ts('The reserved volunteer interest profile is missing.', array('domain' => 'org.civicrm.volunteer')));
+        }
 
         // if the user is logged in, serve edit mode profile; else serve create mode
         $contact_id = CRM_Core_Session::getLoggedInContactID();
@@ -35,6 +36,7 @@ class CRM_Volunteer_Page_Router extends CRM_Core_Page {
         $attachUpload = FALSE;
 
         $controller = new CRM_Core_Controller_Simple($class, $title, $mode, $imageUpload, $addSequence, $ignoreKey, $attachUpload);
+        $controller->set('gid', $profileId);
 
         if (isset($contact_id)) {
           $controller->set('edit', 1);
@@ -44,8 +46,7 @@ class CRM_Volunteer_Page_Router extends CRM_Core_Page {
         return $controller->run();
 
       default:
-        CRM_Core_Error::fatal('Invalid page callback config.');
-        return;
+        throw new CRM_Core_Exception(ts('Invalid volunteer page callback configuration.', array('domain' => 'org.civicrm.volunteer')));
     }
   }
 }

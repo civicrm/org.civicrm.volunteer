@@ -1,0 +1,180 @@
+<section class="crm-vol-workflow-section crm-vol-assign" aria-labelledby="crm-vol-assign-heading">
+  <header class="crm-vol-section-header">
+    <div>
+      <h2 id="crm-vol-assign-heading">{{:: ts('Assign volunteers') }}</h2>
+      <p>{{:: ts('Drag a volunteer from Available volunteers at the bottom onto a shift — or pick a shift and search for someone by name.') }}</p>
+    </div>
+  </header>
+
+  <div class="crm-loading-element" ng-if="loading">{{:: ts('Loading…') }}</div>
+
+  <div class="messages status no-popup" ng-if="!loading && !shifts.length">
+    {{:: ts('This project has no shifts yet.') }}
+    <button type="button" class="crm-vol-link-button" ng-click="editShifts()">{{:: ts('Set up shifts and roles') }}</button>
+  </div>
+
+  <div ng-if="!loading && shifts.length">
+    <ul class="crm-vol-assign-metrics">
+      <li class="crm-vol-metric">
+        <strong>{{metrics.assigned}}</strong>
+        <span>{{:: ts('Assigned to a shift') }}</span>
+      </li>
+      <li class="crm-vol-metric is-attention">
+        <strong>{{metrics.open}}</strong>
+        <span>{{:: ts('Open spots to fill') }}</span>
+      </li>
+      <li class="crm-vol-metric">
+        <strong>{{metrics.available}}</strong>
+        <span>{{:: ts('Available, not yet placed') }}</span>
+      </li>
+    </ul>
+
+    <div class="crm-vol-assign-board">
+      <nav class="crm-vol-shift-rail" aria-label="{{:: ts('Shifts') }}">
+        <h3 class="crm-vol-rail-heading">{{:: ts('Shifts · drop a volunteer here') }}</h3>
+        <ul>
+          <li ng-repeat="need in shifts track by need.id"
+              class="crm-vol-rail-shift"
+              ng-class="{'is-selected': isSelected(need), 'is-full': isFull(need)}"
+              crm-vol-drop-target="dropAssignment(assignmentId, needId)"
+              crm-vol-drop-need="{{need.id}}">
+            <button type="button" class="crm-vol-link-button crm-vol-rail-button" ng-click="selectShift(need)" ng-attr-aria-current="{{isSelected(need) ? 'true' : undefined}}">
+              <span class="crm-vol-rail-role">{{need.role_label || ts('Volunteer')}}</span>
+              <span class="crm-vol-rail-time">{{need.display_time || need.start_time || ts('Ongoing')}}</span>
+              <span class="crm-vol-capacity-summary" ng-class="{'is-full': isFull(need)}">{{capacityLabel(need)}}</span>
+            </button>
+          </li>
+        </ul>
+        <button type="button" class="crm-vol-link-button crm-vol-add-shift" ng-click="addShift()" ng-disabled="workflow.pending">
+          <i class="crm-i fa-plus" aria-hidden="true"></i> {{:: ts('Add a shift') }}
+        </button>
+      </nav>
+
+      <article class="crm-vol-selected-shift" ng-if="selectedNeed">
+        <header>
+          <div>
+            <h3>{{selectedNeed.role_label || ts('Volunteer')}}</h3>
+            <p class="crm-vol-secondary-text">{{selectedNeed.display_time || selectedNeed.start_time || ts('Ongoing')}}</p>
+          </div>
+          <span class="crm-vol-capacity-summary" ng-class="{'is-full': isFull(selectedNeed)}">{{spotsLabel(selectedNeed)}}</span>
+        </header>
+
+        <div class="crm-vol-add-person">
+          <label for="crm-vol-assign-search">{{:: ts('Add a volunteer to this shift') }}</label>
+          <input id="crm-vol-assign-search"
+                 class="crm-form-entityref"
+                 crm-entityref="{entity: 'Contact', select: {create: true, minimumInputLength: 1, placeholder: ts('Type a name, or paste an email')}}"
+                 ng-model="newContacts[selectedNeed.id]"
+                 ng-change="addVolunteer(selectedNeed)">
+        </div>
+
+        <table class="display crm-vol-assignment-table">
+          <thead>
+            <tr>
+              <th>{{:: ts('Name') }}</th>
+              <th>{{:: ts('Email') }}</th>
+              <th>{{:: ts('Phone') }}</th>
+              <th><span class="sr-only">{{:: ts('Actions') }}</span></th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr ng-repeat="assignment in selectedNeed.assignments track by assignment.id"
+                class="crm-vol-assigned-row"
+                crm-vol-draggable-volunteer="{{assignment.id}}">
+              <td>
+                <span class="crm-vol-avatar" aria-hidden="true">{{initials(assignment.assignee_display_name)}}</span>
+                <a ng-href="{{contactUrl(assignment.assignee_contact_id)}}">{{assignment.assignee_display_name}}</a>
+              </td>
+              <td>{{assignment.assignee_email}}</td>
+              <td>{{assignment.assignee_phone}}</td>
+              <td class="crm-vol-assignment-actions">
+                <details class="crm-vol-actions-menu">
+                  <summary class="crm-hover-button" aria-label="{{ts('Actions for %1', {1: assignment.assignee_display_name})}}">
+                    <i class="crm-i fa-ellipsis-h" role="img" aria-hidden="true"></i>
+                  </summary>
+                  <ul>
+                    <li ng-repeat="target in targetsFor(assignment)">
+                      <button type="button" class="crm-vol-link-button" ng-click="moveTo(assignment, target)">
+                        {{ts('Move to %1', {1: needLabel(target)})}}
+                      </button>
+                    </li>
+                    <li ng-repeat="target in targetsFor(assignment)">
+                      <button type="button" class="crm-vol-link-button" ng-click="copyTo(assignment, target)">
+                        {{ts('Also add to %1', {1: needLabel(target)})}}
+                      </button>
+                    </li>
+                    <li>
+                      <button type="button" class="crm-vol-link-button crm-vol-destructive-action" ng-click="removeVolunteer(assignment)">
+                        {{:: ts('Remove from this shift') }}
+                      </button>
+                    </li>
+                  </ul>
+                </details>
+              </td>
+            </tr>
+            <tr class="crm-vol-open-spot"
+                ng-repeat="spot in openSpots(selectedNeed) track by $index"
+                crm-vol-drop-target="dropAssignment(assignmentId, needId)"
+                crm-vol-drop-need="{{selectedNeed.id}}">
+              <td colspan="4">
+                <span class="crm-vol-open-marker" aria-hidden="true"></span>
+                <strong>{{:: ts('Open spot') }}</strong>
+                <span class="crm-vol-secondary-text">{{:: ts('— drag someone here, or search above') }}</span>
+              </td>
+            </tr>
+            <tr ng-if="!selectedNeed.assignments.length && !openSpots(selectedNeed).length">
+              <td colspan="4" class="crm-vol-empty-row">{{:: ts('Nobody is assigned to this shift yet.') }}</td>
+            </tr>
+          </tbody>
+        </table>
+
+        <footer class="crm-vol-selected-shift-footer">
+          <span class="crm-vol-secondary-text">{{:: ts('Changes save as you go.') }}</span>
+          <button type="button" class="crm-hover-button" ng-click="goToHours(selectedNeed)">
+            {{:: ts('Log hours for this shift') }} <i class="crm-i fa-arrow-right" aria-hidden="true"></i>
+          </button>
+        </footer>
+      </article>
+    </div>
+
+    <section class="crm-vol-available-pool"
+             ng-if="availableNeed"
+             crm-vol-drop-target="dropAssignment(assignmentId, needId)"
+             crm-vol-drop-need="{{availableNeed.id}}"
+             aria-labelledby="crm-vol-available-heading">
+      <h3 id="crm-vol-available-heading">{{:: ts('Available volunteers') }}</h3>
+      <p class="crm-vol-secondary-text">{{:: ts('These people signed up without a shift. Drag a card onto a shift above to place them.') }}</p>
+      <ul class="crm-vol-available-cards">
+        <li ng-repeat="assignment in availableAssignments track by assignment.id"
+            class="crm-vol-available-card-item"
+            crm-vol-draggable-volunteer="{{assignment.id}}">
+          <span class="crm-vol-avatar" aria-hidden="true">{{initials(assignment.assignee_display_name)}}</span>
+          <span class="crm-vol-available-identity">
+            <a ng-href="{{contactUrl(assignment.assignee_contact_id)}}">{{assignment.assignee_display_name}}</a>
+            <span class="crm-vol-secondary-text">{{assignment.assignee_email}}</span>
+          </span>
+          <details class="crm-vol-actions-menu">
+            <summary class="crm-hover-button" aria-label="{{ts('Actions for %1', {1: assignment.assignee_display_name})}}">
+              <i class="crm-i fa-ellipsis-h" role="img" aria-hidden="true"></i>
+            </summary>
+            <ul>
+              <li ng-repeat="target in targetsFor(assignment)">
+                <button type="button" class="crm-vol-link-button" ng-click="moveTo(assignment, target)">
+                  {{ts('Assign to %1', {1: needLabel(target)})}}
+                </button>
+              </li>
+              <li>
+                <button type="button" class="crm-vol-link-button crm-vol-destructive-action" ng-click="removeVolunteer(assignment)">
+                  {{:: ts('Remove from project') }}
+                </button>
+              </li>
+            </ul>
+          </details>
+        </li>
+        <li class="crm-vol-empty-row" ng-if="!availableAssignments.length">
+          {{:: ts('Everyone who signed up has a shift.') }}
+        </li>
+      </ul>
+    </section>
+  </div>
+</section>

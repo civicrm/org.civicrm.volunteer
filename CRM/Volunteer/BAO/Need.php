@@ -57,46 +57,70 @@ class CRM_Volunteer_BAO_Need extends CRM_Volunteer_DAO_Need {
    * @access public
    * @static
    */
-  static function &create($params) {
+  public static function &create($params) {
     // these metadata fields are managed; don't accept them as params
     unset($params['created'], $params['last_updated']);
+
+    $existing = NULL;
+    if (!empty($params['id'])) {
+      $existing = new CRM_Volunteer_DAO_Need();
+      $existing->id = (int) $params['id'];
+      if (!$existing->find(TRUE)) {
+        throw new CRM_Core_Exception(ts('The volunteer need does not exist.', array('domain' => 'org.civicrm.volunteer')));
+      }
+      if (array_key_exists('project_id', $params)
+        && (int) $params['project_id'] !== (int) $existing->project_id) {
+        throw new CRM_Core_Exception(ts('A volunteer need cannot be moved to a different project.', array('domain' => 'org.civicrm.volunteer')));
+      }
+      if (array_key_exists('is_flexible', $params)
+        && (bool) $params['is_flexible'] !== (bool) $existing->is_flexible) {
+        throw new CRM_Core_Exception(ts('The flexible status of an existing volunteer need cannot be changed.', array('domain' => 'org.civicrm.volunteer')));
+      }
+    }
 
     $need = new CRM_Volunteer_BAO_Need();
     $need->copyValues($params);
     $projectId = $need->getProjectId();
+    $isFlexible = $existing ? (bool) $existing->is_flexible : (bool) $need->is_flexible;
 
     if ($projectId === FALSE) {
-      CRM_Core_Error::fatal('Missing required Need ID or Project ID');
+      throw new CRM_Core_Exception(ts('A project ID is required to save a volunteer need.', array('domain' => 'org.civicrm.volunteer')));
+    }
+    if (!CRM_Core_DAO::getFieldValue('CRM_Volunteer_DAO_Project', $projectId, 'id')) {
+      throw new CRM_Core_Exception(ts('The volunteer project does not exist.', array('domain' => 'org.civicrm.volunteer')));
     }
 
     // creating a Need constitutes updating a Project
     $op = CRM_Core_Action::UPDATE;
-    if (!empty($params['check_permissions']) && !CRM_Volunteer_Permission::checkProjectPerms($op, $projectId)) {
-      CRM_Utils_System::permissionDenied();
-
-      // FIXME: If we don't return here, the script keeps executing. This is not
-      // what I expect from CRM_Utils_System::permissionDenied().
-      return FALSE;
+    if (CRM_Volunteer_Permission::shouldCheckPermissions($params)) {
+      CRM_Volunteer_Permission::assertProjectPerms($op, $projectId);
     }
 
-    // VOL-269: Do not allow creation of more than one flexible need per project.
-    if ($need->is_flexible) {
-      $existingNeedId = CRM_Volunteer_BAO_Project::getFlexibleNeedID($projectId);
-      $thisNeedId = property_exists($need, 'id') ? (int) $need->id : NULL;
-      if ($existingNeedId === $thisNeedId) {
-        CRM_Core_Error::fatal('Cannot create more than one flexible need for a given project');
+    $transaction = CRM_Core_Transaction::create(TRUE);
+    try {
+      // VOL-269: Do not allow creation of more than one flexible need per
+      // project. The project row lock and save must share one transaction or
+      // two concurrent requests could both pass the uniqueness check.
+      if ($isFlexible) {
+        CRM_Core_DAO::executeQuery(
+          'SELECT id FROM civicrm_volunteer_project WHERE id = %1 FOR UPDATE',
+          array(1 => array($projectId, 'Integer'))
+        );
+        // Must be a locking read: a plain SELECT would answer from this
+        // transaction's read view, which may predate a concurrent commit.
+        $existingNeedId = CRM_Volunteer_BAO_Project::getFlexibleNeedIDForUpdate($projectId);
+        $thisNeedId = property_exists($need, 'id') ? (int) $need->id : NULL;
+        if ($existingNeedId && (int) $existingNeedId !== $thisNeedId) {
+          throw new CRM_Core_Exception(ts('A volunteer project cannot have more than one flexible need.', array('domain' => 'org.civicrm.volunteer')));
+        }
       }
-    }
 
-    $need->save();
-    // Workaround for CRM-20178 - timestamp fields can't be saved via the save()
-    // method and hence we must use SQL
-    if (!empty($params['created'])) {
-      $sql = 'UPDATE civicrm_volunteer_need SET created = %1 WHERE id = %2';
-      $need->executeQuery($sql, array(
-        1 => array($params['created'], 'Timestamp'),
-        2 => array($need->id, 'Integer'),
-      ));
+      $need->save();
+      $transaction->commit();
+    }
+    catch (Throwable $e) {
+      $transaction->rollback()->commit();
+      throw $e;
     }
 
     return $need;
@@ -149,6 +173,74 @@ class CRM_Volunteer_BAO_Need extends CRM_Volunteer_DAO_Need {
   }
 
   /**
+   * Memoisation key for the volunteer role option list.
+   *
+   * Shape: [(int) value => ['label' => string, 'description' => string]].
+   *
+   * Kept in Civi::$statics rather than a class static so that a cache flush --
+   * or a long-running process which adds a role -- invalidates it. A plain
+   * class static outlives Civi::reset() and served a stale list.
+   */
+  const DISPLAY_ROLE_OPTIONS_CACHE = 'displayRoleOptions';
+
+  /**
+   * Add the derived display fields (display_time, role_label,
+   * role_description) shared by the API4/API3 need reads and the project
+   * BAO's need lists.
+   *
+   * @param array $needs
+   *   Need rows; keyed or indexed. Modified copies are returned.
+   * @return array
+   */
+  public static function addDisplayFields(array $needs) {
+    if ($needs === array()) {
+      return $needs;
+    }
+    $roleOptions = self::getDisplayRoleOptions();
+    foreach ($needs as &$need) {
+      if (!empty($need['start_time'])) {
+        $need['display_time'] = self::getTimes(
+          $need['start_time'],
+          $need['duration'] ?? NULL,
+          $need['end_time'] ?? NULL
+        );
+      }
+      else {
+        $need['display_time'] = self::getFlexibleDisplayTime();
+      }
+      if (isset($need['role_id'])) {
+        $role = $roleOptions[(int) $need['role_id']] ?? array();
+        $need['role_label'] = $role['label'] ?? (string) $need['role_id'];
+        $need['role_description'] = CRM_Utils_String::purifyHTML($role['description'] ?? '');
+      }
+      elseif (!empty($need['is_flexible'])) {
+        $need['role_label'] = self::getFlexibleRoleLabel();
+        $need['role_description'] = NULL;
+      }
+    }
+    unset($need);
+    return $needs;
+  }
+
+  /**
+   * @return array
+   */
+  private static function getDisplayRoleOptions() {
+    if (!isset(Civi::$statics[__CLASS__][self::DISPLAY_ROLE_OPTIONS_CACHE])) {
+      $options = array();
+      $roleOptions = \Civi\Api4\OptionValue::get(FALSE)
+        ->addSelect('value', 'label', 'description')
+        ->addWhere('option_group_id.name', '=', CRM_Volunteer_BAO_Assignment::ROLE_OPTION_GROUP)
+        ->execute();
+      foreach ($roleOptions as $roleOption) {
+        $options[(int) $roleOption['value']] = $roleOption;
+      }
+      Civi::$statics[__CLASS__][self::DISPLAY_ROLE_OPTIONS_CACHE] = $options;
+    }
+    return Civi::$statics[__CLASS__][self::DISPLAY_ROLE_OPTIONS_CACHE];
+  }
+
+  /**
    * Returns a string representing the times of a shift. Times will be formatted
    * according to the user's defined time display settings. If no duration/end
    * date is given, only the formatted start time will be returned.
@@ -164,7 +256,7 @@ class CRM_Volunteer_BAO_Need extends CRM_Volunteer_DAO_Need {
    *   a parseable time.
    */
   static function getTimes($start, $duration = NULL, $end = NULL) {
-    if (!strtotime($start)) {
+    if ($start === NULL || $start === '' || !strtotime((string) $start)) {
       return FALSE;
     }
 
@@ -172,7 +264,7 @@ class CRM_Volunteer_BAO_Need extends CRM_Volunteer_DAO_Need {
     $timeFormat = $config->dateformatDatetime;
     $result = CRM_Utils_Date::customFormat($start, $timeFormat);
 
-    if (strtotime($end)) {
+    if ($end !== NULL && $end !== '' && strtotime((string) $end)) {
       $result .= ' - ' . CRM_Utils_Date::customFormat($end, $timeFormat);
     } elseif (CRM_Utils_Type::validate($duration, 'Positive', FALSE)) {
       $date = new DateTime($start);
@@ -195,37 +287,127 @@ class CRM_Volunteer_BAO_Need extends CRM_Volunteer_DAO_Need {
    * @return bool
    */
   static function del($id) {
-    $need = civicrm_api3('volunteer_need', 'getsingle', array('id' => $id));
-
-    // TODO: What do we do with associated activities when deleting a flexible need?
-    if (empty($need['is_flexible'])) {
-      // Lookup the flexible need
-      $flexibleNeedId = CRM_Volunteer_BAO_Project::getFlexibleNeedID($need['project_id']);
-
-      // Reassign any activities back to the flexible need
-      $acts = civicrm_api3('volunteer_assignment', 'get', array('volunteer_need_id' => $id));
-      $status = CRM_Core_PseudoConstant::getKey('CRM_Activity_BAO_Activity', 'status_id', 'Available');
-      foreach ($acts['values'] as $act) {
-        civicrm_api3('volunteer_assignment', 'create', array(
-          'id' => $act['id'],
-          'volunteer_need_id' => $flexibleNeedId,
-          'status_id' => $status,
-          'time_scheduled_minutes' => 0,
-        ));
+    $transaction = CRM_Core_Transaction::create(TRUE);
+    try {
+      $id = (int) $id;
+      // Assignment creation locks this same row before writing the activity.
+      // Taking the lock first prevents a new assignment from appearing after
+      // the reparenting query but before the need is deleted.
+      $need = CRM_Core_DAO::executeQuery(
+        'SELECT id, project_id, is_flexible
+           FROM civicrm_volunteer_need
+          WHERE id = %1
+          FOR UPDATE',
+        array(1 => array($id, 'Integer'))
+      );
+      if (!$need->fetch()) {
+        $transaction->rollback()->commit();
+        return FALSE;
       }
-    }
 
-    $dao = new CRM_Volunteer_DAO_Need();
-    $dao->id = $id;
-    if ($dao->find()) {
-      while ($dao->fetch()) {
-        $dao->delete();
+      if (!empty($need->is_flexible)) {
+        throw new CRM_Core_Exception(ts('The flexible need is required and cannot be deleted.', array('domain' => 'org.civicrm.volunteer')));
       }
+
+      // Reassign activities from a dated need to the required fallback before
+      // deleting the dated need.
+      $flexibleNeedId = CRM_Volunteer_BAO_Project::getFlexibleNeedID((int) $need->project_id);
+      if (!$flexibleNeedId) {
+        throw new CRM_Core_Exception(ts('The project has no flexible need to receive existing assignments.', array('domain' => 'org.civicrm.volunteer')));
+      }
+
+      // Reparent the custom-field reference directly. VolunteerAssignment.get
+      // intentionally returns only capacity-consuming statuses, so using it
+      // here omitted Completed and No-show history. Changing only the need ID
+      // preserves status, scheduled/completed minutes, dates, and audit data.
+      // Include soft-deleted activities too so restoring one later cannot
+      // resurrect a reference to a deleted need.
+      $customGroup = CRM_Volunteer_BAO_Assignment::getCustomGroup();
+      $customFields = CRM_Volunteer_BAO_Assignment::getCustomFields();
+      $customTable = $customGroup['table_name'];
+      $needColumn = $customFields['volunteer_need_id']['column_name'];
+      // Resolve the rows first, then update them without a join.
+      //
+      // `UPDATE custom_table cv INNER JOIN civicrm_activity a ...` is rejected
+      // outright by MySQL on any normal CiviCRM install: core maintains an
+      // AFTER UPDATE trigger on every Activity custom-value table which sets
+      // civicrm_activity.modified_date, and a trigger may not write to a table
+      // the invoking statement is already reading --
+      //   ERROR 1442: Can't update table 'civicrm_activity' in stored
+      //   function/trigger because it is already used by statement which
+      //   invoked this stored function/trigger.
+      // So deleting any dated shift that had volunteers assigned to it failed.
+      // A SELECT may join freely; only the UPDATE has to stay off
+      // civicrm_activity.
+      $reassignIds = array();
+      $reassignDao = CRM_Core_DAO::executeQuery(
+        sprintf(
+          'SELECT cv.entity_id
+             FROM `%s` cv
+             INNER JOIN civicrm_activity a ON a.id = cv.entity_id
+            WHERE cv.`%s` = %%1
+              AND a.activity_type_id = %%2',
+          $customTable,
+          $needColumn
+        ),
+        array(
+          1 => array($id, 'Integer'),
+          2 => array(CRM_Volunteer_BAO_Assignment::getActivityTypeId(), 'Integer'),
+        )
+      );
+      while ($reassignDao->fetch()) {
+        $reassignIds[] = (int) $reassignDao->entity_id;
+      }
+
+      if ($reassignIds) {
+        CRM_Core_DAO::executeQuery(
+          sprintf(
+            'UPDATE `%s` SET `%s` = %%1 WHERE entity_id IN (%s)',
+            $customTable,
+            $needColumn,
+            implode(',', $reassignIds)
+          ),
+          array(1 => array((int) $flexibleNeedId, 'Integer'))
+        );
+      }
+
+      $dao = new CRM_Volunteer_DAO_Need();
+      $dao->id = $id;
+      if ($dao->find()) {
+        while ($dao->fetch()) {
+          $dao->delete();
+        }
+      }
+      else {
+        $transaction->rollback()->commit();
+        return FALSE;
+      }
+      $transaction->commit();
+      return TRUE;
     }
-    else {
-      return FALSE;
+    catch (Throwable $e) {
+      $transaction->rollback()->commit();
+      throw $e;
     }
-    return TRUE;
+  }
+
+  /**
+   * Permission-aware entry point used by API3 and API4 delete actions.
+   */
+  public static function deleteNeed($id, $checkPermissions = TRUE) {
+    $id = (int) $id;
+    $need = \Civi\Api4\VolunteerNeed::get(FALSE)
+      ->addSelect('id', 'project_id', 'is_flexible')
+      ->addWhere('id', '=', $id)
+      ->execute()
+      ->single();
+    if ($checkPermissions) {
+      CRM_Volunteer_Permission::assertProjectPerms(CRM_Core_Action::UPDATE, $need['project_id']);
+    }
+    if (!empty($need['is_flexible'])) {
+      throw new CRM_Core_Exception(ts('The flexible need is required and cannot be deleted.', array('domain' => 'org.civicrm.volunteer')));
+    }
+    return self::del($id);
   }
 
   /**
@@ -234,8 +416,64 @@ class CRM_Volunteer_BAO_Need extends CRM_Volunteer_DAO_Need {
    */
   public static function getAssignmentCount($need_id) {
     CRM_Utils_Type::validate($need_id, 'Integer');
-    return civicrm_api3('VolunteerAssignment', 'getcount', array(
-      'volunteer_need_id' => $need_id,
-    ));
+    return \Civi\Api4\VolunteerAssignment::get(FALSE)
+      ->addSelect('row_count')
+      ->addWhere('volunteer_need_id', '=', $need_id)
+      ->execute()
+      ->countMatched();
+  }
+
+  /**
+   * Count a need's capacity-consuming assignments under a row lock.
+   *
+   * getAssignmentCount() reads through the APIv3 query builder, i.e. a plain
+   * SELECT answered from the transaction's read view. A capacity decision has
+   * to see rows committed by a writer we just queued behind, so it needs a
+   * locking read -- which always reads the latest committed version.
+   *
+   * Mirrors CRM_Volunteer_BAO_Assignment::retrieve() exactly: only Scheduled
+   * and Available, nondeleted activities occupy a place.
+   *
+   * @param int $need_id
+   *
+   * @return int
+   */
+  public static function getAssignmentCountForUpdate($need_id) {
+    $need_id = (int) $need_id;
+    if ($need_id < 1) {
+      return 0;
+    }
+    $customGroup = CRM_Volunteer_BAO_Assignment::getCustomGroup();
+    $customFields = CRM_Volunteer_BAO_Assignment::getCustomFields();
+    $needColumn = $customFields['volunteer_need_id']['column_name'];
+
+    $statuses = array_column(
+      \Civi::entity('Activity')->getOptions('status_id', array(), TRUE) ?? array(),
+      'name',
+      'id'
+    );
+    $scheduled = CRM_Utils_Array::key('Scheduled', $statuses);
+    $available = CRM_Utils_Array::key('Available', $statuses);
+
+    return (int) CRM_Core_DAO::singleValueQuery(
+      sprintf(
+        'SELECT COUNT(*)
+           FROM `%s` cv
+           INNER JOIN civicrm_activity a ON a.id = cv.entity_id
+          WHERE cv.`%s` = %%1
+            AND a.activity_type_id = %%2
+            AND a.status_id IN (%%3, %%4)
+            AND a.is_deleted = 0
+          FOR UPDATE',
+        $customGroup['table_name'],
+        $needColumn
+      ),
+      array(
+        1 => array($need_id, 'Integer'),
+        2 => array(CRM_Volunteer_BAO_Assignment::getActivityTypeId(), 'Integer'),
+        3 => array($scheduled, 'Integer'),
+        4 => array($available, 'Integer'),
+      )
+    );
   }
 }

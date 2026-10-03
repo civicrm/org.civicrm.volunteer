@@ -1,6 +1,6 @@
 # Volunteer assignments
 
-An "assignment" links a CiviCRM contact to a specific [volunteering opportunity](../opportunities). After defining your opportunities, it's time to start assigning some volunteers to these opportunities!
+An "assignment" links a CiviCRM contact to a specific [volunteering opportunity](./opportunities.md). After defining your opportunities, it's time to start assigning some volunteers to these opportunities!
 
 ## Allowing volunteers to self-assign
 
@@ -13,44 +13,35 @@ A user with the proper [permissions](./installation.md#permissions) *(henceforth
 
 1. Go to **Volunteers > Manage Volunteer Projects**
 2. Find the project
-3. Choose **Assign Volunteers**
+3. Choose **Assign volunteers** (from the `…` menu, or by opening the project and continuing to the **Assign volunteers** step)
 
-### The Available Volunteers list
-
-The left side shows a list of "Available Volunteers" which is populated by either of the following actions:
-
-* A volunteer uses the [sign-up form](./sign-up-form.md) and selects "Any" as the shift *(which is only possible if "Allow users to sign up without specifying a shift" is checked while defining [opportunities](./opportunities))*
-* A staff member manually adds a contact to this list by clicking **Add Volunteer...** below it.
-
-This Avilable Volunteers list will persist even after closing Assign Volunteers. Think of it as the people you have "on deck", waiting to be placed into a specific opportunity.
+The screen is organized around three metric tiles — volunteers assigned to a shift, open spots left to fill, and available-but-unplaced volunteers — a shift rail on the left, and a panel for the selected shift.
 
 ### Making and editing assignments
 
-Volunteers must be added to the Available Volunteers list before they can be assigned to any opportunities. After this list contains some contacts, make assignments using any of the following methods:
+With a shift selected in the panel:
 
-* Drag and drop volunteers from Available Volunteers to the red **More Needed** boxes below the opportunities.
-* Click the triangle icon to the right of a volunteer and choose **Move to** or **Copy to**.
+* Type a name (or paste an email address) into **Add a volunteer to this shift** to search for — or create — a contact, and add them to the shift.
+* Drag a card from the **Available volunteers** pool at the bottom onto a shift in the rail, or onto one of the **Open spot** rows in the panel.
+* Open a volunteer's `…` row menu to **Move to** another shift, **Also add to** another shift (copying the assignment), or **Remove from this shift**.
 
-![Assign Volunteers screenshot](./images/assign-volunteers.gif)
+Placement updates the board immediately and is undone if the server rejects the write.
 
-When an opportunity has reached the required number of volunteer assignments, CiviVolunteer won't allow any more.
+When a shift has reached the required number of volunteer assignments, CiviVolunteer won't allow any more — one "Open spot" placeholder is shown for each unfilled slot, and there are none when the shift is full.
 
 !!! caution
     When you assign a contact to an opportunity, CiviVolunteer does not check whether the contact is already assigned to a different opportunity, overlapping in time. You will have to take this logic into account to avoid double-booking volunteers.
 
-### Removing assignments
+### The Available Volunteers list
 
-To remove an assignment, use the arrow button and choose **Move to** or **Delete**.
+The pool of "Available volunteers" at the bottom is populated by either of the following actions:
 
-### Searching for volunteers based on skill level {:#searching}
+* A volunteer uses the [sign-up form](./sign-up-form.md) and chooses the project's "any time" option instead of a specific shift *(which is only possible if "Let people volunteer without picking a shift" is checked while defining [opportunities](./opportunities))*
+* A staff member adds a contact there when placing them without a shift.
 
-If you have set up and collected [custom data](./custom-data.md) on volunteer skills and interests (using the "Volunteer Information" custom data set), you can quickly search for volunteers based on criteria within these fields as follows:
+This Available Volunteers list will persist even after closing the Assign volunteers screen. Think of it as the people you have "on deck", waiting to be placed into a specific opportunity.
 
-1. Within **Assign Volunteers**, hover over the box for an assignment which is still in need of volunteers
-2. Notice a magnifying glass icon appear at the top right of this box
-3. Click the magnifying glass icon.
-4. Search, and select volunteers
-
+From each shift's panel you can also continue straight to recording what happened with **Log hours for this shift**.
 
 ## Confirmation emails
 
@@ -72,10 +63,13 @@ Assignments are activities, and thus are viewable within the Activities tab for 
 
 ## Viewing a roster of all assignments {:#roster}
 
-To see a summary of all the volunteers signed up for opportunities within a given project, you can do any of the following:
+The **Roster** step of the project workflow shows everyone assigned to the project — Volunteer / Email / Phone / Role & time — grouped by date, with historical rows available via **Include past assignments**.
 
-* Use [Assign Volunteers](#assign-volunteers) as a way to *view* the assignments
-* Click on **View Volunteer Roster** (from the **Manage Projects** screen) to see a similar view
-* Use a [report](./reporting.md) to gain even more control over what data is displayed.
+From the roster you can:
 
+* search by name, role, email or phone, and filter by assignment status;
+* select volunteers and compose an email to them, or use the per-row **Email**, **Call** and **SMS** actions *(email and SMS actions appear only when outbound mail and an SMS provider are configured)*;
+* **Print roster** for a print-optimized layout;
+* **Export CSV** of every visible row, with spreadsheet-formula characters made safe.
 
+Roster access follows project authority: a project's owners and managers, and holders of *edit all volunteer projects*, may view it. For even more control over what data is displayed, use a [report](./reporting.md).

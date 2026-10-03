@@ -1,18 +1,34 @@
-<?xml version="1.0"?>
-<phpunit backupGlobals="false" backupStaticAttributes="false" colors="true" convertErrorsToExceptions="true" convertNoticesToExceptions="true" convertWarningsToExceptions="true" processIsolation="false" stopOnFailure="false" bootstrap="tests/phpunit/bootstrap.php">
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  Deliberately targets PHPUnit 9.x. CiviCRM 6.16's Civi\Test\CiviTestListener
+  implements \PHPUnit\Framework\TestListener, which PHPUnit removed in 10.0,
+  so <listeners>, backupStaticAttributes and <coverage processUncoveredFiles>
+  must stay as-is. Run with a phpunit9 binary, not the repository's PHPUnit 11.
+  See README.md, "Why a separate PHPUnit binary".
+-->
+<phpunit xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:noNamespaceSchemaLocation="https://schema.phpunit.de/9.3/phpunit.xsd"
+         bootstrap="tests/phpunit/bootstrap.php"
+         backupGlobals="false"
+         backupStaticAttributes="false"
+         colors="true"
+         processIsolation="false"
+         stopOnFailure="false">
   <testsuites>
-    <testsuite name="My Test Suite">
+    <testsuite name="CiviVolunteer">
       <directory>./tests/phpunit</directory>
     </testsuite>
   </testsuites>
-  <filter>
-    <whitelist>
+  <coverage processUncoveredFiles="true">
+    <include>
       <directory suffix=".php">./</directory>
-    </whitelist>
-  </filter>
+    </include>
+    <exclude>
+      <directory>./mixin</directory>
+      <directory>./tests</directory>
+    </exclude>
+  </coverage>
   <listeners>
-    <listener class="Civi\Test\CiviTestListener">
-      <arguments/>
-    </listener>
+    <listener class="Civi\Test\CiviTestListener"/>
   </listeners>
 </phpunit>

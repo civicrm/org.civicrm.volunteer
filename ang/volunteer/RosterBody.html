@@ -1,0 +1,91 @@
+<section class="crm-vol-workflow-section crm-vol-roster" aria-labelledby="crm-vol-roster-heading">
+  <header class="crm-vol-section-header crm-vol-print-heading" data-print-title="{{workflow.project.title}}">
+    <div>
+      <h2 id="crm-vol-roster-heading">{{:: ts('Volunteer roster') }}</h2>
+      <p>{{:: ts('Everyone assigned to this project, grouped by date, with their contact details.') }}</p>
+    </div>
+    <label class="crm-vol-screen-only crm-vol-include-past">
+      <input type="checkbox" ng-model="ui.includePast" ng-change="reload()"> {{:: ts('Include past assignments') }}
+    </label>
+  </header>
+
+  <div class="crm-vol-roster-actions crm-vol-screen-only">
+    <span class="crm-vol-selection-label">{{selectedCount() ? ts('%1 selected', {1: selectedCount()}) : ts('Nobody selected')}}</span>
+    <button type="button" class="crm-hover-button" ng-click="emailSelected()"
+            ng-disabled="!selectedCount() || !canSendEmail()"
+            ng-attr-title="{{canSendEmail() ? undefined : ts('Outbound email is not configured for this site.')}}">
+      <i class="crm-i fa-envelope" aria-hidden="true"></i> {{:: ts('Email selected') }}
+    </button>
+    <button type="button" class="crm-hover-button" ng-click="printRoster()">
+      <i class="crm-i fa-print" aria-hidden="true"></i> {{:: ts('Print roster') }}
+    </button>
+    <button type="button" class="crm-hover-button" ng-click="exportCsv()">
+      <i class="crm-i fa-download" aria-hidden="true"></i> {{:: ts('Export CSV') }}
+    </button>
+  </div>
+
+  <div class="crm-vol-roster-filters crm-vol-screen-only">
+    <label>{{:: ts('Search') }}
+      <input type="search" ng-model="ui.search" ng-change="filterRows()" placeholder="{{:: ts('Name, role, email, or phone') }}">
+    </label>
+    <label>{{:: ts('Status') }}
+      <select ng-model="ui.statusFilter" ng-change="filterRows()">
+        <option value="">{{:: ts('All statuses') }}</option>
+        <option ng-repeat="status in statuses" value="{{status.name}}">{{status.label}}</option>
+      </select>
+    </label>
+  </div>
+
+  <div class="crm-loading-element" ng-if="loading">{{:: ts('Loading…') }}</div>
+  <div class="messages status no-popup" ng-if="!loading && !visibleRows.length">{{:: ts('No roster entries match these filters.') }}</div>
+
+  <div class="crm-vol-roster-groups" ng-if="!loading">
+    <article class="crm-vol-roster-group" ng-repeat="group in groups track by group.label">
+      <h3>{{group.label}} <span>{{ts('%1 volunteers', {1: group.rows.length})}}</span></h3>
+      <table class="display crm-vol-roster-table">
+        <thead>
+          <tr>
+            <th class="crm-vol-screen-only">
+              <input type="checkbox" ng-model="ui.allSelected" ng-change="toggleAll()" aria-label="{{:: ts('Select all visible volunteers') }}">
+            </th>
+            <th>{{:: ts('Volunteer') }}</th>
+            <th>{{:: ts('Email') }}</th>
+            <th>{{:: ts('Phone') }}</th>
+            <th>{{:: ts('Role & time') }}</th>
+            <th class="crm-vol-screen-only"><span class="sr-only">{{:: ts('Actions') }}</span></th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr ng-repeat="row in group.rows track by row.id">
+            <td class="crm-vol-screen-only">
+              <input type="checkbox" ng-model="selected[row.id]" aria-label="{{ts('Select %1', {1: row.assignee_display_name})}}">
+            </td>
+            <td>
+              <a ng-if="row.can_view_contact" ng-href="{{contactUrl(row.assignee_contact_id)}}">{{row.assignee_display_name}}</a>
+              <span ng-if="!row.can_view_contact">{{row.assignee_display_name}}</span>
+              <span class="crm-vol-status-badge" ng-if="row.status_name !== 'Scheduled'">{{row.status_label}}</span>
+            </td>
+            <td><a ng-if="row.assignee_email" ng-href="mailto:{{row.assignee_email}}">{{row.assignee_email}}</a></td>
+            <td>
+              <a ng-if="row.assignee_phone" ng-href="tel:{{row.assignee_phone}}">{{row.assignee_phone}}</a>
+              <span ng-if="row.assignee_phone && row.assignee_phone_ext"> {{ts('ext. %1', {1: row.assignee_phone_ext})}}</span>
+            </td>
+            <td>
+              {{row.role_label}}
+              <span class="crm-vol-secondary-text">{{row.display_time || row.start_time}}</span>
+            </td>
+            <td class="crm-vol-screen-only crm-vol-roster-row-actions">
+              <button type="button" class="crm-hover-button" ng-if="canEmail(row)" ng-click="emailVolunteer(row)">{{:: ts('Email') }}</button>
+              <a class="crm-hover-button" ng-if="row.assignee_phone" ng-href="tel:{{row.assignee_phone}}">{{:: ts('Call') }}</a>
+              <button type="button" class="crm-hover-button" ng-if="canSms(row)" ng-click="smsVolunteer(row)">{{:: ts('SMS') }}</button>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </article>
+  </div>
+
+  <p class="crm-vol-roster-footnote crm-vol-secondary-text" ng-if="!loading && !ui.includePast">
+    {{:: ts('Assignments that ended before today are hidden.') }}
+  </p>
+</section>

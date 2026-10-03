@@ -39,6 +39,24 @@ class CRM_Volunteer_Form_VolunteerReport extends CRM_Report_Form {
     'Individual',
   );
 
+  /**
+   * Assigned in the constructor. Declared because PHP 8.2 deprecates creating
+   * dynamic properties, and info.xml claims 8.1-8.4 compatibility.
+   *
+   * @var array
+   */
+  protected $customGroup;
+
+  /**
+   * @var array
+   */
+  protected $customFields;
+
+  /**
+   * @var int
+   */
+  protected $activityTypeID;
+
   function __construct() {
     $this->customGroup = CRM_Volunteer_BAO_Assignment::getCustomGroup();
     $this->customFields = CRM_Volunteer_BAO_Assignment::getCustomFields();
@@ -62,6 +80,8 @@ class CRM_Volunteer_Form_VolunteerReport extends CRM_Report_Form {
         ),
         'grouping' => 'project-fields',
       ),
+      'civicrm_campaign' => self::campaignColumns(),
+      'civicrm_event' => self::eventColumns(),
       'civicrm_contact' => array(
         'dao' => 'CRM_Contact_DAO_Contact',
         'fields' => array(
@@ -221,7 +241,11 @@ class CRM_Volunteer_Form_VolunteerReport extends CRM_Report_Form {
             'title' => ts('Activity Status', array('domain' => 'org.civicrm.volunteer')),
             'type' => CRM_Utils_Type::T_STRING,
             'operatorType' => CRM_Report_Form::OP_MULTISELECT,
-            'options' => CRM_Core_PseudoConstant::activityStatus(),
+            'options' => array_column(
+              \Civi::entity('Activity')->getOptions('status_id') ?? array(),
+              'label',
+              'id'
+            ),
           ),
         ),
       ),
@@ -305,11 +329,99 @@ class CRM_Volunteer_Form_VolunteerReport extends CRM_Report_Form {
       ),
     );
 
+    // A volunteer activity carries the project's campaign, and the project may
+    // belong to an event -- but neither was reachable from this report, so
+    // "associate efforts with outcomes", the reason campaign_id exists on the
+    // project at all, could not be answered here. Drop each dimension when its
+    // component is off rather than offering a column that can never fill.
+    if (!CRM_Core_Component::isEnabled('CiviCampaign')) {
+      unset($this->_columns['civicrm_campaign']);
+    }
+    if (!CRM_Core_Component::isEnabled('CiviEvent')) {
+      unset($this->_columns['civicrm_event']);
+    }
+
     $this->addPhoneFields();
 
     $this->_groupFilter = TRUE;
     $this->_tagFilter = TRUE;
     parent::__construct();
+  }
+
+  /**
+   * Campaign dimension, reached through the volunteer project.
+   *
+   * @return array
+   */
+  private static function campaignColumns() {
+    return array(
+      'dao' => 'CRM_Campaign_DAO_Campaign',
+      'fields' => array(
+        'campaign_title' => array(
+          'name' => 'title',
+          'title' => ts('Campaign', array('domain' => 'org.civicrm.volunteer')),
+        ),
+      ),
+      'filters' => array(
+        'campaign_title' => array(
+          'name' => 'title',
+          'title' => ts('Campaign', array('domain' => 'org.civicrm.volunteer')),
+          'operatorType' => CRM_Report_Form::OP_STRING,
+          'type' => CRM_Utils_Type::T_STRING,
+        ),
+      ),
+      'order_bys' => array(
+        'campaign_title' => array(
+          'name' => 'title',
+          'title' => ts('Campaign', array('domain' => 'org.civicrm.volunteer')),
+        ),
+      ),
+      'group_bys' => array(
+        'campaign_title' => array(
+          'name' => 'title',
+          'title' => ts('Campaign', array('domain' => 'org.civicrm.volunteer')),
+        ),
+      ),
+      'grouping' => 'project-fields',
+    );
+  }
+
+  /**
+   * Associated-event dimension, reached through the volunteer project.
+   *
+   * @return array
+   */
+  private static function eventColumns() {
+    return array(
+      'dao' => 'CRM_Event_DAO_Event',
+      'fields' => array(
+        'event_title' => array(
+          'name' => 'title',
+          'title' => ts('Event', array('domain' => 'org.civicrm.volunteer')),
+        ),
+      ),
+      'filters' => array(
+        'event_title' => array(
+          'name' => 'title',
+          'title' => ts('Event', array('domain' => 'org.civicrm.volunteer')),
+          'operatorType' => CRM_Report_Form::OP_STRING,
+          'type' => CRM_Utils_Type::T_STRING,
+        ),
+      ),
+      'order_bys' => array(
+        'event_title' => array(
+          'name' => 'title',
+          'title' => ts('Event', array('domain' => 'org.civicrm.volunteer')),
+        ),
+      ),
+      'group_bys' => array(
+        'event_title' => array(
+          'name' => 'title',
+          'title' => ts('Event', array('domain' => 'org.civicrm.volunteer')),
+        ),
+      ),
+      'grouping' => 'project-fields',
+    );
   }
 
   public function buildGroupFilter() {
@@ -327,7 +439,11 @@ class CRM_Volunteer_Form_VolunteerReport extends CRM_Report_Form {
    * column for each phone type per contact.
    */
   protected function addPhoneFields() {
-    $phoneTypes = CRM_Core_BAO_Phone::buildOptions('phone_type_id');
+    $phoneTypes = array_column(
+      \Civi::entity('Phone')->getOptions('phone_type_id') ?? array(),
+      'label',
+      'id'
+    );
     $activityRoles = array(
       'assignee' => array(
         '_actvityContactCorrelate' => 'civicrm_activity_assignment',
@@ -412,6 +528,36 @@ class CRM_Volunteer_Form_VolunteerReport extends CRM_Report_Form {
     $this->_select = "SELECT " . implode(', ', $select) . " ";
   }
 
+  /**
+   * Joins for the campaign and associated-event dimensions.
+   *
+   * Both hang off the volunteer project, which from() has already joined. Each
+   * is emitted only when its component is enabled -- the column group is
+   * removed from $_columns in that case, so _aliases holds no entry to join
+   * with -- and only when something actually selected it.
+   *
+   * @return string
+   */
+  private function componentFrom() {
+    $from = '';
+    if (isset($this->_columns['civicrm_campaign'])
+      && ($this->isTableSelected('civicrm_campaign') || !empty($this->_params['campaign_title_value']))) {
+      $from .= "
+             LEFT JOIN civicrm_campaign {$this->_aliases['civicrm_campaign']}
+                    ON {$this->_aliases['civicrm_campaign']}.id = {$this->_aliases['project']}.campaign_id";
+    }
+    if (isset($this->_columns['civicrm_event'])
+      && ($this->isTableSelected('civicrm_event') || !empty($this->_params['event_title_value']))) {
+      // entity_table as well as entity_id: the pair is a polymorphic pointer,
+      // so an entity_id alone could match an unrelated entity's primary key.
+      $from .= "
+             LEFT JOIN civicrm_event {$this->_aliases['civicrm_event']}
+                    ON {$this->_aliases['civicrm_event']}.id = {$this->_aliases['project']}.entity_id
+                   AND {$this->_aliases['project']}.entity_table = 'civicrm_event'";
+    }
+    return $from;
+  }
+
   function from() {
     $activityContacts = CRM_Core_OptionGroup::values('activity_contacts', FALSE, FALSE, FALSE, NULL, 'name');
     $roleID = CRM_Core_DAO::getFieldValue('CRM_Core_DAO_OptionGroup', 'volunteer_role', 'id','name');
@@ -430,6 +576,7 @@ class CRM_Volunteer_Form_VolunteerReport extends CRM_Report_Form {
              LEFT JOIN civicrm_option_value {$this->_aliases['role']} ON ( {$this->_aliases['role']}.value = cg.{$this->customFields['volunteer_role_id']['column_name']} AND {$this->_aliases['role']}.option_group_id = {$roleID} )
              LEFT JOIN civicrm_volunteer_project {$this->_aliases['project']}
                     ON {$this->_aliases['project']}.id = n.project_id
+             {$this->componentFrom()}
              LEFT JOIN civicrm_activity_contact {$this->_aliases['civicrm_activity_assignment']}
                     ON {$this->_aliases['civicrm_activity']}.id = {$this->_aliases['civicrm_activity_assignment']}.activity_id AND
                        {$this->_aliases['civicrm_activity_assignment']}.record_type_id = {$assigneeID}
@@ -498,13 +645,17 @@ class CRM_Volunteer_Form_VolunteerReport extends CRM_Report_Form {
 
   function addEmployerClause() {
     if ($this->isTableSelected('civicrm_contact_organization')) {
-      $relationshipTypeId = civicrm_api3('RelationshipType', 'getvalue', array(
-        'contact_type_b' => 'Organization',
-        'contact_type_a' => 'Individual',
-        'name_a_b' => 'Employee of',
-        'name_b_a' => 'Employer of',
-        'return' => 'id',
-      ));
+      $relationshipTypeId = \Civi\Api4\RelationshipType::get(FALSE)
+        ->addSelect('id')
+        ->addWhere('contact_type_b', '=', 'Organization')
+        ->addWhere('contact_type_a', '=', 'Individual')
+        ->addWhere('name_a_b', '=', 'Employee of')
+        ->addWhere('name_b_a', '=', 'Employer of')
+        ->execute()
+        ->first()['id'] ?? NULL;
+      if (!$relationshipTypeId) {
+        throw new CRM_Core_Exception(ts('The employer relationship type is missing.', array('domain' => 'org.civicrm.volunteer')));
+      }
 
       $this->_from .= "
             LEFT JOIN civicrm_relationship employer_rel
@@ -667,10 +818,15 @@ class CRM_Volunteer_Form_VolunteerReport extends CRM_Report_Form {
         continue;
       }
 
-      $api = civicrm_api3('Contact', 'get', array(
-        'sort_name' => $value,
-      ));
-      $this->_formValues[$formKey] = implode(',', array_keys($api['values']));
+      // APIv3 matched a bare sort_name filter as `LIKE %value%`; CONTAINS is
+      // API4's equivalent. APIv3 also hid trashed contacts by default.
+      $contactIds = \Civi\Api4\Contact::get(FALSE)
+        ->addSelect('id')
+        ->addWhere('sort_name', 'CONTAINS', $value)
+        ->addWhere('is_deleted', '=', FALSE)
+        ->execute()
+        ->column('id');
+      $this->_formValues[$formKey] = implode(',', $contactIds);
       $this->_formValues[$column . '_op'] = 'in';
       $msgs[$column] = '<li><strong>' . $this->_columns['civicrm_contact']['filters'][$column]['title'] . '</strong><br />' .
           ts('stored value:', array('domain' => 'org.civicrm.volunteer')) .
@@ -694,9 +850,21 @@ class CRM_Volunteer_Form_VolunteerReport extends CRM_Report_Form {
     // custom code to alter rows
 
     $entryFound     = FALSE;
-    $activityType   = CRM_Core_PseudoConstant::activityType(TRUE, TRUE, FALSE, 'label', TRUE);
-    $activityStatus = CRM_Core_PseudoConstant::activityStatus();
-    $volunteerRoles = CRM_Volunteer_BAO_Need::buildOptions('role_id', 'create');
+    $activityType = array_column(
+      \Civi::entity('Activity')->getOptions('activity_type_id', array(), TRUE, FALSE, NULL, TRUE) ?? array(),
+      'label',
+      'id'
+    );
+    $activityStatus = array_column(
+      \Civi::entity('Activity')->getOptions('status_id') ?? array(),
+      'label',
+      'id'
+    );
+    $volunteerRoles = array_column(
+      \Civi::entity('VolunteerNeed')->getOptions('role_id', array(), FALSE, TRUE) ?? array(),
+      'label',
+      'id'
+    );
     $viewLinks      = FALSE;
     $seperator      = CRM_CORE_DAO::VALUE_SEPARATOR;
     $context        = CRM_Utils_Request::retrieve('context', 'String', $this, FALSE, 'report');

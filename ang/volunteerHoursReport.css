@@ -1,0 +1,63 @@
+.crm-vol-hours-filters {
+  border: 1px solid var(--crm-vol-border);
+  border-radius: var(--crm-l-radius, 4px);
+  margin-bottom: 1.25rem;
+  padding: .75rem 1rem 1rem;
+}
+
+.crm-vol-hours-kpis {
+  margin: 0 0 1.25rem;
+}
+
+.crm-vol-hours-kpi-table {
+  border-collapse: separate;
+  border-spacing: .5rem 0;
+  table-layout: fixed;
+}
+
+.crm-vol-hours-kpi-table th,
+.crm-vol-hours-kpi-table td {
+  border: 1px solid var(--crm-vol-border);
+  text-align: center;
+}
+
+.crm-vol-hours-kpi-table th {
+  background: var(--crm-vol-panel);
+  border-bottom: 0;
+  font-weight: 600;
+  padding: .65rem .5rem .2rem;
+}
+
+.crm-vol-hours-kpi-table td {
+  border-top: 0;
+  font-size: 1.65rem;
+  font-weight: 700;
+  padding: .2rem .5rem .75rem;
+}
+
+.crm-vol-hours-tabs .crm-tab-panel {
+  padding-top: 1rem;
+}
+
+/* Search Kit normally puts an All/This Page/None dropdown beside its master
+ * checkbox. These reports fit on one page in the common case, where that menu
+ * merely duplicates the master checkbox. Keep row selection (so a subset can
+ * be downloaded), but remove the redundant dropdown half of the split button. */
+.crm-vol-hours-report .crm-search-result-select .btn-group > .dropdown-toggle,
+.crm-vol-hours-report .crm-search-result-select .btn-group > .dropdown-menu {
+  display: none;
+}
+
+.crm-vol-hours-report .crm-search-result-select .btn-group > .btn:first-child {
+  border-radius: var(--crm-l-radius, 4px);
+}
+
+@media (max-width: 767px) {
+  .crm-vol-hours-kpis {
+    overflow-x: auto;
+  }
+
+  .crm-vol-hours-kpi-table {
+    min-width: 650px;
+  }
+}

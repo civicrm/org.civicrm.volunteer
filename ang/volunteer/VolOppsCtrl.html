@@ -1,241 +1,112 @@
-<!--
-Controller: VolOppsCtrl
-Required vars: volOppData(), searchParams
--->
+<div class="crm-container crm-vol-public-workflow crm-vol-opportunities-page">
+  <header class="crm-vol-public-hero">
+    <span class="crm-vol-public-eyebrow">{{:: ts('Volunteer with us') }}</span>
+    <h1>{{:: ts('Pick a shift that fits your week') }}</h1>
+    <p>{{:: ts('Choose one or more shifts below. We will ask for your details once, at the end — nothing is confirmed until you finish.') }}</p>
+  </header>
 
-<div class="crm-container">
-  <div class="help">
-    <p>
-      {{helpText()}}
-    </p>
-  </div>
-
-  <!-- Search Form -->
-  <div class="crm-vol-half-responsive crm-vol-opp-show-hidden-search" ng-show="allowShowSearch">
-    <div class="crm-buttons">
-      <button crm-icon="search" ng-click="showSearch()">{{:: ts('Filter this List of Volunteer Opportunities') }}</button>
+  <div class="crm-vol-public-content">
+    <div class="crm-vol-quick-filters" role="group" aria-label="{{:: ts('Quick shift filters') }}">
+      <span>{{:: ts('Filter:') }}</span>
+      <button type="button" ng-class="{'is-active': searchParams.timeFilter === 'all'}" aria-pressed="{{searchParams.timeFilter === 'all'}}" ng-click="setTimeFilter('all')">{{:: ts('All shifts') }}</button>
+      <button type="button" ng-class="{'is-active': searchParams.timeFilter === 'weekends'}" aria-pressed="{{searchParams.timeFilter === 'weekends'}}" ng-click="setTimeFilter('weekends')">{{:: ts('Weekends') }}</button>
+      <button type="button" ng-class="{'is-active': searchParams.timeFilter === 'evenings'}" aria-pressed="{{searchParams.timeFilter === 'evenings'}}" ng-click="setTimeFilter('evenings')">{{:: ts('Evenings') }}</button>
+      <button type="button" ng-class="{'is-active': searchParams.timeFilter === 'no_fixed_time'}" aria-pressed="{{searchParams.timeFilter === 'no_fixed_time'}}" ng-click="setTimeFilter('no_fixed_time')">{{:: ts('No fixed time') }}</button>
+      <button type="button" ng-if="!hideSearch" ng-click="toggleMoreFilters()" aria-expanded="{{moreFiltersOpen}}">{{ moreFiltersOpen ? ts('Fewer filters') : ts('More filters') }}</button>
+      <button type="button" ng-if="allowShowSearch" ng-click="showSearch()">{{:: ts('More filters') }}</button>
     </div>
-  </div>
-  <div class="crm-vol-half-responsive crm-vol-opp-search" ng-hide="hideSearch">
-    <h2>{{:: ts('Find Volunteer Opportunities') }}</h2>
-    <form name="volOppSearchForm" crm-ui-id-scope>
-      <div class="crm-block ui-tabs ui-widget ui-widget-content ui-corner-all">
-        <div class="crm-group" crm-ui-id-scope>
-          <div crm-ui-field="{name: 'volOppSearchForm.date_start', title: ts('Between')}" class="crm-vol-opp-time">
-            <input crm-ui-id="volOppSearchForm.date_start" crm-ui-datepicker="{time: false}" ng-model="searchParams.date_start" />
-            <label crm-ui-for="volOppSearchForm.date_end">and</label>
-            <input crm-ui-id="volOppSearchForm.date_end" crm-ui-datepicker="{time: false}" ng-model="searchParams.date_end" />
-          </div>
 
-          <div crm-ui-field="{name: 'volOppSearchForm.role_id', title: ts('Role')}" class="crm-vol-opp-role">
-            <select
-              crm-ui-id="volOppSearchForm.role_id"
-              crm-ui-select="{minimumInputLength: 0, placeholder: ts('Select Volunteer Role(s)')}"
-              type="text"
-              multiple="multiple"
-              name="role_id"
-              ng-model="searchParams.role_id"
-              ng-options="key as value for (key , value) in  roles track by key"
-              class="big crm-form-text">
-              <option />
-            </select>
+    <section id="crm-vol-more-filters" class="crm-vol-more-filters" ng-if="!hideSearch && moreFiltersOpen" aria-labelledby="crm-vol-more-filters-heading">
+      <h2 id="crm-vol-more-filters-heading" class="crm-vol-sr-only">{{:: ts('More filters') }}</h2>
+      <form name="volOppSearchForm" crm-ui-id-scope ng-submit="applyFilters(volOppSearchForm)" novalidate>
+        <div class="crm-vol-public-filter-grid crm-vol-opportunity-filter-grid">
+          <div crm-ui-field="{name: 'volOppSearchForm.date_start', title: ts('Date range')}">
+            <div class="crm-vol-date-range"><input name="date_start" crm-ui-id="volOppSearchForm.date_start" crm-ui-datepicker="{time: false}" ng-model="searchParams.date_start" aria-label="{{:: ts('Start date') }}" aria-describedby="crm-vol-date-range-error" /><span>{{:: ts('to') }}</span><input name="date_end" crm-ui-id="volOppSearchForm.date_end" crm-ui-datepicker="{time: false}" ng-model="searchParams.date_end" aria-label="{{:: ts('End date') }}" aria-describedby="crm-vol-date-range-error" /></div><span id="crm-vol-date-range-error" class="crm-vol-filter-field-error" ng-if="filterValidationAttempted && (volOppSearchForm.date_start.$invalid || volOppSearchForm.date_end.$invalid)">{{:: ts('Enter complete dates in the expected format.') }}</span>
           </div>
-          <div crm-ui-field="{name: 'volOppSearchForm.beneficiary', title: ts('With')}" class="crm-vol-opp-beneficiary">
-            <input
-              crm-entityref="{
-                select: {
-                  minimumInputLength: 0,
-                  placeholder: ts('Select Organizer(s)'),
-                  multiple: true
-                },
-                api: {
-                  params: {contact_type: 'Organization'}
-                }
-              }"
-              crm-ui-id="volOppSearchForm.beneficiary"
-              type="text"
-              name="beneficiary"
-              ng-model="searchParams.beneficiary"
-              class="big crm-form-text"
-            />
+          <div crm-ui-field="{name: 'volOppSearchForm.beneficiary', title: ts('Organizer')}">
+            <input name="beneficiary" crm-entityref="{select: {minimumInputLength: 0, placeholder: ts('Select organizer(s)'), multiple: true}, api: {params: {contact_type: 'Organization'}}}" crm-ui-id="volOppSearchForm.beneficiary" ng-model="searchParams.beneficiary" class="big" />
+          </div>
+          <div crm-ui-field="{name: 'volOppSearchForm.role_id', title: ts('Role')}">
+            <select name="role_id" crm-ui-id="volOppSearchForm.role_id" crm-ui-select="{minimumInputLength: 0, placeholder: ts('Select role(s)')}" multiple="multiple" ng-model="searchParams.role_id" ng-options="key as value for (key, value) in roles" class="big"><option /></select>
+          </div>
+          <div crm-ui-field="{name: 'volOppSearchForm.campaign_id', title: ts('Campaign')}" ng-if="isCampaignEnabled">
+            <input name="campaign_id" crm-entityref="{entity: 'Campaign', api: {params: campaignFilter}, select: {minimumInputLength: 0, placeholder: ts('Any campaign'), allowClear: true}}" crm-ui-id="volOppSearchForm.campaign_id" ng-model="searchParams.campaign_id" class="big" />
           </div>
         </div>
-        <div class="crm-vol-proximity" crm-ui-accordion="{title: ts('Search by Location'), collapsed: !isProximitySearch}">
-          <div crm-ui-field="{name: 'volOppSearchForm.radius', title: ts('Within')}" class="crm-vol-opp-radius">
-            <input
-              class="four crm-form-text"
-              crm-ui-id="volOppSearchForm.radius"
-              ng-model="searchParams.proximity.radius"
-              ng-required="isProximitySearch"
-              type="number"
-            />
-            <select
-              crm-ui-id="volOppSearchForm.unit"
-              ng-model="searchParams.proximity.unit"
-              ng-options="option.value as option.label for option in proximityUnits"
-              ng-required="isProximitySearch">
-            </select>
-            <label crm-ui-for="volOppSearchForm.unit">of:</label>
+        <div class="crm-vol-proximity" crm-ui-accordion="{title: ts('Search by location'), collapsed: !hasLocationSearch}">
+          <div class="crm-vol-public-filter-grid" crm-ui-id-scope>
+            <div crm-ui-field="{name: 'volOppSearchForm.radius', title: ts('Within')}"><div class="crm-vol-radius-fields"><input name="radius" class="four" crm-ui-id="volOppSearchForm.radius" ng-model="locationFilters.radius" ng-disabled="!proximityAvailable" min="0.000001" type="number" aria-describedby="crm-vol-radius-error crm-vol-radius-help" /><select name="unit" crm-ui-id="volOppSearchForm.unit" ng-model="locationFilters.unit" ng-options="option.value as option.label for option in proximityUnits" ng-disabled="!proximityAvailable" ng-required="isProximitySearch" aria-describedby="crm-vol-radius-error crm-vol-radius-help"><option value="">{{:: ts('Units') }}</option></select></div><span id="crm-vol-radius-error" class="crm-vol-filter-field-error" ng-if="filterValidationAttempted && (volOppSearchForm.radius.$invalid || volOppSearchForm.unit.$invalid)">{{:: ts('Enter a distance greater than zero and choose miles or kilometers.') }}</span><span id="crm-vol-radius-help" class="crm-vol-filter-field-note" ng-if="!proximityAvailable">{{:: ts('Distance filtering requires the Geocoder extension to be enabled and configured.') }}</span></div>
+            <div crm-ui-field="{name: 'volOppSearchForm.street_address', title: ts('Street address')}"><input name="street_address" crm-ui-id="volOppSearchForm.street_address" ng-model="locationFilters.street_address" /></div>
+            <div crm-ui-field="{name: 'volOppSearchForm.city', title: ts('City')}"><input name="city" crm-ui-id="volOppSearchForm.city" ng-model="locationFilters.city" /></div>
+            <div crm-ui-field="{name: 'volOppSearchForm.country', title: ts('Country')}"><select name="country" class="big crm-form-select" crm-ui-id="volOppSearchForm.country" ng-change="countryChanged()" ng-model="locationFilters.country" ng-options="value.id as value.name for (key, value) in countries"><option value="">{{:: ts('Select country') }}</option></select></div>
+            <div crm-ui-field="{name: 'volOppSearchForm.state_province_id', title: ts('State/Province')}"><select name="state_province_id" class="big crm-form-select" crm-ui-id="volOppSearchForm.state_province_id" ng-disabled="stateProvincesLoading || !locationFilters.country" ng-model="locationFilters.state_province_id" ng-options="state.id as state.name for state in stateProvinces"><option value="">{{:: ts('Select State/Province') }}</option></select></div>
+            <div crm-ui-field="{name: 'volOppSearchForm.postal_code', title: ts('Postal code')}"><input name="postal_code" crm-ui-id="volOppSearchForm.postal_code" ng-model="locationFilters.postal_code" /></div>
           </div>
-          <div crm-ui-field="{name: 'volOppSearchForm.street_address', title: ts('Street Address')}" class="crm-vol-opp-street">
-            <input
-              class="crm-form-text"
-              crm-ui-id="volOppSearchForm.street_address"
-              ng-model="searchParams.proximity.street_address"
-              type="text"
-            />
-          </div>
-          <div crm-ui-field="{name: 'volOppSearchForm.city', title: ts('City')}" class="crm-vol-opp-city">
-            <input
-              class="crm-form-text"
-              crm-ui-id="volOppSearchForm.city"
-              ng-model="searchParams.proximity.city"
-              type="text"
-            />
-          </div>
-          <div crm-ui-field="{name: 'volOppSearchForm.postal_code', title: ts('Postal Code')}" class="crm-vol-opp-postal">
-            <input
-              class="crm-form-text"
-              crm-ui-id="volOppSearchForm.postal_code"
-              ng-model="searchParams.proximity.postal_code"
-              ng-required="isProximitySearch"
-              type="text"
-            />
-          </div>
-          <div crm-ui-field="{name: 'volOppSearchForm.country', title: ts('Country')}" class="crm-vol-opp-country">
-            <select
-              class="big crm-form-select"
-              crm-ui-id="volOppSearchForm.country"
-              crm-ui-select="{placeholder: ts('Select Country'), allowClear:true}"
-              ng-model="searchParams.proximity.country"
-              ng-options="k as v.name for (k, v) in countries track by k"
-              ng-required="isProximitySearch">
-            </select>
-          </div>
+          <span class="crm-vol-filter-field-error" ng-if="filterValidationAttempted && locationCenterMissing">{{:: ts('Enter at least one location field to use a distance search.') }}</span>
         </div>
-        <div class="crm-buttons">
-          <button crm-icon="search" ng-click="search()">{{:: ts('Search') }}</button>
-        </div>
-      </div>
-    </form>
-  </div>
+        <div class="crm-vol-filter-validation messages error no-popup" ng-if="filterValidationAttempted && (volOppSearchForm.$invalid || locationCenterMissing)" role="alert"><strong>{{:: ts('Some filter details need attention.') }}</strong><span>{{:: ts('Complete the fields marked above, then apply the filters again.') }}</span></div>
+        <div class="crm-vol-public-filter-actions"><button type="submit">{{:: ts('Apply filters') }}</button><button type="button" class="crm-vol-public-secondary" ng-click="clearSearch(volOppSearchForm)">{{:: ts('Clear') }}</button></div>
+      </form>
+    </section>
 
-
-  <!-- Shopping Cart -->
-  <div class="crm-vol-half-responsive crm-vol-opp-cart" ng-class="{'floating_cart': cartIsFloating, 'contents_visible': showCartContents}">
-    <h2>{{:: ts('Your Selected Volunteer Opportunities') }}</h2>
-    <div class="crm-block ui-tabs ui-widget ui-widget-content ui-corner-all " ng-form="volOppCheckoutForm" crm-ui-id-scope>
-      <div class="crm-vol-opp-cart-message-wrapper">
-        <div class="crm-vol-opp-cart-large-indicator">
-          <span>{{itemCountInCart}} {{:: ts('Commitments') }}</span>
-        </div>
-        <div class="crm-vol-opp-cart-message">
-          <span ng-show="itemCountInCart === 0">{{:: ts('Make a commitment by clicking the checkbox for the volunteer opportunity that interests you.') }}</span>
-          <span ng-hide="itemCountInCart === 0">{{:: ts('Great! Make as many selections you like, then click \'Sign Up!\' to complete your registration.') }}</span>
-        </div>
-      </div>
-
-      <table ng-show="showCartContents" class="display dataTable no-footer crm-vol-opp-cart-list" ng-class="{'contents_visible': showCartContents}" role="grid">
-        <thead>
-        <tr role="row">
-          <th class="ui-state-default crm-vol-opp-project">{{:: ts('Project') }}</th>
-          <th class="ui-state-default crm-vol-opp-role">{{:: ts('Role') }}</th>
-          <th class="ui-state-default crm-vol-opp-time">{{:: ts('Time') }}</th>
-          <th class="ui-state-default crm-vol-opp-toggle">{{:: ts('Remove') }}</th>
-        </tr>
-        </thead>
-        <tbody>
-          <tr ng-repeat="need in shoppingCart" role="row" class="crm-vol-opp-cart-need-{{need.id}}">
-            <td class="crm-vol-opp-project">
-            {{need.project.title}}
-              <span
-                class="icon ui-icon-comment"
-                ng-show="need.project.description"
-                ng-click="showProjectDescription(need.project)">
+    <div class="crm-vol-public-grid">
+      <main class="crm-vol-opportunity-results">
+        <p class="crm-vol-results-status" role="status" ng-if="hasSearched">{{ resultsLabel() }}</p>
+        <div class="crm-vol-shift-group" ng-repeat="group in groups track by group.key">
+          <h2>{{group.label}}</h2>
+          <label class="crm-vol-opportunity-card" ng-repeat="need in group.needs track by need.id" ng-class="{'is-selected': need.inCart}">
+            <input type="checkbox" ng-checked="need.inCart" ng-click="toggleSelection(need)" aria-label="{{ ts('Select %1 with %2', {1: need.role_label, 2: need.project.title}) }}" />
+            <div class="crm-vol-opportunity-main">
+              <h3>{{need.role_label}} <span>{{need.project.title}}</span></h3>
+              <time>{{need.display_time}}</time>
+              <div class="crm-vol-opportunity-description" ng-bind-html="cardDescription(need)"></div>
+              <span class="crm-vol-opportunity-organizer" ng-if="need.project.beneficiaries.length">{{ ts('Organized by %1', {1: _.pluck(need.project.beneficiaries, 'display_name').join(', ')}) }}</span>
+              <!-- The search already resolved this for every project it returned;
+                   nothing rendered it, so the extra Campaign read per project was
+                   pure cost. -->
+              <span class="crm-vol-opportunity-campaign" ng-if="need.project.campaign_title">
+                <i class="crm-i fa-bullhorn" role="img" aria-hidden="true"></i> {{need.project.campaign_title}}
               </span>
-          </td>
-          <td class="crm-vol-opp-role">{{need.role_label}}
-              <span
-                class="icon ui-icon-comment"
-                ng-show="need.role_description"
-                ng-click="showRoleDescription(need)">
-              </span>
-          </td>
-          <td class="crm-vol-opp-time">{{need.display_time}}</td>
-          <td class="crm-vol-opp-toggle">
-              <span
-                class="icon ui-icon-trash"
-                ng-checked="need.inCart"
-                ng-click="toggleSelection(need)"
-            </span>
-          </td>
-        </tr>
-        </tbody>
-      </table>
+            </div>
+            <div class="crm-vol-opportunity-capacity">
+              <strong ng-if="remaining(need) !== null" ng-class="{'is-low': remaining(need) <= 1}">{{ ts('%1 spots left', {1: remaining(need)}) }}</strong>
+              <strong ng-if="remaining(need) === null">{{:: ts('Open') }}</strong>
+              <span>{{durationLabel(need)}}</span>
+            </div>
+          </label>
+        </div>
 
-      <div class="crm-buttons">
-        <button class="crm-vol-button crm-vol-opp-cart-sign-up" crm-icon="check" ng-click="checkout()" ng-disabled="itemCountInCart === 0">
-          {{:: ts('Sign Up!') }}
-        </button>
-        <a class="crm-vol-opp-cart-show-contents" ng-hide="itemCountInCart === 0" ng-click="toggleCartList()">{{showCartContents ? ts('Hide selections') : ts('View selections')}}</a>
-      </div>
+        <div class="crm-vol-public-empty" ng-if="hasSearched && !groups.length && !flexibleNeeds.length">
+          <strong>{{:: ts('No opportunities match these filters') }}</strong>
+          <span>{{:: ts('Try another filter.') }}</span>
+        </div>
+
+        <section class="crm-vol-flexible-section" ng-if="flexibleNeeds.length" aria-labelledby="crm-vol-flexible-heading">
+          <h2 id="crm-vol-flexible-heading">{{:: ts('Any time you like') }}</h2>
+          <label class="crm-vol-flexible-card" ng-repeat="need in flexibleNeeds track by need.id" ng-class="{'is-selected': need.inCart}">
+            <input type="checkbox" ng-checked="need.inCart" ng-click="toggleSelection(need)" aria-label="{{ ts('Select general availability for %1', {1: need.project.title}) }}" />
+            <div><h3>{{:: ts('Help whenever you can') }}</h3><p>{{:: ts('Not sure about dates? Tell us you are interested and we will be in touch.') }}</p><span>{{need.project.title}}</span></div>
+            <span class="crm-vol-flexible-action">{{need.inCart ? ts('Generally available') : ts('I am generally available')}}</span>
+          </label>
+        </section>
+      </main>
+
+      <aside class="crm-vol-shift-cart" aria-labelledby="crm-vol-shift-cart-heading">
+        <header><h2 id="crm-vol-shift-cart-heading">{{:: ts('Your shifts') }}</h2><span>{{itemCountInCart() ? ts('%1 picked', {1: itemCountInCart()}) : ts('Nothing picked yet')}}</span></header>
+        <div class="crm-vol-shift-cart-empty" ng-if="!itemCountInCart()">{{:: ts('Nothing picked yet. Tap a shift on the left and it lands here.') }}</div>
+        <ol ng-if="itemCountInCart()">
+          <li ng-repeat="need in shoppingCart track by need.id"><div><strong>{{need.is_flexible == 1 ? ts('Generally available') : need.role_label}}</strong><span>{{need.project.title}}</span><time ng-if="need.is_flexible != 1">{{need.display_time}}</time></div><button type="button" class="crm-vol-remove-shift" ng-click="toggleSelection(need)" aria-label="{{ need.is_flexible == 1 ? ts('Remove general availability for %1', {1: need.project.title}) : ts('Remove %1', {1: need.role_label}) }}">×</button></li>
+        </ol>
+        <footer><button type="button" ng-click="checkout()" ng-disabled="!itemCountInCart()">{{itemCountInCart() ? ts('Continue to your details') : ts('Pick a shift to continue')}}</button><small>{{:: ts('Next: your details. Nothing is confirmed until you finish.') }}</small></footer>
+      </aside>
     </div>
-  </div>
 
-  <div class="clear"></div>
-
-  <!-- Results -->
-  <div class="crm-vol-opp-results messages status no-popup" ng-show="_.size(volOppData()) === 0">
-    <div class="icon inform-icon"></div>
-    {{:: ts('No results found. Please try different search criteria.') }}
-  </div>
-  <div class="crm-vol-opp-results" ng-show="_.size(volOppData()) > 0">
-    <h2>{{:: ts('Available Volunteer Opportunities') }}</h2>
-    <p class="description">
-      {{:: ts('For additional project or role detail, click the corresponding detail icon in the table below.') }}
-      <span class="icon ui-icon-comment"></span>
-    </p>
-    <table class="display dataTable no-footer" role="grid">
-      <thead>
-      <tr role="row">
-        <th class="ui-state-default crm-vol-opp-project">{{:: ts('Project') }}</th>
-        <th class="ui-state-default crm-vol-opp-beneficiary">{{:: ts('With') }}</th>
-        <th class="ui-state-default crm-vol-opp-role">{{:: ts('Role') }}</th>
-        <th class="ui-state-default crm-vol-opp-time">{{:: ts('Time') }}</th>
-        <th class="ui-state-default crm-vol-opp-toggle">{{:: ts('Sign up!') }}</th>
-      </tr>
-      </thead>
-      <tbody>
-        <tr ng-repeat="need in volOppData()" role="row" class="crm-vol-opp-need-{{need.id}}">
-          <td class="crm-vol-opp-project">
-          {{need.project.title}}
-            <span
-              class="icon ui-icon-comment"
-              ng-show="need.project.description"
-              ng-click="showProjectDescription(need.project)">
-            </span>
-        </td>
-        <td class="crm-vol-opp-beneficiary">
-          <span class="beneficiary" ng-repeat="ben in need.project.beneficiaries">{{ben.display_name}}</span>
-        </td>
-        <td class="crm-vol-opp-role">{{need.role_label}}
-            <span
-              class="icon ui-icon-comment"
-              ng-show="need.role_description"
-              ng-click="showRoleDescription(need)">
-            </span>
-        </td>
-        <td class="crm-vol-opp-time">{{need.display_time}}</td>
-        <td class="crm-vol-opp-toggle">
-          <input
-            type="checkbox"
-            ng-checked="need.inCart"
-            ng-click="toggleSelection(need)"
-            class="crm-form-checkbox"
-          />
-        </td>
-      </tr>
-      </tbody>
-    </table>
+    <!-- Narrow screens only. The cart drops out of the sticky rail once the
+         grid stacks, which strands the primary action below the whole shift
+         list; this keeps it reachable and gives each tap visible feedback. -->
+    <div class="crm-vol-shift-bar" ng-if="itemCountInCart()">
+      <span>{{ ts('%1 picked', {1: itemCountInCart()}) }}</span>
+      <button type="button" ng-click="checkout()">{{:: ts('Continue to your details') }}</button>
+    </div>
   </div>
 </div>

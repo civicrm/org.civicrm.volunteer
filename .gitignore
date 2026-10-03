@@ -1,7 +1,21 @@
-*~
-*.bak
-bin/setup.conf
-.DS_Store
-update.sh
-.*
-/nbproject
+# PHPUnit run cache
+.phpunit.result.cache
+
+# PHPStan run cache
+.phpstan-cache/
+# Downloaded PHPUnit PHAR (tools/run-phpunit.sh)
+tools/.cache/
+
+# Local CiviCRM seed dump for the test runner. Regenerate with mysqldump
+# from any bootable CiviCRM 6.16 database; see .env.example and the README.
+tests/phpunit/seed/*.sql
+
+# JavaScript test tooling (Jest, Playwright). Installed with `npm install`
+# from the extension root; never part of a release.
+node_modules/
+package-lock.json
+tests/e2e/.auth/
+tests/e2e/.fixtures/
+test-results/
+playwright-report/
+tests/e2e/.env

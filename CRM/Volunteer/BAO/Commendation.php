@@ -25,18 +25,43 @@ class CRM_Volunteer_BAO_Commendation extends CRM_Volunteer_BAO_Activity {
    * @static
    */
   public static function create(array $params) {
-    // check required params
-    if (!self::requiredParamsArePresent($params)) {
-      CRM_Core_Error::fatal('Not enough data to create commendation object.');
+    $aid = $params['aid'] ?? NULL;
+    if ($aid) {
+      $existing = self::retrieve(array('id' => $aid));
+      $existing = $existing[$aid] ?? NULL;
+      if (!$existing) {
+        throw new CRM_Core_Exception(ts('The volunteer commendation does not exist.', array('domain' => 'org.civicrm.volunteer')));
+      }
+      foreach (array(
+        'vid' => 'volunteer_project_id',
+        'cid' => 'volunteer_contact_id',
+      ) as $paramName => $fieldName) {
+        if (!empty($params[$paramName])
+          && (int) $params[$paramName] !== (int) $existing[$fieldName]) {
+          throw new CRM_Core_Exception(ts('An existing commendation cannot be moved to another project or contact.', array('domain' => 'org.civicrm.volunteer')));
+        }
+        $params[$paramName] = $existing[$fieldName];
+      }
     }
 
-    $activity_statuses = CRM_Activity_BAO_Activity::buildOptions('status_id', 'create');
+    // check required params
+    if (!self::requiredParamsArePresent($params)) {
+      throw new CRM_Core_Exception(ts('Not enough data was supplied to create a volunteer commendation.', array('domain' => 'org.civicrm.volunteer')));
+    }
+    if (CRM_Volunteer_Permission::shouldCheckPermissions($params)) {
+      CRM_Volunteer_Permission::assertProjectPerms(CRM_Core_Action::UPDATE, $params['vid']);
+    }
+
+    $activity_statuses = array_column(
+      \Civi::entity('Activity')->getOptions('status_id', $params, FALSE, TRUE) ?? array(),
+      'name',
+      'id'
+    );
     $api_params = array(
       'activity_type_id' => self::getActivityTypeId(),
       'status_id' => CRM_Utils_Array::key('Completed', $activity_statuses),
     );
 
-    $aid = $params['aid'] ?? NULL;
     if ($aid) {
       $api_params['id'] = $aid;
     }
@@ -51,16 +76,51 @@ class CRM_Volunteer_BAO_Commendation extends CRM_Volunteer_BAO_Activity {
       $project = CRM_Volunteer_BAO_Project::retrieveByID($vid);
       $api_params['subject'] = ts('Volunteer Commendation for %1', array('1' => $project->title, 'domain' => 'org.civicrm.volunteer'));
 
+      // A commendation is a volunteer activity in the same sense an assignment
+      // is, so it belongs to the project's campaign for the same reason.
+      // Without this, half of what CiviVolunteer records is invisible to
+      // campaign reporting.
+      //
+      // No isEnabled('CiviCampaign') guard, deliberately: the guards elsewhere
+      // in this extension exist because \Civi\Api4\Campaign is a class that
+      // does not exist when the component is off, and writing a column value
+      // reaches no such class. Guarding here would also have made commendations
+      // and assignments disagree, since
+      // CRM_Volunteer_BAO_Assignment::setActivityDefaults() sets the same field
+      // unconditionally. Empty string rather than NULL mirrors it too.
+      $api_params['campaign_id'] = empty($project->campaign_id) ? '' : $project->campaign_id;
+
       $customFieldSpec = self::getCustomFields();
-      $volunteer_project_id_field_name = $customFieldSpec['volunteer_project_id']['custom_n'];
-      $api_params[$volunteer_project_id_field_name] = $vid;
+      $projectField = $customFieldSpec['volunteer_project_id'];
+      $api_params[self::CUSTOM_GROUP_NAME . '.' . $projectField['name']] = $vid;
     }
 
     if (array_key_exists('details', $params)) {
       $api_params['details'] = $params['details'] ?? NULL;
     }
 
-    return civicrm_api3('Activity', 'create', $api_params);
+    if (!$aid) {
+      // APIv3's Activity.create filled this from `user_contact_id`; API4
+      // requires it outright. Fall back to the commended volunteer when there
+      // is no session contact.
+      $api_params['source_contact_id'] = CRM_Core_Session::getLoggedInContactID() ?: $cid;
+    }
+
+    // Project authorization above is more specific than core's broad activity
+    // permission and applies to both create and update.
+    if (!empty($api_params['id'])) {
+      $activityId = (int) $api_params['id'];
+      unset($api_params['id']);
+      return \Civi\Api4\Activity::update(FALSE)
+        ->addWhere('id', '=', $activityId)
+        ->setValues($api_params)
+        ->execute()
+        ->single();
+    }
+    return \Civi\Api4\Activity::create(FALSE)
+      ->setValues($api_params)
+      ->execute()
+      ->single();
   }
 
   /**
@@ -113,6 +173,7 @@ class CRM_Volunteer_BAO_Commendation extends CRM_Volunteer_BAO_Activity {
     $custom_group = self::getCustomGroup();
     $customTableName = $custom_group['table_name'];
 
+    $selectClause = array();
     foreach ($custom_fields as $name => $field) {
       $selectClause[] = "{$customTableName}.{$field['column_name']} AS {$name}";
     }
@@ -143,6 +204,9 @@ class CRM_Volunteer_BAO_Commendation extends CRM_Volunteer_BAO_Activity {
         $dataType = $custom_fields[$key]['data_type'];
         $fieldName = $custom_fields[$key]['column_name'];
         $tableName = $customTableName;
+      }
+      else {
+        continue;
       }
       $where[] = "{$tableName}.{$fieldName} = %{$i}";
 

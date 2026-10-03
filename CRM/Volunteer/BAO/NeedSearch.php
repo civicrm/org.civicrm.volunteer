@@ -54,6 +54,7 @@ class CRM_Volunteer_BAO_NeedSearch {
       ),
       'need' => array(
         'role_id' => array(),
+        'time_filter' => 'all',
       ),
     );
   }
@@ -70,12 +71,17 @@ class CRM_Volunteer_BAO_NeedSearch {
     foreach ($projects as $project) {
       $results = array();
 
-      $flexibleNeed = civicrm_api3('VolunteerNeed', 'getsingle', array(
-        'id' => $project->flexible_need_id,
-      ));
-      if ($flexibleNeed['visibility_id'] === CRM_Core_PseudoConstant::getKey('CRM_Volunteer_BAO_Need', 'visibility_id', 'public')) {
-        $needId = $flexibleNeed['id'];
-        $results[$needId] = $flexibleNeed;
+      $flexibleNeedId = $project->flexible_need_id;
+      if ($flexibleNeedId) {
+        $flexibleNeed = \Civi\Api4\VolunteerNeed::get(FALSE)
+          ->addWhere('id', '=', $flexibleNeedId)
+          ->execute()
+          ->first();
+        if (!empty($flexibleNeed['is_active'])
+          && ($flexibleNeed['visibility_id'] ?? NULL) === CRM_Core_PseudoConstant::getKey('CRM_Volunteer_BAO_Need', 'visibility_id', 'public')) {
+          $needId = $flexibleNeed['id'];
+          $results[$needId] = $flexibleNeed;
+        }
       }
 
       $openNeeds = $project->open_needs;
@@ -93,7 +99,7 @@ class CRM_Volunteer_BAO_NeedSearch {
     }
 
     $this->getSearchResultsProjectData();
-    usort($this->searchResults, array($this, "usortDateAscending"));
+    uasort($this->searchResults, array($this, "usortDateAscending"));
     return $this->searchResults;
   }
 
@@ -154,6 +160,7 @@ class CRM_Volunteer_BAO_NeedSearch {
   private function needFitsSearchCriteria(array $need) {
     return
       $this->needFitsDateCriteria($need)
+      && $this->needFitsTimeCriteria($need)
       && (
         // Either no role was specified in the search...
         empty($this->searchParams['need']['role_id'])
@@ -163,12 +170,49 @@ class CRM_Volunteer_BAO_NeedSearch {
   }
 
   /**
+   * Apply the public browser's mutually-exclusive schedule shortcuts.
+   *
+   * Need timestamps are stored as site-local wall time. CiviCRM initializes
+   * PHP with the CMS timezone, and using it explicitly here keeps weekday and
+   * 5:00 PM boundary decisions stable on hosts whose process default differs.
+   */
+  private function needFitsTimeCriteria(array $need) {
+    $filter = $this->searchParams['need']['time_filter'];
+    if ($filter === 'all') {
+      return TRUE;
+    }
+    if ($filter === 'no_fixed_time') {
+      return !empty($need['end_time'])
+        || (empty($need['end_time']) && empty($need['duration']));
+    }
+    if (empty($need['start_time'])) {
+      return FALSE;
+    }
+    try {
+      $start = new DateTimeImmutable(
+        $need['start_time'],
+        new DateTimeZone(date_default_timezone_get())
+      );
+    }
+    catch (Throwable $e) {
+      return FALSE;
+    }
+    if ($filter === 'weekends') {
+      return (int) $start->format('N') >= 6;
+    }
+    if ($filter === 'evenings') {
+      return (int) $start->format('H') >= 17;
+    }
+    return TRUE;
+  }
+
+  /**
    * @param array $userSearchParams
    *   Supported parameters:
    *     - beneficiary: mixed - an int-like string, a comma-separated list
    *         thereof, or an array representing one or more contact IDs
    *     - project: int-like string representing project ID
-   *     - proximity: array - see CRM_Volunteer_BAO_Project::buildProximityWhere
+   *     - proximity: array - address fields plus optional radius/unit
    *     - role_id: mixed - an int-like string, a comma-separated list thereof, or
    *         an array representing one or more role IDs
    *     - date_start: See setSearchDateParams()
@@ -196,9 +240,27 @@ class CRM_Volunteer_BAO_NeedSearch {
       $this->searchParams['project']['project_contacts']['volunteer_beneficiary'] = $beneficiary;
     }
 
+    // The listing already resolves a campaign title for every project it
+    // returns, but there was no way to search on one -- so a "volunteer for
+    // this campaign" page could not be built.
+    // One campaign, not a list: these params are handed to
+    // CRM_Volunteer_BAO_Project::retrieve(), whose generic field filter emits a
+    // scalar equality per DAO field. An array there would build invalid SQL.
+    $campaign = $userSearchParams['campaign_id'] ?? NULL;
+    if ($campaign && CRM_Core_Component::isEnabled('CiviCampaign')
+      && CRM_Utils_Type::validate($campaign, 'Positive', FALSE)) {
+      $this->searchParams['project']['campaign_id'] = (int) $campaign;
+    }
+
     $role = $userSearchParams['role_id'] ?? NULL;
     if ($role) {
-      $this->searchParams['need']['role_id'] = is_array($role) ? $role : explode(',', $role);
+      $roles = is_array($role) ? $role : explode(',', $role);
+      $this->searchParams['need']['role_id'] = array_values(array_unique(array_filter(array_map('intval', $roles))));
+    }
+
+    $timeFilter = (string) ($userSearchParams['time_filter'] ?? 'all');
+    if (in_array($timeFilter, array('all', 'weekends', 'evenings', 'no_fixed_time'), TRUE)) {
+      $this->searchParams['need']['time_filter'] = $timeFilter;
     }
   }
 
@@ -213,16 +275,21 @@ class CRM_Volunteer_BAO_NeedSearch {
    */
   private function setSearchDateParams($userSearchParams) {
     $this->searchParams['need']['date_start'] = strtotime(($userSearchParams['date_start'] ?? ''));
-    $date_end = strtotime(($userSearchParams['date_end'] ?? ''));
-    if ($date_end) {
-      // The end date is entered by the user as YYYY-MM-DD. Then, strtotime
-      // converts it to a time stamp represending YYYY-MM-DD 00:00:00.
-      // However, when searching by dates, users expect the end date to be the
-      // *end* of the day entered, not the beginning (i.e. YYYY-MM-DD
-      // 23:59:99), so we add enough seconds to make the search work.
-      $date_end += 85399;
+    $dateEndInput = trim((string) ($userSearchParams['date_end'] ?? ''));
+    $dateEnd = FALSE;
+    if ($dateEndInput !== '') {
+      try {
+        // Set a calendar end-of-day in the configured timezone. Adding a fixed
+        // number of seconds is incorrect on daylight-saving transition days.
+        $dateEnd = (new DateTimeImmutable($dateEndInput))
+          ->setTime(23, 59, 59)
+          ->getTimestamp();
+      }
+      catch (Exception $e) {
+        $dateEnd = FALSE;
+      }
     }
-    $this->searchParams['need']['date_end'] = $date_end;
+    $this->searchParams['need']['date_end'] = $dateEnd;
   }
 
   /**
@@ -230,74 +297,110 @@ class CRM_Volunteer_BAO_NeedSearch {
    * related to the project, campaign, location, and project contacts.
    */
   private function getSearchResultsProjectData() {
-    // api.VolunteerProject.get does not support the 'IN' operator, so we loop
+    $beneficiaryIds = array();
     foreach ($this->projects as $id => &$project) {
-      $api = civicrm_api3('VolunteerProject', 'getsingle', array(
-        'id' => $id,
-        'api.Campaign.getvalue' => array(
-          'return' => 'title',
-        ),
-        'api.LocBlock.getsingle' => array(
-          'api.Address.getsingle' => array(),
-        ),
-        'api.VolunteerProjectContact.get' => array(
-          'options' => array('limit' => 0),
-          'relationship_type_id' => 'volunteer_beneficiary',
-          'api.Contact.get' => array(
-            'options' => array('limit' => 0),
-          ),
-        ),
-      ));
+      $api = \Civi\Api4\VolunteerProject::get(FALSE)
+        ->addSelect('id', 'title', 'description', 'campaign_id', 'loc_block_id')
+        ->addWhere('id', '=', $id)
+        ->execute()
+        ->single();
 
-      $project['description'] = $api['description'];
+      $project['description'] = CRM_Utils_String::purifyHTML($api['description'] ?? '');
       $project['id'] = $api['id'];
       $project['title'] = $api['title'];
 
-      // Because of CRM-17327, the chained "get" may improperly report its result,
-      // so we check the value we're chaining off of to decide whether or not
-      // to trust the result.
-      $project['campaign_title'] = empty($api['campaign_id']) ? NULL : $api['api.Campaign.getvalue'];
+      // Civi\Api4\Campaign lives in the civi_campaign extension. Without this
+      // guard a project holding a campaign_id fatals the public opportunity
+      // listing on any site where CiviCampaign is switched off.
+      $campaignReadable = !empty($api['campaign_id'])
+        && CRM_Core_Component::isEnabled('CiviCampaign');
+      $campaign = !$campaignReadable ? NULL : \Civi\Api4\Campaign::get(FALSE)
+        ->addSelect('title')
+        ->addWhere('id', '=', $api['campaign_id'])
+        ->execute()
+        ->first();
+      $project['campaign_title'] = $campaign['title'] ?? NULL;
 
-      // CRM-17327
-      if (empty($api['loc_block_id']) || empty($api['api.LocBlock.getsingle']['address_id'])) {
+      $location = empty($api['loc_block_id']) ? NULL : \Civi\Api4\LocBlock::get(FALSE)
+        ->addSelect(
+          'address_id', 'address_id.city', 'address_id.country_id',
+          'address_id.postal_code', 'address_id.state_province_id',
+          'address_id.street_address'
+        )
+        ->addWhere('id', '=', $api['loc_block_id'])
+        ->execute()
+        ->first();
+      if (empty($location['address_id'])) {
         $project['location'] = array(
           'city' => NULL,
           'country' => NULL,
           'postal_code' => NULL,
-          'state_provice' => NULL,
+          'state_province' => NULL,
           'street_address' => NULL,
         );
       } else {
-        $countryId = $api['api.LocBlock.getsingle']['api.Address.getsingle']['country_id'];
+        $countryId = $location['address_id.country_id'] ?? NULL;
         $country = $countryId ? CRM_Core_PseudoConstant::country($countryId) : NULL;
 
         $stateProvince = NULL;
-        if (isset($api['api.LocBlock.getsingle']['api.Address.getsingle']['state_province_id'])) {
-          $stateProvinceId = $api['api.LocBlock.getsingle']['api.Address.getsingle']['state_province_id'];
+        if (isset($location['address_id.state_province_id'])) {
+          $stateProvinceId = $location['address_id.state_province_id'];
           $stateProvince = CRM_Core_PseudoConstant::stateProvince($stateProvinceId);
         }
         
 
         $project['location'] = array(
-          'city' => $api['api.LocBlock.getsingle']['api.Address.getsingle']['city'],
+          'city' => $location['address_id.city'] ?? NULL,
           'country' => $country,
-          'postal_code' => $api['api.LocBlock.getsingle']['api.Address.getsingle']['postal_code'],
+          'postal_code' => $location['address_id.postal_code'] ?? NULL,
           'state_province' => $stateProvince,
-          'street_address' => $api['api.LocBlock.getsingle']['api.Address.getsingle']['street_address'],
+          'street_address' => $location['address_id.street_address'] ?? NULL,
         );
       }
 
-      foreach ($api['api.VolunteerProjectContact.get']['values'] as $projectContact) {
+      $projectContacts = \Civi\Api4\VolunteerProjectContact::get(FALSE)
+        ->addSelect('contact_id')
+        ->addWhere('project_id', '=', $id)
+        ->addWhere('relationship_type_id:name', '=', 'volunteer_beneficiary')
+        ->execute();
+      foreach ($projectContacts as $projectContact) {
         if (!array_key_exists('beneficiaries', $project)) {
           $project['beneficiaries'] = array();
         }
 
-        $project['beneficiaries'][] = array(
-          'id' => $projectContact['contact_id'],
-          'display_name' => $projectContact['api.Contact.get']['values'][0]['display_name'],
-        );
+        $contactId = (int) $projectContact['contact_id'];
+        $beneficiaryIds[$contactId] = $contactId;
+        $project['beneficiaries'][] = array('id' => $contactId, 'display_name' => '');
       }
     }
+    unset($project);
+
+    // The public result needs only beneficiary display names. Fetch them in a
+    // single internal query after project-contact authorization has constrained
+    // the IDs to active-project beneficiaries.
+    $beneficiaryNames = array();
+    if ($beneficiaryIds) {
+      $contacts = \Civi\Api4\Contact::get(FALSE)
+        ->addSelect('id', 'display_name')
+        ->addWhere('id', 'IN', array_values($beneficiaryIds))
+        ->execute();
+      foreach ($contacts as $contact) {
+        $beneficiaryNames[(int) $contact['id']] = $contact['display_name'];
+      }
+    }
+    foreach ($this->projects as &$project) {
+      // Iterate the array itself, not `$project['beneficiaries'] ?? array()`:
+      // a null-coalescing expression is not a variable, so foreach-by-reference
+      // would bind to a temporary and silently discard every write.
+      if (empty($project['beneficiaries'])) {
+        continue;
+      }
+      foreach ($project['beneficiaries'] as &$beneficiary) {
+        $beneficiary['display_name'] = $beneficiaryNames[(int) $beneficiary['id']] ?? '';
+      }
+      unset($beneficiary);
+    }
+    unset($project);
 
     foreach ($this->searchResults as &$need) {
       $projectId = (int) $need['project_id'];
@@ -309,8 +412,9 @@ class CRM_Volunteer_BAO_NeedSearch {
    * Callback for usort.
    */
   private static function usortDateAscending($a, $b) {
-    $startTimeA = strtotime($a['start_time']);
-    $startTimeB = strtotime($b['start_time']);
+    // A flexible need has no start time, and PHP 8.1 deprecates strtotime(NULL).
+    $startTimeA = strtotime($a['start_time'] ?? '');
+    $startTimeB = strtotime($b['start_time'] ?? '');
 
     if ($startTimeA === $startTimeB) {
       return 0;

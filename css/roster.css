@@ -1,0 +1,302 @@
+.crm-container .crm-vol-roster {
+  color: var(--crm-text-color, #27313d);
+}
+
+.crm-container .crm-vol-roster-print-heading {
+  display: none;
+}
+
+.crm-container .crm-vol-roster-summary {
+  align-items: center;
+  background: var(--crm-vol-panel);
+  border: 1px solid var(--crm-vol-border);
+  border-radius: var(--crm-l-radius, 4px);
+  display: flex;
+  gap: var(--crm-l-reg, 16px);
+  justify-content: space-between;
+  margin-bottom: var(--crm-l-reg, 16px);
+  padding: var(--crm-l-reg, 16px);
+}
+
+.crm-container .crm-vol-roster-metrics,
+.crm-container .crm-vol-roster-contact-actions,
+.crm-container .crm-vol-roster-screen-actions {
+  align-items: center;
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--crm-l-medium, 8px);
+}
+
+.crm-container .crm-vol-roster-metric,
+.crm-container .crm-vol-roster-count {
+  align-items: center;
+  background: var(--crm-page-bg-color, #fff);
+  border: 1px solid var(--crm-vol-border);
+  border-radius: 999px;
+  display: inline-flex;
+  font-size: var(--crm-font-small-size, 13px);
+  font-weight: 600;
+  gap: var(--crm-l-small, 4px);
+  padding: var(--crm-l-small, 4px) var(--crm-l-medium, 8px);
+  white-space: nowrap;
+}
+
+.crm-container .crm-vol-roster-notice {
+  align-items: flex-start;
+  display: flex;
+  gap: var(--crm-l-medium, 8px);
+  margin: 0 0 var(--crm-l-reg, 16px);
+}
+
+.crm-container .crm-vol-roster-shift {
+  border-color: var(--crm-vol-border);
+  border-radius: var(--crm-l-radius, 4px);
+  box-shadow: none;
+  margin-bottom: var(--crm-l-reg, 16px);
+  overflow: hidden;
+}
+
+.crm-container .crm-vol-roster-shift > .panel-heading {
+  background: var(--crm-vol-panel);
+  border-color: var(--crm-vol-border);
+  padding: var(--crm-l-reg, 16px);
+}
+
+.crm-container .crm-vol-roster-shift .panel-title {
+  align-items: center;
+  color: inherit;
+  display: flex;
+  font-size: 1rem;
+  font-weight: 650;
+  gap: var(--crm-l-medium, 8px);
+  justify-content: space-between;
+  margin: 0;
+}
+
+.crm-container .crm-vol-roster-shift .panel-body {
+  padding: 0;
+}
+
+.crm-container .crm-vol-roster-table {
+  border: 0;
+  margin: 0;
+  table-layout: fixed;
+  width: 100%;
+}
+
+.crm-container .crm-vol-roster-table th,
+.crm-container .crm-vol-roster-table td {
+  border-color: var(--crm-vol-border);
+  padding: var(--crm-l-reg, 16px);
+  text-align: left;
+  vertical-align: top;
+}
+
+.crm-container .crm-vol-roster-table th:first-child,
+.crm-container .crm-vol-roster-table td:first-child {
+  width: 25%;
+}
+
+.crm-container .crm-vol-roster-table th:nth-child(2),
+.crm-container .crm-vol-roster-table td:nth-child(2) {
+  width: 22%;
+}
+
+.crm-container .crm-vol-roster-name {
+  font-weight: 600;
+}
+
+.crm-container .crm-vol-roster-contact {
+  align-items: flex-start;
+  display: flex;
+  gap: var(--crm-l-reg, 16px);
+  justify-content: space-between;
+}
+
+.crm-container .crm-vol-roster-contact-values {
+  display: grid;
+  gap: var(--crm-l-small, 4px);
+  min-width: 0;
+}
+
+.crm-container .crm-vol-roster-contact-values > span {
+  align-items: baseline;
+  display: flex;
+  gap: var(--crm-l-small, 4px);
+  overflow-wrap: anywhere;
+}
+
+.crm-container .crm-vol-roster-contact-values small,
+.crm-container .crm-vol-roster-muted {
+  color: var(--crm-vol-muted);
+}
+
+.crm-container a.crm-vol-roster-action.crm-hover-button,
+.crm-container button.crm-vol-roster-action {
+  align-items: center;
+  background: var(--crm-page-bg-color, #fff);
+  border: 1px solid var(--crm-vol-border);
+  border-radius: var(--crm-l-radius, 4px);
+  box-shadow: none;
+  color: var(--crm-link-color, #0563c1);
+  cursor: pointer;
+  display: inline-flex;
+  font-size: var(--crm-font-small-size, 13px);
+  font-weight: 600;
+  gap: var(--crm-l-small, 4px);
+  line-height: 1.25;
+  margin: 0;
+  min-height: 32px;
+  padding: var(--crm-l-small, 4px) var(--crm-l-medium, 8px);
+  text-decoration: none;
+}
+
+.crm-container .crm-vol-roster-action.crm-hover-button:hover,
+.crm-container .crm-vol-roster-action.crm-hover-button:focus,
+.crm-container button.crm-vol-roster-action:hover,
+.crm-container button.crm-vol-roster-action:focus {
+  background: var(--crm-layer2-bg-color, #e8f1fa);
+  border-color: var(--crm-primary-color, #0563c1);
+  color: var(--crm-primary-color, #0563c1);
+}
+
+.crm-container .crm-vol-roster-empty {
+  align-items: flex-start;
+  display: flex;
+  gap: var(--crm-l-medium, 8px);
+  margin: 0;
+  padding: var(--crm-l-reg, 16px);
+}
+
+.crm-container .crm-vol-roster-empty p {
+  margin: var(--crm-l-small, 4px) 0 0;
+}
+
+.crm-container .crm-vol-roster-footer {
+  border-top: 1px solid var(--crm-vol-border);
+  justify-content: flex-end;
+  margin-top: var(--crm-l-reg, 16px);
+  padding-top: var(--crm-l-reg, 16px);
+}
+
+.crm-container .crm-vol-modal-closer {
+  display: none;
+}
+
+.crm-ajax-container .crm-vol-modal-closer {
+  display: inline-flex;
+}
+
+@media (max-width: 767px) {
+  .crm-container .crm-vol-roster-summary,
+  .crm-container .crm-vol-roster-contact {
+    align-items: stretch;
+    flex-direction: column;
+  }
+
+  .crm-container .crm-vol-roster-summary > .crm-vol-roster-screen-actions,
+  .crm-container .crm-vol-roster-summary .crm-vol-roster-action {
+    width: 100%;
+  }
+
+  .crm-container .crm-vol-roster-summary .crm-vol-roster-action {
+    justify-content: center;
+  }
+
+  .crm-container .crm-vol-roster-shift .panel-title {
+    align-items: flex-start;
+    flex-direction: column;
+  }
+
+  .crm-container .crm-vol-roster-table,
+  .crm-container .crm-vol-roster-table tbody,
+  .crm-container .crm-vol-roster-table tr,
+  .crm-container .crm-vol-roster-table td {
+    display: block;
+    width: 100%;
+  }
+
+  .crm-container .crm-vol-roster-table thead {
+    clip: rect(0 0 0 0);
+    clip-path: inset(50%);
+    height: 1px;
+    overflow: hidden;
+    position: absolute;
+    white-space: nowrap;
+    width: 1px;
+  }
+
+  .crm-container .crm-vol-roster-table tr {
+    border-bottom: 1px solid var(--crm-vol-border);
+    padding: var(--crm-l-medium, 8px) 0;
+  }
+
+  .crm-container .crm-vol-roster-table tr:last-child {
+    border-bottom: 0;
+  }
+
+  .crm-container .crm-vol-roster-table td,
+  .crm-container .crm-vol-roster-table td:first-child,
+  .crm-container .crm-vol-roster-table td:nth-child(2) {
+    border: 0;
+    display: grid;
+    gap: var(--crm-l-medium, 8px);
+    grid-template-columns: minmax(7.5rem, 35%) minmax(0, 1fr);
+    padding: var(--crm-l-medium, 8px) var(--crm-l-reg, 16px);
+    width: 100%;
+  }
+
+  .crm-container .crm-vol-roster-table td::before {
+    color: var(--crm-vol-muted);
+    content: attr(data-label);
+    font-size: var(--crm-font-small-size, 13px);
+    font-weight: 600;
+  }
+
+  .crm-container .crm-vol-roster-contact-actions .crm-vol-roster-action {
+    flex: 1 1 auto;
+    justify-content: center;
+  }
+}
+
+@media print {
+  .crm-container .crm-vol-roster-print-heading {
+    display: block;
+    margin-bottom: 1rem;
+  }
+
+  .crm-container .crm-vol-roster-print-heading h1 {
+    margin-bottom: 0.25rem;
+  }
+
+  .crm-container .crm-vol-roster-print-heading p {
+    color: #555;
+    margin: 0;
+  }
+
+  .crm-container .crm-vol-roster-screen-actions,
+  .crm-container .crm-vol-roster-summary,
+  .crm-container .crm-vol-roster-notice {
+    display: none !important;
+  }
+
+  .crm-container .crm-vol-roster-shift,
+  .crm-container .crm-vol-roster-table tr {
+    break-inside: avoid;
+    page-break-inside: avoid;
+  }
+
+  .crm-container .crm-vol-roster-shift {
+    border: 1px solid #bbb;
+    margin-bottom: 1rem;
+  }
+
+  .crm-container .crm-vol-roster-shift > .panel-heading {
+    background: #eee !important;
+  }
+
+  .crm-container .crm-vol-roster-table th,
+  .crm-container .crm-vol-roster-table td {
+    padding: 0.5rem;
+  }
+}

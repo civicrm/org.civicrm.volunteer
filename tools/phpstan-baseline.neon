@@ -1,0 +1,345 @@
+parameters:
+	ignoreErrors:
+		-
+			message: "#^Access to an undefined static property static\\(CRM_Volunteer_BAO_Activity\\)\\:\\:\\$customFields\\.$#"
+			count: 3
+			path: ../CRM/Volunteer/BAO/Activity.php
+
+		-
+			message: "#^Access to an undefined static property static\\(CRM_Volunteer_BAO_Activity\\)\\:\\:\\$customGroup\\.$#"
+			count: 3
+			path: ../CRM/Volunteer/BAO/Activity.php
+
+		-
+			message: "#^Access to undefined constant static\\(CRM_Volunteer_BAO_Activity\\)\\:\\:CUSTOM_ACTIVITY_TYPE\\.$#"
+			count: 1
+			path: ../CRM/Volunteer/BAO/Activity.php
+
+		-
+			message: "#^Access to undefined constant static\\(CRM_Volunteer_BAO_Activity\\)\\:\\:CUSTOM_GROUP_NAME\\.$#"
+			count: 2
+			path: ../CRM/Volunteer/BAO/Activity.php
+
+		-
+			message: "#^Ternary operator condition is always true\\.$#"
+			count: 1
+			path: ../CRM/Volunteer/BAO/Assignment.php
+
+		-
+			message: "#^Access to an undefined property CRM_Core_Config\\:\\:\\$dateformatDatetime\\.$#"
+			count: 1
+			path: ../CRM/Volunteer/BAO/Need.php
+
+		-
+			message: "#^Access to an undefined property CRM_Core_Config\\:\\:\\$dateformatTime\\.$#"
+			count: 1
+			path: ../CRM/Volunteer/BAO/Need.php
+
+		-
+			message: "#^Strict comparison using \\=\\=\\= between string and null will always evaluate to false\\.$#"
+			count: 1
+			path: ../CRM/Volunteer/BAO/Need.php
+
+		-
+			message: "#^PHPDoc tag @var above a method has no effect\\.$#"
+			count: 1
+			path: ../CRM/Volunteer/BAO/Project.php
+
+		-
+			message: "#^PHPDoc tag @var does not specify variable name\\.$#"
+			count: 1
+			path: ../CRM/Volunteer/BAO/Project.php
+
+		-
+			message: "#^Parameter \\$value of method CRM_Volunteer_BAO_Project\\:\\:isOff\\(\\) has invalid type type\\.$#"
+			count: 1
+			path: ../CRM/Volunteer/BAO/Project.php
+
+		-
+			message: "#^Access to an undefined property CRM_Core_Config\\:\\:\\$timeInputFormat\\.$#"
+			count: 1
+			path: ../CRM/Volunteer/BAO/VolunteerUtil.php
+
+		-
+			message: "#^Property CRM_Volunteer_Form_Commendation\\:\\:\\$_aid \\(int\\) in isset\\(\\) is not nullable\\.$#"
+			count: 1
+			path: ../CRM/Volunteer/Form/Commendation.php
+
+		-
+			message: "#^Access to private property CRM_Volunteer_BAO_Project\\:\\:\\$end_date\\.$#"
+			count: 3
+			path: ../CRM/Volunteer/Form/Log.php
+
+		-
+			message: "#^Access to private property CRM_Volunteer_BAO_Project\\:\\:\\$start_date\\.$#"
+			count: 3
+			path: ../CRM/Volunteer/Form/Log.php
+
+		-
+			message: "#^Call to an undefined method CRM_Core_Smarty\\:\\:assign\\(\\)\\.$#"
+			count: 1
+			path: ../CRM/Volunteer/Form/Log.php
+
+		-
+			message: "#^Call to method freeze\\(\\) on an unknown class HTML_QuickForm_Element\\.$#"
+			count: 1
+			path: ../CRM/Volunteer/Form/Log.php
+
+		-
+			message: "#^Method CRM_Volunteer_Form_Log\\:\\:formRule\\(\\) should return array but returns true\\.$#"
+			count: 1
+			path: ../CRM/Volunteer/Form/Log.php
+
+		-
+			message: "#^Method CRM_Volunteer_Form_Log\\:\\:postProcess\\(\\) has invalid return type None\\.$#"
+			count: 1
+			path: ../CRM/Volunteer/Form/Log.php
+
+		-
+			message: "#^Method CRM_Volunteer_Form_Log\\:\\:postProcess\\(\\) should return None but return statement is missing\\.$#"
+			count: 1
+			path: ../CRM/Volunteer/Form/Log.php
+
+		-
+			message: "#^Method CRM_Volunteer_Form_Log\\:\\:setDefaultValues\\(\\) has invalid return type None\\.$#"
+			count: 1
+			path: ../CRM/Volunteer/Form/Log.php
+
+		-
+			message: "#^Method CRM_Volunteer_Form_Log\\:\\:setDefaultValues\\(\\) should return None but returns array\\<string, array\\<int, array\\<string, mixed\\>\\>\\>\\.$#"
+			count: 1
+			path: ../CRM/Volunteer/Form/Log.php
+
+		-
+			message: "#^Parameter \\#2 \\$format of method HTML_QuickForm\\:\\:addFormRule\\(\\) expects string\\|null, \\$this\\(CRM_Volunteer_Form_Log\\) given\\.$#"
+			count: 1
+			path: ../CRM/Volunteer/Form/Log.php
+
+		-
+			message: "#^Return type \\(None\\) of method CRM_Volunteer_Form_Log\\:\\:setDefaultValues\\(\\) should be compatible with return type \\(array\\) of method CRM_Core_Form\\:\\:setDefaultValues\\(\\)$#"
+			count: 1
+			path: ../CRM/Volunteer/Form/Log.php
+
+		-
+			message: "#^Variable \\$path might not be defined\\.$#"
+			count: 1
+			path: ../CRM/Volunteer/Form/Log.php
+
+		-
+			message: "#^Variable \\$query might not be defined\\.$#"
+			count: 1
+			path: ../CRM/Volunteer/Form/Log.php
+
+		-
+			message: "#^Access to property \\$_elements on an unknown class HTML_QuickForm_element\\.$#"
+			count: 1
+			path: ../CRM/Volunteer/Form/Settings.php
+
+		-
+			message: "#^Access to property \\$_elements on an unknown class HTML_QuickForm_group\\.$#"
+			count: 1
+			path: ../CRM/Volunteer/Form/Settings.php
+
+		-
+			message: "#^Call to method getAttribute\\(\\) on an unknown class HTML_QuickForm_element\\.$#"
+			count: 1
+			path: ../CRM/Volunteer/Form/Settings.php
+
+		-
+			message: "#^Call to method getName\\(\\) on an unknown class HTML_QuickForm_element\\.$#"
+			count: 1
+			path: ../CRM/Volunteer/Form/Settings.php
+
+		-
+			message: "#^Parameter \\#2 \\$query of static method CRM_Utils_System\\:\\:url\\(\\) expects array\\|string, null given\\.$#"
+			count: 1
+			path: ../CRM/Volunteer/Form/Settings.php
+
+		-
+			message: "#^Parameter \\$element of method CRM_Volunteer_Form_Settings\\:\\:getGroupName\\(\\) has invalid type HTML_QuickForm_element\\.$#"
+			count: 2
+			path: ../CRM/Volunteer/Form/Settings.php
+
+		-
+			message: "#^Argument of an invalid type string supplied for foreach, only iterables are supported\\.$#"
+			count: 1
+			path: ../CRM/Volunteer/Form/VolunteerReport.php
+
+		-
+			message: """
+				#^Call to deprecated method buildACLClause\\(\\) of class CRM_Volunteer_Form_VolunteerReport\\:
+				in favor of buildPermissionClause$#
+			"""
+			count: 1
+			path: ../CRM/Volunteer/Form/VolunteerReport.php
+
+		-
+			message: "#^Class CRM_Core_DAO referenced with incorrect case\\: CRM_CORE_DAO\\.$#"
+			count: 2
+			path: ../CRM/Volunteer/Form/VolunteerReport.php
+
+		-
+			message: "#^Parameter \\#1 \\$tableAlias of method CRM_Volunteer_Form_VolunteerReport\\:\\:buildACLClause\\(\\) expects string, array\\<int, string\\> given\\.$#"
+			count: 1
+			path: ../CRM/Volunteer/Form/VolunteerReport.php
+
+		-
+			message: "#^Parameter \\#2 \\$searchValue of static method CRM_Core_DAO\\:\\:getFieldValue\\(\\) expects int, string given\\.$#"
+			count: 1
+			path: ../CRM/Volunteer/Form/VolunteerReport.php
+
+		-
+			message: "#^Property CRM_Volunteer_Form_VolunteerReport\\:\\:\\$_customGroupExtends \\(null\\) does not accept default value of type array\\<int, string\\>\\.$#"
+			count: 1
+			path: ../CRM/Volunteer/Form/VolunteerReport.php
+
+		-
+			message: "#^Variable \\$completed might not be defined\\.$#"
+			count: 1
+			path: ../CRM/Volunteer/Form/VolunteerReport.php
+
+		-
+			message: "#^Variable \\$scheduled might not be defined\\.$#"
+			count: 1
+			path: ../CRM/Volunteer/Form/VolunteerReport.php
+
+		-
+			message: "#^Access to private property CRM_Volunteer_BAO_Project\\:\\:\\$open_needs\\.$#"
+			count: 1
+			path: ../CRM/Volunteer/Form/VolunteerSignUp.php
+
+		-
+			message: "#^Default value of the parameter \\#3 \\$prefix \\(string\\) of method CRM_Volunteer_Form_VolunteerSignUp\\:\\:buildCustom\\(\\) is incompatible with type type\\.$#"
+			count: 1
+			path: ../CRM/Volunteer/Form/VolunteerSignUp.php
+
+		-
+			message: "#^Parameter \\#3 \\$prefix of method CRM_Volunteer_Form_VolunteerSignUp\\:\\:buildCustom\\(\\) expects type, string given\\.$#"
+			count: 1
+			path: ../CRM/Volunteer/Form/VolunteerSignUp.php
+
+		-
+			message: "#^Parameter \\#5 \\$searchable of static method CRM_Core_BAO_UFGroup\\:\\:getFields\\(\\) expects bool, null given\\.$#"
+			count: 1
+			path: ../CRM/Volunteer/Form/VolunteerSignUp.php
+
+		-
+			message: "#^Parameter \\#8 \\$prefix of static method CRM_Core_BAO_UFGroup\\:\\:buildProfile\\(\\) expects string, type given\\.$#"
+			count: 1
+			path: ../CRM/Volunteer/Form/VolunteerSignUp.php
+
+		-
+			message: "#^Parameter \\$prefix of method CRM_Volunteer_Form_VolunteerSignUp\\:\\:buildCustom\\(\\) has invalid type type\\.$#"
+			count: 1
+			path: ../CRM/Volunteer/Form/VolunteerSignUp.php
+
+		-
+			message: "#^Access to deprecated static property \\$_nullObject of class CRM_Utils_Hook\\.$#"
+			count: 5
+			path: ../CRM/Volunteer/Hook.php
+
+		-
+			message: "#^Call to an undefined method CRM_Core_Smarty\\:\\:assign\\(\\)\\.$#"
+			count: 1
+			path: ../CRM/Volunteer/Page/Backbone.php
+
+
+		-
+			message: "#^Parameter \\#2 \\$title of class CRM_Core_Controller_Simple constructor expects bool, null given\\.$#"
+			count: 1
+			path: ../CRM/Volunteer/Page/Router.php
+
+		-
+			message: "#^Parameter \\#3 \\$mode of class CRM_Core_Controller_Simple constructor expects string\\|null, int given\\.$#"
+			count: 1
+			path: ../CRM/Volunteer/Page/Router.php
+
+		-
+			message: "#^Call to an undefined method CRM_Core_Smarty\\:\\:assign\\(\\)\\.$#"
+			count: 5
+			path: ../CRM/Volunteer/Upgrader.php
+
+		-
+			message: "#^Call to an undefined method CRM_Core_Smarty\\:\\:fetch\\(\\)\\.$#"
+			count: 1
+			path: ../CRM/Volunteer/Upgrader.php
+
+		-
+			message: "#^Parameter \\#1 \\$targets of static method Civi\\:\\:rebuild\\(\\) expects array\\{ext\\: bool, files\\: bool, tables\\: bool, sessions\\: bool, metadata\\: bool, system\\: bool, userjob\\: bool, menu\\: bool, \\.\\.\\.\\}\\|string\\|null, array\\{metadata\\: true, entities\\: true\\} given\\.$#"
+			count: 1
+			path: ../CRM/Volunteer/Upgrader.php
+
+		-
+			message: "#^Parameter \\#1 \\$targets of static method Civi\\:\\:rebuild\\(\\) expects array\\{ext\\: bool, files\\: bool, tables\\: bool, sessions\\: bool, metadata\\: bool, system\\: bool, userjob\\: bool, menu\\: bool, \\.\\.\\.\\}\\|string\\|null, array\\{metadata\\: true\\} given\\.$#"
+			count: 1
+			path: ../CRM/Volunteer/Upgrader.php
+
+		-
+			message: "#^Function _civicrm_api3_basic_delete not found\\.$#"
+			count: 1
+			path: ../api/v3/VolunteerAssignment.php
+
+		-
+			message: "#^Function civicrm_api3_create_success not found\\.$#"
+			count: 2
+			path: ../api/v3/VolunteerAssignment.php
+
+		-
+			message: "#^Function civicrm_api3_create_success not found\\.$#"
+			count: 1
+			path: ../api/v3/VolunteerCommendation.php
+
+		-
+			message: "#^Function _civicrm_api3_basic_create not found\\.$#"
+			count: 1
+			path: ../api/v3/VolunteerNeed.php
+
+		-
+			message: "#^Function _civicrm_api3_basic_get not found\\.$#"
+			count: 1
+			path: ../api/v3/VolunteerNeed.php
+
+		-
+			message: "#^Function _civicrm_api3_get_BAO not found\\.$#"
+			count: 1
+			path: ../api/v3/VolunteerNeed.php
+
+		-
+			message: "#^Function civicrm_api3_create_success not found\\.$#"
+			count: 3
+			path: ../api/v3/VolunteerNeed.php
+
+		-
+			message: "#^Function civicrm_api3_create_success not found\\.$#"
+			count: 8
+			path: ../api/v3/VolunteerProject.php
+
+		-
+			message: "#^Function _civicrm_api3_basic_create not found\\.$#"
+			count: 1
+			path: ../api/v3/VolunteerProjectContact.php
+
+		-
+			message: "#^Function _civicrm_api3_basic_delete not found\\.$#"
+			count: 1
+			path: ../api/v3/VolunteerProjectContact.php
+
+		-
+			message: "#^Function _civicrm_api3_basic_get not found\\.$#"
+			count: 1
+			path: ../api/v3/VolunteerProjectContact.php
+
+		-
+			message: "#^Function _civicrm_api3_get_BAO not found\\.$#"
+			count: 3
+			path: ../api/v3/VolunteerProjectContact.php
+
+		-
+			message: "#^Function civicrm_api3_create_success not found\\.$#"
+			count: 1
+			path: ../api/v3/VolunteerProjectContact.php
+
+		-
+			message: "#^Function civicrm_api3_create_success not found\\.$#"
+			count: 8
+			path: ../api/v3/VolunteerUtil.php

@@ -39,6 +39,42 @@ function volunteer_civicrm_config(&$config) {
 }
 
 /**
+ * Use the configured CiviCRM backend theme on CiviVolunteer screens.
+ *
+ * Public signup routes must remain marked public for access, URL-generation,
+ * and CMS integration purposes. CiviCRM normally couples that flag to the
+ * frontend theme, however, which makes public and administrative volunteer
+ * screens look unrelated. Keep the public semantics while giving the complete
+ * CiviVolunteer workflow the theme selected for CiviCRM's backend screens.
+ *
+ * The volunteer_use_backend_theme setting turns this off for sites whose
+ * public CiviCRM pages must follow the frontend theme. An unknown value --
+ * the settings metadata has not been reloaded since the upgrade -- keeps the
+ * override on, which is the behaviour every earlier 2.5 build had.
+ *
+ * @param string $theme
+ * @param array $context
+ *
+ * @see CRM_Utils_Hook::activeTheme()
+ */
+function volunteer_civicrm_activeTheme(&$theme, $context) {
+  $path = trim((string) ($context['page'] ?? ''), '/');
+  if (!preg_match('#^civicrm/(?:vol(?:/|$)|volunteer(?:/|$))#', $path)) {
+    return;
+  }
+
+  $useBackendTheme = Civi::settings()->get('volunteer_use_backend_theme');
+  if ($useBackendTheme !== NULL && !$useBackendTheme) {
+    return;
+  }
+
+  $configuredTheme = Civi::settings()->get('theme_backend');
+  $theme = (!$configuredTheme || $configuredTheme === 'default')
+    ? \Civi\Core\Themes::DEFAULT_THEME
+    : $configuredTheme;
+}
+
+/**
  * Implements hook_civicrm_navigationMenu().
  *
  * @link https://docs.civicrm.org/dev/en/latest/hooks/hook_civicrm_navigationMenu/
@@ -48,8 +84,8 @@ function volunteer_civicrm_navigationMenu(&$menu) {
     'label' => E::ts('Volunteers'),
     'name' => 'volunteer_volunteers',
     'url' => NULL,
-    'permission' => NULL,
-    'operator' => NULL,
+    'permission' => 'register to volunteer,create volunteer projects,edit own volunteer projects,edit all volunteer projects,administer CiviCRM',
+    'operator' => 'OR',
     'separator' => 0,
     'icon' => 'crm-i fa-users',
   ));
@@ -57,27 +93,36 @@ function volunteer_civicrm_navigationMenu(&$menu) {
   _volunteer_civix_insert_navigation_menu($menu, 'volunteer_volunteers', array(
     'label' => E::ts('New Volunteer Project'),
     'name' => 'volunteer_new_project',
-    'url' => 'civicrm/vol/#/volunteer/manage/0',
-    'permission' => NULL,
-    'operator' => NULL,
+    'url' => 'civicrm/volunteer/manage#/volunteer/manage/0',
+    'permission' => 'create volunteer projects',
+    'operator' => 'OR',
     'separator' => 0,
   ));
 
   _volunteer_civix_insert_navigation_menu($menu, 'volunteer_volunteers', array(
     'label' => E::ts('Manage Volunteer Projects'),
     'name' => 'volunteer_manage_projects',
-    'url' => 'civicrm/vol/#/volunteer/manage',
-    'permission' => NULL,
-    'operator' => NULL,
+    'url' => 'civicrm/volunteer/manage#/volunteer/manage',
+    'permission' => 'edit own volunteer projects,edit all volunteer projects',
+    'operator' => 'OR',
     'separator' => 1,
+  ));
+
+  _volunteer_civix_insert_navigation_menu($menu, 'volunteer_volunteers', array(
+    'label' => E::ts('Volunteer Hours Report'),
+    'name' => 'volunteer_hours_report',
+    'url' => 'civicrm/volunteer/hours-report',
+    'permission' => 'edit all volunteer projects,view all contacts',
+    'operator' => 'AND',
+    'separator' => 0,
   ));
 
   _volunteer_civix_insert_navigation_menu($menu, 'volunteer_volunteers', array(
     'label' => E::ts('Configure Roles'),
     'name' => 'volunteer_config_roles',
     'url' => 'civicrm/admin/options/volunteer_role?reset=1',
-    'permission' => NULL,
-    'operator' => NULL,
+    'permission' => 'administer CiviCRM',
+    'operator' => 'OR',
     'separator' => 0,
   ));
 
@@ -85,8 +130,8 @@ function volunteer_civicrm_navigationMenu(&$menu) {
     'label' => E::ts('Configure Project Relationships'),
     'name' => 'volunteer_config_projrel',
     'url' => 'civicrm/admin/options/volunteer_project_relationship?reset=1',
-    'permission' => NULL,
-    'operator' => NULL,
+    'permission' => 'administer CiviCRM',
+    'operator' => 'OR',
     'separator' => 0,
   ));
 
@@ -94,8 +139,8 @@ function volunteer_civicrm_navigationMenu(&$menu) {
     'label' => E::ts('Configure Volunteer Settings'),
     'name' => 'volunteer_config_settings',
     'url' => 'civicrm/admin/volunteer/settings',
-    'permission' => NULL,
-    'operator' => NULL,
+    'permission' => 'administer CiviCRM',
+    'operator' => 'OR',
     'separator' => 1,
   ));
 
@@ -103,8 +148,8 @@ function volunteer_civicrm_navigationMenu(&$menu) {
     'label' => E::ts('Volunteer Interest Form'),
     'name' => 'volunteer_join',
     'url' => 'civicrm/volunteer/join',
-    'permission' => NULL,
-    'operator' => NULL,
+    'permission' => 'register to volunteer',
+    'operator' => 'OR',
     'separator' => 0,
   ));
 
@@ -112,8 +157,8 @@ function volunteer_civicrm_navigationMenu(&$menu) {
     'label' => E::ts('Search for Volunteer Opportunities'),
     'name' => 'volunteer_opp_search',
     'url' => 'civicrm/vol/#/volunteer/opportunities',
-    'permission' => NULL,
-    'operator' => NULL,
+    'permission' => 'register to volunteer',
+    'operator' => 'OR',
     'separator' => 0,
   ));
 
@@ -128,6 +173,11 @@ function volunteer_civicrm_navigationMenu(&$menu) {
  */
 function volunteer_civicrm_tabset($tabsetName, &$tabs, $context) {
   $eventId = $context['event_id'] ?? NULL;
+
+  if (in_array($tabsetName, array('civicrm/event/manage', 'civicrm/event/manage/rows'), TRUE)
+    && !_volunteer_can_manage_event_project($eventId)) {
+    return;
+  }
 
   if ($tabsetName == 'civicrm/event/manage') {
     if ($eventId) {
@@ -154,7 +204,11 @@ function volunteer_civicrm_tabset($tabsetName, &$tabs, $context) {
         'current' => false,
       );
 
-      if (!CRM_Volunteer_BAO_Project::isActive($eventId, CRM_Event_DAO_Event::getTableName())) {
+      // getEventProject() rather than isActive(): the gate above has already
+      // performed this lookup for this event, and the memo makes the second
+      // read free.
+      $eventProject = CRM_Volunteer_BAO_Project::getEventProject($eventId);
+      if (!$eventProject || !$eventProject->is_active) {
         $tab['volunteer']['valid'] = FALSE;
       }
     }
@@ -174,9 +228,23 @@ function volunteer_civicrm_tabset($tabsetName, &$tabs, $context) {
   }
 
   // on manage events listing screen, this section sets volunteer tab in configuration popup as enabled/disabled.
+  // Core calls this once per row, so both reads here go through the memo.
   if ($tabsetName == 'civicrm/event/manage/rows' && $eventId) {
-    $tabs[$eventId]['is_volunteer'] = CRM_Volunteer_BAO_Project::isActive($eventId, CRM_Event_DAO_Event::getTableName());
+    $rowProject = CRM_Volunteer_BAO_Project::getEventProject($eventId);
+    $tabs[$eventId]['is_volunteer'] = $rowProject ? $rowProject->is_active : NULL;
   }
+}
+
+/**
+ * Check the project-level permission behind an event's Volunteer tab.
+ *
+ * @param int|null $eventId
+ * @return bool
+ */
+function _volunteer_can_manage_event_project($eventId) {
+  // The decision itself lives on CRM_Volunteer_Permission so the route behind
+  // the tab can apply the same one; this remains the hook-facing name.
+  return CRM_Volunteer_Permission::checkEventProjectManagement($eventId);
 }
 
 /**
@@ -209,28 +277,8 @@ function volunteer_civicrm_enable() {
     <li>" . ts('Enable volunteer management for one or more <a href="%1" target="_blank">events</a>', array(1 => $events_url, 'domain' => 'org.civicrm.volunteer')) . "</li></ul>";
   // As long as the message contains a link, the pop-up will not automatically close
   CRM_Core_Session::setStatus($message, ts('CiviVolunteer Installed', array('domain' => 'org.civicrm.volunteer')), 'success');
-  return _volunteer_civix_civicrm_enable();
-}
-
-/**
- * Implementation of hook_civicrm_entityTypes
- */
-function volunteer_civicrm_entityTypes(&$entityTypes) {
-  $entityTypes[] = array(
-    'name'  => 'VolunteerNeed',
-    'class' => 'CRM_Volunteer_DAO_Need',
-    'table' => 'civicrm_volunteer_need',
-  );
-  $entityTypes[] = array(
-    'name'  => 'VolunteerProject',
-    'class' => 'CRM_Volunteer_DAO_Project',
-    'table' => 'civicrm_volunteer_project',
-  );
-  $entityTypes[] = array(
-    'name'  => 'VolunteerProjectContact',
-    'class' => 'CRM_Volunteer_DAO_ProjectContact',
-    'table' => 'civicrm_volunteer_project_contact',
-  );
+  _volunteer_civix_civicrm_enable();
+  return TRUE;
 }
 
 /**
@@ -243,32 +291,6 @@ function volunteer_civicrm_pageRun(&$page) {
   if (function_exists($f)) {
     $f($page);
   }
-  _volunteer_periodicChecks();
-}
-
-function _volunteer_civicrm_pageRun_CRM_Admin_Page_Extensions(&$page) {
-  _volunteer_prereqCheck();
-}
-
-function _volunteer_civicrm_pageRun_CRM_Volunteer_Page_Angular(&$page) {
-  _volunteer_prereqCheck();
-}
-
-function _volunteer_prereqCheck() {
-  $unmet = CRM_Volunteer_Upgrader::checkExtensionDependencies();
-  CRM_Volunteer_Upgrader::displayDependencyErrors($unmet);
-}
-
-function _volunteer_periodicChecks() {
-  $session = CRM_Core_Session::singleton();
-  if (
-    !CRM_Core_Permission::check('administer CiviCRM')
-    || !$session->timer('check_CRM_Volunteer_Depends', CRM_Utils_Check::CHECK_TIMER)
-  ) {
-    return;
-  }
-
-  _volunteer_prereqCheck();
 }
 
 /**
@@ -290,6 +312,13 @@ function volunteer_civicrm_postProcess($formName, &$form) {
  * with the event.
  */
 function _volunteer_civicrm_pageRun_CRM_Event_Page_EventInfo(&$page) {
+  // Public event pages are rendered for visitors who may not be allowed to
+  // register as volunteers. Leave the page untouched for them rather than
+  // invoking a guarded project read which would raise an exception.
+  if (!CRM_Volunteer_Permission::check('register to volunteer')) {
+    return;
+  }
+
   $params = array(
     'entity_id' => $page->getVar('_id'),
     'entity_table' => 'civicrm_event',
@@ -298,18 +327,19 @@ function _volunteer_civicrm_pageRun_CRM_Event_Page_EventInfo(&$page) {
   $projects = CRM_Volunteer_BAO_Project::retrieve($params);
 
   // show volunteer button only if user has CiviVolunteer: register to volunteer AND this event has an active project
-  if (CRM_Volunteer_Permission::check('register to volunteer') && count($projects)) {
+  if (count($projects)) {
     $project = current($projects);
 
     //VOL-189: Do not show the volunteer now button if there are not open needs.
-    $openNeeds = civicrm_api3('VolunteerNeed', 'getsearchresult', array(
-      'project' => $project->id,
-      'sequential' => 1
-    ));
-    if($openNeeds['count'] > 0) {
+    $openNeeds = \Civi\Api4\VolunteerNeed::search()
+      ->setProject($project->id)
+      ->execute()
+      ->getArrayCopy();
+    $openNeedCount = count($openNeeds);
+    if ($openNeedCount > 0) {
       //VOL-191: Skip "shopping cart" if only one need
-      if ($openNeeds['count'] == 1) {
-        $need = $openNeeds['values'][0];
+      if ($openNeedCount == 1) {
+        $need = reset($openNeeds);
         $url = CRM_Utils_System::url('civicrm/volunteer/signup',
           "reset=1&needs[]={$need['id']}&dest=event", // query string
           FALSE, // absolute
@@ -319,7 +349,7 @@ function _volunteer_civicrm_pageRun_CRM_Event_Page_EventInfo(&$page) {
         );
       } else {
         //VOL-190: Hide search pane in "shopping cart" for low role count projects
-        $hideSearch = ($openNeeds['count'] < 10) ? "hideSearch=always" : (($openNeeds['count'] < 25) ? "hideSearch=1" : "hideSearch=0");
+        $hideSearch = ($openNeedCount < 10) ? "hideSearch=always" : (($openNeedCount < 25) ? "hideSearch=1" : "hideSearch=0");
         $url = CRM_Utils_System::url('civicrm/vol/',
           NULL, // query string
           FALSE, // absolute?
@@ -399,11 +429,26 @@ function _volunteer_civicrm_buildForm_CRM_Activity_Form_Activity($formName, &$fo
     // If need_id isn't set, do not re-add need_id field as a dropdown.
     // See http://issues.civicrm.org/jira/browse/VOL-24?focusedCommentId=53836#comment-53836
     if (($need_id = $field->_attributes['value'])) {
-      $need = civicrm_api3('VolunteerNeed', 'getsingle', array(
-        'id' => $need_id,
-        'return' => 'project_id'
-      ));
-      $Project = CRM_Volunteer_BAO_Project::retrieveByID($need['project_id']);
+      $need = CRM_Volunteer_Permission::withInternalBypass(function() use ($need_id) {
+        return \Civi\Api4\VolunteerNeed::get(FALSE)
+          ->addSelect('project_id')
+          ->addWhere('id', '=', $need_id)
+          ->execute()
+          ->first();
+      });
+      if (!$need) {
+        $form->add('static', $element_name, $field->_label, E::ts('Unavailable volunteer opportunity'));
+        return;
+      }
+      // The core Activity form has already authorized access to this activity.
+      // Read its static opportunity label in a trusted scope; project-level
+      // authorization below still controls whether the field is editable.
+      $Project = CRM_Volunteer_Permission::withInternalBypass(function() use ($need) {
+        return CRM_Volunteer_BAO_Project::retrieveByID(
+          $need['project_id'],
+          array('check_permissions' => FALSE)
+        );
+      });
 
       $needs = array();
       foreach ($Project->needs as $key => $value) {
@@ -411,13 +456,20 @@ function _volunteer_civicrm_buildForm_CRM_Activity_Form_Activity($formName, &$fo
       }
       asort($needs);
 
-      $form->add(
-        'select',               // field type
-        $element_name,          // field name
-        $field->_label,         // field label
-        $needs,                 // list of options (value => label)
-        TRUE                    // required
-      );
+      if (CRM_Volunteer_Permission::checkProjectPerms(CRM_Core_Action::UPDATE, $need['project_id'])) {
+        $form->add(
+          'select',               // field type
+          $element_name,          // field name
+          $field->_label,         // field label
+          $needs,                 // list of options (value => label)
+          TRUE                    // required
+        );
+      }
+      else {
+        // Core activity access permits viewing this value, but changing the
+        // owning volunteer need requires project-level authority.
+        $form->add('static', $element_name, $field->_label, $needs[$need_id] ?? (string) $need_id);
+      }
     }
   }
   // In "View" mode
@@ -427,8 +479,16 @@ function _volunteer_civicrm_buildForm_CRM_Activity_Form_Activity($formName, &$fo
       $index = key($custom[$group_id]);
       if (!empty($custom[$group_id][$index]['fields'][$field_id]['field_value'])) {
         $value =& $custom[$group_id][$index]['fields'][$field_id]['field_value'];
-        $need = civicrm_api3('VolunteerNeed', 'getsingle', array('id' => $value));
-        $value = $need['role_label'] . ': ' . $need['display_time'];
+        $need = CRM_Volunteer_Permission::withInternalBypass(function() use ($value) {
+          return \Civi\Api4\VolunteerNeed::get(FALSE)
+            ->addSelect('*')
+            ->addWhere('id', '=', $value)
+            ->execute()
+            ->first();
+        });
+        if ($need) {
+          $value = $need['role_label'] . ': ' . $need['display_time'];
+        }
         $form->assign('viewCustomData', $custom);
       }
     }
@@ -440,6 +500,55 @@ function _volunteer_civicrm_buildForm_CRM_Activity_Form_Activity($formName, &$fo
  *
  * @param array $permissions Does not contain core perms -- only extension-defined perms.
  */
+/**
+ * Implementation of hook_civicrm_copy
+ *
+ * Carry an event's volunteer setup onto a copy of that event. Core fires this
+ * from CRM_Event_BAO_Event::copy() with the original's ID; without a listener,
+ * duplicating an event produced one with no volunteer project and no warning.
+ *
+ * @param string $objectName
+ * @param object $object
+ *   The newly created copy.
+ * @param int|null $original_id
+ */
+function volunteer_civicrm_copy($objectName, &$object, $original_id = NULL) {
+  if ($objectName !== 'Event' || empty($object->id) || empty($original_id)) {
+    return;
+  }
+
+  try {
+    CRM_Volunteer_BAO_Project::copyForEvent((int) $original_id, (int) $object->id);
+  }
+  catch (Throwable $e) {
+    // The event copy itself has already happened and is not ours to fail.
+    // Surface the problem rather than aborting someone else's operation.
+    \Civi::log()->error(sprintf(
+      'Could not copy the volunteer project from event %d to event %d: %s',
+      $original_id,
+      $object->id,
+      $e->getMessage()
+    ));
+  }
+}
+
+/**
+ * Implementation of hook_civicrm_pre
+ *
+ * Unlink, rather than orphan, the volunteer project of an event being deleted.
+ * @see CRM_Volunteer_BAO_Project::detachFromEvent()
+ *
+ * @param string $op
+ * @param string $objectName
+ * @param int|null $id
+ * @param array $params
+ */
+function volunteer_civicrm_pre($op, $objectName, $id, &$params) {
+  if ($objectName === 'Event' && $op === 'delete' && $id) {
+    CRM_Volunteer_BAO_Project::detachFromEvent((int) $id);
+  }
+}
+
 function volunteer_civicrm_permission(array &$permissions) {
   // VOL-71: Until the Joomla/Civi integration is fixed, don't declare new perms
   // for Joomla installs
@@ -452,50 +561,65 @@ function volunteer_civicrm_permission(array &$permissions) {
  * Implements hook_civicrm_alterAPIPermissions
  */
 function volunteer_civicrm_alterAPIPermissions($entity, $action, &$params, &$permissions) {
-// note: unsetting the below would require the default 'administer CiviCRM' permission
-  $permissions['volunteer_need']['default'] = array('create volunteer projects');
-  $permissions['volunteer_need']['getsearchresult'] = array('register to volunteer');
-  $permissions['volunteer_assignment']['default'] = array('edit own volunteer projects');
-  $permissions['volunteer_commendation']['default'] = array('edit own volunteer projects');
-  $permissions['volunteer_project']['default'] = array('create volunteer projects');
-  $permissions['volunteer_project']['get'] = array('register to volunteer');
-  $permissions['volunteer_project']['getlocblockdata'] = array('edit own volunteer projects');
-  $permissions['volunteer_util']['default'] = array('edit own volunteer projects');
-  $permissions['volunteer_project_contact']['default'] = array('edit own volunteer projects');
+  // Coarse API authorization limits action discovery. Domain methods still
+  // perform project-level checks and never trust a request-supplied
+  // check_permissions=FALSE value.
+  $allow = array(CRM_Core_Permission::ALWAYS_ALLOW_PERMISSION);
+  $projectView = array(array(
+    'register to volunteer',
+    'create volunteer projects',
+    'edit own volunteer projects',
+    'edit all volunteer projects',
+  ));
+  $projectEdit = array(array(
+    'create volunteer projects',
+    'edit own volunteer projects',
+    'edit all volunteer projects',
+  ));
+  // APIv3's generic `setvalue` writes through CRM_Core_DAO::setFieldValue()
+  // without ever reaching a BAO, so none of the project-level authorization in
+  // this extension applies to it: anyone who satisfies the coarse map could
+  // edit any row of any project. Core deprecated the action in favour of
+  // `create` with an id -- which is guarded -- so refuse it outright rather
+  // than leaving an unauthorized write path open.
+  $deny = array(CRM_Core_Permission::ALWAYS_DENY_PERMISSION);
 
-
-  // allow fairly liberal access to the volunteer opp listing UI, which uses lots of API calls
-  if (_volunteer_isVolListingApiCall($entity, $action) && CRM_Volunteer_Permission::checkProjectPerms(CRM_Core_Action::VIEW)) {
-    $params['check_permissions'] = FALSE;
-  }
-}
-
-/**
- * This is a helper function to volunteer_civicrm_alterAPIPermissions.
- *
- * It encapsulates the logic for determining whether or not the API calls in
- * question are of the type that the volunteer opportunities search/listing
- * depends on.
- *
- * @param string $entity
- *   The noun in an API call (e.g., volunteer_project)
- * @param string $action
- *   The verb in an API call (e.g., get)
- * @return boolean
- *   True if the API call is of the type that the vol opps UI depends on.
- */
-function _volunteer_isVolListingApiCall($entity, $action) {
-  $actions = array(
-    'get',
-    'getcountries',
-    'getlist',
-    'getsingle',
-    'getsupportingdata',
-    'getperms'
+  $permissions['volunteer_need'] = array(
+    'default' => $projectEdit,
+    'get' => $projectView,
+    'getsearchresult' => $projectView,
+    'setvalue' => $deny,
   );
-  $entities = array('volunteer_project_contact', 'volunteer_need', 'volunteer_project', 'volunteer_util');
-
-  return (in_array($entity, $entities) && in_array($action, $actions));
+  // Assignment and project-contact reads have relationship-based access which
+  // cannot be represented by the coarse permission map; their API methods do
+  // the mandatory row check.
+  $permissions['volunteer_assignment'] = array(
+    'default' => $projectEdit,
+    'get' => $allow,
+  );
+  $permissions['volunteer_commendation']['default'] = array(array(
+    'edit own volunteer projects',
+    'edit all volunteer projects',
+  ));
+  $permissions['volunteer_project'] = array(
+    'default' => $projectEdit,
+    'get' => $projectView,
+    'delete' => array(array('delete own volunteer projects', 'delete all volunteer projects')),
+    'removeprofile' => array('edit volunteer registration profiles'),
+    'setvalue' => $deny,
+  );
+  $permissions['volunteer_util'] = array(
+    'default' => $projectEdit,
+    'getperms' => $allow,
+    'getprofiles' => array('edit volunteer registration profiles'),
+    'getsupportingdata' => $projectView,
+    'getcountries' => $projectView,
+  );
+  $permissions['volunteer_project_contact'] = array(
+    'default' => $projectEdit,
+    'get' => $allow,
+    'setvalue' => $deny,
+  );
 }
 
 /**
@@ -510,11 +634,11 @@ function _volunteer_isVolListingApiCall($entity, $action) {
  */
 function volunteer_civicrm_fieldOptions($entity, $field, &$options, $params) {
   if ($entity == 'UFJoin' && $field == 'entity_table') {
-    if ($params['context'] == 'validate') {
+    if (($params['context'] ?? NULL) == 'validate') {
       $options[CRM_Volunteer_DAO_Project::getTableName()] = CRM_Volunteer_DAO_Project::getTableName();
     }
     else {
-      $options[CRM_Volunteer_DAO_Project::getTableName()] = 'Project';
+      $options[CRM_Volunteer_DAO_Project::getTableName()] = E::ts('Volunteer Project');
     }
   }
 }

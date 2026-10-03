@@ -31,28 +31,34 @@ class CRM_Volunteer_Angular_Tab_Event extends CRM_Core_Page {
       'template' => 'CRM/Volunteer/Page/Angular.tpl',
     ));
 
-    $project = current(CRM_Volunteer_BAO_Project::retrieve(array(
-          'entity_id' => $eventId,
-          'entity_table' => CRM_Event_DAO_Event::getTableName(),
-    )));
+    // Memoized, and the same read hook_civicrm_tabset() has already performed
+    // for this event.
+    $project = CRM_Volunteer_BAO_Project::getEventProject($eventId);
     if (!$project) {
       $project = self::initializeProject($eventId);
     }
 
-    CRM_Volunteer_Angular::load('/volunteer/manage/' . $project->id);
+    CRM_Volunteer_Angular::load('/volunteer/manage/' . $project->id . '/details');
 
     $event = $project->getEntityAttributes();
-    $entityTitle = $event['title'];
 
     CRM_Core_Resources::singleton()
-        ->addStyleFile('org.civicrm.volunteer', 'css/volunteer_app.css')
+        // Only the tab's own stylesheet is added here. This hook fires from
+        // CRM_Event_Form_ManageEvent::buildQuickForm(), i.e. on *every*
+        // event-configuration screen (Info, Location, Fees, Registration,
+        // Reminders), so anything added here is injected into all of them; the
+        // workflow dialogs' chrome ships with the Angular bundle instead.
         ->addStyleFile('org.civicrm.volunteer', 'css/volunteer_events.css')
         ->addVars('org.civicrm.volunteer', array(
-          'hash' => '#/volunteer/manage/' . $project->id,
+          'hash' => '#/volunteer/manage/' . $project->id . '/details',
           'projectId' => $project->id,
           'entityTable' => $project->entity_table,
           'entityId' => $project->entity_id,
-          'entityTitle' => $entityTitle,
+          'entityTitle' => $event['title'],
+          // Seeds a *new* project's campaign from the event's own; see
+          // ang/volunteer/Project.js. An existing project keeps whatever it was
+          // given.
+          'entityCampaignId' => $event['campaign_id'] ?? NULL,
           'context' => 'eventTab',
     ));
   }

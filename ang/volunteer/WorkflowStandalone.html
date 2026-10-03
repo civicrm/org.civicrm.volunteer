@@ -1,0 +1,6 @@
+<div class="crm-container crm-vol-workflow-standalone">
+  <div ng-switch="model.step">
+    <div ng-switch-when="roster"><div ng-include="'~/volunteer/RosterBody.html'"></div></div>
+    <div ng-switch-when="hours"><div ng-include="'~/volunteer/HoursBody.html'"></div></div>
+  </div>
+</div>

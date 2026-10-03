@@ -1,25 +1,25 @@
 .volunteer-commendation {
   cursor: pointer;
-  min-height: 25px;
-  min-width: 25px;
+  min-height: 30px;
+  min-width: 30px;
 }
 
-.volunteer-commendation span {
+.volunteer-commendation > span[aria-hidden="true"] {
   background: url('../img/stars.png') no-repeat -26px 0px;
   display: block;
   height: 25px;
   width: 26px;
 }
 
-.volunteer-commendation:hover span {
+.volunteer-commendation:hover > span[aria-hidden="true"] {
   background-position: -26px -25px;
 }
 
-.volunteer-commendation.commended span {
+.volunteer-commendation.commended > span[aria-hidden="true"] {
   background-position: 0 0;
 }
 
-.volunteer-commendation.commended:hover span {
+.volunteer-commendation.commended:hover > span[aria-hidden="true"] {
   background-position: 0 -25px;
 }
 

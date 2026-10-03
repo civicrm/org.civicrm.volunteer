@@ -37,13 +37,27 @@ class CRM_Volunteer_Form_Commendation extends CRM_Core_Form {
     $this->_cid = CRM_Utils_Request::retrieve('cid', 'Positive', $this, FALSE);
     $this->_vid = CRM_Utils_Request::retrieve('vid', 'Positive', $this, FALSE);
 
-    if (!CRM_Volunteer_Permission::checkProjectPerms(CRM_Core_Action::UPDATE, $this->_vid)) {
-      CRM_Utils_System::permissionDenied();
+    if ($this->_aid) {
+      $commendations = CRM_Volunteer_BAO_Commendation::retrieve(array('id' => $this->_aid));
+      $commendation = $commendations[$this->_aid] ?? NULL;
+      if (!$commendation) {
+        throw new CRM_Core_Exception(ts('The volunteer commendation does not exist.', array('domain' => 'org.civicrm.volunteer')));
+      }
+      $commendationProjectId = (int) ($commendation['volunteer_project_id'] ?? 0);
+      $commendationContactId = (int) ($commendation['volunteer_contact_id'] ?? 0);
+      if (($this->_vid && (int) $this->_vid !== $commendationProjectId)
+        || ($this->_cid && (int) $this->_cid !== $commendationContactId)) {
+        throw new CRM_Core_Exception(ts('The supplied project or contact does not match this commendation.', array('domain' => 'org.civicrm.volunteer')));
+      }
+      $this->_vid = $commendationProjectId;
+      $this->_cid = $commendationContactId;
     }
 
     if (!$this->_aid && !($this->_cid && $this->_vid)) {
-      CRM_Core_Error::fatal("Form expects an activity ID or both a contact and a volunteer project ID.");
+      throw new CRM_Core_Exception(ts('The commendation form requires an activity ID or both a contact and volunteer project ID.', array('domain' => 'org.civicrm.volunteer')));
     }
+
+    CRM_Volunteer_Permission::assertProjectPerms(CRM_Core_Action::UPDATE, $this->_vid);
 
     $check = array(
       'Activity' => $this->_aid,
@@ -52,18 +66,19 @@ class CRM_Volunteer_Form_Commendation extends CRM_Core_Form {
     );
     $errors = array();
     foreach ($check as $entityType => $entityID) {
-      if (!$this->entityExists($entityType, $entityID)) {
+      if ($entityID && !$this->entityExists($entityType, $entityID)) {
         $errors[] = "No $entityType with ID $entityID exists.";
       }
     }
     if (count($errors)) {
-      CRM_Core_Error::fatal("Invalid parameter(s) passed to commendation form: " . implode(' ', $errors));
+      throw new CRM_Core_Exception(ts('Invalid parameters were passed to the commendation form: %1', array(1 => implode(' ', $errors), 'domain' => 'org.civicrm.volunteer')));
     }
 
-    $contact_display_name = civicrm_api3('Contact', 'getvalue', array(
-      'id' => $this->_cid,
-      'return' => 'display_name',
-    ));
+    $contact_display_name = \Civi\Api4\Contact::get(FALSE)
+      ->addSelect('display_name')
+      ->addWhere('id', '=', $this->_cid)
+      ->execute()
+      ->first()['display_name'] ?? '';
     CRM_Utils_System::setTitle(
       ts('Commend %1', array(1 => $contact_display_name, 'domain' => 'org.civicrm.volunteer'))
     );
@@ -80,10 +95,13 @@ class CRM_Volunteer_Form_Commendation extends CRM_Core_Form {
    * @return boolean
    */
   private function entityExists($entityType, $entityID) {
-    $cnt = civicrm_api3($entityType, 'getcount', array(
-      'id' => $entityID,
+    // API4 has no getcount action; a row_count select is its equivalent.
+    $result = civicrm_api4($entityType, 'get', array(
+      'checkPermissions' => FALSE,
+      'select' => array('row_count'),
+      'where' => array(array('id', '=', $entityID)),
     ));
-    return ($cnt > 0);
+    return $result->count() > 0;
   }
 
   /**
@@ -148,9 +166,10 @@ class CRM_Volunteer_Form_Commendation extends CRM_Core_Form {
 
     if (array_key_exists('_qf_Commendation_submit_delete', $values)) {
       // this is our delete condition
-      civicrm_api3('Activity', 'delete', array(
-        'id' => $this->_aid,
-      ));
+      // preProcess() already asserted project authority for this commendation.
+      \Civi\Api4\VolunteerCommendation::delete(FALSE)
+        ->addWhere('id', '=', $this->_aid)
+        ->execute();
       $this->_action = CRM_Core_Action::DELETE;
     } else {
       // this is our create/update condition

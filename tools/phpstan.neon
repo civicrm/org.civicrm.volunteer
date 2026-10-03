@@ -1,0 +1,36 @@
+# Static analysis for CiviVolunteer's own code.
+#
+# Run from the repository root so CiviCRM's Composer plugins resolve paths
+# against the codebase rather than the extension:
+#   vendor/bin/phpstan analyse -c web/sites/default/civicrm/extensions/custom/civivolunteer/tools/phpstan.neon
+#
+# Generated civix scaffolding, the vendored civimix-schema library and the
+# CodeGen DAOs are excluded from analysis but kept on the symbol path.
+# phpstan-baseline.neon records the pre-existing debt in legacy files so CI can
+# gate on *new* errors. Regenerate it deliberately, never to silence a new one:
+#   vendor/bin/phpstan analyse -c tools/phpstan.neon \
+#     --generate-baseline=tools/phpstan-baseline.neon
+includes:
+  - phpstan-baseline.neon
+
+parameters:
+  level: 5
+  paths:
+    - ../Civi
+    - ../CRM
+    - ../api
+    - ../schema
+  excludePaths:
+    # analyse-only: the DAOs stay on the symbol path so everything that extends
+    # or references them still type-checks.
+    analyse:
+      - ../CRM/Volunteer/DAO
+  scanDirectories:
+    - ../mixin
+  scanFiles:
+    - phpstan-stubs.php
+    - ../volunteer.php
+    - ../volunteer.civix.php
+  bootstrapFiles:
+    - phpstan-bootstrap.php
+  reportUnmatchedIgnoredErrors: true

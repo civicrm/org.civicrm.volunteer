@@ -1,0 +1,108 @@
+<section class="crm-vol-workflow-section crm-vol-shifts" aria-labelledby="crm-vol-shifts-heading">
+  <header class="crm-vol-section-header">
+    <div>
+      <h2 id="crm-vol-shifts-heading">{{:: ts('Shifts & roles') }}</h2>
+      <p>{{:: ts('Each row is one role at one time, and how many people you need. Changes save automatically.') }}</p>
+    </div>
+    <button type="button" class="button" ng-click="addShift()"><i class="crm-i fa-plus" aria-hidden="true"></i> {{:: ts('Add shift') }}</button>
+  </header>
+
+  <div class="crm-loading-element" ng-if="loading">{{:: ts('Loading…') }}</div>
+  <div class="crm-vol-shift-filter-panel" ng-if="!loading">
+    <div class="crm-vol-shift-quick-filters" role="group" aria-label="{{:: ts('Quick date filters') }}">
+      <strong>{{:: ts('Date') }}</strong>
+      <button type="button" ng-class="{'is-active': ui.appliedShiftFilters.dateScope === 'upcoming'}" aria-pressed="{{ui.appliedShiftFilters.dateScope === 'upcoming'}}" ng-click="setShiftDateScope('upcoming')">{{:: ts('Upcoming') }}</button>
+      <button type="button" ng-class="{'is-active': ui.appliedShiftFilters.dateScope === 'today'}" aria-pressed="{{ui.appliedShiftFilters.dateScope === 'today'}}" ng-click="setShiftDateScope('today')">{{:: ts('Today') }}</button>
+      <button type="button" ng-class="{'is-active': ui.appliedShiftFilters.dateScope === 'this_week'}" aria-pressed="{{ui.appliedShiftFilters.dateScope === 'this_week'}}" ng-click="setShiftDateScope('this_week')">{{:: ts('This week') }}</button>
+      <button type="button" ng-class="{'is-active': ui.appliedShiftFilters.dateScope === 'next_week'}" aria-pressed="{{ui.appliedShiftFilters.dateScope === 'next_week'}}" ng-click="setShiftDateScope('next_week')">{{:: ts('Next week') }}</button>
+      <button type="button" ng-class="{'is-active': ui.appliedShiftFilters.dateScope === 'last_week'}" aria-pressed="{{ui.appliedShiftFilters.dateScope === 'last_week'}}" ng-click="setShiftDateScope('last_week')">{{:: ts('Last week') }}</button>
+      <button type="button" ng-class="{'is-active': ui.appliedShiftFilters.dateScope === 'all'}" aria-pressed="{{ui.appliedShiftFilters.dateScope === 'all'}}" ng-click="setShiftDateScope('all')">{{:: ts('All') }}</button>
+    </div>
+
+    <form name="shiftFilterForm" class="crm-vol-shift-filter-form" crm-ui-id-scope ng-submit="applyCustomShiftRange(shiftFilterForm)" novalidate>
+      <div class="crm-vol-shift-custom-range">
+        <strong>{{:: ts('Custom range') }}</strong>
+        <label><span>{{:: ts('From') }}</span><input name="dateFrom" crm-ui-id="shiftFilterForm.dateFrom" class="crm-form-text" crm-ui-datepicker="{time: false}" ng-model="ui.shiftFilters.dateFrom" aria-describedby="crm-vol-shift-filter-error"></label>
+        <label><span>{{:: ts('To') }}</span><input name="dateTo" crm-ui-id="shiftFilterForm.dateTo" class="crm-form-text" crm-ui-datepicker="{time: false}" ng-model="ui.shiftFilters.dateTo" aria-describedby="crm-vol-shift-filter-error"></label>
+        <button type="submit" class="button">{{:: ts('Apply dates') }}</button>
+      </div>
+
+      <div class="crm-vol-shift-option-filters">
+        <label><span>{{:: ts('Schedule') }}</span><select ng-model="ui.shiftFilters.scheduleMode" ng-change="applyShiftOptionFilters()"><option value="any">{{:: ts('Any schedule') }}</option><option value="fixed">{{:: ts('Fixed shifts') }}</option><option value="window">{{:: ts('Time windows') }}</option><option value="ongoing">{{:: ts('Ongoing only') }}</option></select></label>
+        <label><span>{{:: ts('Role') }}</span><select ng-model="ui.shiftFilters.roleId" ng-change="applyShiftOptionFilters()" ng-options="role.id as role.label for role in roles"><option value="">{{:: ts('Any role') }}</option></select></label>
+        <label><span>{{:: ts('Sign-ups') }}</span><select ng-model="ui.shiftFilters.signupStatus" ng-change="applyShiftOptionFilters()"><option value="any">{{:: ts('Any status') }}</option><option value="accepting">{{:: ts('Accepting sign-ups') }}</option><option value="not_accepting">{{:: ts('Not accepting sign-ups') }}</option></select></label>
+        <button type="button" class="crm-vol-link-button" ng-click="resetShiftFilters()">{{:: ts('Reset filters') }}</button>
+      </div>
+
+      <p id="crm-vol-shift-filter-error" class="crm-vol-shift-filter-error" role="alert" ng-if="ui.shiftFilterError || shiftFilterForm.dateFrom.$invalid || shiftFilterForm.dateTo.$invalid">{{:: ts('Enter valid dates, with the start date no later than the end date.') }}</p>
+    </form>
+    <p class="crm-vol-shift-result-count" role="status">{{ts('Showing %1 of %2 shifts', {1: visibleNeeds.length, 2: needs.length})}}</p>
+  </div>
+
+  <div class="crm-vol-shift-table" ng-if="!loading">
+    <div class="crm-vol-shift-header" aria-hidden="true">
+      <span>{{:: ts('Role') }}</span><span>{{:: ts('Spots') }}</span><span>{{:: ts('When') }}</span><span>{{:: ts('Visibility') }}</span><span></span>
+    </div>
+    <article class="crm-vol-shift-row" ng-repeat="need in visibleNeeds track by (need.id || need._clientId)">
+      <div class="crm-vol-shift-role">
+        <label class="sr-only" for="crm-vol-role-{{$index}}">{{:: ts('Volunteer role') }}</label>
+        <select id="crm-vol-role-{{$index}}" ng-model="need.role_id" ng-options="role.id as role.label for role in roles" ng-change="saveNeed(need)">
+          <option value="">{{:: ts('Select a role') }}</option>
+        </select>
+        <div class="crm-vol-inline-links">
+          <span ng-if="(roles | filter:{id: need.role_id}:true)[0].description" ng-bind-html="(roles | filter:{id: need.role_id}:true)[0].description"></span>
+          <a ng-if="workflow.supporting.manage_roles_url" ng-href="{{workflow.supporting.manage_roles_url}}" target="_blank" rel="noopener">{{:: ts('Manage roles') }}</a>
+        </div>
+      </div>
+      <div>
+        <label class="sr-only" for="crm-vol-spots-{{$index}}">{{:: ts('Spots') }}</label>
+        <input id="crm-vol-spots-{{$index}}" type="number" min="0" step="1" ng-model="need.quantity" ng-model-options="{debounce: 450}" ng-change="saveNeed(need)">
+      </div>
+      <div class="crm-vol-shift-when">
+        <div class="crm-vol-segmented">
+          <label><input type="radio" ng-model="need.schedule_mode" value="fixed" ng-change="changeSchedule(need)"> {{:: ts('Fixed shift') }}</label>
+          <label><input type="radio" ng-model="need.schedule_mode" value="window" ng-change="changeSchedule(need)"> {{:: ts('Any time in a window') }}</label>
+          <label><input type="radio" ng-model="need.schedule_mode" value="ongoing" ng-change="changeSchedule(need)"> {{:: ts('Ongoing') }}</label>
+        </div>
+        <div class="crm-vol-schedule-inputs">
+          <span class="crm-vol-schedule-label" ng-if="need.schedule_mode === 'ongoing'">{{:: ts('Starts') }}</span>
+          <input class="crm-form-text" crm-ui-datepicker="{time: true}" ng-model="need.start_time" ng-change="saveNeed(need)" aria-label="{{:: ts('Start date and time') }}">
+          <span ng-if="need.schedule_mode === 'window'">{{:: ts('to') }}</span>
+          <input ng-if="need.schedule_mode === 'window'" class="crm-form-text" crm-ui-datepicker="{time: true}" ng-model="need.end_time" ng-change="saveNeed(need)" aria-label="{{:: ts('End date and time') }}">
+          <span class="crm-vol-duration" ng-if="need.schedule_mode !== 'ongoing'"><input type="number" min="0" step="1" ng-model="need.duration" ng-model-options="{debounce: 450}" ng-change="saveNeed(need)" aria-label="{{:: ts('Duration in minutes') }}"> {{:: ts('minutes') }}</span>
+        </div>
+      </div>
+      <div class="crm-vol-shift-visibility">
+        <label><input type="checkbox" ng-model="need.public" ng-change="saveNeed(need)"> {{:: ts('On the public page') }}</label>
+        <label><input type="checkbox" ng-model="need.accepting" ng-change="saveNeed(need)"> {{:: ts('Accepting sign-ups') }}</label>
+      </div>
+      <div class="crm-vol-shift-actions">
+        <span class="crm-vol-save-state" ng-class="'is-' + need.saveState" aria-live="polite">
+          <i class="crm-i" ng-class="need.saveState === 'saving' ? 'fa-spinner fa-spin' : (need.saveState === 'error' ? 'fa-exclamation-triangle' : 'fa-check')" aria-hidden="true"></i>
+          {{need.saveState === 'saving' ? ts('Saving') : (need.saveState === 'error' ? ts('Not saved') : ts('Saved'))}}
+        </span>
+        <span class="crm-vol-filled-count">{{ts('%1 of %2 filled', {1: need.assignment_count, 2: need.quantity || 0})}}</span>
+        <button type="button" class="crm-vol-link-button" ng-click="duplicateNeed(need)">{{:: ts('Duplicate') }}</button>
+        <button type="button" class="crm-vol-link-button crm-vol-destructive-action" ng-click="deleteNeed(need)">{{:: ts('Delete') }}</button>
+      </div>
+    </article>
+
+    <div class="crm-vol-shift-empty" ng-if="!visibleNeeds.length">
+      <i class="crm-i fa-filter" aria-hidden="true"></i>
+      <div><strong>{{:: ts('No shifts match these filters.') }}</strong><p>{{:: ts('Try another date range or reset the filters to see upcoming shifts.') }}</p></div>
+      <button type="button" class="crm-vol-link-button" ng-click="resetShiftFilters()">{{:: ts('Reset filters') }}</button>
+    </div>
+
+    <div class="crm-vol-flexible-row" ng-if="flexibleNeed">
+      <button type="button" class="crm-hover-button" ng-click="addShift()"><i class="crm-i fa-plus" aria-hidden="true"></i> {{:: ts('Add another shift') }}</button>
+      <label><input type="checkbox" ng-model="flexibleNeed.public" ng-change="saveFlexible()"> {{:: ts('Let people volunteer without picking a shift') }}</label>
+    </div>
+  </div>
+
+  <div class="crm-submit-buttons" ng-if="!dialogMode">
+    <button type="button" class="crm-button crm-vol-primary-action" ng-click="continueToAssign()" ng-disabled="workflow.pending">
+      {{:: ts('Continue to assign volunteers') }} <i class="crm-i fa-arrow-right" aria-hidden="true"></i>
+    </button>
+    <button type="button" class="crm-hover-button" ng-click="cancelWorkflow()">{{:: ts('Cancel') }}</button>
+  </div>
+</section>

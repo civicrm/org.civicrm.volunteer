@@ -1,0 +1,65 @@
+<div class="crm-container crm-vol-workflow" ng-class="['crm-vol-step-' + $ctrl.workflow.step, {'crm-vol-workflow--embedded': $ctrl.isEmbedded()}]">
+  <header class="crm-vol-workflow-header">
+    <div class="crm-vol-workflow-heading">
+      <!-- Embedded in CiviEvent's Volunteers tab the page already has its own
+           breadcrumb and title, and this breadcrumb's target is an Angular
+           route -- so following it rendered the standalone project list inside
+           the event tab. -->
+      <div class="crm-vol-breadcrumb" ng-if="!$ctrl.isEmbedded()">
+        <a href="#/volunteer/manage">{{:: $ctrl.ts('Volunteer projects') }}</a>
+        <span aria-hidden="true">/</span>
+        <span>{{$ctrl.workflow.project.title || $ctrl.ts('New project')}}</span>
+      </div>
+      <h1 ng-if="!$ctrl.isEmbedded()">{{$ctrl.workflow.project.title || $ctrl.ts('New volunteer project')}}</h1>
+      <div class="crm-vol-project-meta">
+        <!-- Rendered only once the project's real status is known: a select bound
+             to undefined would commit a value of its own and silently persist it. -->
+        <label class="sr-only" for="crm-vol-project-status"
+               ng-if="$ctrl.workflow.project.is_active === true || $ctrl.workflow.project.is_active === false">{{:: $ctrl.ts('Project status') }}</label>
+        <select id="crm-vol-project-status"
+                ng-if="$ctrl.workflow.project.is_active === true || $ctrl.workflow.project.is_active === false"
+                ng-model="$ctrl.workflow.project.is_active"
+                ng-change="$ctrl.setActive()"
+                ng-disabled="!$ctrl.workflow.projectId || $ctrl.workflow.statusSaving">
+          <option ng-value="true">{{:: $ctrl.ts('Active') }}</option>
+          <option ng-value="false">{{:: $ctrl.ts('Inactive') }}</option>
+        </select>
+        <span ng-if="$ctrl.workflow.beneficiaryNames.length">
+          {{:: $ctrl.ts('Beneficiary:') }} {{$ctrl.workflow.beneficiaryNames.join(', ')}}
+        </span>
+        <span class="crm-vol-capacity-meta" ng-if="$ctrl.workflow.summary.total">
+          {{$ctrl.ts('%1 of %2 spots filled', {1: $ctrl.workflow.summary.filled, 2: $ctrl.workflow.summary.total})}}
+        </span>
+      </div>
+    </div>
+    <div class="crm-vol-workflow-actions">
+      <button type="button" class="crm-hover-button" ng-click="$ctrl.preview()" ng-disabled="!$ctrl.workflow.projectId">
+        {{:: $ctrl.ts('Preview public page') }}
+      </button>
+      <!-- Details carries its own Cancel in the submit row; a second one in the
+           header only duplicates it. The other four steps have none. -->
+      <button type="button" class="crm-hover-button" ng-if="$ctrl.workflow.step !== 'details'" ng-click="$ctrl.cancel()">{{:: $ctrl.ts('Cancel') }}</button>
+      <button type="button" class="button" ng-if="$ctrl.workflow.manualSave" ng-click="$ctrl.save()" ng-disabled="$ctrl.workflow.saving">
+        {{:: $ctrl.ts('Save changes') }}
+      </button>
+      <span class="crm-vol-autosave-state" ng-if="$ctrl.workflow.autoSave" aria-live="polite">
+        <i class="crm-i" ng-class="$ctrl.workflow.pending ? 'fa-spinner fa-spin' : ($ctrl.workflow.saveError ? 'fa-exclamation-triangle' : 'fa-check')" aria-hidden="true"></i>
+        {{$ctrl.workflow.pending ? $ctrl.ts('Saving') : ($ctrl.workflow.saveError ? $ctrl.ts('Not saved') : $ctrl.ts('Changes saved'))}}
+      </span>
+    </div>
+  </header>
+
+  <nav class="crm-vol-workflow-tabs" aria-label="{{:: $ctrl.ts('Volunteer project sections') }}">
+    <!-- `nav-tabs` inside CiviEvent's own tab bar reads as a second row of
+         page tabs. Embedded, this is a sub-navigation within one tab. -->
+    <ul ng-class="$ctrl.isEmbedded() ? 'crm-vol-workflow-steps' : 'nav nav-tabs'" role="tablist">
+      <li ng-repeat="step in $ctrl.steps" ng-class="{active: step.id === $ctrl.workflow.step, disabled: !$ctrl.workflow.projectId && step.id !== $ctrl.workflow.step}">
+        <a href="" role="tab" ng-click="$ctrl.go(step.id)" ng-attr-aria-current="{{step.id === $ctrl.workflow.step ? 'page' : undefined}}" ng-attr-aria-disabled="{{(!$ctrl.workflow.projectId && step.id !== $ctrl.workflow.step) || undefined}}">
+          {{step.label}}
+        </a>
+      </li>
+    </ul>
+  </nav>
+
+  <main class="crm-vol-workflow-content" ng-transclude></main>
+</div>

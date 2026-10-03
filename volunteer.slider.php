@@ -84,10 +84,7 @@ function _volunteer_addSliderWidget(CRM_Core_Form &$form) {
  * @return array
  */
 function _volunteer_get_slider_fields() {
-  $result = civicrm_api3('setting', 'getvalue', array(
-    'name' => 'slider_widget_fields',
-    'group' => 'CiviVolunteer Configurations',
-  ));
+  $result = CRM_Volunteer_Api4::getSetting('slider_widget_fields');
   return is_array($result) ? $result : array();
 }
 
@@ -124,7 +121,7 @@ function _volunteer_update_slider_fields(array $params) {
   }
 
   sort($widgetized_fields);
-  civicrm_api3('Setting', 'create', array(
+  CRM_Volunteer_Api4::setSettings(array(
     'slider_widget_fields' => $widgetized_fields,
   ));
 

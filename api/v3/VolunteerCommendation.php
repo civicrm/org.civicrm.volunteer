@@ -45,6 +45,22 @@
  * @access public
  */
 function civicrm_api3_volunteer_commendation_get($params) {
+  if (CRM_Volunteer_Permission::shouldCheckPermissions($params)
+    && !CRM_Volunteer_Permission::check('edit all volunteer projects')) {
+    $projectId = (int) ($params['volunteer_project_id'] ?? 0);
+    if (!$projectId && !empty($params['id'])) {
+      $commendations = CRM_Volunteer_BAO_Commendation::retrieve(array('id' => $params['id']));
+      $commendation = reset($commendations);
+      $projectId = (int) ($commendation['volunteer_project_id'] ?? 0);
+    }
+    if (!$projectId) {
+      throw new API_Exception(ts('A volunteer project ID is required to retrieve commendations.', array('domain' => 'org.civicrm.volunteer')));
+    }
+    CRM_Volunteer_Permission::assertProjectPerms(CRM_Core_Action::UPDATE, $projectId);
+  }
+  if (!CRM_Volunteer_Permission::isInternalBypassActive()) {
+    $params = CRM_Volunteer_Permission::enforceChainedApiPermissions($params);
+  }
   $result = CRM_Volunteer_BAO_Commendation::retrieve($params);
   return civicrm_api3_create_success($result, $params, 'Activity', 'get');
 }

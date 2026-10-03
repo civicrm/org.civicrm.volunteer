@@ -22,11 +22,13 @@ abstract class CRM_Volunteer_BAO_Activity extends CRM_Activity_DAO_Activity {
         'return' => array('id', 'table_name'),
       );
 
-      static::$customGroup = civicrm_api3('CustomGroup', 'getsingle', $params);
-
-      unset(static::$customGroup['extends']);
-      unset(static::$customGroup['is_active']);
-      unset(static::$customGroup['name']);
+      static::$customGroup = \Civi\Api4\CustomGroup::get(FALSE)
+        ->addSelect('id', 'table_name')
+        ->addWhere('extends', '=', $params['extends'])
+        ->addWhere('is_active', '=', TRUE)
+        ->addWhere('name', '=', $params['name'])
+        ->execute()
+        ->single();
     }
     return static::$customGroup;
   }
@@ -48,15 +50,20 @@ abstract class CRM_Volunteer_BAO_Activity extends CRM_Activity_DAO_Activity {
         'return' => array('id', 'column_name', 'name', 'data_type'),
       );
 
-      $fields = civicrm_api3('CustomField', 'get', $params);
+      $fields = \Civi\Api4\CustomField::get(FALSE)
+        ->addSelect('id', 'column_name', 'name', 'data_type')
+        ->addWhere('custom_group_id', '=', $custom_group['id'])
+        ->addWhere('is_active', '=', TRUE)
+        ->execute();
 
-      if (($fields['count'] ?? 0) < 1) {
-        CRM_Core_Error::fatal('CiviVolunteer-defined custom fields appear to be missing (custom field group' . static::CUSTOM_GROUP_NAME . ').');
+      if ($fields->countFetched() < 1) {
+        throw new CRM_Core_Exception(ts('CiviVolunteer custom fields are missing from custom group %1.', array(1 => static::CUSTOM_GROUP_NAME, 'domain' => 'org.civicrm.volunteer')));
       }
 
-      foreach ($fields['values'] as $field) {
+      foreach ($fields as $field) {
         static::$customFields[strtolower($field['name'])] = array(
           'id' => $field['id'],
+          'name' => $field['name'],
           'column_name' => $field['column_name'],
           'custom_n' => 'custom_' . $field['id'],
           'data_type' => $field['data_type'],

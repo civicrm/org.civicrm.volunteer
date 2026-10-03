@@ -1,0 +1,27 @@
+<div af-fieldset="" class="crm-vol-hours-report">
+  <p class="help af-text">
+    {{:: ts('Report on assigned volunteer shifts and their logged hours. General availability is not included. The date filter uses the shift start date.') }}
+  </p>
+
+  <details class="af-container af-layout-inline crm-vol-hours-filters" open af-title="Report filters">
+    <af-field name="shift_start" defn="{label: 'Shift Date', input_type: 'Select', search_range: true, afform_default: 'this.year', options: [{id: '{}', label: 'Custom date range'}, {id: 'this.year', label: 'This calendar year'}, {id: 'current.year', label: 'Current year to-date'}, {id: 'previous.year', label: 'Previous calendar year'}, {id: 'this.month', label: 'This calendar month'}, {id: 'ending.week', label: 'Last 7 days including today'}, {id: 'ending_30.day', label: 'Last 30 days including today'}, {id: 'ending_90.day', label: 'Last 90 days including today'}], input_attrs: {}}" />
+    <af-field name="volunteer_contact_id" defn="{label: 'Volunteer', input_attrs: {multiple: true}}" />
+    <af-field ng-if="!options.project_id" name="project_id" defn="{label: 'Project', input_attrs: {multiple: true}}" />
+    <af-field name="role_id" defn="{label: 'Role', input_attrs: {multiple: true}}" />
+    <af-field name="status_id" defn="{label: 'Assignment Status', input_attrs: {multiple: true}}" />
+    <af-field name="hours_entry_state" defn="{label: 'Hours Entry State', input_attrs: {multiple: true}}" />
+  </details>
+
+  <section class="crm-vol-hours-kpis" aria-label="Volunteer hours totals">
+    <crm-search-display-table search-name="Volunteer_Hours_Headline" display-name="Volunteer_Hours_Headline" filters="{project_id: options.project_id}"></crm-search-display-table>
+  </section>
+
+  <div crm-ui-tab-set="" class="crm-vol-hours-tabs">
+    <div crm-ui-tab="" crm-title="ts('Volunteer Summary')" id="tab-volunteer-hours-summary">
+      <crm-search-display-table search-name="Volunteer_Hours_Summary" display-name="Volunteer_Hours_Summary" filters="{project_id: options.project_id}"></crm-search-display-table>
+    </div>
+    <div crm-ui-tab="" crm-title="ts('Assignment Detail')" id="tab-volunteer-hours-detail">
+      <crm-search-display-table search-name="Volunteer_Hours_Detail" display-name="Volunteer_Hours_Detail" filters="{project_id: options.project_id}"></crm-search-display-table>
+    </div>
+  </div>
+</div>

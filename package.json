@@ -1,0 +1,17 @@
+{
+  "name": "civivolunteer-dev",
+  "private": true,
+  "description": "Development-only tooling for the CiviVolunteer extension: AngularJS unit tests under Jest/jsdom and Playwright end-to-end tests. Not part of the release archive.",
+  "license": "AGPL-3.0",
+  "scripts": {
+    "test": "npm run test:js && npm run test:angular",
+    "test:js": "tools/run-js-tests.sh",
+    "test:angular": "jest --config tests/angular/jest.config.js",
+    "test:e2e": "playwright test --config tests/e2e/playwright.config.js"
+  },
+  "devDependencies": {
+    "@playwright/test": "1.62.1",
+    "jest": "30.5.1",
+    "jest-environment-jsdom": "30.5.1"
+  }
+}

@@ -1,0 +1,613 @@
+.crm-vol-public-workflow,
+.crm-vol-signup-page {
+  box-sizing: border-box;
+  color: var(--crm-text-color, #25313e);
+}
+
+.crm-vol-public-workflow *,
+.crm-vol-signup-page * {
+  box-sizing: border-box;
+}
+
+/* The hero is padded off its own containing block, not the viewport, so its
+ * copy lines up with .crm-vol-public-content exactly -- both resolve the same
+ * "centre an 80rem column" arithmetic against the same box.
+ *
+ * The previous rule bled the hero out with a hard-coded -1rem margin and
+ * padded it with (100vw - 80rem)/2. Riverlea sets --crm-page-padding per CMS
+ * (0, 1rem, 2rem, 3rem, 1rem 3rem, 0.5rem 1.25rem), so that margin was right
+ * on exactly one of them: elsewhere the hero either failed to reach the edge
+ * or overhung the container and produced a horizontal scrollbar on phones.
+ * 100vw also counts the scrollbar, which the content box does not, so the two
+ * were offset from each other even in the best case. */
+.crm-vol-public-hero,
+.crm-vol-signup-hero {
+  background: var(--crm-vol-hero);
+  color: var(--crm-vol-hero-text);
+  margin: 0;
+  padding: 2rem max(var(--crm-l-reg, 1rem), calc((100% - 80rem) / 2));
+}
+
+.crm-vol-public-hero h1,
+.crm-vol-signup-hero h1 {
+  background: transparent;
+  color: inherit;
+  font-size: clamp(1.8rem, 4vw, 2.35rem);
+  line-height: 1.1;
+  margin: 0.55rem 0 0.8rem;
+  max-width: 34rem;
+  padding: 0;
+}
+
+.crm-vol-public-hero p {
+  color: inherit;
+  font-size: 1.05rem;
+  line-height: 1.45;
+  margin: 0;
+  max-width: 45rem;
+  /* Riverlea's --crm-secondary-color is #5d677b, much lighter than the
+   * wireframe's navy. At 0.82 this copy fell to ~4.2:1 against it; 0.92 keeps
+   * it above the 4.5:1 floor while still reading as secondary. */
+  opacity: 0.92;
+}
+
+.crm-vol-public-eyebrow {
+  font-size: 0.75rem;
+  font-weight: bold;
+  letter-spacing: 0.14em;
+  /* Small and bold is still "normal" text for contrast purposes. */
+  opacity: 0.9;
+  text-transform: uppercase;
+}
+
+.crm-vol-public-content {
+  margin: 0 auto;
+  max-width: 80rem;
+  padding: 1.6rem 0;
+}
+
+.crm-vol-quick-filters {
+  align-items: center;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.55rem;
+  margin-bottom: 0.9rem;
+}
+
+.crm-vol-quick-filters > span {
+  color: var(--crm-vol-muted);
+}
+
+.crm-container .crm-vol-quick-filters button,
+.crm-container .crm-vol-public-secondary,
+.crm-container .crm-vol-flexible-action {
+  background: var(--crm-vol-paper);
+  border: 1px solid var(--crm-vol-border);
+  border-radius: 999px;
+  color: var(--crm-link-color, #0878c9);
+  min-height: 2rem;
+  padding: 0.3rem 0.8rem;
+}
+
+.crm-container .crm-vol-quick-filters button.is-active {
+  background: var(--crm-secondary-color, #2f4558);
+  border-color: var(--crm-secondary-color, #2f4558);
+  color: var(--crm-secondary-text-color, #fff);
+}
+
+.crm-vol-more-filters {
+  background: var(--crm-layer1-bg-color, #f5f7f9);
+  border: 1px solid var(--crm-vol-border);
+  border-radius: var(--crm-l-radius, 5px);
+  margin-bottom: 1rem;
+  padding: 1rem;
+}
+
+.crm-vol-more-filters > h2 {
+  background: transparent;
+  color: var(--crm-text-color, #25313e);
+  font-size: 1rem;
+  margin: 0 0 0.8rem;
+  padding: 0;
+}
+
+.crm-vol-public-filter-grid {
+  display: grid;
+  gap: 0.9rem;
+  grid-template-columns: repeat(auto-fit, minmax(13rem, 1fr));
+}
+
+.crm-vol-opportunity-filter-grid {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+.crm-vol-public-filter-grid .crm-section,
+.crm-vol-public-filter-grid .crm-section > .label,
+.crm-vol-public-filter-grid .crm-section > .content {
+  float: none;
+  margin: 0;
+  padding: 0;
+  text-align: left;
+  width: 100%;
+}
+
+.crm-vol-public-filter-grid :is(input:not(.four), select, .select2-container) {
+  max-width: 100%;
+  width: 100% !important;
+}
+
+.crm-vol-public-filter-grid .crm-vol-date-range,
+.crm-vol-public-filter-grid .crm-vol-radius-fields {
+  flex-wrap: nowrap;
+  min-width: 0;
+}
+
+.crm-vol-opportunity-filter-grid .crm-vol-date-range {
+  display: grid;
+  gap: var(--crm-l-medium, 0.5rem);
+  grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr);
+  width: 100%;
+}
+
+.crm-vol-opportunity-filter-grid .crm-vol-date-range > .crm-form-date-wrapper {
+  min-width: 0;
+  width: 100%;
+}
+
+.crm-vol-public-filter-grid .crm-vol-date-range input {
+  flex: 1 1 0;
+  min-width: 0;
+  width: auto !important;
+}
+
+.crm-vol-opportunity-filter-grid .crm-vol-date-range .crm-form-date {
+  width: 100% !important;
+}
+
+.crm-vol-public-filter-grid .crm-vol-radius-fields input {
+  flex: 0 1 6rem;
+  min-width: 0;
+  width: 6rem !important;
+}
+
+.crm-vol-public-filter-grid .crm-vol-radius-fields select,
+.crm-vol-public-filter-grid .crm-vol-radius-fields .select2-container {
+  flex: 0 1 7rem;
+  min-width: 4.5rem;
+  width: 7rem !important;
+}
+
+.crm-vol-filter-field-error {
+  color: var(--crm-danger-color, #b42318);
+  display: block;
+  font-size: 0.85rem;
+  margin-top: 0.35rem;
+}
+
+.crm-vol-filter-field-note {
+  color: var(--crm-vol-muted);
+  display: block;
+  font-size: 0.85rem;
+  line-height: 1.35;
+  margin-top: 0.35rem;
+}
+
+.crm-vol-filter-validation {
+  display: flex;
+  flex-direction: column;
+  gap: 0.15rem;
+  margin: 1rem 0 0;
+}
+
+.crm-vol-more-filters select.ng-invalid.ng-dirty + .select2-container .select2-choice {
+  border-color: var(--crm-danger-color, #b42318);
+}
+
+.crm-vol-public-filter-actions {
+  align-items: center;
+  border-top: 1px solid var(--crm-vol-border);
+  display: flex;
+  gap: 0.6rem;
+  justify-content: flex-start;
+  margin-top: 1rem;
+  padding-top: 0.9rem;
+}
+
+.crm-vol-public-grid,
+.crm-vol-signup-layout {
+  align-items: start;
+  display: grid;
+  gap: 1.6rem;
+  grid-template-columns: minmax(0, 1fr) minmax(17rem, 20rem);
+}
+
+.crm-vol-results-status {
+  color: var(--crm-vol-muted);
+  font-size: 0.85rem;
+  margin: 0 0 0.75rem;
+}
+
+.crm-vol-shift-group > h2,
+.crm-vol-flexible-section > h2 {
+  background: transparent;
+  color: var(--crm-vol-muted);
+  font-size: 0.8rem;
+  letter-spacing: 0.08em;
+  margin: 1rem 0 0.55rem;
+  padding: 0;
+  text-transform: uppercase;
+}
+
+.crm-vol-shift-group:first-child > h2 {
+  margin-top: 0;
+}
+
+.crm-vol-opportunity-card {
+  align-items: start;
+  background: var(--crm-vol-paper);
+  border: 1px solid var(--crm-vol-border);
+  border-radius: var(--crm-l-radius, 6px);
+  cursor: pointer;
+  display: grid !important;
+  gap: 1rem;
+  grid-template-columns: auto minmax(0, 1fr) auto;
+  margin: 0 0 0.75rem !important;
+  padding: 1rem 1.15rem !important;
+  transition: border-color 120ms ease, box-shadow 120ms ease;
+}
+
+.crm-vol-opportunity-card:hover,
+.crm-vol-opportunity-card:focus-within,
+.crm-vol-opportunity-card.is-selected {
+  border-color: var(--crm-link-color, #0878c9);
+  box-shadow: 0 0 0 1px var(--crm-link-color, #0878c9);
+}
+
+.crm-vol-opportunity-card > input,
+.crm-vol-flexible-card > input {
+  height: 1.35rem;
+  margin: 0.1rem 0 0;
+  width: 1.35rem;
+}
+
+.crm-vol-opportunity-main h3,
+.crm-vol-flexible-card h3 {
+  background: transparent;
+  color: var(--crm-text-color, #25313e);
+  font-size: 1.05rem;
+  margin: 0;
+  padding: 0;
+}
+
+.crm-vol-opportunity-main h3 span {
+  color: var(--crm-vol-muted);
+  font-size: 0.85rem;
+  font-weight: normal;
+  margin-left: 0.35rem;
+}
+
+.crm-vol-opportunity-main time {
+  display: block;
+  font-weight: normal;
+  margin-top: 0.35rem;
+}
+
+.crm-vol-opportunity-description {
+  color: var(--crm-vol-muted);
+  font-weight: normal;
+  line-height: 1.4;
+  margin-top: 0.65rem;
+}
+
+.crm-vol-opportunity-description > :first-child {
+  margin-top: 0;
+}
+
+.crm-vol-opportunity-description > :last-child {
+  margin-bottom: 0;
+}
+
+.crm-vol-opportunity-organizer,
+.crm-vol-opportunity-campaign {
+  color: var(--crm-vol-muted);
+  display: block;
+  font-size: 0.8rem;
+  font-weight: normal;
+  margin-top: 0.5rem;
+}
+
+.crm-vol-opportunity-campaign {
+  margin-top: 0.2rem;
+}
+
+.crm-vol-opportunity-campaign .crm-i {
+  font-size: 0.75rem;
+  margin-right: 0.2rem;
+}
+
+.crm-vol-opportunity-capacity {
+  text-align: right;
+}
+
+.crm-vol-opportunity-capacity strong,
+.crm-vol-opportunity-capacity span {
+  display: block;
+  white-space: nowrap;
+}
+
+.crm-vol-opportunity-capacity strong {
+  color: var(--crm-success-ink-color, #287441);
+  font-size: 0.85rem;
+}
+
+.crm-vol-opportunity-capacity strong.is-low {
+  color: var(--crm-danger-ink-color, #9b2f3f);
+}
+
+.crm-vol-opportunity-capacity span {
+  color: var(--crm-vol-muted);
+  font-size: 0.8rem;
+  font-weight: normal;
+  margin-top: 0.35rem;
+}
+
+.crm-vol-flexible-card {
+  align-items: center;
+  background: var(--crm-vol-paper);
+  border: 1px dashed var(--crm-vol-border);
+  border-radius: var(--crm-l-radius, 6px);
+  cursor: pointer;
+  display: grid !important;
+  gap: 1rem;
+  grid-template-columns: auto minmax(0, 1fr) auto;
+  margin: 0 0 0.75rem !important;
+  padding: 1rem 1.15rem !important;
+}
+
+.crm-vol-flexible-card.is-selected {
+  border-color: var(--crm-link-color, #0878c9);
+  border-style: solid;
+}
+
+.crm-vol-flexible-card p,
+.crm-vol-flexible-card div > span {
+  color: var(--crm-vol-muted);
+  font-weight: normal;
+  margin: 0.3rem 0 0;
+}
+
+.crm-vol-shift-cart,
+.crm-vol-signup-commitments {
+  background: var(--crm-vol-paper);
+  border: 1px solid var(--crm-vol-border);
+  border-radius: var(--crm-l-radius, 6px);
+  box-shadow: var(--crm-shadow-block, 0 1px 3px rgba(31, 49, 67, 0.08));
+  overflow: hidden;
+  position: sticky;
+  top: calc(var(--crm-menubar-bottom, 0px) + 0.75rem);
+}
+
+.crm-vol-shift-cart > header,
+.crm-vol-signup-commitments > header {
+  border-bottom: 1px solid var(--crm-vol-border);
+  padding: 1rem 1.1rem;
+}
+
+.crm-vol-shift-cart h2,
+.crm-vol-signup-commitments h2 {
+  background: transparent;
+  color: var(--crm-text-color, #25313e);
+  font-size: 1rem;
+  margin: 0;
+  padding: 0;
+}
+
+.crm-vol-shift-cart > header span,
+.crm-vol-signup-commitments > header span,
+.crm-vol-shift-cart-empty {
+  color: var(--crm-vol-muted);
+  display: block;
+  margin-top: 0.2rem;
+}
+
+.crm-vol-shift-cart-empty {
+  min-height: 5rem;
+  padding: 1.2rem 1.1rem;
+}
+
+.crm-vol-shift-cart ol {
+  list-style: none;
+  margin: 0;
+  max-height: 25rem;
+  overflow: auto;
+  padding: 0 1.1rem;
+}
+
+.crm-vol-shift-cart li {
+  align-items: start;
+  border-bottom: 1px solid var(--crm-vol-border);
+  display: flex;
+  gap: 0.5rem;
+  justify-content: space-between;
+  padding: 0.85rem 0;
+}
+
+.crm-vol-shift-cart li span,
+.crm-vol-shift-cart li time {
+  color: var(--crm-vol-muted);
+  display: block;
+  font-size: 0.8rem;
+  margin-top: 0.2rem;
+}
+
+.crm-container .crm-vol-remove-shift {
+  align-items: center;
+  background: transparent;
+  border: 0;
+  border-radius: var(--crm-l-radius, 4px);
+  color: var(--crm-vol-muted);
+  display: inline-flex;
+  font-size: 1.35rem;
+  justify-content: center;
+  /* Was 2rem wide and glyph-tall -- about 32x22, under the 24px minimum. */
+  min-height: 2rem;
+  min-width: 2rem;
+  padding: 0;
+}
+
+.crm-vol-shift-cart > footer {
+  background: var(--crm-layer1-bg-color, #f7f9fb);
+  border-top: 1px solid var(--crm-vol-border);
+  padding: 1rem 1.1rem;
+}
+
+.crm-vol-shift-cart > footer button {
+  justify-content: center;
+  max-width: none;
+  width: 100%;
+}
+
+.crm-vol-shift-cart > footer small {
+  color: var(--crm-vol-muted);
+  display: block;
+  line-height: 1.4;
+  margin-top: 0.65rem;
+}
+
+/* Shown only once the two-column grid stacks -- see the media query below. */
+.crm-vol-shift-bar {
+  display: none;
+}
+
+/* Keyboard focus ------------------------------------------------------- */
+.crm-vol-public-workflow :is(
+  .crm-vol-quick-filters button,
+  .crm-vol-public-secondary,
+  .crm-vol-remove-shift,
+  .crm-vol-shift-bar button,
+  .crm-vol-public-filter-actions button
+):focus-visible {
+  outline: 2px solid var(--crm-focus-color, #0878c9);
+  outline-offset: 2px;
+}
+
+/* Each card is a label wrapping its checkbox, so focus lands on the input.
+ * Ring the card, which is what the user sees. */
+.crm-vol-opportunity-card:has(input:focus-visible),
+.crm-vol-flexible-card:has(input:focus-visible) {
+  outline: 2px solid var(--crm-focus-color, #0878c9);
+  outline-offset: 2px;
+}
+
+.crm-vol-public-empty {
+  border: 1px dashed var(--crm-vol-border);
+  border-radius: var(--crm-l-radius, 6px);
+  color: var(--crm-vol-muted);
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+  padding: 1rem;
+}
+
+/* Stacks at 900px, not 800px. Between roughly 700 and 800 the sidebar track
+ * resolved to its 20rem maximum and squeezed the main column to about 320px,
+ * which is not enough for a role title, its time, a description and a capacity
+ * figure side by side. */
+@media (max-width: 900px) {
+  .crm-vol-public-grid,
+  .crm-vol-signup-layout {
+    grid-template-columns: 1fr;
+  }
+
+  .crm-vol-shift-cart,
+  .crm-vol-signup-commitments {
+    position: static;
+  }
+
+  /* Both panels are the reason the user is here; reading them after the form
+   * or the shift list inverts the order the page is meant to be read in. */
+  .crm-vol-shift-cart,
+  .crm-vol-signup-commitments {
+    order: -1;
+  }
+
+  /* An inner scroll region is awkward once the panel is full width. */
+  .crm-vol-shift-cart ol {
+    max-height: none;
+  }
+
+  /* The bar carries the action down here, so the panel's own footer would be
+   * a second, redundant Continue. */
+  .crm-vol-shift-cart > footer {
+    display: none;
+  }
+
+  .crm-vol-shift-bar {
+    align-items: center;
+    background: var(--crm-vol-paper);
+    border-top: 1px solid var(--crm-vol-border);
+    bottom: 0;
+    box-shadow: 0 -2px 10px rgba(31, 49, 67, 0.14);
+    display: flex;
+    gap: 0.75rem;
+    justify-content: space-between;
+    left: 0;
+    padding: 0.75rem var(--crm-l-reg, 1rem);
+    /* Clear of the home indicator on notched devices. */
+    padding-bottom: calc(0.75rem + env(safe-area-inset-bottom, 0px));
+    position: fixed;
+    right: 0;
+    z-index: 100;
+  }
+
+  .crm-container .crm-vol-shift-bar button {
+    flex: 0 1 60%;
+    justify-content: center;
+    min-height: 2.75rem;
+  }
+
+  /* Leave room so the bar never covers the last card. */
+  .crm-vol-public-content {
+    padding-bottom: 6rem;
+  }
+}
+
+@media (max-width: 600px) {
+  .crm-vol-opportunity-filter-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .crm-vol-public-content {
+    padding-top: 1rem;
+  }
+
+  .crm-vol-quick-filters {
+    align-items: stretch;
+  }
+
+  .crm-vol-quick-filters > span {
+    flex-basis: 100%;
+  }
+
+  .crm-container .crm-vol-quick-filters button {
+    flex: 1 1 auto;
+    min-height: 2.75rem;
+  }
+
+  .crm-vol-opportunity-card,
+  .crm-vol-flexible-card {
+    grid-template-columns: auto minmax(0, 1fr);
+  }
+
+  .crm-vol-opportunity-capacity,
+  .crm-vol-flexible-action {
+    grid-column: 2;
+    text-align: left;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .crm-vol-opportunity-card {
+    transition: none;
+  }
+}

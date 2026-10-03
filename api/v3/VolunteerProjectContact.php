@@ -46,11 +46,11 @@
  * @access public
  */
 function civicrm_api3_volunteer_project_contact_create($params) {
-  if (empty($params['check_permissions']) || CRM_Volunteer_Permission::checkProjectPerms(CRM_Core_Action::UPDATE, $params['project_id'])) {
-    return _civicrm_api3_basic_create(_civicrm_api3_get_BAO(__FUNCTION__), $params);
-  } else {
-    return civicrm_api3_create_error(ts('You do not have permission to modify contacts for this project'));
-  }
+  // Validation and project-level authorization live in
+  // CRM_Volunteer_BAO_ProjectContact::create(), which _civicrm_api3_basic_create()
+  // dispatches to. Keeping them there means API4's generic save/replace and any
+  // direct BAO caller are guarded by the same code rather than a copy of it.
+  return _civicrm_api3_basic_create(_civicrm_api3_get_BAO(__FUNCTION__), $params);
 }
 
 /**
@@ -60,9 +60,8 @@ function civicrm_api3_volunteer_project_contact_create($params) {
  * @param array $params array or parameters determined by getfields
  */
 function _civicrm_api3_volunteer_project_contact_create_spec(&$params) {
-  $params['project_id']['api.required'] = 1;
-  $params['contact_id']['api.required'] = 1;
-  $params['relationship_type_id']['api.required'] = 1;
+  // The action supports partial updates by ID. Required create fields are
+  // validated in civicrm_api3_volunteer_project_contact_create().
 }
 
 /**
@@ -88,8 +87,70 @@ function _civicrm_api3_volunteer_project_contact_get_spec(&$params) {
  * @access public
  */
 function civicrm_api3_volunteer_project_contact_get($params) {
+  $publicRead = FALSE;
+  if (CRM_Volunteer_Permission::shouldCheckPermissions($params)) {
+    // `id` and `project_id` may each be a scalar, a comma-separated list, or an
+    // operator array, so resolve the full set of projects in scope rather than
+    // authorizing against whichever one happened to be first.
+    $projectIds = CRM_Volunteer_Permission::extractRequestedIds($params['project_id'] ?? NULL);
+    if ($projectIds === array()) {
+      $rowIds = CRM_Volunteer_Permission::extractRequestedIds($params['id'] ?? NULL);
+      $projectIds = $rowIds === NULL
+        ? NULL
+        : CRM_Volunteer_Permission::projectIdsForRecords('CRM_Volunteer_DAO_ProjectContact', $rowIds);
+    }
+    if (empty($projectIds)) {
+      throw new API_Exception(ts('A project ID is required to retrieve volunteer project contacts.', array('domain' => 'org.civicrm.volunteer')));
+    }
+
+    $privileged = TRUE;
+    foreach ($projectIds as $projectId) {
+      if (!CRM_Volunteer_Permission::checkProjectPerms(CRM_Core_Action::UPDATE, $projectId)) {
+        $privileged = FALSE;
+        break;
+      }
+    }
+    if (!$privileged) {
+      CRM_Volunteer_Permission::assertProjectPerms(CRM_Core_Action::VIEW);
+      $publicRead = TRUE;
+      // Pseudoconstant translation happens on civi.api.prepare, before this
+      // function runs, so a name here would reach SQL as a string compared
+      // against an int column and match nothing. Use the stored value.
+      $params['relationship_type_id'] = CRM_Core_PseudoConstant::getKey(
+        'CRM_Volunteer_BAO_ProjectContact',
+        'relationship_type_id',
+        'volunteer_beneficiary'
+      );
+      $activeInScope = FALSE;
+      foreach ($projectIds as $projectId) {
+        if (CRM_Core_DAO::getFieldValue('CRM_Volunteer_DAO_Project', $projectId, 'is_active')) {
+          $activeInScope = TRUE;
+          break;
+        }
+      }
+      if (!$activeInScope) {
+        return civicrm_api3_create_success(array(), $params, 'VolunteerProjectContact', 'get');
+      }
+    }
+  }
+  if ($publicRead && !CRM_Volunteer_Permission::isInternalBypassActive()) {
+    $params = CRM_Volunteer_Permission::stripChainedApiParams($params);
+  }
+  elseif (!CRM_Volunteer_Permission::isInternalBypassActive()) {
+    $params = CRM_Volunteer_Permission::enforceChainedApiPermissions($params);
+  }
   $result = _civicrm_api3_basic_get(_civicrm_api3_get_BAO(__FUNCTION__), $params);
   if (!empty($result['values'])) {
+    $relationshipOptions = \Civi\Api4\OptionValue::get(FALSE)
+      ->addSelect('value', 'name', 'label')
+      ->addWhere('option_group_id.name', '=', CRM_Volunteer_BAO_ProjectContact::RELATIONSHIP_OPTION_GROUP)
+      ->execute();
+    $relationshipOptionsByValue = array();
+    $relationshipOptionsByName = array();
+    foreach ($relationshipOptions as $optionValue) {
+      $relationshipOptionsByValue[(int) $optionValue['value']] = $optionValue;
+      $relationshipOptionsByName[$optionValue['name']] = $optionValue;
+    }
     foreach ($result['values'] as &$projectContact) {
       //In some contexts we are passing 'return' => 'contact_id' in with $params
       //In this case, there is no relationship_type_id returned as part of the results set above
@@ -101,15 +162,16 @@ function civicrm_api3_volunteer_project_contact_get($params) {
       $rType = (array_key_exists("relationship_type_id", $projectContact) ) ? $projectContact['relationship_type_id'] : $rType;
 
       if ($rType) {
-        $optionValue = civicrm_api3('OptionValue', 'getsingle', array(
-          'option_group_id' => CRM_Volunteer_BAO_ProjectContact::RELATIONSHIP_OPTION_GROUP,
-          'value' => $rType
-        ));
-
-        $projectContact['relationship_type_label'] = $optionValue['label'];
-        $projectContact['relationship_type_name'] = $optionValue['name'];
+        $optionValue = is_numeric($rType)
+          ? ($relationshipOptionsByValue[(int) $rType] ?? NULL)
+          : ($relationshipOptionsByName[$rType] ?? NULL);
+        if ($optionValue) {
+          $projectContact['relationship_type_label'] = $optionValue['label'];
+          $projectContact['relationship_type_name'] = $optionValue['name'];
+        }
       }
     }
+    unset($projectContact);
   }
   return $result;
 
@@ -131,11 +193,15 @@ function civicrm_api3_volunteer_project_contact_get($params) {
  */
 function civicrm_api3_volunteer_project_contact_delete($params) {
   $projectId = CRM_Core_DAO::getFieldValue("CRM_Volunteer_DAO_ProjectContact", $params['id'], "project_id");
-  if (empty($params['check_permissions']) || CRM_Volunteer_Permission::checkProjectPerms(CRM_Core_Action::UPDATE, $projectId)) {
-    return _civicrm_api3_basic_delete(_civicrm_api3_get_BAO(__FUNCTION__), $params);
-  } else {
-    return civicrm_api3_create_error(ts('You do not have permission to modify contacts for this project'));
+  if (CRM_Volunteer_Permission::shouldCheckPermissions($params)) {
+    CRM_Volunteer_Permission::assertProjectPerms(CRM_Core_Action::UPDATE, $projectId);
+    if (!CRM_Volunteer_Permission::check('edit volunteer project relationships')) {
+      throw new API_Exception(ts('You do not have permission to modify contacts for this project.', array('domain' => 'org.civicrm.volunteer')), 403);
+    }
   }
+  $result = _civicrm_api3_basic_delete(_civicrm_api3_get_BAO(__FUNCTION__), $params);
+  CRM_Volunteer_Permission::flushProjectContactCache($projectId);
+  return $result;
 }
 
 /**

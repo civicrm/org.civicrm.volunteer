@@ -19,11 +19,13 @@ return array(
     'group' => 'org.civicrm.volunteer',
     'name' => 'volunteer_project_default_profiles',
     'type' => 'Array',
-    'default' => array(
-      "primary" => array(civicrm_api3('UFGroup', 'getvalue', array(
-        "name" => "volunteer_sign_up",
-        "return" => "id"
-      )))),
+    // Deliberately static. This file is metadata: CiviCRM scans and caches it,
+    // so an API call here ran on every settings-metadata cache miss -- and
+    // UFGroup.getvalue() throws when the volunteer_sign_up profile has been
+    // renamed or deleted, which turned a cache rebuild into a fatal. The
+    // volunteer_sign_up fallback is resolved lazily instead, by
+    // CRM_Volunteer_BAO_Project::composeDefaultSettingsArray().
+    'default' => NULL,
     'add' => '4.5',
     'is_domain' => 1,
     'is_contact' => 0,
@@ -106,6 +108,20 @@ return array(
     'is_contact' => 0,
     'description' => 'Campaign Type(s)',
     'help_text' => 'Depending on the value of the Campaign Filter Whitelist/Blacklist setting, the campaign types in this list will either be shown or hidden from CiviVolunteer screens.',
+  ),
+  'volunteer_use_backend_theme' => array(
+    'group_name' => 'CiviVolunteer Global Settings',
+    'group' => 'org.civicrm.volunteer',
+    'name' => 'volunteer_use_backend_theme',
+    'type' => 'Boolean',
+    'html_type' => 'checkbox',
+    'default' => 1,
+    'add' => '2.5',
+    'is_domain' => 1,
+    'is_contact' => 0,
+    'title' => 'Use the backend theme on public volunteer pages',
+    'description' => 'Render the public opportunity browser and signup form with the CiviCRM backend theme',
+    'help_text' => 'The opportunity browser and the signup form are public pages, so CiviCRM would normally render them with its frontend theme. Leave this on so they match the volunteer management screens. Turn it off if the public volunteer pages must follow the theme configured for the rest of your public CiviCRM pages.',
   ),
   'volunteer_general_project_settings_help_text' => array(
     'group_name' => 'CiviVolunteer Global Settings',

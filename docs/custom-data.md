@@ -9,7 +9,7 @@ For example, let's say you want the [volunteer interest form](./interest-form.md
 
 ## The "Volunteer Information" *set* of custom fields {:#volunteer-information}
 
-Custom data fields are stored in "sets". Sets can be attached to different CiviCRM entities, like "Contact" or "Contribution". When CiviVolunteer is installed it creates a set called "Volunteer Information" which is attached to *contacts*. This set of custom fields provides a good place to store information about the skills and interests of your volunteers, and the fields within it are exposed when searching for volunteers within the [Assign Volunteers](./assignments.md#searching) interface.
+Custom data fields are stored in "sets". Sets can be attached to different CiviCRM entities, like "Contact" or "Contribution". When CiviVolunteer is installed it creates a set called "Volunteer Information" which is attached to *contacts*. This set of custom fields provides a good place to store information about the skills and interests of your volunteers, and the fields within it can be used as columns and filters in the [Volunteer Report](./reporting.md) and in CiviCRM's contact searches.
 
 !!! note "Contact *sub-type* must be **Volunteer**"
     For the Volunteer Information set to become visible, a contact will need to have **Volunteer** selected as a sub-type. To do this for one individual choose **Edit** and find the **Contact Type** field.
@@ -28,7 +28,7 @@ By default there is one field in this set called "Camera Skill Level", mostly as
 	    Use something short but descriptive for **Field Label** (e.g. "CPR Certification" for our example above). It will only be visible to staff &mdash; the general public will see a *different* label which you set in the *profile*.
 
     !!! tip "Tip: make it searchable"
-        New fields are not searchable by default. You must check the box for **Is this Field Searchable**. If the field is not searchable, you won't be able to use it within the [Assign Volunteers](./assignments.md#searching) interface.
+        New fields are not searchable by default. Check the box for **Is this Field Searchable** to use the field in CiviCRM's Advanced Search and in report filters.
 
 ## Field type {:#type}
 

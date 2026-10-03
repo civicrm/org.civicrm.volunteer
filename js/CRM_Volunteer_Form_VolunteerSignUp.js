@@ -1,13 +1,9 @@
 (function(ts) {
   CRM.$(function($) {
     function getTitle(el) {
-      var title = '';
-      el.contents().each(function () {
-        if (this.nodeType === 3) {
-          title += this.textContent;
-        }
-      });
-      return title;
+      var titleSource = el.clone();
+      titleSource.find('.crm-vol-description').remove();
+      return $.trim(titleSource.text());
     }
 
     function getDescription(el) {
@@ -22,5 +18,15 @@
       var title =  getTitle($(this).parent());
       CRM.alert(description, title, 'info', {expires: 0});
     });
+
+    // On a validation round-trip, take the volunteer directly to the first
+    // field that needs attention while retaining CiviCRM's inline messages.
+    var firstInvalidField = $('.crm-vol-signup-page')
+      .find('input.error, select.error, textarea.error, input.crm-error, select.crm-error, textarea.crm-error')
+      .filter(':visible')
+      .first();
+    if (firstInvalidField.length) {
+      firstInvalidField.trigger('focus');
+    }
   });
 }(CRM.ts('org.civicrm.volunteer')));

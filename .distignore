@@ -1,0 +1,10 @@
+# Files that must never ship in a release tarball.
+tests/
+tools/
+.gitignore
+.distignore
+.env.example
+.phpunit.result.cache
+node_modules/
+package.json
+package-lock.json
